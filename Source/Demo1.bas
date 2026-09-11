@@ -26,6 +26,10 @@ Const SCALE% = 6
 ' Number of seconds between ticks of the thermometer
 Const THERMO_TICK% = 3
 
+' Number of screen pixels per frame
+' Currently, can only be an integer
+Const WALKING_SPEED# = 1
+
 ' --------------------------
 ' Includes
 ' --------------------------
@@ -41,6 +45,8 @@ Type Player
   ScreenPos As Point
   SpriteIndex As Integer
   HasBlock As Integer
+  IsClimbing As Integer
+  IsFalling As Integer
   ToLeft As Integer
   Temp As Integer ' 0 to 10
   ThermoTick As Integer
@@ -68,8 +74,9 @@ LoadLevel Levels(0)
 Dim Shared Dodu As Player
 Let Dodu.SpriteIndex = 0
 Let Dodu.ScreenPos.x = BLOCK_SIZE%
-Let Dodu.ScreenPos.y = 0
+Let Dodu.ScreenPos.y = 2 * BLOCK_SIZE%
 Let Dodu.HasBlock = FALSE
+Let Dodu.IsClimbing = 0
 Let Dodu.Temp = 10
 
 ' --------------------------
@@ -137,19 +144,59 @@ End Sub
 
 Sub MapRect (p As Player, m As LevelMap, r As Rectangle)
   Dim lp As Point
+  Dim p_x, p_y As Integer
   LevelPos p, m, lp
-  Let r.p1.y = Floor%(lp.x / BLOCK_SIZE%)
-  Let r.p1.x = Floor%(lp.y / BLOCK_SIZE%)
-  Let r.p2.y = Ceil%((lp.x + PLAYER_WIDTH% - 1) / BLOCK_SIZE%) - 1
-  Let r.p2.x = Ceil%((lp.y + PLAYER_HEIGHT% - 1) / BLOCK_SIZE%) - 1
+  Let r.p1.y = Floor%(p_x / BLOCK_SIZE%)
+  Let r.p1.x = Floor%(p_y / BLOCK_SIZE%) - 1
+  Let r.p2.y = Floor%(p_x / BLOCK_SIZE%)
+  Let r.p2.x = Floor%(p_y / BLOCK_SIZE%) + 1
 End Sub
 
-Function Blocked% (side As Integer, m As LevelMap)
-  Dim s As Sprite
-  Let s = CharSprites(Dodu.SpriteIndex)
+Function CanClimb% (side As Integer, m As LevelMap)
   Dim r As Rectangle
-  MapRect Dodu, Levels(0), r
+  MapRect Dodu, m, r
   ' Look out, points in the rect have their *line* first
+  Select Case side
+    Case K_RIGHT
+      If m.Topo(r.p2.x, r.p2.y) = "@" Then
+        Let CanClimb% = TRUE
+        Exit Function
+      End If
+      Let CanClimb% = TRUE
+    Case K_LEFT
+      If m.Topo(r.p2.x, r.p1.y) = "@" Then
+        Let CanClimb% = TRUE
+        Exit Function
+      End If
+  End Select
+  Let CanClimb% = FALSE
+End Function
+
+Function CanFall% (side As Integer, m As LevelMap)
+  Dim r As Rectangle
+  MapRect Dodu, m, r
+  ' Look out, points in the rect have their *line* first
+  Select Case side
+    Case K_RIGHT
+      If m.Topo(r.p2.x + 1, r.p2.y) = " " Then
+        Let CanFall% = TRUE
+        Exit Function
+      End If
+      Let CanFall% = TRUE
+    Case K_LEFT
+      If m.Topo(r.p2.x + 1, r.p1.y) = " " Then
+        Let CanFall% = TRUE
+        Exit Function
+      End If
+  End Select
+  Let CanFall% = FALSE
+End Function
+
+
+Function Blocked% (side As Integer, m As LevelMap)
+  Dim r As Rectangle
+  MapRect Dodu, m, r
+  ' Look out,5 points in the rect have their *line* first
   Select Case side
     Case K_LEFT
       If r.p1.y = 0 Then
@@ -157,7 +204,7 @@ Function Blocked% (side As Integer, m As LevelMap)
         Exit Function
       End If
       Dim x As Integer
-      For x% = r.p1.x To r.p2.x
+      For x% = _Max(0, r.p1.x) To _Min(M_H - 1, r.p2.x)
         If m.Topo(x%, r.p1.y) = "@" Then
           Let Blocked% = TRUE
           Exit Function
@@ -170,17 +217,48 @@ Function Blocked% (side As Integer, m As LevelMap)
         Exit Function
       End If
       Dim x2 As Integer
-      For x2% = r.p1.x To r.p2.x
+      For x2% = _Max(0, r.p1.x) To _Min(M_H - 1, r.p2.x)
         If m.Topo(x2%, r.p2.y) = "@" Then
           Let Blocked% = TRUE
           Exit Function
         End If
       Next
       Let Blocked% = FALSE
-
   End Select
-
 End Function
+
+Sub MovePlayer (x As Integer, y As Integer)
+  If x < 0 Then Dodu.ToLeft = TRUE Else Dodu.ToLeft = FALSE
+  Select Case Dodu.ToLeft
+    Case FALSE ' Going right, x > 0
+      If Dodu.ScreenPos.x < 20 Then
+        Let Dodu.ScreenPos.x = Dodu.ScreenPos.x + (x * WALKING_SPEED#)
+      Else
+        Let Levels(0).PanX = Levels(0).PanX - (x * WALKING_SPEED#)
+      End If
+    Case TRUE ' Going left, x < 0
+      If Dodu.ScreenPos.x > 10 Then
+        Let Dodu.ScreenPos.x = Dodu.ScreenPos.x + (x * WALKING_SPEED#)
+      Else
+        Let Levels(0).PanX = Levels(0).PanX - (x * WALKING_SPEED#)
+      End If
+  End Select
+  If y > 0 Then
+    ' Going down, y > 0
+    If Dodu.ScreenPos.y < 20 Then
+      Let Dodu.ScreenPos.y = Dodu.ScreenPos.y + (y * WALKING_SPEED#)
+    Else
+      Let Levels(0).PanY = Levels(0).PanY - (y * WALKING_SPEED#)
+    End If
+  Else
+    'Going up, y < 0
+    If Dodu.ScreenPos.y > 10 Then
+      Let Dodu.ScreenPos.y = Dodu.ScreenPos.y + (y * WALKING_SPEED#)
+    Else
+      Let Levels(0).PanY = Levels(0).PanY - (y * WALKING_SPEED#)
+    End If
+  End If
+End Sub
 
 ' --------------------------
 ' Main loop
@@ -200,28 +278,52 @@ Do
   DrawThermometer ImgBuffer
   Dim r As Rectangle
   MapRect Dodu, Levels(0), r
-  _PrintString (0, 48), RectangleToString$(r), ImgBuffer
+  Line (r.p1.y * BLOCK_SIZE + Levels(0).PanX, r.p1.x * BLOCK_SIZE% + Levels(0).PanY)-(r.p2.y * BLOCK_SIZE% + Levels(0).PanX, r.p2.x * BLOCK_SIZE% + Levels(0).PanY), _RGB32(255, 0, 0), B
+  '_PrintString (0, 48), RectangleToString$(r), ImgBuffer
+  '_PrintString (0, 48), Str$(Dodu.IsClimbing)
   _PutImage (0, 0)-(SCREEN_W% * SCALE% - 1, SCREEN_H% * SCALE% - 1), ImgBuffer, MainScreen
   _Display
+  ' If player is climbing, ignore keyboard until on top of block
+  If Dodu.IsClimbing > 0 Then
+    Dim dir_c As Integer
+    If Dodu.ToLeft = TRUE Then dir_c% = -WALKING_SPEED% Else dir_c% = WALKING_SPEED%
+    MovePlayer dir_c, -1
+    Let Dodu.IsClimbing = Dodu.IsClimbing - 1
+    _Continue
+  End If
+  ' If player is falling, ignore keyboard until on top of block
+  If Dodu.IsClimbing > 0 Then
+    Dim dir_f As Integer
+    If Dodu.ToLeft = TRUE Then dir_f% = -WALKING_SPEED% Else dir_f% = WALKING_SPEED%
+    MovePlayer dir_f, 1
+    Let Dodu.IsFalling = Dodu.IsFalling - 1
+    _Continue
+  End If
   If _KeyDown(K_LEFT) Then
-    If Blocked(K_LEFT, Levels(0)) Then _Continue
-    Let Dodu.ToLeft = -1
-    If Dodu.ScreenPos.x > 10 Then
-      Let Dodu.ScreenPos.x = Dodu.ScreenPos.x - 1
+    If Blocked(K_LEFT, Levels(0)) Then
+      If CanClimb%(K_LEFT, Levels(0)) Then
+        Dodu.IsClimbing = 11
+      End If
     Else
-      Let Levels(0).PanX = Levels(0).PanX + 1
+      MovePlayer -1, 0
+      If CanFall%(K_LEFT, Levels(0)) Then
+        Dodu.IsFalling = 11
+      End If
     End If
   ElseIf _KeyDown(K_RIGHT) Then
-    If Blocked(K_RIGHT, Levels(0)) Then _Continue
-    Let Dodu.ToLeft = 0
-    If Dodu.ScreenPos.x < 20 Then
-      Let Dodu.ScreenPos.x = Dodu.ScreenPos.x + 1
+    If Blocked(K_RIGHT, Levels(0)) Then
+      If CanClimb%(K_RIGHT, Levels(0)) Then
+        Dodu.IsClimbing = 11
+      End If
     Else
-      Let Levels(0).PanX = Levels(0).PanX - 1
+      MovePlayer 1, 0
+      If CanFall%(K_RIGHT, Levels(0)) Then
+        Dodu.IsFalling = 11
+      End If
+
     End If
   End If
 Loop
 
-
-'$Include:'Levels.bm'
+'$Include:'LevelMaps.bm'
 
