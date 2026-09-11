@@ -1,3 +1,4 @@
+'$Debug
 Option Base 0
 Option _Explicit
 
@@ -10,6 +11,7 @@ Const TRUE = -1
 Const FALSE = 0
 
 ' Keys
+Const K_ESC = 27
 Const K_LEFT = 19200
 Const K_RIGHT = 19712
 
@@ -24,7 +26,7 @@ Const FPS% = 25
 Const SCALE% = 6
 
 ' Number of seconds between ticks of the thermometer
-Const THERMO_TICK% = 3
+Const THERMO_TICK% = 30
 
 ' Number of screen pixels per frame
 ' Currently, can only be an integer
@@ -81,8 +83,8 @@ LoadLevel Levels(0)
 ' Game state
 Dim Shared Dodu As Player
 Let Dodu.SpriteIndex = 0
-Let Dodu.ScreenPos.x = BLOCK_SIZE%
-Let Dodu.ScreenPos.y = 1 * BLOCK_SIZE%
+Let Dodu.ScreenPos.x = 6 * BLOCK_SIZE%
+Let Dodu.ScreenPos.y = 0 * BLOCK_SIZE%
 Let Dodu.HasBlock = FALSE
 Let Dodu.IsClimbing = 0
 Let Dodu.Temp = 10
@@ -197,44 +199,45 @@ Sub MapSurroundings (p As Player, m As LevelMap, s As Surroundings, threshold As
   If Abs(r * BLOCK_SIZE% - (lp.x + PLAYER_WIDTH%)) < threshold Then Let s.Right = r Else Let s.Right = -1
 End Sub
 
-Function CanClimb% (side As Integer, m As LevelMap)
-  Dim r As Rectangle
-  MapRect Dodu, m, r
-  ' Look out, points in the rect have their *line* first
+Function SurroundingsToString$ (s As Surroundings)
+  Dim cont As String
+  Let SurroundingsToString$ = "L" + Str$(s.Left) + "R" + Str$(s.Right) + "T" + Str$(s.Top) + "B" + Str$(s.Bottom)
+End Function
+
+Function CanClimb% (side As Integer, m As LevelMap, s As Surroundings)
   Select Case side
     Case K_RIGHT
-      If m.Topo(r.p2.x, r.p2.y) = "@" Then
-        Let CanClimb% = TRUE
+      If s.Right >= 0 And s.Bottom >= 4 Then
+        Let CanClimb% = m.Topo(s.Bottom - 1, s.Right) = "@" And m.Topo(s.Bottom - 2, s.Right) = " " And m.Topo(s.Bottom - 3, s.Right) = " " And m.Topo(s.Bottom - 4, s.Right) = " "
         Exit Function
       End If
-      Let CanClimb% = TRUE
     Case K_LEFT
-      If m.Topo(r.p2.x, r.p1.y) = "@" Then
-        Let CanClimb% = TRUE
+      If s.Left >= 0 And s.Bottom >= 4 Then
+        Let CanClimb% = m.Topo(s.Bottom - 1, s.Left) = "@" And m.Topo(s.Bottom - 2, s.Left) = " " And m.Topo(s.Bottom - 3, s.Left) = " " And m.Topo(s.Bottom - 4, s.Left) = " "
         Exit Function
       End If
   End Select
   Let CanClimb% = FALSE
 End Function
 
-Function CanFall% (side As Integer, m As LevelMap)
-  Dim r As Rectangle
-  MapRect Dodu, m, r
-  ' Look out, points in the rect have their *line* first
+Function CanUnclimb% (p As Point, side As Integer, m As LevelMap, s As Surroundings)
   Select Case side
     Case K_RIGHT
-      If m.Topo(r.p2.x + 1, r.p2.y) = " " Then
-        Let CanFall% = TRUE
-        Exit Function
+      If s.Left >= 0 And s.Left < M_W% - 1 And s.Bottom >= 2 And s.Bottom < M_H% Then
+        If m.Topo(s.Bottom + 1, s.Left + 2) = "@" And m.Topo(s.Bottom, s.Left + 2) = " " And m.Topo(s.Bottom - 1, s.Left + 2) = " " And m.Topo(s.Bottom - 2, s.Left + 2) = " " Then
+          Let CanUnclimb% = TRUE
+          Exit Function
+        End If
       End If
-      Let CanFall% = TRUE
     Case K_LEFT
-      If m.Topo(r.p2.x + 1, r.p1.y) = " " Then
-        Let CanFall% = TRUE
-        Exit Function
+      If s.Right >= 2 And s.Right < M_W% - 1 And s.Bottom >= 2 And s.Bottom < M_H% Then
+        If m.Topo(s.Bottom + 1, s.Right - 2) = "@" And m.Topo(s.Bottom, s.Right - 2) = " " And m.Topo(s.Bottom - 1, s.Right - 2) = " " And m.Topo(s.Bottom - 2, s.Right - 2) = " " Then
+          Let CanUnclimb% = TRUE
+          Exit Function
+        End If
       End If
   End Select
-  Let CanFall% = FALSE
+  Let CanUnclimb% = FALSE
 End Function
 
 
@@ -298,23 +301,23 @@ Sub MovePlayer (x As Integer, y As Integer)
   End If
 End Sub
 
-Sub DrawSurroundings (s As Surroundings, m As LevelMap)
+Sub DrawSurroundings (s As Surroundings, m As LevelMap, threshold As Integer)
   Dim v As Integer
   If s.Top >= 0 Then
-    Let v = s.Top * BLOCK_SIZE% + m.PanY + (BLOCK_SIZE% / 2)
-    Line (0, v)-(SCREEN_W%, v), _RGB32(255, 255, 0) ' yellow
+    Let v = s.Top * BLOCK_SIZE% + m.PanY + (BLOCK_SIZE% - 1)
+    Line (0, v)-(SCREEN_W%, v + threshold), _RGB32(255, 255, 0, 128), BF ' yellow
   End If
   If s.Bottom >= 0 Then
-    Let v = s.Bottom * BLOCK_SIZE% + m.PanY + (BLOCK_SIZE% / 2)
-    Line (0, v)-(SCREEN_W%, v), _RGB32(255, 0, 0) ' red
+    Let v = s.Bottom * BLOCK_SIZE% + m.PanY
+    Line (0, v)-(SCREEN_W%, v - threshold), _RGB32(255, 0, 0, 128), BF ' red
   End If
   If s.Left >= 0 Then
-    Let v = s.Left * BLOCK_SIZE% + m.PanX + (BLOCK_SIZE% / 2)
-    Line (v, 0)-(v, SCREEN_H%), _RGB32(255, 0, 255) ' pink
+    Let v = s.Left * BLOCK_SIZE% + m.PanX + (BLOCK_SIZE% - 1)
+    Line (v, 0)-(v + threshold, SCREEN_H%), _RGB32(255, 0, 255, 128), BF ' pink
   End If
   If s.Right >= 0 Then
-    Let v = s.Right * BLOCK_SIZE% + m.PanX + (BLOCK_SIZE% / 2)
-    Line (v, 0)-(v, SCREEN_H%), _RGB32(0, 255, 0) ' green
+    Let v = s.Right * BLOCK_SIZE% + m.PanX
+    Line (v, 0)-(v - threshold, SCREEN_H%), _RGB32(0, 255, 0, 128), BF ' green
   End If
 End Sub
 
@@ -340,8 +343,8 @@ Do
   MapSurroundings Dodu, Levels(0), s_wide, 3
   MapSurroundings Dodu, Levels(0), s_tight, 1
   'Line (r.p1.y * BLOCK_SIZE + Levels(0).PanX, r.p1.x * BLOCK_SIZE% + Levels(0).PanY)-(r.p2.y * BLOCK_SIZE% + Levels(0).PanX + BLOCK_SIZE% - 1, r.p2.x * BLOCK_SIZE% + Levels(0).PanY + BLOCK_SIZE% - 1), _RGB32(255, 0, 0), B
-  DrawSurroundings s_wide, Levels(0)
-  _PrintString (0, 48), PointToString(lp), ImgBuffer
+  DrawSurroundings s_wide, Levels(0), 3
+  _PrintString (0, 48), Str$(s_wide.Right) + ",", ImgBuffer
   '_PrintString (0, 48), Str$(Dodu.IsClimbing)
   _PutImage (0, 0)-(SCREEN_W% * SCALE% - 1, SCREEN_H% * SCALE% - 1), ImgBuffer, MainScreen
   _Display
@@ -354,7 +357,7 @@ Do
     _Continue
   End If
   ' If player is falling, ignore keyboard until on top of block
-  If Dodu.IsClimbing > 0 Then
+  If Dodu.IsFalling > 0 Then
     Dim dir_f As Integer
     If Dodu.ToLeft = TRUE Then dir_f% = -WALKING_SPEED% Else dir_f% = WALKING_SPEED%
     MovePlayer dir_f, 1
@@ -363,27 +366,28 @@ Do
   End If
   If _KeyDown(K_LEFT) Then
     If Blocked(K_LEFT, Levels(0), s_tight) Then
-      If CanClimb%(K_LEFT, Levels(0)) Then
+      If CanClimb%(K_LEFT, Levels(0), s_tight) Then
         Dodu.IsClimbing = 11
       End If
     Else
       MovePlayer -1, 0
-      If CanFall%(K_LEFT, Levels(0)) Then
+      If CanUnclimb%(lp, K_LEFT, Levels(0), s_wide) Then
         Dodu.IsFalling = 11
       End If
     End If
   ElseIf _KeyDown(K_RIGHT) Then
     If Blocked(K_RIGHT, Levels(0), s_tight) Then
-      If CanClimb%(K_RIGHT, Levels(0)) Then
+      If CanClimb%(K_RIGHT, Levels(0), s_tight) Then
         Dodu.IsClimbing = 11
       End If
     Else
       MovePlayer 1, 0
-      If CanFall%(K_RIGHT, Levels(0)) Then
+      If CanUnclimb%(lp, K_RIGHT, Levels(0), s_wide) Then
         Dodu.IsFalling = 11
       End If
-
     End If
+  ElseIf _KeyDown(K_ESC) Then
+    End
   End If
 Loop
 
