@@ -50,6 +50,14 @@ Type Player
   ToLeft As Integer
   Temp As Integer ' 0 to 10
   ThermoTick As Integer
+  ThermoFlash As Integer
+End Type
+
+Type Surroundings
+  Top As Integer
+  Bottom As Integer
+  Left As Integer
+  Right As Integer
 End Type
 
 ' --------------------------
@@ -74,7 +82,7 @@ LoadLevel Levels(0)
 Dim Shared Dodu As Player
 Let Dodu.SpriteIndex = 0
 Let Dodu.ScreenPos.x = BLOCK_SIZE%
-Let Dodu.ScreenPos.y = 2 * BLOCK_SIZE%
+Let Dodu.ScreenPos.y = 1 * BLOCK_SIZE%
 Let Dodu.HasBlock = FALSE
 Let Dodu.IsClimbing = 0
 Let Dodu.Temp = 10
@@ -119,8 +127,18 @@ Sub DrawThermometer (buf As Long)
   Let p.x = 4
   Let p.y = 4
   DrawSprite Thermometer, p, FALSE, buf
-  Line (6, 15 - Dodu.Temp)-(7, 15), THERMO_RED~&, BF
-  Line (5, 16)-(8, 18), THERMO_RED~&, BF
+  Dim red As _Unsigned Long
+  Let red = THERMO_RED~&
+  If Dodu.Temp <= 2 Then
+    If Dodu.ThermoFlash < 10 Then
+      red = _RGB32(170, 255, 255)
+    Else
+      red = THERMO_RED~&
+    End If
+    Let Dodu.ThermoFlash = (Dodu.ThermoFlash + 1) Mod 20
+  End If
+  Line (6, 15 - Dodu.Temp)-(7, 15), red, BF
+  Line (5, 16)-(8, 18), red, BF
 End Sub
 
 Function Ceil% (x As Single)
@@ -146,10 +164,37 @@ Sub MapRect (p As Player, m As LevelMap, r As Rectangle)
   Dim lp As Point
   Dim p_x, p_y As Integer
   LevelPos p, m, lp
-  Let r.p1.y = Floor%(p_x / BLOCK_SIZE%)
-  Let r.p1.x = Floor%(p_y / BLOCK_SIZE%) - 1
-  Let r.p2.y = Floor%(p_x / BLOCK_SIZE%)
-  Let r.p2.x = Floor%(p_y / BLOCK_SIZE%) + 1
+  If p.ToLeft Then
+
+    Let r.p1.x = CInt((lp.y + PLAYER_HEIGHT% / 2) / BLOCK_SIZE%)
+    Let r.p2.y = Ceil%((lp.x + PLAYER_WIDTH% / 2) / BLOCK_SIZE%)
+    Let r.p2.x = r.p1.x
+    Let r.p1.y = r.p2.y - 1
+  Else
+    Let r.p1.y = Floor%((lp.x + PLAYER_WIDTH% / 2) / BLOCK_SIZE%)
+    Let r.p1.x = CInt((lp.y + PLAYER_HEIGHT% / 2) / BLOCK_SIZE%)
+    Let r.p2.y = r.p1.y + 1
+    Let r.p2.x = r.p1.x
+
+  End If
+End Sub
+
+Sub MapSurroundings (p As Player, m As LevelMap, s As Surroundings, threshold As Integer)
+  Dim lp As Point
+  Dim t, l, b, r As Integer
+  LevelPos p, m, lp
+  Let t = Floor%(lp.y / BLOCK_SIZE%) - 1
+  Let b = Floor%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%)
+  Let l = Floor%(lp.x / BLOCK_SIZE%) - 1
+  Let r = Floor%((lp.x + PLAYER_WIDTH%) / BLOCK_SIZE%)
+  s.Left = -1
+  s.Top = -1
+  s.Right = -1
+  s.Bottom = -1
+  If Abs(lp.y - (t + 1) * BLOCK_SIZE%) < threshold Then Let s.Top = t Else Let s.Top = -1
+  If Abs(lp.y + PLAYER_HEIGHT% - b * BLOCK_SIZE%) < threshold Then Let s.Bottom = b Else Let s.Bottom = -1
+  If Abs(lp.x - (l + 1) * BLOCK_SIZE%) < threshold Then Let s.Left = l Else Let s.Left = -1
+  If Abs(r * BLOCK_SIZE% - (lp.x + PLAYER_WIDTH%)) < threshold Then Let s.Right = r Else Let s.Right = -1
 End Sub
 
 Function CanClimb% (side As Integer, m As LevelMap)
@@ -193,38 +238,31 @@ Function CanFall% (side As Integer, m As LevelMap)
 End Function
 
 
-Function Blocked% (side As Integer, m As LevelMap)
+Function Blocked% (side As Integer, m As LevelMap, s As Surroundings)
   Dim r As Rectangle
-  MapRect Dodu, m, r
-  ' Look out,5 points in the rect have their *line* first
   Select Case side
     Case K_LEFT
-      If r.p1.y = 0 Then
-        Let Blocked% = TRUE
-        Exit Function
+      If s.Left >= 0 Then
+        Dim y1 As Integer
+        For y1 = s.Bottom - 1 To _Max(0, s.Bottom - 3) Step -1
+          If m.Topo(y1, s.Left) = "@" Then
+            Let Blocked% = TRUE
+            Exit Function
+          End If
+        Next
       End If
-      Dim x As Integer
-      For x% = _Max(0, r.p1.x) To _Min(M_H - 1, r.p2.x)
-        If m.Topo(x%, r.p1.y) = "@" Then
-          Let Blocked% = TRUE
-          Exit Function
-        End If
-      Next
-      Let Blocked% = FALSE
     Case K_RIGHT
-      If r.p2.y = M_W - 1 Then
-        Let Blocked% = TRUE
-        Exit Function
+      If s.Right >= 0 Then
+        Dim y2 As Integer
+        For y2 = s.Bottom - 1 To _Max(0, s.Bottom - 3) Step -1
+          If m.Topo(y2, s.Right) = "@" Then
+            Let Blocked% = TRUE
+            Exit Function
+          End If
+        Next
       End If
-      Dim x2 As Integer
-      For x2% = _Max(0, r.p1.x) To _Min(M_H - 1, r.p2.x)
-        If m.Topo(x2%, r.p2.y) = "@" Then
-          Let Blocked% = TRUE
-          Exit Function
-        End If
-      Next
-      Let Blocked% = FALSE
   End Select
+  Let Blocked% = FALSE
 End Function
 
 Sub MovePlayer (x As Integer, y As Integer)
@@ -260,6 +298,26 @@ Sub MovePlayer (x As Integer, y As Integer)
   End If
 End Sub
 
+Sub DrawSurroundings (s As Surroundings, m As LevelMap)
+  Dim v As Integer
+  If s.Top >= 0 Then
+    Let v = s.Top * BLOCK_SIZE% + m.PanY + (BLOCK_SIZE% / 2)
+    Line (0, v)-(SCREEN_W%, v), _RGB32(255, 255, 0) ' yellow
+  End If
+  If s.Bottom >= 0 Then
+    Let v = s.Bottom * BLOCK_SIZE% + m.PanY + (BLOCK_SIZE% / 2)
+    Line (0, v)-(SCREEN_W%, v), _RGB32(255, 0, 0) ' red
+  End If
+  If s.Left >= 0 Then
+    Let v = s.Left * BLOCK_SIZE% + m.PanX + (BLOCK_SIZE% / 2)
+    Line (v, 0)-(v, SCREEN_H%), _RGB32(255, 0, 255) ' pink
+  End If
+  If s.Right >= 0 Then
+    Let v = s.Right * BLOCK_SIZE% + m.PanX + (BLOCK_SIZE% / 2)
+    Line (v, 0)-(v, SCREEN_H%), _RGB32(0, 255, 0) ' green
+  End If
+End Sub
+
 ' --------------------------
 ' Main loop
 ' --------------------------
@@ -276,10 +334,14 @@ Do
   DrawLevel 1, ImgBuffer
   DrawPlayer ImgBuffer
   DrawThermometer ImgBuffer
-  Dim r As Rectangle
-  MapRect Dodu, Levels(0), r
-  Line (r.p1.y * BLOCK_SIZE + Levels(0).PanX, r.p1.x * BLOCK_SIZE% + Levels(0).PanY)-(r.p2.y * BLOCK_SIZE% + Levels(0).PanX, r.p2.x * BLOCK_SIZE% + Levels(0).PanY), _RGB32(255, 0, 0), B
-  '_PrintString (0, 48), RectangleToString$(r), ImgBuffer
+  Dim lp As Point
+  LevelPos Dodu, Levels(0), lp
+  Dim s_wide As Surroundings, s_tight As Surroundings
+  MapSurroundings Dodu, Levels(0), s_wide, 3
+  MapSurroundings Dodu, Levels(0), s_tight, 1
+  'Line (r.p1.y * BLOCK_SIZE + Levels(0).PanX, r.p1.x * BLOCK_SIZE% + Levels(0).PanY)-(r.p2.y * BLOCK_SIZE% + Levels(0).PanX + BLOCK_SIZE% - 1, r.p2.x * BLOCK_SIZE% + Levels(0).PanY + BLOCK_SIZE% - 1), _RGB32(255, 0, 0), B
+  DrawSurroundings s_wide, Levels(0)
+  _PrintString (0, 48), PointToString(lp), ImgBuffer
   '_PrintString (0, 48), Str$(Dodu.IsClimbing)
   _PutImage (0, 0)-(SCREEN_W% * SCALE% - 1, SCREEN_H% * SCALE% - 1), ImgBuffer, MainScreen
   _Display
@@ -300,7 +362,7 @@ Do
     _Continue
   End If
   If _KeyDown(K_LEFT) Then
-    If Blocked(K_LEFT, Levels(0)) Then
+    If Blocked(K_LEFT, Levels(0), s_tight) Then
       If CanClimb%(K_LEFT, Levels(0)) Then
         Dodu.IsClimbing = 11
       End If
@@ -311,7 +373,7 @@ Do
       End If
     End If
   ElseIf _KeyDown(K_RIGHT) Then
-    If Blocked(K_RIGHT, Levels(0)) Then
+    If Blocked(K_RIGHT, Levels(0), s_tight) Then
       If CanClimb%(K_RIGHT, Levels(0)) Then
         Dodu.IsClimbing = 11
       End If
