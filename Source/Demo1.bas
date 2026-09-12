@@ -213,10 +213,10 @@ Sub MapSurroundings (p As Player, m As LevelMap, s As Surroundings, threshold As
   s.Top = -1
   s.Right = -1
   s.Bottom = -1
-  If Abs(lp.y - (t + 1) * BLOCK_SIZE%) < threshold Then Let s.Top = t Else Let s.Top = -1
-  If Abs(lp.y + PLAYER_HEIGHT% - b * BLOCK_SIZE%) < threshold Then Let s.Bottom = b Else Let s.Bottom = -1
-  If Abs(lp.x - (l + 1) * BLOCK_SIZE%) < threshold Then Let s.Left = l Else Let s.Left = -1
-  If Abs(r * BLOCK_SIZE% - (lp.x + PLAYER_WIDTH%)) < threshold Then Let s.Right = r Else Let s.Right = -1
+  If lp.y - (t + 1) * BLOCK_SIZE% < threshold Then Let s.Top = t Else Let s.Top = -1
+  If PLAYER_HEIGHT% - b * BLOCK_SIZE% - lp.y < threshold Then Let s.Bottom = b Else Let s.Bottom = -1
+  If lp.x - (l + 1) * BLOCK_SIZE% < threshold Then Let s.Left = l Else Let s.Left = -1
+  If r * BLOCK_SIZE% - (lp.x + PLAYER_WIDTH%) < threshold Then Let s.Right = r Else Let s.Right = -1
 End Sub
 
 Function SurroundingsToString$ (s As Surroundings)
@@ -426,12 +426,13 @@ Do
   DrawThermometer ImgBuffer
   Dim lp As Point
   LevelPos Dodu, Levels(0), lp
-  Dim s_wide As Surroundings, s_tight As Surroundings
+  Dim s_wide As Surroundings, s_tight As Surroundings, s_climb As Surroundings
   MapSurroundings Dodu, Levels(0), s_wide, 5
   MapSurroundings Dodu, Levels(0), s_tight, 1
+  MapSurroundings Dodu, Levels(0), s_climb, -3
   'Line (r.p1.y * BLOCK_SIZE + Levels(0).PanX, r.p1.x * BLOCK_SIZE% + Levels(0).PanY)-(r.p2.y * BLOCK_SIZE% + Levels(0).PanX + BLOCK_SIZE% - 1, r.p2.x * BLOCK_SIZE% + Levels(0).PanY + BLOCK_SIZE% - 1), _RGB32(255, 0, 0), B
   If SHOW_SURROUNDINGS Then
-    DrawSurroundings s_wide, Levels(0), 3
+    DrawSurroundings s_climb, Levels(0), -3
     '_PrintString (0, 48), Str$(s_wide.Right) + ",", ImgBuffer
   End If
   '_PrintString (0, 48), Str$(Dodu.IsClimbing)
@@ -459,8 +460,8 @@ Do
     _Continue
   End If
   If _KeyDown(K_LEFT) Then
-    If Blocked(K_LEFT, Levels(0), s_tight) Then
-      If CanClimb%(K_LEFT, Levels(0), s_tight) Then
+    If Blocked(K_LEFT, Levels(0), s_climb) Then
+      If CanClimb%(K_LEFT, Levels(0), s_climb) Then
         Let Dodu.IsClimbing = 11
       End If
     Else
@@ -470,8 +471,8 @@ Do
       End If
     End If
   ElseIf _KeyDown(K_RIGHT) Then
-    If Blocked(K_RIGHT, Levels(0), s_tight) Then
-      If CanClimb%(K_RIGHT, Levels(0), s_tight) Then
+    If Blocked(K_RIGHT, Levels(0), s_climb) Then
+      If CanClimb%(K_RIGHT, Levels(0), s_climb) Then
         Let Dodu.IsClimbing = 11
       End If
     Else
