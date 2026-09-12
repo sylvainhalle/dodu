@@ -8,6 +8,8 @@ Const M_H = 30
 Const T_NOTHING = " "
 Const T_BLOCK_B = "@"
 Const T_BLOCK_W = "#"
+Const T_POLE = "!"
+Const T_COOKIE = "*"
 
 Type LevelMap
   Width As Integer
@@ -60,7 +62,7 @@ Sub PrintLevel (m As LevelMap)
   For i = 1 To m.Height
     For j = 1 To m.Width
       Locate i, j
-      If m.Topo(i - 1, j - 1) = "@" Then Print "@"
+      Print m.Topo(i - 1, j - 1)
     Next
     Print
   Next

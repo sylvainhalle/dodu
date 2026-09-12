@@ -119,6 +119,10 @@ Sub DrawLevel (n As Integer, buf As Long)
           Let p.x = j * BLOCK_SIZE% + m.PanX
           Let p.y = i * BLOCK_SIZE% + m.PanY
           DrawSprite BlockWhite, p, FALSE, buf
+        Case T_POLE
+          Let p.x = j * BLOCK_SIZE% + m.PanX
+          Let p.y = i * BLOCK_SIZE% + m.PanY
+          DrawSprite Pole, p, FALSE, buf
       End Select
     Next
   Next

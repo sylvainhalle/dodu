@@ -53,6 +53,9 @@ LoadSprite "/BlockBlue.gif", BlockBlue, 0, 0
 Dim Shared BlockWhite As Sprite
 LoadSprite "/Block_white.gif", BlockWhite, 0, 0
 
+' Goal post
+Dim Shared Pole As Sprite
+LoadSprite "/Pole.gif", Pole, 1, -9
 
 ' Thermometer
 Dim Shared Thermometer As Sprite
