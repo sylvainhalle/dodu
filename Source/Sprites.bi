@@ -44,6 +44,9 @@ LoadSprite "/Dodu_right_0.png", CharSprites(0)
 ' Blocks
 Dim Shared BlockBlue As Sprite
 LoadSprite "/BlockBlue.gif", BlockBlue
+Dim Shared BlockWhite As Sprite
+LoadSprite "/Block_white.gif", BlockWhite
+
 
 ' Thermometer
 Dim Shared Thermometer As Sprite

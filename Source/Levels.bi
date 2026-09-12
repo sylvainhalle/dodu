@@ -4,6 +4,11 @@
 Const M_W = 30
 Const M_H = 30
 
+' Symbols designating level tiles
+Const T_NOTHING = " "
+Const T_BLOCK_B = "@"
+Const T_BLOCK_W = "#"
+
 Type LevelMap
   Width As Integer
   Height As Integer
@@ -14,15 +19,28 @@ Type LevelMap
   PanY As Integer
 End Type
 
+Function IsBlockAt (i As Integer, j As Integer, l As LevelMap)
+	if l.Topo(i,j) = T_BLOCK_B Or l.Topo(i,j) = T_BLOCK_W then
+		let IsBlockAt = TRUE
+	else
+		let IsBlockAt = FALSE
+	end if
+End Function
+
 ' --------------------------
 ' Loads a level
 ' --------------------------
 Sub LoadLevel (l As LevelMap)
   Dim w As Integer, h As Integer
+  Dim sx As Integer, sy As Integer
   Read h
   Read w
+  Read sx
+  Read sy
   Let l.Width = w
   Let l.Height = h
+  Let l.StartPointX = sx
+  Let l.StartpointY = sy
   Dim i, j As Integer
   Dim b As String
   For i = 1 To h
