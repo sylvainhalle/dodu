@@ -27,6 +27,9 @@ Const FPS% = 25
 ' Window scaling factor
 Const SCALE% = 6
 
+' Threshold to enable block holding/dropping (px)
+Const BLOCK_THRESHOLD% = 5
+
 ' Number of seconds between ticks of the thermometer
 Const THERMO_TICK% = 3
 
@@ -34,7 +37,8 @@ Const THERMO_TICK% = 3
 ' Currently, can only be an integer
 Const WALKING_SPEED# = 1
 
-Const SHOW_SURROUNDINGS = TRUE
+Const SHOW_SURROUNDINGS = FALSE
+Const PLAY_MUSIC = FALSE
 
 ' --------------------------
 ' Includes
@@ -87,9 +91,9 @@ LoadLevel Levels(0)
 ' Game state
 Dim Shared Dodu As Player
 Let Dodu.SpriteIndex = 0
-Let Dodu.ScreenPos.x = Levels(0).StartPointX * BLOCK_SIZE%
-Let Dodu.ScreenPos.y = (Levels(0).StartpointY - 2) * BLOCK_SIZE%
-Let Dodu.HasBlock = FALSE
+Let Dodu.ScreenPos.x = Levels(0).StartPoint.col * BLOCK_SIZE%
+Let Dodu.ScreenPos.y = (Levels(0).StartPoint.row - 2) * BLOCK_SIZE%
+Let Dodu.HasBlock = TRUE
 Let Dodu.IsClimbing = 0
 Let Dodu.Temp = 10
 
@@ -106,22 +110,19 @@ End Sub
 Sub DrawLevel (n As Integer, buf As Long)
   Dim m As LevelMap
   Let m = Levels(n - 1)
-  Dim i, j As Integer
-  For i = 0 To m.Height
-    For j = 0 To m.Width
+  Dim col, row As Integer
+  For row = 0 To m.Height
+    For col = 0 To m.Width
       Dim p As Point
-      Select Case m.Topo(i, j)
+      Let p.x = col * BLOCK_SIZE% + m.PanX
+      Let p.y = row * BLOCK_SIZE% + m.PanY
+
+      Select Case m.Topo(col, row)
         Case T_BLOCK_B
-          Let p.x = j * BLOCK_SIZE% + m.PanX
-          Let p.y = i * BLOCK_SIZE% + m.PanY
           DrawSprite BlockBlue, p, FALSE, buf
         Case T_BLOCK_W
-          Let p.x = j * BLOCK_SIZE% + m.PanX
-          Let p.y = i * BLOCK_SIZE% + m.PanY
           DrawSprite BlockWhite, p, FALSE, buf
         Case T_POLE
-          Let p.x = j * BLOCK_SIZE% + m.PanX
-          Let p.y = i * BLOCK_SIZE% + m.PanY
           DrawSprite Pole, p, FALSE, buf
       End Select
     Next
@@ -313,6 +314,50 @@ Function CanTakeBlock% (side As Integer, m As LevelMap, s As Surroundings)
   Let CanTakeBlock% = FALSE
 End Function
 
+Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+  Dim col As Integer, row As Integer
+  Let p.col = -1
+  Let p.row = -1
+  If Not Dodu.HasBlock Then
+    Exit Sub
+  End If
+  Select Case side
+    Case TRUE ' left
+      Let col = Floor%(lp.x / BLOCK_SIZE%)
+      If lp.x - ((col - 1) * BLOCK_SIZE) <= BLOCK_THRESHOLD% Then
+        Let col = col - 1
+      End If
+    Case FALSE ' right
+      Let col = Floor%((lp.x + PLAYER_WIDTH%) / BLOCK_SIZE%)
+      If (lp.x + PLAYER_WIDTH%) - ((col) * BLOCK_SIZE%) > BLOCK_THRESHOLD% Then
+        If ((col + 1) * BLOCK_SIZE% - 1) - lp.x + PLAYER_WIDTH% > BLOCK_THRESHOLD% Then
+          Exit Sub
+        Else
+          Let col = col + 1
+        End If
+      End If
+  End Select
+  Let row = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%) - 1
+  Let p.col = col
+  Let p.row = row
+  Exit Sub
+  If IsBlockAt(col, row, m) Then
+    If row > 0 And Not IsBlockAt(col, row - 1, m) Then
+      Let p.col = col
+      Let p.row = row
+    End If
+    Exit Sub
+  Else
+    For row = row + 1 To M_H - 1
+      If IsBlockAt(col, row, m) Then
+        Let p.col = col
+        Let p.row = row - 1
+        Exit Sub
+      End If
+    Next
+  End If
+End Sub
+
 Sub TakeBlock (side As Integer, m As LevelMap, s As Surroundings)
   Select Case side
     Case TRUE 'Left
@@ -337,26 +382,9 @@ Function CanDropBlock% (side As Integer, m As LevelMap, s As Surroundings)
   Let CanDropBlock% = FALSE
 End Function
 
-Sub DropBlock (lp As Point, side As Integer, m As LevelMap)
-  Dim p As Point, y As Integer, start As Integer
-  Select Case side
-    Case TRUE 'Left
-      Let p.x = Floor%(lp.x / BLOCK_SIZE%) - 1
-    Case FALSE 'Right
-      Let p.x = Floor%((lp.x + PLAYER_WIDTH%) / BLOCK_SIZE%) + 1
-  End Select
-  Let start = Floor%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%) - 1
-  If m.Topo(start, p.x) <> T_NOTHING Then
-    Exit Sub
-  End If
-  For y = start + 1 To M_H - 1
-    Let p.y = y
-    If IsBlockAt(y, p.x, m) Then
-      Let m.Topo(y - 1, p.x) = T_BLOCK_W
-      Let Dodu.HasBlock = FALSE
-      Exit Sub
-    End If
-  Next
+Sub DropBlock (m As LevelMap, p As Square)
+  Let m.Topo(p.col, p.row) = T_BLOCK_W
+  Let Dodu.HasBlock = FALSE
 End Sub
 
 Sub MovePlayer (x As Integer, y As Integer)
@@ -392,6 +420,12 @@ Sub MovePlayer (x As Integer, y As Integer)
   End If
 End Sub
 
+Sub HighlightBlock (m As LevelMap, p As Square)
+  If p.col >= 0 And p.row >= 0 Then
+    Line (p.col * BLOCK_SIZE% + m.PanX, p.row * BLOCK_SIZE% + m.PanY)-((p.col + 1) * BLOCK_SIZE% - 1 + m.PanX, (p.row + 1) * BLOCK_SIZE% - 1 + m.PanY), _RGB32(255, 255, 0, 128), B
+  End If
+End Sub
+
 Sub DrawSurroundings (s As Surroundings, m As LevelMap, threshold As Integer)
   Dim v As Integer
   If s.Top >= 0 Then
@@ -415,6 +449,21 @@ End Sub
 ' --------------------------
 ' Main loop
 ' --------------------------
+Dim snd As Long
+If PLAY_MUSIC Then
+  _MIDISoundBank ("/home/sylvain/Downloads/General User GS v1.471.sf2")
+  '_MIDISoundBank ("/usr/share/sounds/sf2/default-GM.sf2")
+  snd = _SndOpen("/home/sylvain/Documents/Reel.mid")
+  _SndPlay (snd)
+End If
+
+Dim CURRENT_LEVEL As Integer
+Let CURRENT_LEVEL = 0
+
+_Dest ImgBuffer
+' Font
+_Font _LoadFont("/home/sylvain/Workspaces/dodu/Source/fonts/TinyAndChunkyRegular.ttf", 5, "MONOSPACE")
+
 Do
   _Limit FPS%
   ' Thermometer
@@ -424,28 +473,22 @@ Do
   End If
   If Dodu.Temp = 0 Then GoTo GameOver:
   _Dest ImgBuffer
+
   DrawBackground ImgBuffer
   DrawLevel 1, ImgBuffer
   DrawPlayer ImgBuffer
   DrawThermometer ImgBuffer
   Dim lp As Point
-  LevelPos Dodu, Levels(0), lp
+  LevelPos Dodu, Levels(CURRENT_LEVEL), lp
+  Dim droppableP As Square
+  DroppableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), droppableP
+  HighlightBlock Levels(CURRENT_LEVEL), droppableP
   Dim s_wide As Surroundings, s_tight As Surroundings, s_climb As Surroundings
-  MapSurroundings Dodu, Levels(0), s_wide, 5
-  MapSurroundings Dodu, Levels(0), s_tight, 1
-  MapSurroundings Dodu, Levels(0), s_climb, -3
-  'Line (r.p1.y * BLOCK_SIZE + Levels(0).PanX, r.p1.x * BLOCK_SIZE% + Levels(0).PanY)-(r.p2.y * BLOCK_SIZE% + Levels(0).PanX + BLOCK_SIZE% - 1, r.p2.x * BLOCK_SIZE% + Levels(0).PanY + BLOCK_SIZE% - 1), _RGB32(255, 0, 0), B
-  If SHOW_SURROUNDINGS Then
-    DrawSurroundings s_climb, Levels(0), -3
-    '_PrintString (0, 48), Str$(s_wide.Right) + ",", ImgBuffer
-  End If
-  '_PrintString (0, 48), Str$(Dodu.IsClimbing)
+  MapSurroundings Dodu, Levels(CURRENT_LEVEL), s_wide, 5
+  MapSurroundings Dodu, Levels(CURRENT_LEVEL), s_tight, 1
+  MapSurroundings Dodu, Levels(CURRENT_LEVEL), s_climb, -3
+  _PrintString (0, 59), Str$(droppableP.row) + "," + Str$(droppableP.col)
   _PutImage (0, 0)-(SCREEN_W% * SCALE% - 1, SCREEN_H% * SCALE% - 1), ImgBuffer, MainScreen
-  If CanDropBlock%(Dodu.ToLeft, Levels(0), s_wide) Then
-    _PrintString (0, 48), "LEFT"
-  ElseIf CanDropBlock%(Not Dodu.ToLeft, Levels(0), s_wide) Then
-    _PrintString (0, 48), "RIGHT"
-  End If
   _Display
   ' If player is climbing, ignore keyboard until on top of block
   If Dodu.IsClimbing > 0 Then
@@ -464,31 +507,31 @@ Do
     _Continue
   End If
   If _KeyDown(K_LEFT) Then
-    If Blocked(K_LEFT, Levels(0), s_climb) Then
-      If CanClimb%(K_LEFT, Levels(0), s_climb) Then
+    If Blocked(K_LEFT, Levels(CURRENT_LEVEL), s_climb) Then
+      If CanClimb%(K_LEFT, Levels(CURRENT_LEVEL), s_climb) Then
         Let Dodu.IsClimbing = 11
       End If
     Else
       MovePlayer -1, 0
-      If CanUnclimb%(lp, K_LEFT, Levels(0), s_wide) Then
+      If CanUnclimb%(lp, K_LEFT, Levels(CURRENT_LEVEL), s_wide) Then
         Let Dodu.IsFalling = 11
       End If
     End If
   ElseIf _KeyDown(K_RIGHT) Then
-    If Blocked(K_RIGHT, Levels(0), s_climb) Then
-      If CanClimb%(K_RIGHT, Levels(0), s_climb) Then
+    If Blocked(K_RIGHT, Levels(CURRENT_LEVEL), s_climb) Then
+      If CanClimb%(K_RIGHT, Levels(CURRENT_LEVEL), s_climb) Then
         Let Dodu.IsClimbing = 11
       End If
     Else
       MovePlayer 1, 0
-      If CanUnclimb%(lp, K_RIGHT, Levels(0), s_wide) Then
+      If CanUnclimb%(lp, K_RIGHT, Levels(CURRENT_LEVEL), s_wide) Then
         Let Dodu.IsFalling = 11
       End If
     End If
   ElseIf _KeyDown(K_UP) And Not Dodu.HasBlock _AndAlso CanTakeBlock%(Dodu.ToLeft, Levels(0), s_wide) Then
-    TakeBlock Dodu.ToLeft, Levels(0), s_wide
-  ElseIf _KeyDown(K_DOWN) And Dodu.HasBlock Then '_AndAlso CanDropBlock%(Dodu.ToLeft, Levels(0), s_wide) Then
-    DropBlock lp, Dodu.ToLeft, Levels(0)
+    TakeBlock Dodu.ToLeft, Levels(CURRENT_LEVEL), s_wide
+  ElseIf _KeyDown(K_DOWN) And droppableP.col >= 0 And droppableP.row >= 0 Then
+    DropBlock Levels(CURRENT_LEVEL), droppableP
   ElseIf _KeyDown(K_ESC) Then
     GoTo Quit:
   End If

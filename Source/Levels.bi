@@ -11,18 +11,22 @@ Const T_BLOCK_W = "#"
 Const T_POLE = "!"
 Const T_COOKIE = "*"
 
+Type Square
+	col AS Integer
+	row AS Integer
+End Type
+
 Type LevelMap
   Width As Integer
   Height As Integer
-  Topo(M_H, M_W) As String
-  StartPointX As Integer
-  StartpointY As Integer
+  Topo(M_W, M_H) As String
+  StartPoint as Square
   PanX As Integer
   PanY As Integer
 End Type
 
-Function IsBlockAt (i As Integer, j As Integer, l As LevelMap)
-	if l.Topo(i,j) = T_BLOCK_B Or l.Topo(i,j) = T_BLOCK_W then
+Function IsBlockAt (col As Integer, row As Integer, l As LevelMap)
+	if l.Topo(col,row) = T_BLOCK_B Or l.Topo(col,row) = T_BLOCK_W then
 		let IsBlockAt = TRUE
 	else
 		let IsBlockAt = FALSE
@@ -41,14 +45,14 @@ Sub LoadLevel (l As LevelMap)
   Read sy
   Let l.Width = w
   Let l.Height = h
-  Let l.StartPointX = sx
-  Let l.StartpointY = sy
-  Dim i, j As Integer
+  Let l.StartPoint.col = sx
+  Let l.Startpoint.row = sy
+  Dim col, row As Integer
   Dim b As String
-  For i = 1 To h
-    For j = 1 To w
+  For row = 1 To h
+    For col = 1 To w
       Read b
-      Let l.Topo(i - 1, j - 1) = b
+      Let l.Topo(col - 1, row - 1) = b
     Next
   Next
 End Sub
