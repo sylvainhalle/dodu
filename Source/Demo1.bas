@@ -41,7 +41,7 @@ Const THERMO_TICK% = 3
 Const WALKING_SPEED# = 1
 
 Const SHOW_SURROUNDINGS = FALSE
-Const PLAY_MUSIC = TRUE
+Const PLAY_MUSIC = FALSE
 
 ' --------------------------
 ' Includes
@@ -293,7 +293,7 @@ Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 
   ' If a block is already beside Dodu, try putting
   ' the carried block on top of it.
-  If IsBlockAt(row, col, m) Then
+  If IsBlockAt(col, row, m) Then
     If row > 0 And Not IsBlockAt(col, row - 1, m) Then
       Let p.col = col
       Let p.row = row - 1
@@ -303,7 +303,7 @@ Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 
   ' Otherwise find the first supporting block below.
   For r = row + 1 To M_H% - 1
-    If IsBlockAt(r, col, m) Then
+    If IsBlockAt(col, r, m) Then
       Let p.col = col
       Let p.row = r - 1
       Exit Sub
@@ -524,7 +524,7 @@ Dim snd As Long
 If PLAY_MUSIC Then
   '_MIDISoundBank ("/home/sylvain/Downloads/FluidR3_GM.sf2")
   _MIDISoundBank ("/usr/share/sounds/sf2/default-GM.sf2")
-  snd = _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod.mid")
+  snd = _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/yaya.mid")
   _SndPlay (snd)
 End If
 
@@ -561,8 +561,9 @@ Do
   DrawPlayer ImgBuffer
   DrawThermometer ImgBuffer
 
-  'HighlightBlock Levels(CURRENT_LEVEL), takeP, COLOR_YELLOW
+  HighlightBlock Levels(CURRENT_LEVEL), takeP, COLOR_YELLOW
   HighlightBlock Levels(CURRENT_LEVEL), climbP, COLOR_RED
+  HighlightBlock Levels(CURRENT_LEVEL), dropP, COLOR_GREEN
   Dim s_wide As Surroundings, s_tight As Surroundings, s_climb As Surroundings
   _PrintString (0, 59), Str$(sc) + " " + Str$(takeP.row) + "," + Str$(takeP.col)
   _PutImage (0, 0)-(SCREEN_W% * SCALE% - 1, SCREEN_H% * SCALE% - 1), ImgBuffer, MainScreen
@@ -603,8 +604,8 @@ Do
     End If
   ElseIf _KeyDown(K_UP) And takeP.col >= 0 Then
     TakeBlock Levels(CURRENT_LEVEL), takeP
-  ElseIf _KeyDown(K_UP) And takeP.col >= 0 Then
-    TakeBlock Levels(CURRENT_LEVEL), takeP
+  ElseIf _KeyDown(K_DOWN) And dropP.col >= 0 Then
+    DropBlock Levels(CURRENT_LEVEL), dropP
   ElseIf _KeyDown(K_ESC) Then
     GoTo Quit:
   End If
