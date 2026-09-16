@@ -10,10 +10,21 @@ Const IMG_DIR$ = "/home/sylvain/Workspaces/dodu/Source/images"
 ' Transparent color across sprites
 Const PINK~& = _RGB32(255, 0, 255)
 
+' Other useful colors
+const COLOR_RED~& = _RGB32(255, 0, 0)
+const COLOR_GREEN~& = _RGB32(0, 255, 0)
+const COLOR_YELLOW~& = _RGB32(255, 255, 0)
+
 ' Point type
 Type Point
   x As Integer
   y As Integer
+End Type
+
+' Viewport type
+Type Viewport
+	Position as Point
+	
 End Type
 
 Function PointToString$ (p As Point)

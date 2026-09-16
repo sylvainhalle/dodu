@@ -240,16 +240,16 @@ Sub ClimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   If row < 3 Or row >= M_H% Then Exit Sub
 
   ' A block must be present at foot level
-  If Not IsBlockAt(row, col, m) Then Exit Sub
+  If Not IsBlockAt(col, row, m) Then Exit Sub
 
   ' Dodu is three blocks high: the destination column
   ' must be clear above the block
-  If IsBlockAt(row - 1, col, m) Then Exit Sub
-  If IsBlockAt(row - 2, col, m) Then Exit Sub
-  If IsBlockAt(row - 3, col, m) Then Exit Sub
+  If IsBlockAt(col, row - 1, m) Then Exit Sub
+  If IsBlockAt(col, row - 2, m) Then Exit Sub
+  If IsBlockAt(col, row - 3, m) Then Exit Sub
 
   Let p.col = col
-  Let p.row = row
+  Let p.row = row - 1
 End Sub
 
 Sub TakeableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
@@ -294,7 +294,7 @@ Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   ' If a block is already beside Dodu, try putting
   ' the carried block on top of it.
   If IsBlockAt(row, col, m) Then
-    If row > 0 And Not IsBlockAt(row - 1, col, m) Then
+    If row > 0 And Not IsBlockAt(col, row - 1, m) Then
       Let p.col = col
       Let p.row = row - 1
     End If
@@ -462,9 +462,9 @@ Sub MovePlayer (x As Integer, y As Integer)
   End If
 End Sub
 
-Sub HighlightBlock (m As LevelMap, p As Square)
+Sub HighlightBlock (m As LevelMap, p As Square, c~&)
   If p.col >= 0 And p.row >= 0 Then
-    Line (p.col * BLOCK_SIZE% + m.PanX, p.row * BLOCK_SIZE% + m.PanY)-((p.col + 1) * BLOCK_SIZE% - 1 + m.PanX, (p.row + 1) * BLOCK_SIZE% - 1 + m.PanY), _RGB32(255, 255, 0, 128), B
+    Line (p.col * BLOCK_SIZE% + m.PanX, p.row * BLOCK_SIZE% + m.PanY)-((p.col + 1) * BLOCK_SIZE% - 1 + m.PanX, (p.row + 1) * BLOCK_SIZE% - 1 + m.PanY), c~&, B
   End If
 End Sub
 
@@ -548,19 +548,21 @@ Do
   ' Squares of interest
   Dim lp As Point
   Dim climbP As Square, takeP As Square, dropP As Square
+  Dim sc As Integer
+  Let sc = SideColumn(Dodu.ToLeft, lp, CLIMB_THRESHOLD%)
   LevelPos Dodu, Levels(CURRENT_LEVEL), lp
   ClimbableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), climbP
   TakeableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), takeP
   DroppableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), dropP
-  Dim sc As Integer
-  Let sc = SideColumn(Dodu.ToLeft, lp, 3)
+
   ' Drawing
   DrawBackground ImgBuffer
   DrawLevel CURRENT_LEVEL + 1, ImgBuffer
   DrawPlayer ImgBuffer
   DrawThermometer ImgBuffer
 
-  HighlightBlock Levels(CURRENT_LEVEL), takeP
+  'HighlightBlock Levels(CURRENT_LEVEL), takeP, COLOR_YELLOW
+  HighlightBlock Levels(CURRENT_LEVEL), climbP, COLOR_RED
   Dim s_wide As Surroundings, s_tight As Surroundings, s_climb As Surroundings
   _PrintString (0, 59), Str$(sc) + " " + Str$(takeP.row) + "," + Str$(takeP.col)
   _PutImage (0, 0)-(SCREEN_W% * SCALE% - 1, SCREEN_H% * SCALE% - 1), ImgBuffer, MainScreen
@@ -582,26 +584,22 @@ Do
     _Continue
   End If
   If _KeyDown(K_LEFT) Then
-    If Blocked(K_LEFT, Levels(CURRENT_LEVEL), s_climb) Then
-      If CanClimb%(K_LEFT, Levels(CURRENT_LEVEL), s_climb) Then
-        Let Dodu.IsClimbing = 11
-      End If
+    If climbP.col >= 0 And climbP.row >= 0 Then
+      Let Dodu.IsClimbing = 11F
     Else
       MovePlayer -1, 0
-      If CanUnclimb%(lp, K_LEFT, Levels(CURRENT_LEVEL), s_wide) Then
-        Let Dodu.IsFalling = 11
-      End If
+    End If
+    If CanUnclimb%(lp, K_LEFT, Levels(CURRENT_LEVEL), s_wide) Then
+      Let Dodu.IsFalling = 11
     End If
   ElseIf _KeyDown(K_RIGHT) Then
-    If Blocked(K_RIGHT, Levels(CURRENT_LEVEL), s_climb) Then
-      If CanClimb%(K_RIGHT, Levels(CURRENT_LEVEL), s_climb) Then
-        Let Dodu.IsClimbing = 11
-      End If
+    If climbP.col >= 0 And climbP.row >= 0 Then
+      Let Dodu.IsClimbing = 11
     Else
       MovePlayer 1, 0
-      If CanUnclimb%(lp, K_RIGHT, Levels(CURRENT_LEVEL), s_wide) Then
-        Let Dodu.IsFalling = 11
-      End If
+    End If
+    If CanUnclimb%(lp, K_RIGHT, Levels(CURRENT_LEVEL), s_wide) Then
+      Let Dodu.IsFalling = 11
     End If
   ElseIf _KeyDown(K_UP) And takeP.col >= 0 Then
     TakeBlock Levels(CURRENT_LEVEL), takeP
