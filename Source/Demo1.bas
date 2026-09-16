@@ -31,6 +31,7 @@ Const SCALE% = 6
 Const CLIMB_THRESHOLD% = 1
 Const TAKE_THRESHOLD% = 3
 Const DROP_THRESHOLD% = 5
+Const UNCLIMB_THRESHOLD% = 5
 
 
 ' Number of seconds between ticks of the thermometer
@@ -190,43 +191,6 @@ Sub LevelPos (p As Player, m As LevelMap, pt As Point)
   Let pt.y = p.ScreenPos.y - m.PanY
 End Sub
 
-Sub MapRect (p As Player, m As LevelMap, r As Rectangle)
-  Dim lp As Point
-  Dim p_x, p_y As Integer
-  LevelPos p, m, lp
-  If p.ToLeft Then
-
-    Let r.p1.x = CInt((lp.y + PLAYER_HEIGHT% / 2) / BLOCK_SIZE%)
-    Let r.p2.y = Ceil%((lp.x + PLAYER_WIDTH% / 2) / BLOCK_SIZE%)
-    Let r.p2.x = r.p1.x
-    Let r.p1.y = r.p2.y - 1
-  Else
-    Let r.p1.y = Floor%((lp.x + PLAYER_WIDTH% / 2) / BLOCK_SIZE%)
-    Let r.p1.x = CInt((lp.y + PLAYER_HEIGHT% / 2) / BLOCK_SIZE%)
-    Let r.p2.y = r.p1.y + 1
-    Let r.p2.x = r.p1.x
-
-  End If
-End Sub
-
-Sub MapSurroundings (p As Player, m As LevelMap, s As Surroundings, threshold As Integer)
-  Dim lp As Point
-  Dim t, l, b, r As Integer
-  LevelPos p, m, lp
-  Let t = Floor%(lp.y / BLOCK_SIZE%) - 1
-  Let b = Floor%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%)
-  Let l = Floor%(lp.x / BLOCK_SIZE%) - 1
-  Let r = Floor%((lp.x + PLAYER_WIDTH%) / BLOCK_SIZE%)
-  s.Left = -1
-  s.Top = -1
-  s.Right = -1
-  s.Bottom = -1
-  If lp.y - (t + 1) * BLOCK_SIZE% < threshold Then Let s.Top = t Else Let s.Top = -1
-  If PLAYER_HEIGHT% - b * BLOCK_SIZE% - lp.y < threshold Then Let s.Bottom = b Else Let s.Bottom = -1
-  If lp.x - (l + 1) * BLOCK_SIZE% < threshold Then Let s.Left = l Else Let s.Left = -1
-  If r * BLOCK_SIZE% - (lp.x + PLAYER_WIDTH%) < threshold Then Let s.Right = r Else Let s.Right = -1
-End Sub
-
 Sub ClimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   Dim col As Integer, row As Integer
 
@@ -276,6 +240,7 @@ Sub TakeableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   Let p.row = row
 End Sub
 
+' Game state
 Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   Dim col As Integer, row As Integer
   Dim r As Integer
@@ -311,118 +276,49 @@ Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   Next
 End Sub
 
+Sub UnclimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+  Dim col As Integer, row As Integer
+  Dim r As Integer
 
+  Let p.col = -1
+  Let p.row = -1
+  Let col = SideColumn%(side, lp, UNCLIMB_THRESHOLD%)
+  If col < 0 Or col >= M_W% Then Exit Sub
 
+  Let row = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%)
+  If row < 0 Or row >= M_H% Then Exit Sub
+  If IsBlockAt(col, row, m) Then Exit Sub
 
-Function SurroundingsToString$ (s As Surroundings)
-  Dim cont As String
-  Let SurroundingsToString$ = "L" + Str$(s.Left) + "R" + Str$(s.Right) + "T" + Str$(s.Top) + "B" + Str$(s.Bottom)
-End Function
+  ' Otherwise find the first supporting block below.
+  For r = row + 1 To M_H% - 1
+    If Not IsBlockAt(col, r, m) Then
+      Let p.col = col
+      Let p.row = r - 1
+      Exit Sub
+    End If
+  Next
+End Sub
 
-Function CanClimb% (side As Integer, m As LevelMap, s As Surroundings)
-  Select Case side
-    Case K_RIGHT
-      If s.Right >= 0 And s.Bottom >= 4 Then
-        Let CanClimb% = IsBlockAt(s.Bottom - 1, s.Right, m) And m.Topo(s.Bottom - 2, s.Right) = " " And m.Topo(s.Bottom - 3, s.Right) = " " And m.Topo(s.Bottom - 4, s.Right) = " "
+Function Blocked% (side As Integer, lp As Point, m As LevelMap)
+  Dim col As Integer, row As Integer
+  Let col = SideColumn%(side, lp, UNCLIMB_THRESHOLD%)
+  Let row = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%) + 1
+  If row < M_H% - 1 Then
+    Dim y1 As Integer
+    For y1 = row To row - 2 Step -1
+      If IsBlockAt(col, y1, m) Then
+        Let Blocked% = TRUE
         Exit Function
       End If
-    Case K_LEFT
-      If s.Left >= 0 And s.Bottom >= 4 Then
-        Let CanClimb% = IsBlockAt(s.Bottom - 1, s.Left, m) And m.Topo(s.Bottom - 2, s.Left) = " " And m.Topo(s.Bottom - 3, s.Left) = " " And m.Topo(s.Bottom - 4, s.Left) = " "
-        Exit Function
-      End If
-  End Select
-  Let CanClimb% = FALSE
-End Function
-
-Function CanUnclimb% (p As Point, side As Integer, m As LevelMap, s As Surroundings)
-  Select Case side
-    Case K_RIGHT
-      If s.Left >= 0 And s.Left < M_W% - 1 And s.Bottom >= 2 And s.Bottom < M_H% Then
-        If IsBlockAt(s.Bottom + 1, s.Left + 2, m) And m.Topo(s.Bottom, s.Left + 2) = " " And m.Topo(s.Bottom - 1, s.Left + 2) = " " And m.Topo(s.Bottom - 2, s.Left + 2) = " " Then
-          Let CanUnclimb% = TRUE
-          Exit Function
-        End If
-      End If
-    Case K_LEFT
-      If s.Right >= 2 And s.Right < M_W% - 1 And s.Bottom >= 2 And s.Bottom < M_H% Then
-        If IsBlockAt(s.Bottom + 1, s.Right - 2, m) And m.Topo(s.Bottom, s.Right - 2) = " " And m.Topo(s.Bottom - 1, s.Right - 2) = " " And m.Topo(s.Bottom - 2, s.Right - 2) = " " Then
-          Let CanUnclimb% = TRUE
-          Exit Function
-        End If
-      End If
-  End Select
-  Let CanUnclimb% = FALSE
-End Function
-
-
-Function Blocked% (side As Integer, m As LevelMap, s As Surroundings)
-  Dim r As Rectangle
-  Select Case side
-    Case K_LEFT
-      If s.Left >= 0 Then
-        Dim y1 As Integer
-        For y1 = s.Bottom - 1 To _Max(0, s.Bottom - 3) Step -1
-          If IsBlockAt(y1, s.Left, m) Then
-            Let Blocked% = TRUE
-            Exit Function
-          End If
-        Next
-      End If
-    Case K_RIGHT
-      If s.Right >= 0 Then
-        Dim y2 As Integer
-        For y2 = s.Bottom - 1 To _Max(0, s.Bottom - 3) Step -1
-          If IsBlockAt(y2, s.Right, m) Then
-            Let Blocked% = TRUE
-            Exit Function
-          End If
-        Next
-      End If
-  End Select
+    Next
+  End If
   Let Blocked% = FALSE
 End Function
-
-Function CanTakeBlock% (side As Integer, m As LevelMap, s As Surroundings)
-  Dim r As Rectangle
-  Select Case side
-    Case TRUE 'Left
-      If s.Left >= 0 Then
-        If IsBlockAt(s.Bottom - 1, s.Left, m) And Not IsBlockAt(s.Bottom - 2, s.Left, m) Then
-          Let CanTakeBlock% = TRUE
-          Exit Function
-        End If
-      End If
-    Case FALSE 'Right
-      If s.Right >= 0 Then
-        If IsBlockAt(s.Bottom - 1, s.Right, m) And Not IsBlockAt(s.Bottom - 2, s.Right, m) Then
-          Let CanTakeBlock% = TRUE
-          Exit Function
-        End If
-      End If
-  End Select
-  Let CanTakeBlock% = FALSE
-End Function
-
 
 Sub TakeBlock (m As LevelMap, p As Square)
   Let m.Topo(p.col, p.row) = T_NOTHING
   Let Dodu.HasBlock = TRUE
 End Sub
-
-Function CanDropBlock% (side As Integer, m As LevelMap, s As Surroundings)
-  Select Case side
-    Case TRUE 'Left
-      If s.Left >= 0 _AndAlso s.Bottom >= 0 _AndAlso s.Bottom < M_H - 2 _AndAlso (m.Topo(s.Bottom, s.Left) = " " Or m.Topo(s.Bottom - 1, s.Left) = " ") Then
-        Let CanDropBlock% = TRUE
-      End If
-    Case FALSE 'Right
-      If s.Right >= 0 _AndAlso s.Bottom >= 0 _AndAlso s.Bottom < m.Height - 2 _AndAlso m.Topo(s.Bottom, s.Right) = " " Then
-        Let CanDropBlock% = TRUE
-      End If
-  End Select
-  Let CanDropBlock% = FALSE
-End Function
 
 Sub DropBlock (m As LevelMap, p As Square)
   Let m.Topo(p.col, p.row) = T_BLOCK_W
@@ -468,26 +364,6 @@ Sub HighlightBlock (m As LevelMap, p As Square, c~&)
   End If
 End Sub
 
-Sub DrawSurroundings (s As Surroundings, m As LevelMap, threshold As Integer)
-  Dim v As Integer
-  If s.Top >= 0 Then
-    Let v = s.Top * BLOCK_SIZE% + m.PanY + (BLOCK_SIZE% - 1)
-    Line (0, v)-(SCREEN_W%, v + threshold), _RGB32(255, 255, 0, 128), BF ' yellow
-  End If
-  If s.Bottom >= 0 Then
-    Let v = s.Bottom * BLOCK_SIZE% + m.PanY
-    Line (0, v)-(SCREEN_W%, v - threshold), _RGB32(255, 0, 0, 128), BF ' red
-  End If
-  If s.Left >= 0 Then
-    Let v = s.Left * BLOCK_SIZE% + m.PanX + (BLOCK_SIZE% - 1)
-    Line (v, 0)-(v + threshold, SCREEN_H%), _RGB32(255, 0, 255, 128), BF ' pink
-  End If
-  If s.Right >= 0 Then
-    Let v = s.Right * BLOCK_SIZE% + m.PanX
-    Line (v, 0)-(v - threshold, SCREEN_H%), _RGB32(0, 255, 0, 128), BF ' green
-  End If
-End Sub
-
 Function SideColumn% (side As Integer, lp As Point, threshold As Integer)
   Dim x As Integer, grid As Integer
 
@@ -513,9 +389,6 @@ Function SideColumn% (side As Integer, lp As Point, threshold As Integer)
     Let SideColumn% = grid \ BLOCK_SIZE%
   End If
 End Function
-
-
-
 
 ' --------------------------
 ' Main loop
@@ -547,13 +420,14 @@ Do
 
   ' Squares of interest
   Dim lp As Point
-  Dim climbP As Square, takeP As Square, dropP As Square
+  Dim climbP As Square, takeP As Square, dropP As Square, unclimbP As Square
   Dim sc As Integer
   Let sc = SideColumn(Dodu.ToLeft, lp, CLIMB_THRESHOLD%)
   LevelPos Dodu, Levels(CURRENT_LEVEL), lp
   ClimbableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), climbP
   TakeableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), takeP
   DroppableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), dropP
+  UnclimbableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), unclimbP
 
   ' Drawing
   DrawBackground ImgBuffer
@@ -561,9 +435,20 @@ Do
   DrawPlayer ImgBuffer
   DrawThermometer ImgBuffer
 
-  HighlightBlock Levels(CURRENT_LEVEL), takeP, COLOR_YELLOW
-  HighlightBlock Levels(CURRENT_LEVEL), climbP, COLOR_RED
-  HighlightBlock Levels(CURRENT_LEVEL), dropP, COLOR_GREEN
+  Dim bb As Square
+  Dim col As Integer, row As Integer
+  Let col = SideColumn%(Dodu.ToLeft, lp, UNCLIMB_THRESHOLD%)
+  Let row = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%) - 1
+  Dim blockP As Square
+  Let blockP.col = col
+  Let blockP.row = row
+  HighlightBlock Levels(CURRENT_LEVEL), blockP, _RGB(0, 0, 0)
+
+
+  'HighlightBlock Levels(CURRENT_LEVEL), takeP, COLOR_YELLOW
+  'HighlightBlock Levels(CURRENT_LEVEL), climbP, COLOR_RED
+  'HighlightBlock Levels(CURRENT_LEVEL), dropP, COLOR_GREEN
+  'HighlightBlock Levels(CURRENT_LEVEL), unclimbP, PINK~&
   Dim s_wide As Surroundings, s_tight As Surroundings, s_climb As Surroundings
   _PrintString (0, 59), Str$(sc) + " " + Str$(takeP.row) + "," + Str$(takeP.col)
   _PutImage (0, 0)-(SCREEN_W% * SCALE% - 1, SCREEN_H% * SCALE% - 1), ImgBuffer, MainScreen
@@ -584,13 +469,16 @@ Do
     Let Dodu.IsFalling = Dodu.IsFalling - 1
     _Continue
   End If
+  If Blocked%(Dodu.ToLeft, lp, Levels(CURRENT_LEVEL)) Then
+    _Continue
+  End If
   If _KeyDown(K_LEFT) Then
     If climbP.col >= 0 And climbP.row >= 0 Then
-      Let Dodu.IsClimbing = 11F
+      Let Dodu.IsClimbing = 11
     Else
       MovePlayer -1, 0
     End If
-    If CanUnclimb%(lp, K_LEFT, Levels(CURRENT_LEVEL), s_wide) Then
+    If unclimbP.col >= 0 Then
       Let Dodu.IsFalling = 11
     End If
   ElseIf _KeyDown(K_RIGHT) Then
@@ -599,7 +487,7 @@ Do
     Else
       MovePlayer 1, 0
     End If
-    If CanUnclimb%(lp, K_RIGHT, Levels(CURRENT_LEVEL), s_wide) Then
+    If unclimbP.col >= 0 Then
       Let Dodu.IsFalling = 11
     End If
   ElseIf _KeyDown(K_UP) And takeP.col >= 0 Then
