@@ -12,25 +12,51 @@ Const T_POLE = "!"
 Const T_COOKIE = "*"
 
 Type Square
-	col AS Integer
-	row AS Integer
+  col As Integer
+  row As Integer
 End Type
 
 Type LevelMap
   Width As Integer
   Height As Integer
   Topo(M_W, M_H) As String
-  StartPoint as Square
+  StartPoint As Square
   PanX As Integer
   PanY As Integer
 End Type
 
+Function IsGoalAt (col As Integer, row As Integer, l As LevelMap)
+  If col >= 0 _AndAlso col < M_W% _AndAlso row >= 0 _AndAlso row < M_H% Then
+  	If l.Topo(col, row) = T_POLE Then
+    	Let IsGoalAt = TRUE
+    	Exit Function
+    End If
+  End If
+  Let IsGoalAt = FALSE
+End Function
+
 Function IsBlockAt (col As Integer, row As Integer, l As LevelMap)
-	if l.Topo(col,row) = T_BLOCK_B Or l.Topo(col,row) = T_BLOCK_W then
-		let IsBlockAt = TRUE
-	else
-		let IsBlockAt = FALSE
-	end if
+  If l.Topo(col, row) = T_BLOCK_B Or l.Topo(col, row) = T_BLOCK_W Then
+    Let IsBlockAt = TRUE
+  Else
+    Let IsBlockAt = FALSE
+  End If
+End Function
+
+Function IsWhiteBlockAt (col As Integer, row As Integer, l As LevelMap)
+  If l.Topo(col, row) = T_BLOCK_W Then
+    Let IsWhiteBlockAt = TRUE
+  Else
+    Let IsWhiteBlockAt = FALSE
+  End If
+End Function
+
+Function IsObstacleAt (col As Integer, row As Integer, l As LevelMap)
+  If l.Topo(col, row) = T_BLOCK_B Or l.Topo(col, row) = T_BLOCK_W Or l.Topo(col, row) = T_POLE Then
+    Let IsObstacleAt = TRUE
+  Else
+    Let IsObstacleAt = FALSE
+  End If
 End Function
 
 ' --------------------------
@@ -46,7 +72,7 @@ Sub LoadLevel (l As LevelMap)
   Let l.Width = w
   Let l.Height = h
   Let l.StartPoint.col = sx
-  Let l.Startpoint.row = sy
+  Let l.StartPoint.row = sy
   Dim col, row As Integer
   Dim b As String
   For row = 1 To h

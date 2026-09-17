@@ -1,3 +1,4 @@
+$Debug
 '$Debug
 Option Base 0
 Option _Explicit
@@ -299,22 +300,6 @@ Sub UnclimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   Next
 End Sub
 
-Function Blocked% (side As Integer, lp As Point, m As LevelMap)
-  Dim col As Integer, row As Integer
-  Let col = SideColumn%(side, lp, UNCLIMB_THRESHOLD%)
-  Let row = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%) + 1
-  If row < M_H% - 1 Then
-    Dim y1 As Integer
-    For y1 = row To row - 2 Step -1
-      If IsBlockAt(col, y1, m) Then
-        Let Blocked% = TRUE
-        Exit Function
-      End If
-    Next
-  End If
-  Let Blocked% = FALSE
-End Function
-
 Sub TakeBlock (m As LevelMap, p As Square)
   Let m.Topo(p.col, p.row) = T_NOTHING
   Let Dodu.HasBlock = TRUE
@@ -390,6 +375,52 @@ Function SideColumn% (side As Integer, lp As Point, threshold As Integer)
   End If
 End Function
 
+Sub BlockingSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+  Dim x As Integer
+  Dim col As Integer
+  Dim feet As Integer
+  Dim overlap As Integer
+
+  Let p.col = -1
+  Let p.row = -1
+
+  ' Leading edge after the next movement
+  If side Then ' left
+    Let x = lp.x - WALKING_SPEED%
+    Let col = Floor%((x - 1) / BLOCK_SIZE%)
+    Let overlap = (col + 1) * BLOCK_SIZE% - x
+  Else ' right
+    Let x = lp.x + PLAYER_WIDTH% + WALKING_SPEED%
+    Let col = Floor%(x / BLOCK_SIZE%)
+    Let overlap = x - col * BLOCK_SIZE%
+  End If
+
+  ' Still within the permitted penetration
+  If overlap <= 2 Then Exit Sub
+
+  If col < 0 Or col >= M_W% Then Exit Sub
+
+  Let feet = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%) - 1
+
+  ' Check the two rows alongside Dodu
+  If feet >= 1 Then
+    If IsBlockAt(col, feet - 1, m) Then
+      Let p.col = col
+      Let p.row = feet - 1
+      Exit Sub
+    End If
+  End If
+
+  If feet >= 2 Then
+    If IsBlockAt(col, feet - 2, m) Then
+      Let p.col = col
+      Let p.row = feet - 2
+      Exit Sub
+    End If
+  End If
+End Sub
+
+
 ' --------------------------
 ' Main loop
 ' --------------------------
@@ -420,14 +451,13 @@ Do
 
   ' Squares of interest
   Dim lp As Point
-  Dim climbP As Square, takeP As Square, dropP As Square, unclimbP As Square
-  Dim sc As Integer
-  Let sc = SideColumn(Dodu.ToLeft, lp, CLIMB_THRESHOLD%)
+  Dim climbP As Square, takeP As Square, dropP As Square, unclimbP As Square, blockingP As Square
   LevelPos Dodu, Levels(CURRENT_LEVEL), lp
   ClimbableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), climbP
   TakeableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), takeP
   DroppableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), dropP
   UnclimbableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), unclimbP
+  BlockingSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), blockingP
 
   ' Drawing
   DrawBackground ImgBuffer
@@ -435,24 +465,28 @@ Do
   DrawPlayer ImgBuffer
   DrawThermometer ImgBuffer
 
-  Dim bb As Square
-  Dim col As Integer, row As Integer
-  Let col = SideColumn%(Dodu.ToLeft, lp, UNCLIMB_THRESHOLD%)
-  Let row = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%) - 1
-  Dim blockP As Square
-  Let blockP.col = col
-  Let blockP.row = row
-  HighlightBlock Levels(CURRENT_LEVEL), blockP, _RGB(0, 0, 0)
+  If _KeyDown(K_ESC) Then
+    GoTo Quit:
+  End If
 
+  ' Unless he is climbing/falling, Dodu can always flip sides
+  If Not Dodu.IsClimbing And Not Dodu.IsFalling Then
+    If _KeyDown(K_LEFT) Then
+      Let Dodu.ToLeft = TRUE
+    End If
+    If _KeyDown(K_RIGHT) Then
+      Let Dodu.ToLeft = FALSE
+    End If
+  End If
 
   'HighlightBlock Levels(CURRENT_LEVEL), takeP, COLOR_YELLOW
   'HighlightBlock Levels(CURRENT_LEVEL), climbP, COLOR_RED
   'HighlightBlock Levels(CURRENT_LEVEL), dropP, COLOR_GREEN
   'HighlightBlock Levels(CURRENT_LEVEL), unclimbP, PINK~&
-  Dim s_wide As Surroundings, s_tight As Surroundings, s_climb As Surroundings
-  _PrintString (0, 59), Str$(sc) + " " + Str$(takeP.row) + "," + Str$(takeP.col)
+  '_PrintString (0, 59), Str$(sc) + " " + Str$(blockingP.row) + "," + Str$(blockingP.col)
   _PutImage (0, 0)-(SCREEN_W% * SCALE% - 1, SCREEN_H% * SCALE% - 1), ImgBuffer, MainScreen
   _Display
+
   ' If player is climbing, ignore keyboard until on top of block
   If Dodu.IsClimbing > 0 Then
     Dim dir_c As Integer
@@ -469,14 +503,19 @@ Do
     Let Dodu.IsFalling = Dodu.IsFalling - 1
     _Continue
   End If
-  If Blocked%(Dodu.ToLeft, lp, Levels(CURRENT_LEVEL)) Then
-    _Continue
+
+  ' Is goal reached?
+  If IsGoalAt(blockingP.col, blockingP.row, Levels(CURRENT_LEVEL)) Then
+    GoTo Quit:
   End If
+
   If _KeyDown(K_LEFT) Then
     If climbP.col >= 0 And climbP.row >= 0 Then
       Let Dodu.IsClimbing = 11
     Else
-      MovePlayer -1, 0
+      If blockingP.col < 0 Then
+        MovePlayer -1, 0
+      End If
     End If
     If unclimbP.col >= 0 Then
       Let Dodu.IsFalling = 11
@@ -485,7 +524,9 @@ Do
     If climbP.col >= 0 And climbP.row >= 0 Then
       Let Dodu.IsClimbing = 11
     Else
-      MovePlayer 1, 0
+      If blockingP.col < 0 Then 'Not IsBlocked%(bc, lp, Levels(CURRENT_LEVEL)) Then
+        MovePlayer 1, 0
+      End If
     End If
     If unclimbP.col >= 0 Then
       Let Dodu.IsFalling = 11
@@ -494,8 +535,6 @@ Do
     TakeBlock Levels(CURRENT_LEVEL), takeP
   ElseIf _KeyDown(K_DOWN) And dropP.col >= 0 Then
     DropBlock Levels(CURRENT_LEVEL), dropP
-  ElseIf _KeyDown(K_ESC) Then
-    GoTo Quit:
   End If
 Loop
 
