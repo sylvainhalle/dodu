@@ -1,0 +1,7 @@
+declare Sub ClimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+declare Sub TakeableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+declare Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+declare Sub UnclimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+declare Function SideColumn% (side As Integer, lp As Point, threshold As Integer)
+declare Sub BlockingSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+declare Sub PoleSquare (side As Integer, lp As Point, m As LevelMap, p As Square)

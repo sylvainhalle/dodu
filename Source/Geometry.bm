@@ -1,0 +1,231 @@
+
+Sub ClimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+  Dim col As Integer, row As Integer, x As Integer, overlap As Integer
+
+  Let p.col = -1
+  Let p.row = -1
+
+  ' Leading edge after the next movement
+  If side Then ' left
+    Let x = lp.x - WALKING_SPEED%
+    Let col = Floor%((x - 1) / BLOCK_SIZE%)
+    Let overlap = (col + 1) * BLOCK_SIZE% - x
+  Else ' right
+    Let x = lp.x + PLAYER_WIDTH% + WALKING_SPEED%
+    Let col = Floor%(x / BLOCK_SIZE%)
+    Let overlap = x - col * BLOCK_SIZE%
+  End If
+
+  ' Still within the permitted penetration
+  If overlap <= 2 Then Exit Sub
+
+  If col < 0 Or col >= M_W% Then Exit Sub
+
+  Let row = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%) - 1
+  If row < 3 Or row >= M_H% Then Exit Sub
+
+  ' A block must be present at foot level
+  If Not IsBlockAt(col, row, m) Then Exit Sub
+
+  ' Dodu is three blocks high: the destination column
+  ' must be clear above the block
+  If IsBlockAt(col, row - 1, m) Then Exit Sub
+  If IsBlockAt(col, row - 2, m) Then Exit Sub
+  If IsBlockAt(col, row - 3, m) Then Exit Sub
+
+  Let p.col = col
+  Let p.row = row - 1
+End Sub
+
+Sub TakeableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+  Dim col As Integer, row As Integer
+
+  Let p.col = -1
+  Let p.row = -1
+
+  If Dodu.HasBlock Then Exit Sub
+
+  Let col = SideColumn%(side, lp, TAKE_THRESHOLD%)
+  If col < 0 Or col >= M_W% Then Exit Sub
+
+  Let row = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%) - 1
+  If row < 1 Or row >= M_H% Then Exit Sub
+
+  ' There must be a block beside Dodu
+  If Not IsBlockAt(col, row, m) Then Exit Sub
+
+  ' And no block may be resting on it
+  If IsBlockAt(col, row - 1, m) Then Exit Sub
+
+  Let p.col = col
+  Let p.row = row
+End Sub
+
+' Game state
+Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+  Dim col As Integer, row As Integer
+  Dim r As Integer
+
+  Let p.col = -1
+  Let p.row = -1
+
+  If Not Dodu.HasBlock Then Exit Sub
+
+  Let col = SideColumn%(side, lp, DROP_THRESHOLD%)
+  If col < 0 Or col >= M_W% Then Exit Sub
+
+  Let row = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%) - 1
+  If row < 0 Or row >= M_H% Then Exit Sub
+
+  ' If a block is already beside Dodu, try putting
+  ' the carried block on top of it.
+  If IsBlockAt(col, row, m) Then
+    If row > 0 And Not IsBlockAt(col, row - 1, m) Then
+      Let p.col = col
+      Let p.row = row - 1
+    End If
+    Exit Sub
+  End If
+
+  ' Otherwise find the first supporting block below.
+  For r = row + 1 To M_H% - 1
+    If IsBlockAt(col, r, m) Then
+      Let p.col = col
+      Let p.row = r - 1
+      Exit Sub
+    End If
+  Next
+End Sub
+
+Sub UnclimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+  Dim col As Integer, row As Integer, x As Integer, overlap As Integer
+  Dim r As Integer
+
+  Let p.col = -1
+  Let p.row = -1
+
+  ' Leading edge after the next movement
+  If side Then ' left
+    Let x = lp.x - WALKING_SPEED%
+    Let col = Floor%((x - 1) / BLOCK_SIZE%)
+    Let overlap = (col + 1) * BLOCK_SIZE% - x
+  Else ' right
+    Let x = lp.x + PLAYER_WIDTH% + WALKING_SPEED%
+    Let col = Floor%(x / BLOCK_SIZE%)
+    Let overlap = x - col * BLOCK_SIZE%
+  End If
+
+  ' Still within the permitted penetration
+  If overlap <= UNCLIMB_THRESHOLD% Then Exit Sub
+
+  If col < 0 Or col >= M_W% Then Exit Sub
+
+  Let row = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%)
+  If row < 0 Or row >= M_H% Then Exit Sub
+  If IsBlockAt(col, row, m) Then Exit Sub
+
+  ' Otherwise find the first supporting block below.
+  For r = row + 1 To M_H% - 1
+    If Not IsBlockAt(col, r, m) Then
+      Let p.col = col
+      Let p.row = r - 1
+      Exit Sub
+    End If
+  Next
+End Sub
+
+Function SideColumn% (side As Integer, lp As Point, threshold As Integer)
+  Dim x As Integer, grid As Integer
+
+  Let SideColumn% = -1
+  If side Then ' left
+    Let x = lp.x
+    'Let grid = Floor(x / BLOCK_SIZE%) * BLOCK_SIZE%
+  Else ' right
+    Let x = lp.x + PLAYER_WIDTH%
+    'Let grid = CInt(x / BLOCK_SIZE%) * BLOCK_SIZE%
+  End If
+
+  ' Find the nearest vertical grid line
+
+  Let grid = CInt(x / BLOCK_SIZE%) * BLOCK_SIZE%
+
+  ' The edge of Dodu may be on either side of that line
+  If Abs(x - grid) > threshold Then Exit Function
+
+  If side Then ' left
+    Let SideColumn% = (grid \ BLOCK_SIZE%) - 1
+  Else ' right
+    Let SideColumn% = grid \ BLOCK_SIZE%
+  End If
+End Function
+
+Sub BlockingSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+  Dim x As Integer
+  Dim col As Integer
+  Dim feet As Integer
+  Dim overlap As Integer
+
+  Let p.col = -1
+  Let p.row = -1
+
+  ' Leading edge after the next movement
+  If side Then ' left
+    Let x = lp.x - WALKING_SPEED%
+    Let col = Floor%((x - 1) / BLOCK_SIZE%)
+    Let overlap = (col + 1) * BLOCK_SIZE% - x
+  Else ' right
+    Let x = lp.x + PLAYER_WIDTH% + WALKING_SPEED%
+    Let col = Floor%(x / BLOCK_SIZE%)
+    Let overlap = x - col * BLOCK_SIZE%
+  End If
+
+  ' Still within the permitted penetration
+  If overlap <= 2 Then Exit Sub
+
+  If col < 0 Or col >= M_W% Then Exit Sub
+
+  Let feet = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%) - 1
+
+  ' Check the two rows alongside Dodu
+  If feet >= 1 Then
+    If IsBlockAt(col, feet - 1, m) Then
+      Let p.col = col
+      Let p.row = feet - 1
+      Exit Sub
+    End If
+  End If
+  If feet < 3 And IsObstacleAt(col, feet, m) Then ' 3, since otherwise Dodu cannot climb
+    Let p.col = col
+    Let p.row = feet
+    Exit Sub
+  End If
+End Sub
+
+Sub PoleSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+  Let p.col = -1
+  Let p.row = -1
+  ' Leading edge after the next movement
+  Dim x As Integer, col As Integer, overlap As Integer, feet As Integer
+  If side Then ' left
+    Let x = lp.x - WALKING_SPEED%
+    Let col = Floor%((x - 1) / BLOCK_SIZE%)
+    Let overlap = (col + 1) * BLOCK_SIZE% - x
+  Else ' right
+    Let x = lp.x + PLAYER_WIDTH% + WALKING_SPEED%
+    Let col = Floor%(x / BLOCK_SIZE%)
+    Let overlap = x - col * BLOCK_SIZE%
+  End If
+
+  ' Still within the permitted penetration
+  If overlap <= 5 Then Exit Sub
+
+  If col < 0 Or col >= M_W% Then Exit Sub
+
+  Let feet = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%) - 1
+
+  If IsGoalAt(col, feet, m) Then
+    Let p.col = col
+    Let p.row = feet
+  End If
+End Sub

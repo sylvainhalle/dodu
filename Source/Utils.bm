@@ -1,0 +1,13 @@
+Function Ceil% (x As Single)
+  Dim z As Integer
+  Let z = CInt(x)
+  If z < x Then z = z + 1
+  Let Ceil% = z
+End Function
+
+Function Floor% (x As Single)
+  Dim z As Integer
+  Let z = CInt(x)
+  If z > x Then z = z - 1
+  Let Floor% = z
+End Function

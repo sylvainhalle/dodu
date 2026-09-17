@@ -1,0 +1,75 @@
+Function IsGoalAt (col As Integer, row As Integer, l As LevelMap)
+  If col >= 0 _AndAlso col < M_W% _AndAlso row >= 0 _AndAlso row < M_H% Then
+  	If l.Topo(col, row) = T_POLE Then
+    	Let IsGoalAt = TRUE
+    	Exit Function
+    End If
+  End If
+  Let IsGoalAt = FALSE
+End Function
+
+Function IsBlockAt (col As Integer, row As Integer, l As LevelMap)
+  If l.Topo(col, row) = T_BLOCK_B Or l.Topo(col, row) = T_BLOCK_W Then
+    Let IsBlockAt = TRUE
+  Else
+    Let IsBlockAt = FALSE
+  End If
+End Function
+
+Function IsWhiteBlockAt (col As Integer, row As Integer, l As LevelMap)
+  If l.Topo(col, row) = T_BLOCK_W Then
+    Let IsWhiteBlockAt = TRUE
+  Else
+    Let IsWhiteBlockAt = FALSE
+  End If
+End Function
+
+Function IsObstacleAt (col As Integer, row As Integer, l As LevelMap)
+  If l.Topo(col, row) = T_BLOCK_B Or l.Topo(col, row) = T_BLOCK_W Or l.Topo(col, row) = T_POLE Then
+    Let IsObstacleAt = TRUE
+  Else
+    Let IsObstacleAt = FALSE
+  End If
+End Function
+
+' --------------------------
+' Loads a level
+' --------------------------
+Sub LoadLevel (l As LevelMap)
+  Dim w As Integer, h As Integer
+  Dim sx As Integer, sy As Integer
+  Read h
+  Read w
+  Read sx
+  Read sy
+  Let l.Width = w
+  Let l.Height = h
+  Let l.StartPoint.col = sx
+  Let l.StartPoint.row = sy
+  Dim col, row As Integer
+  Dim b As String
+  For row = 1 To h
+    For col = 1 To w
+      Read b
+      Let l.Topo(col - 1, row - 1) = b
+    Next
+  Next
+End Sub
+
+
+' --------------------------
+' Prints a level as characters onscreen
+' --------------------------
+Sub PrintLevel (m As LevelMap)
+  Dim i, j As Integer
+  For i = 1 To m.Height
+    For j = 1 To m.Width
+      Locate i, j
+      Print m.Topo(i - 1, j - 1)
+    Next
+    Print
+  Next
+End Sub
+
+
+' :mode=visualbasic:
