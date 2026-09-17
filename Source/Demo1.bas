@@ -420,6 +420,18 @@ Sub BlockingSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   End If
 End Sub
 
+Sub PoleSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+  Let p.col = -1
+  Let p.row = -1
+  Dim feet As Integer, col As Integer
+  Let col = SideColumn%(side, lp, 3)
+  Let feet = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%) - 1
+  If IsGoalAt(col, feet, m) Then
+    Let p.col = col
+    Let p.row = feet
+  End If
+End Sub
+
 
 ' --------------------------
 ' Main loop
@@ -451,13 +463,14 @@ Do
 
   ' Squares of interest
   Dim lp As Point
-  Dim climbP As Square, takeP As Square, dropP As Square, unclimbP As Square, blockingP As Square
+  Dim climbP As Square, takeP As Square, dropP As Square, unclimbP As Square, blockingP As Square, poleP As Square
   LevelPos Dodu, Levels(CURRENT_LEVEL), lp
   ClimbableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), climbP
   TakeableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), takeP
   DroppableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), dropP
   UnclimbableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), unclimbP
   BlockingSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), blockingP
+  PoleSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), poleP
 
   ' Drawing
   DrawBackground ImgBuffer
@@ -505,7 +518,7 @@ Do
   End If
 
   ' Is goal reached?
-  If IsGoalAt(blockingP.col, blockingP.row, Levels(CURRENT_LEVEL)) Then
+  If poleP.col >= 0 And poleP.row >= 0 Then
     GoTo Quit:
   End If
 
