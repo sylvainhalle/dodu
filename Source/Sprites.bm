@@ -3,115 +3,82 @@
 ' --------------------------
 
 
-'** - Point -------------------------------------------------'
-
-
-
 '**
-'* Sets the coordinates of a point.
+'** - Point ------------------------------------------------- {{{
 '**
+
 Sub Point_Set (p As Point, x As Integer, y As Integer)
   Let p.x = x
   Let p.y = y
 End Sub
 
-'**
-'* Returns the coordinates of a point as a string
-'* @param p The point
-'* @return The coordinates as a string
-'**
 Function Point_ToString$ (p As Point)
   Let Point_ToString$ = "(" + _Trim$(Str$(p.x)) + "," + _Trim$(Str$(p.y)) + ")"
 End Function
 
+' }}}
 
+'**
+'** - Sprite ------------------------------------------------- {{{
+'**
 
+Sub Sprite_Load (s As Sprite, file As String, offset As Point)
+  Let s.Content = _LoadImage(file, 32)
+  Point_Set s.Size, _Width(s.Content), _Height(s.Content)
+  Let s.Offset = offset
+  _ClearColor COLOR_PINK~&, s.Content
+End Sub
+
+' }}}
 
 
 '**
-'* Initializes a new viewport with default scale and pan.
+'** - Viewport ------------------------------------------------- {{{
 '**
+
 Sub Viewport_Init_Default (v As Viewport, size As Point)
-  Let v.Size = size
   Viewport_Init v, size, P_ORIGIN, 1
 End Sub
 
-'**
-'* Initializes a new viewport.
-'**
 Sub Viewport_Init (v As Viewport, size As Point, pan As Point, scale As Single)
   Let v.Size = size
   Let v.Pan = pan
   Let v.Scale = scale
-  let v.Buffer = _NewImage(size.x, size.y, 32)
+  Let v.Buffer = _NewImage(size.x * scale, size.y * scale, 32)
 End Sub
 
-'**
-'* Calculates the physical coordinates of a point in the buffer
-'* where the viewport is displayed.
-'**
+
 Sub Viewport_PointToScreen (v As Viewport, p_src As Point, p_dest As Point)
   Let p_dest.x = p_src.x - v.Pan.x
   Let p_dest.y = p_src.y - v.Pan.y
 End Sub
 
-'**
-'* Clears the content of the viewport.
-'**
 Sub Viewport_Clear (v As Viewport)
   _Dest v.Buffer
-  Line (0, 0)-(v.Size.x - 1, v.Size.y - 1), COLOR_BLACK, BF
+  Line (0, 0)-(v.Size.x * v.Scale - 1, v.Size.y * v.Scale - 1), COLOR_BLACK, BF
 End Sub
 
-'**
-'* Equivalent of the LINE command for a viewport.
-'**
 Sub Viewport_Line (v As Viewport, p1 As Point, p2 As Point, clr As _Unsigned Long, box As Integer, filled As Integer)
   _Dest v.Buffer
   If box And filled Then
-    Line (p1.x + v.Pan.x, p1.y + v.Pan.y)-(p2.x + v.Pan.x, p2.y + v.Pan.y), clr, BF
+    Line ((p1.x + v.Pan.x) * v.Scale, (p1.y + v.Pan.y) * v.Scale)-((p2.x + v.Pan.x) * v.Scale, (p2.y + v.Pan.y) * v.Scale), clr, BF
   ElseIf box Then
-    Line (p1.x + v.Pan.x, p1.y + v.Pan.y)-(p2.x + v.Pan.x, p2.y + v.Pan.y), clr, B
+    Line ((p1.x + v.Pan.x) * v.Scale, (p1.y + v.Pan.y) * v.Scale)-((p2.x + v.Pan.x) * v.Scale, (p2.y + v.Pan.y) * v.Scale), clr, B
   Else
-    Line (p1.x + v.Pan.x, p1.y + v.Pan.y)-(p2.x + v.Pan.x, p2.y + v.Pan.y), clr, B
+    Line ((p1.x + v.Pan.x) * v.Scale, (p1.y + v.Pan.y) * v.Scale)-((p2.x + v.Pan.x) * v.Scale, (p2.y + v.Pan.y) * v.Scale), clr
   End If
 End Sub
 
-'**
-'* Equivalent of the LINE command for a viewport.
-'**
 Sub Viewport_Screen (v as Viewport)
 	Screen v.Buffer
 End Sub
 
-'**
-'* Equivalent of the LINE command for a viewport.
-'**
-Sub Viewport_Display (v as Viewport)
-	_Dest v.Buffer
-	_Display
+Sub Viewport_Copy (src As Viewport, dst As Viewport)
+  _PutImage , src.Buffer, dst.Buffer
 End Sub
 
-'**
-'* Prints text in the viewport.
-'**
 Sub Viewport_Print (v As Viewport, s As String, p As Point)
   _PrintString (p.x, p.y), s, v.Buffer
-End Sub
-
-
-'** - Sprite -------------------------------------------------'
-
-
-
-'**
-'* Loads a sprite and sets pink as its transparent color
-'**
-Sub Sprite_Load (s As Sprite, file As String, offset As Point)
-  Let s.Content = _LoadImage(IMG_DIR$ + file, 32)
-  Point_Set s.Size, _Width(s.Content), _Height(s.Content)
-  Let s.Offset = offset
-  _ClearColor COLOR_PINK~&, s.Content
 End Sub
 
 Sub Viewport_PutSprite (v As Viewport, absolute As Integer, s As Sprite, p As Point, flipped As Integer)
@@ -130,9 +97,7 @@ Sub Viewport_PutSprite (v As Viewport, absolute As Integer, s As Sprite, p As Po
   End If
 End Sub
 
+' }}}
 
 
-
-
-
-' :mode=visualbasic:
+' :mode=visualbasic:folding=explicit:wrap=none:

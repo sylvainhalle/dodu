@@ -25,6 +25,8 @@ Const FPS% = 25
 
 ' Window scaling factor
 Const SCALE% = 6
+Dim WINDOW_DIMS As Point
+Point_Set WINDOW_DIMS, SCREEN_DIMS.x * SCALE%, SCREEN_DIMS.y * SCALE%
 
 ' Threshold to enable block holding/dropping (px)
 Const CLIMB_THRESHOLD% = 1
@@ -40,7 +42,6 @@ Const THERMO_TICK% = 3
 ' Currently, can only be an integer
 Const WALKING_SPEED# = 1
 
-Const SHOW_SURROUNDINGS = FALSE
 Const PLAY_MUSIC = FALSE
 
 ' --------------------------
@@ -50,9 +51,8 @@ Const PLAY_MUSIC = FALSE
 '$Include:'Utils.bi'
 '$Include:'Geometry.bi'
 '$Include:'Sprites.bi'
+'$Include:'Assets.bi'
 '$Include:'Levels.bi'
-
-
 
 ' --------------------------
 ' Player
@@ -70,18 +70,11 @@ Type Player
   ThermoFlash As Integer
 End Type
 
-Type Surroundings
-  Top As Integer
-  Bottom As Integer
-  Left As Integer
-  Right As Integer
-End Type
-
 ' --------------------------
 ' Screen setup: 1 main screen and 1 buffer
 ' --------------------------
 Dim Shared MainScreen As Viewport, ImgBuffer As Viewport
-Viewport_Init_Default MainScreen, SCREEN_DIMS
+Viewport_Init MainScreen, WINDOW_DIMS, P_ORIGIN, 1
 Viewport_Init_Default ImgBuffer, SCREEN_DIMS
 
 ' --------------------------
@@ -118,7 +111,7 @@ Let CURRENT_LEVEL = 0
 
 ' Font
 _Font _LoadFont("/home/sylvain/Workspaces/dodu/Source/fonts/TinyAndChunkyRegular.ttf", 5, "MONOSPACE")
-
+Screen MainScreen.Buffer
 Do
   _Limit FPS%
   ' Thermometer
@@ -166,7 +159,7 @@ Do
   HighlightBlock Levels(CURRENT_LEVEL), climbP, COLOR_RED
   '_PrintString (0, 59), Str$(sc) + " " + Str$(blockingP.row) + "," + Str$(blockingP.col)
   '_PutImage (0, 0)-(SCREEN_DIMS.x * SCALE% - 1, SCREEN_DIMS.h * SCALE% - 1), 0, 0
-  Viewport_Display MainScreen
+  Viewport_Copy ImgBuffer, MainScreen
 
   ' If player is climbing, ignore keyboard until on top of block
   Dim to_p As Point
@@ -240,7 +233,7 @@ End
 ' --------------------------
 Sub DrawBackground (v As Viewport)
   Viewport_Clear v
-  '_PutImage (0, 0)-(SCREEN_W, SCREEN_H), Background, buf
+  Viewport_PutSprite v, TRUE, Background, P_ORIGIN, FALSE
 End Sub
 
 ' --------------------------
@@ -287,7 +280,7 @@ End Sub
 Sub DrawThermometer (v As Viewport)
   Dim p As Point
   Point_Set p, 4, 4
-  Viewport_PutSprite v, FALSE, Thermometer, p, FALSE
+  Viewport_PutSprite v, TRUE, Thermometer, p, FALSE
   Dim red As _Unsigned Long
   Let red = THERMO_RED~&
   If Dodu.Temp <= 2 Then
@@ -316,7 +309,8 @@ End Sub
 Sub MovePlayer (v As Viewport, p_to As Point) '(x As Integer, y As Integer)
   If p_to.x < 0 Then Dodu.ToLeft = TRUE Else Dodu.ToLeft = FALSE
   Dim ScreenPos As Point
-  Viewport_PointToScreen v, p_to, ScreenPos
+  ' Demo1.bas, MovePlayer
+  Viewport_PointToScreen v, Dodu.LevPos, ScreenPos
   Select Case Dodu.ToLeft
     Case FALSE ' Going right, x > 0
       If ScreenPos.x < 20 Then

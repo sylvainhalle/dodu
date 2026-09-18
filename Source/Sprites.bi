@@ -1,15 +1,18 @@
-' Image folder
-Const IMG_DIR$ = "/home/sylvain/Workspaces/dodu/Source/images"
 
-' Transparent color across sprites
-Const COLOR_PINK~& = _RGB32(255, 0, 255)
 
-' Other useful colors
+' Colors
 Const COLOR_RED~& = _RGB32(255, 0, 0)
 Const COLOR_GREEN~& = _RGB32(0, 255, 0)
 Const COLOR_YELLOW~& = _RGB32(255, 255, 0)
 Const COLOR_BLACK~& = _RGB32(0, 0, 0)
+Const COLOR_PINK~& = _RGB32(255, 0, 255)
 
+' Transparent color across sprites
+Const COLOR_TRANSPARENT~& = COLOR_PINK~&
+
+'**
+'** - Point ------------------------------------------------- {{{
+'**
 
 '**
 '* Point type. Represents a point in a two-dimensional space.
@@ -21,10 +24,30 @@ Type Point
   y As Integer
 End Type
 
+'**
+'* Sets the coordinates of a point.
+'**
 Declare Sub Point_Set (p As Point, x As Integer, y As Integer)
-declare	Function Point_ToString$ (p As Point)
-	
-	'**
+
+'**
+'* Returns the coordinates of a point as a string
+'* @param p The point
+'* @return The coordinates as a string
+'**
+Declare	Function Point_ToString$ (p As Point)
+
+'**
+'* A instance of the point (0,0).
+'**
+Dim Shared P_ORIGIN As Point: Point_Set P_ORIGIN, 0, 0
+
+' }}}
+
+'**
+'** - Sprite ------------------------------------------------- {{{
+'**
+
+'**
 '* A bitmap to be drawn on a viewport.
 '**
 Type Sprite
@@ -40,7 +63,15 @@ Type Sprite
   Offset As Point
 End Type
 
-	'** - Viewport -------------------------------------------------'
+'**
+'* Loads a sprite and sets pink as its transparent color
+'**
+Declare Sub Sprite_Load (s As Sprite, file As String, offset As Point)
+' }}}
+
+'**
+'** - Viewport ------------------------------------------------- {{{
+'**
 
 ' Viewport type
 Type Viewport
@@ -50,46 +81,52 @@ Type Viewport
   Buffer As Long
 End Type
 
-declare Sub Viewport_Init_Default (v As Viewport, size As Point)
+'**
+'* Initializes a new viewport with default scale and pan.
+'**
+Declare Sub Viewport_Init_Default (v As Viewport, size As Point)
 
-declare Sub Viewport_Init (v As Viewport, size As Point, pan As Point, scale As Single)
-declare Sub Viewport_PointToScreen (v As Viewport, p_src As Point, p_dest As Point)
-declare Sub Viewport_Clear (v As Viewport)
+'**
+'* Initializes a new viewport.
+'**
+Declare Sub Viewport_Init (v As Viewport, size As Point, pan As Point, scale As Single)
+
+'**
+'* Calculates the physical coordinates of a point in the buffer
+'* where the viewport is displayed.
+'**
+Declare Sub Viewport_PointToScreen (v As Viewport, p_src As Point, p_dest As Point)
+
+'**
+'* Clears the content of the viewport.
+'**
+Declare Sub Viewport_Clear (v As Viewport)
+
+'**
+'* Equivalent of the LINE command for a viewport.
+'**
 Declare Sub Viewport_Line (v As Viewport, p1 As Point, p2 As Point, clr As _Unsigned Long, box As Integer, filled As Integer)
+
+'**
+'* Equivalent of the SCREEN command for a viewport.
+'**
 Declare Sub Viewport_Screen (v as Viewport)
-Declare Sub Viewport_Display (v as Viewport)
+
+'**
+'* Copies the buffer of a viewport into another one
+'**
+Declare Sub Viewport_Copy (src As Viewport, dst As Viewport)
+
+'**
+'* Prints text in the viewport.
+'**
 Declare Sub Viewport_Print (v As Viewport, s As String, p As Point)
+
+'**
+'* Puts a sprite at a location on the viewport.
+'**
 Declare Sub Viewport_PutSprite (v As Viewport, absolute As Integer, s As Sprite, p As Point, flipped As Integer)
-	
-	Dim Shared CharSprites(1) As Sprite
-Dim DEFAULT_OFFSET As Point
-Sprite_Load CharSprites(0), "/Dodu_right_0.png", DEFAULT_OFFSET
 
-Dim Shared P_ORIGIN As Point
-Point_Set P_ORIGIN, 0, 0
+' }}}
 
-' Blocks
-Dim Shared BlockBlue As Sprite
-Sprite_Load BlockBlue, "/BlockBlue.gif", DEFAULT_OFFSET
-Dim Shared BlockWhite As Sprite
-Sprite_Load BlockWhite, "/Block_white.gif", DEFAULT_OFFSET
-
-' Goal post
-Dim Shared Pole As Sprite
-Dim PoleOffset As Point
-Point_Set PoleOffset, 1, -9
-Sprite_Load Pole, "/Pole.gif", PoleOffset
-
-' Thermometer
-Dim Shared Thermometer As Sprite
-Sprite_Load Thermometer, "/Thermometer.gif", DEFAULT_OFFSET
-Const THERMO_RED~& = _RGB32(170, 0, 0)
-
-' Background
-Dim Shared Background As Long
-Let Background = _LoadImage(IMG_DIR$ + "/Background.gif")
-
-' Other constants
-Const PLAYER_HEIGHT% = 33
-Const PLAYER_WIDTH% = 19
-Const BLOCK_SIZE% = 11
+' :mode=visualbasic:folding=explicit:wrap=none:
