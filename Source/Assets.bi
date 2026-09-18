@@ -75,6 +75,10 @@ Dim Shared BlockBlue As Sprite
 Sprite_Load BlockBlue, IMG_DIR$ + "/BlockBlue.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
 Dim Shared BlockWhite As Sprite
 Sprite_Load BlockWhite, IMG_DIR$ + "/Block_white.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
+Dim Shared MiniBlockBlue As Sprite
+Sprite_Load MiniBlockBlue, IMG_DIR$ + "/MiniBlockBlue.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
+Dim Shared MiniBlockWhite As Sprite
+Sprite_Load MiniBlockWhite, IMG_DIR$ + "/MiniBlockWhite.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
 
 ' Goal post
 Dim Shared Pole As Sprite
@@ -82,6 +86,11 @@ Dim PoleOffset As Point, PoleOffsetFlip As Point
 Point_Set PoleOffset, 1, -9
 Point_Set PoleOffsetFlip, -1, -9
 Sprite_Load Pole, IMG_DIR$ + "/Pole.gif", PoleOffset, PoleOffsetFlip
+Dim Shared MiniPole As Sprite
+Dim MiniPoleOffset As Point, MiniPoleOffsetFlip As Point
+Point_Set MiniPoleOffset, 1, -2
+Point_Set MiniPoleOffsetFlip, 1, 2
+Sprite_Load MiniPole, IMG_DIR$ + "/MiniPole.gif", MiniPoleOffset, MiniPoleOffsetFlip
 
 ' Thermometer
 Dim Shared Thermometer As Sprite

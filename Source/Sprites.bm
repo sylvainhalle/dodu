@@ -249,6 +249,10 @@ Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteS
 	Viewport_PutSprite v, absolute, spr, p, s.Flipped
 End Sub
 
+Sub Viewport_SetCenter (v as Viewport, p as Point)
+	let v.Pan.x = p.x - v.Size.x \ 2
+	let v.Pan.y = p.y - v.Size.y \ 2
+End Sub
 ' }}}
 
 

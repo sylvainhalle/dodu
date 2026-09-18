@@ -198,7 +198,7 @@ Sub BlockingSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   End If
 
   ' Still within the permitted penetration
-  If overlap <= 2 Then Exit Sub
+  If overlap <= 4 Then Exit Sub
 
   If col < 0 Or col >= M_W% Then Exit Sub
 

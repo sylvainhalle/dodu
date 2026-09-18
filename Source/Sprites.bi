@@ -237,11 +237,15 @@ Declare Sub Viewport_PutSprite (v As Viewport, absolute As Integer, s As Sprite,
 '**
 Declare Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point)
 
-
 '**
 '* Sets the font for a viewport.
 '**
 Declare Sub Viewport_SetFont (v as Viewport, font as _Unsigned Long)
+
+'**
+'* Sets a point as the center of the viewport
+'**
+Declare Sub Viewport_SetCenter (v as Viewport, p as Point)
 
 ' }}}
 
