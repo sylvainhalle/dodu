@@ -72,7 +72,7 @@ End Sub
 Sub Ticker_Init (t As Ticker, l As Integer, speed As Integer, isloop As Integer)
 	let t.Length = l
 	let t.Speed = speed
-	let t.IsLoop = isloop
+	let t.Loop = isloop
 	let t.TickCnt = 0
 	let t.Index = 0
 End Sub
@@ -98,6 +98,14 @@ Sub Ticker_Reset (t As Ticker)
 	let t.Index = 0
 End Sub
 
+Function Ticker_Finished% (t as Ticker)
+	if t.Index < 0 Then
+		let Ticker_Finished% = TRUE
+	else
+		let Ticker_Finished% = FALSE
+	end if
+End Sub
+
 '**
 '** - Sprite sequence------------------------------------------- {{{
 '**
@@ -113,7 +121,7 @@ End Sub
 
 Sub SpriteSequence_Current (s as SpriteSequence, spr as Sprite)
 	If s.Ticker.Index >= 0 Then
-		Sprite_Copy spr, s.Sprites(s.Index)
+		Sprite_Copy spr, s.Sprites(s.Ticker.Index)
 	End If
 End Sub
 
@@ -135,16 +143,13 @@ End Sub
 '**
 
 Sub Trajectory_Init (t As Trajectory, l As Integer, speed As Integer, flipped As Integer, isloop As Integer)
-	let t.Length = l
-	let t.Speed = speed
+	Ticker_Init t.Ticker, l, speed, isloop
 	let t.Flipped = flipped
-	let t.Loop = islooped
-	let t.Index = 0
-	let t.TickCnt = 0
 End Sub
 
 Sub Trajectory_AddPoint (t as Trajectory, p As Point, index As Integer)
-	let t.Points(index) = p
+	let t.Points(index).x = p.x
+	let t.Points(index).y = p.y
 End Sub
 
 Sub Trajectory_AddCoords (t As Trajectory, x as Integer, y as Integer, index As Integer)
@@ -154,27 +159,19 @@ Sub Trajectory_AddCoords (t As Trajectory, x as Integer, y as Integer, index As 
 End Sub
 
 Sub Trajectory_Tick (t As Trajectory, p as Point)
-	If t.Index < 0 Then Exit Sub
-	Let t.TickCnt = t.TickCnt + 1
-	If t.TickCnt = t.Speed Then
-		Let t.TickCnt = 0
-		Let t.Index = t.Index + 1
-		if t.Index = t.Length Then
-			if t.Loop Then
-				let t.Index = 0
-			else
-				let t.Index = -1
-			End If
+	Point_Set p, 0, 0
+	If t.Ticker.Index >= 0 And t.Ticker.TickCnt = 0 Then
+		If t.Flipped Then
+			Point_Set p, -t.Points(t.Ticker.Index).x, t.Points(t.Ticker.Index).y
+		Else
+			Point_Set p, t.Points(t.Ticker.Index).x, t.Points(t.Ticker.Index).y
 		End If
 	End If
-	If t.Index >= 0 Then
-		Point_Set p, Points(t.Index).x, Points(t.Index).y
-	End If
+	Ticker_Tick t.Ticker
 End Sub
 
 Sub Trajectory_Reset (t As Trajectory)
-	let t.Index = 0
-	let t.TickCnt = 0
+	Ticker_reset t.Ticker
 End Sub
 
 '**

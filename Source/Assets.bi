@@ -48,6 +48,28 @@ SpriteSequence_Load DoduSprites(DOD_BLOCK%), sprl, 0
 SpriteSequence_BulkLoad DoduSprites(DOD_WALKING%), IMG_DIR$ + "/Dodu_right_", 4, 2, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET
 SpriteSequence_BulkLoad DoduSprites(DOD_BLOCK_WALKING%), IMG_DIR$ + "/Dodu_right_block_", 4, 2, TRUE, DEFAULT_OFFSET, block_offset
 
+' Trajectories
+Const TRJ_CLIMBING% = 0
+Const TRJ_FALLING% = 1
+Dim Shared Trajectories(2) As Trajectory
+Dim trj As Trajectory
+Trajectory_Init Trajectories(TRJ_CLIMBING%), 6, 1, FALSE, FALSE
+Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 0, -3, 0
+Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 1, -2, 1
+Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 0, -2, 2
+Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 2, -2, 3
+Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 2, -2, 4
+Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 1,  0, 5
+
+Trajectory_Init Trajectories(TRJ_FALLING%), 6, 1, FALSE, FALSE
+Trajectory_AddCoords Trajectories(TRJ_FALLING%), 1,  0, 0
+Trajectory_AddCoords Trajectories(TRJ_FALLING%), 1,  0, 1
+Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 1, 2
+Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 2, 3
+Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 3, 4
+Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 5, 5
+
+
 ' Blocks
 Dim Shared BlockBlue As Sprite
 Sprite_Load BlockBlue, IMG_DIR$ + "/BlockBlue.gif", DEFAULT_OFFSET, DEFAULT_OFFSET

@@ -110,7 +110,11 @@ Dim CURRENT_LEVEL As Integer
 Let CURRENT_LEVEL = 0
 Dim Shared CURRENT_SPRITE As Integer
 Let CURRENT_SPRITE% = DOD_STATIC%
+Dim Shared CURRENT_TRAJECTORY As Integer
+Let CURRENT_TRAJECTORY% = -1
 
+Dim trjP As Point
+Point_Set trjP, -1, -1
 Screen MainScreen.Buffer
 Do
   _Limit FPS%
@@ -140,7 +144,9 @@ Do
   DrawLevel ImgBuffer, Levels(CURRENT_LEVEL)
   DrawPlayer ImgBuffer
   DrawThermometer ImgBuffer
-  'Viewport_Print ImgBuffer, NbFormat$(Dodu.IsFalling), P_ORIGIN ' + " " + Point_ToString(ImgBuffer.Pan), P_ORIGIN
+  If CURRENT_TRAJECTORY% >= 0 Then
+    Viewport_Print ImgBuffer, NbFormat$(Trajectories(CURRENT_TRAJECTORY%).Flipped) + " " + Point_ToString(trjP), P_ORIGIN
+  End If
 
   If _KeyDown(K_ESC) Then
     GoTo Quit:
@@ -153,29 +159,23 @@ Do
   HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), blockingP, COLOR_YELLOW
   Viewport_Copy ImgBuffer, MainScreen
 
-  If (CURRENT_SPRITE% = DOD_WALKING% Or CURRENT_SPRITE% = DOD_BLOCK_WALKING%) And DoduSprites(CURRENT_SPRITE%).TickCnt = 0 And DoduSprites(CURRENT_SPRITE%).Index Mod 2 = 0 Then
+  If (CURRENT_SPRITE% = DOD_WALKING% Or CURRENT_SPRITE% = DOD_BLOCK_WALKING%) And DoduSprites(CURRENT_SPRITE%).Ticker.TickCnt = 0 And DoduSprites(CURRENT_SPRITE%).Ticker.Index Mod 2 = 0 Then
     _SndPlay SND_STEP
   End If
 
-  ' If player is climbing, ignore keyboard until on top of block
+  ' If a trajectory is playing, ignore keybord input
+  If CURRENT_TRAJECTORY% >= 0 Then
+    Trajectory_Tick Trajectories(CURRENT_TRAJECTORY%), trjP
+    MovePlayer ImgBuffer, trjP
+    If Ticker_Finished%(Trajectories(CURRENT_TRAJECTORY%).Ticker) Then
+      'Let Dodu.ToLeft = Trajectories(CURRENT_TRAJECTORY%).Flipped
+      Trajectory_Reset Trajectories(CURRENT_TRAJECTORY)
+      Let CURRENT_TRAJECTORY% = -1
+    End If
+    _Continue
+  End If
+
   Dim to_p As Point
-  If Dodu.IsClimbing > 0 Then
-    Dim dir_c As Integer
-    If Dodu.ToLeft = TRUE Then dir_c% = -WALKING_SPEED% Else dir_c% = WALKING_SPEED%
-    Point_Set to_p, dir_c, -1
-    MovePlayer ImgBuffer, to_p
-    Let Dodu.IsClimbing = Dodu.IsClimbing - 1
-    _Continue
-  End If
-  ' If player is falling, ignore keyboard until on top of block
-  If Dodu.IsFalling > 0 Then
-    Dim dir_f As Integer
-    If Dodu.ToLeft = TRUE Then dir_f% = -WALKING_SPEED% Else dir_f% = WALKING_SPEED%
-    Point_Set to_p, dir_f, 1
-    MovePlayer ImgBuffer, to_p
-    Let Dodu.IsFalling = Dodu.IsFalling - 1
-    _Continue
-  End If
 
   ' Is goal reached?
   If Square_IsValid(poleP) Then
@@ -183,10 +183,14 @@ Do
   End If
 
   If _KeyDown(K_LEFT) Then
+    Let Dodu.ToLeft = TRUE
     Dim klp As Point
     If Square_IsValid(climbP) Then
       Let CURRENT_SPRITE = GetDoduSprite%(TRUE, Dodu.HasBlock)
-      Let Dodu.IsClimbing = 11
+      Let CURRENT_TRAJECTORY% = TRJ_CLIMBING%
+      Let Dodu.ToLeft = TRUE
+      Let Trajectories(CURRENT_TRAJECTORY%).Flipped = TRUE
+      Let DoduSprites(CURRENT_SPRITE).Flipped = TRUE
     Else
       If Not Square_IsValid(blockingP) Then
         Point_Set klp, -1, 0
@@ -196,14 +200,19 @@ Do
     End If
     If Square_IsValid(unclimbP) Then
       Let CURRENT_SPRITE = GetDoduSprite%(FALSE, Dodu.HasBlock)
-      Let Dodu.IsFalling = 11
+      Let CURRENT_TRAJECTORY% = TRJ_FALLING%
+      Let Trajectories(CURRENT_TRAJECTORY%).Flipped = TRUE
+      Let DoduSprites(CURRENT_SPRITE).Flipped = TRUE
     End If
 
   ElseIf _KeyDown(K_RIGHT) Then
+    Let Dodu.ToLeft = FALSE
     Dim krp As Point
     If Square_IsValid(climbP) Then
       Let CURRENT_SPRITE = GetDoduSprite%(TRUE, Dodu.HasBlock)
-      Let Dodu.IsClimbing = 11
+      Let CURRENT_TRAJECTORY% = TRJ_CLIMBING%
+      Let Trajectories(CURRENT_TRAJECTORY%).Flipped = FALSE
+      Let DoduSprites(CURRENT_SPRITE).Flipped = FALSE
     Else
       If Not Square_IsValid(blockingP) Then
         Point_Set krp, 1, 0
@@ -213,7 +222,9 @@ Do
     End If
     If Square_IsValid(unclimbP) Then
       Let CURRENT_SPRITE = GetDoduSprite%(FALSE, Dodu.HasBlock)
-      Let Dodu.IsFalling = 11
+      Let CURRENT_TRAJECTORY% = TRJ_FALLING%
+      Let Trajectories(CURRENT_TRAJECTORY%).Flipped = FALSE
+      Let DoduSprites(CURRENT_SPRITE).Flipped = FALSE
     End If
 
   ElseIf _KeyDown(K_UP) And Square_IsValid(takeP) Then
@@ -230,7 +241,7 @@ Do
   End If
 
   ' Unless he is climbing/falling, Dodu can always flip sides
-  If Dodu.IsClimbing = 0 And Dodu.IsFalling = 0 Then
+  If CURRENT_TRAJECTORY% < 0 Then
     If _KeyDown(K_LEFT) Then
       Let Dodu.ToLeft = TRUE
     End If
@@ -288,7 +299,7 @@ End Sub
 ' --------------------------
 Sub DrawPlayer (v As Viewport)
   Dim s As Sprite
-  Let DoduSprites(CURRENT_SPRITE).Flipped = Dodu.ToLeft
+  DoduSprites(CURRENT_SPRITE).Flipped = Dodu.ToLeft
   Viewport_PutSpriteSequence v, FALSE, DoduSprites(CURRENT_SPRITE), Dodu.LevPos
   SpriteSequence_Tick DoduSprites(CURRENT_SPRITE)
 End Sub
@@ -323,7 +334,9 @@ Sub DropBlock (m As LevelMap, p As Square)
 End Sub
 
 Sub MovePlayer (v As Viewport, p_to As Point) '(x As Integer, y As Integer)
-  If p_to.x < 0 Then Dodu.ToLeft = TRUE Else Dodu.ToLeft = FALSE
+  If p_to.x < 0 Then Dodu.ToLeft = TRUE
+  If p_to.x > 0 Then Dodu.ToLeft = FALSE
+  ' Otherwise, leave in its current state
   Let DoduSprites(CURRENT_SPRITE%).Flipped = Dodu.ToLeft
   Dim ScreenPos As Point
   ' Demo1.bas, MovePlayer
@@ -360,6 +373,13 @@ Sub HighlightBlock (v As Viewport, m As LevelMap, s As Square, c~&)
     Point_Set p2, p1.x + BLOCK_SIZE% - 1, p1.y + BLOCK_SIZE% - 1
     Viewport_Line v, p1, p2, c~&, TRUE, FALSE
   End If
+End Sub
+
+Sub SetFlipSprites (flipped As Integer)
+  Dim x As Integer
+  For x = 0 To 1
+    Let DoduSprites(x).Flipped = flipped
+  Next
 End Sub
 
 Function GetDoduSprite% (walking As Integer, hasBlock As Integer)

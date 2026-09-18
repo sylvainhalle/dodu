@@ -51,6 +51,11 @@ Declare Sub Point_Set (p As Point, x As Integer, y As Integer)
 Declare Function Point_Scale (p2 As Point, s as Single, p1 As Point)
 
 '**
+'* Checks if a point is valid.
+'**
+Declare Function Point_IsValid (p As Point)
+
+'**
 '* Returns the coordinates of a point as a string
 '* @param p The point
 '* @return The coordinates as a string
@@ -75,7 +80,7 @@ Type Sprite
 
   '** A Long pointer to the sprite's image data
   Content As Long
-
+  
   '** A point representing the size of the image
   Size As Point
 
@@ -97,6 +102,7 @@ Declare Sub Sprite_Load (s As Sprite, file As String, offset As Point, offsetfli
 '* Copies the content of a sprite into another one.
 '**
 Declare Sub Sprite_Copy (dst As Sprite, src As Sprite)
+
 ' }}}
 
 '**
@@ -116,6 +122,8 @@ Declare Sub Ticker_Init (t As Ticker, l As Integer, speed As Integer, isloop As 
 Declare Sub Ticker_Tick (t As Ticker)
 
 Declare Sub Ticker_Reset (t As Ticker)
+
+Declare Function Ticker_Finished% (t As Ticker)
 
 '**
 '** - Sprite sequence------------------------------------------- {{{
@@ -146,16 +154,17 @@ Declare Sub SpriteSequence_Current (s as SpriteSequence, spr as Sprite)
 '**
 Declare Sub SpriteSequence_Load (s As SpriteSequence, spr As Sprite, index As Integer)
 
+declare Sub SpriteSequence_SetFlip (s As SpriteSequence, flipped As Integer)
+
+declare Sub SpriteSequence_PutSprite (s As SpriteSequence, v as Viewport, absolute As Integer, p As Point)
+
 Type Trajectory
-	Length As Integer
+	Ticker As Ticker
 	Points(10) As Point
-	Index As Integer
-	Speed As Integer
-	TickCnt As Integer
 	Flipped As Integer
 End Type
 
-Declare Sub Trajectory_Init (t As Trajectory, l As Integer, speed As Integer, flipped As Integer)
+Declare Sub Trajectory_Init (t As Trajectory, l As Integer, speed As Integer, flipped As Integer, isloop As Integer)
 
 Declare Sub Trajectory_AddPoint (t as Trajectory, p As Point)
 
