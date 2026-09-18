@@ -19,6 +19,10 @@
 ' DependsOn: 'Sprites.bi'
 
 Const IMG_DIR$ = "/home/sylvain/Workspaces/dodu/Source/images"
+Const FNT_DIR$ = "/home/sylvain/Workspaces/dodu/Source/fonts"
+
+Dim Shared FNT_TINYC As _Unsigned Long
+Let FNT_TINYC = _LoadFont(FNT_DIR$ + "/TinyAndChunkyRegular.ttf", 5, "MONOSPACE")
 
 Dim Shared CharSprites(1) As Sprite
 Dim DEFAULT_OFFSET As Point

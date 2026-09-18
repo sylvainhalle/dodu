@@ -46,6 +46,11 @@ End Type
 Declare Sub Point_Set (p As Point, x As Integer, y As Integer)
 
 '**
+'* Sets the coordinates of p2 as s * those of p1.
+'**
+Declare Function Point_Scale (p2 As Point, s as Single, p1 As Point)
+
+'**
 '* Returns the coordinates of a point as a string
 '* @param p The point
 '* @return The coordinates as a string
@@ -142,6 +147,11 @@ Declare Sub Viewport_Print (v As Viewport, s As String, p As Point)
 '* Puts a sprite at a location on the viewport.
 '**
 Declare Sub Viewport_PutSprite (v As Viewport, absolute As Integer, s As Sprite, p As Point, flipped As Integer)
+
+'**
+'* Sets the font for a viewport.
+'**
+Declare Sub Viewport_SetFont (v as Viewport, font as _Unsigned Long)
 
 ' }}}
 

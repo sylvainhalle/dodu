@@ -16,6 +16,19 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
+Function Square_IsValid% (s as Square)
+	If s.col >= 0 _AndAlso s.col < M_W% _AndAlso s.row >= 0 _AndAlso s.row < M_H% Then
+		Square_IsValid% = TRUE
+	Else
+		Square_IsValid% = FALSE
+	End If
+End Function
+
+Sub Square_ToPoint (s as Square, p as Point)
+	let p.x = s.col * BLOCK_SIZE%
+	let p.y = s.row * BLOCK_SIZE%
+End Sub
+
 Function IsGoalAt (col As Integer, row As Integer, l As LevelMap)
   If col >= 0 _AndAlso col < M_W% _AndAlso row >= 0 _AndAlso row < M_H% Then
   	If l.Topo(col, row) = T_POLE Then

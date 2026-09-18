@@ -1,21 +1,3 @@
-'-----------------------------------------------------------------------------
-'    Dodu, an old-school QuickBasic game
-'    Copyright (C) 2026  Sylvain Hallé
-'
-'    This program is free software: you can redistribute it and/or modify
-'    it under the terms of the GNU General Public License as published by
-'    the Free Software Foundation, either version 3 of the License, or
-'    (at your option) any later version.
-'
-'    This program is distributed in the hope that it will be useful,
-'    but WITHOUT ANY WARRANTY; without even the implied warranty of
-'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-'    GNU General Public License for more details.
-'
-'    You should have received a copy of the GNU General Public License
-'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-'-----------------------------------------------------------------------------
-
 Option Base 0
 Option _Explicit
 
@@ -94,6 +76,8 @@ End Type
 Dim Shared MainScreen As Viewport, ImgBuffer As Viewport
 Viewport_Init MainScreen, WINDOW_DIMS, P_ORIGIN, 1
 Viewport_Init_Default ImgBuffer, SCREEN_DIMS
+Viewport_SetFont MainScreen, FNT_TINYC
+Viewport_SetFont ImgBuffer, FNT_TINYC
 
 ' --------------------------
 ' Level loading
@@ -127,8 +111,6 @@ End If
 Dim CURRENT_LEVEL As Integer
 Let CURRENT_LEVEL = 0
 
-' Font
-_Font _LoadFont("/home/sylvain/Workspaces/dodu/Source/fonts/TinyAndChunkyRegular.ttf", 5, "MONOSPACE")
 Screen MainScreen.Buffer
 Do
   _Limit FPS%
@@ -150,11 +132,16 @@ Do
   BlockingSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), blockingP
   PoleSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), poleP
 
+
+
   ' Drawing
   DrawBackground ImgBuffer
-  DrawLevel ImgBuffer, CURRENT_LEVEL + 1
+  DrawLevel ImgBuffer, Levels(CURRENT_LEVEL)
   DrawPlayer ImgBuffer
   DrawThermometer ImgBuffer
+  Dim sp As Point
+  Viewport_PointToScreen ImgBuffer, Dodu.LevPos, sp
+  Viewport_Print ImgBuffer, Point_ToString(sp), P_ORIGIN ' + " " + Point_ToString(ImgBuffer.Pan), P_ORIGIN
 
   If _KeyDown(K_ESC) Then
     GoTo Quit:
@@ -174,7 +161,7 @@ Do
   'HighlightBlock Levels(CURRENT_LEVEL), climbP, COLOR_RED
   'HighlightBlock Levels(CURRENT_LEVEL), dropP, COLOR_GREEN
   'HighlightBlock Levels(CURRENT_LEVEL), unclimbP, PINK~&
-  HighlightBlock Levels(CURRENT_LEVEL), climbP, COLOR_RED
+  HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), climbP, COLOR_RED
   '_PrintString (0, 59), Str$(sc) + " " + Str$(blockingP.row) + "," + Str$(blockingP.col)
   '_PutImage (0, 0)-(SCREEN_DIMS.x * SCALE% - 1, SCREEN_DIMS.h * SCALE% - 1), 0, 0
   Viewport_Copy ImgBuffer, MainScreen
@@ -257,14 +244,15 @@ End Sub
 ' --------------------------
 ' Draws a level
 ' --------------------------
-Sub DrawLevel (v As Viewport, n As Integer)
-  Dim m As LevelMap
-  Let m = Levels(n - 1)
+Sub DrawLevel (v As Viewport, m As LevelMap)
   Dim col, row As Integer
   For row = 0 To m.Height
     For col = 0 To m.Width
+      Dim s As Square
+      Let s.col = col
+      Let s.row = row
       Dim p As Point
-      Point_Set p, col * BLOCK_SIZE%, row * BLOCK_SIZE%
+      Square_ToPoint s, p
       Select Case m.Topo(col, row)
         Case T_BLOCK_B
           Viewport_PutSprite v, FALSE, BlockBlue, p, FALSE
@@ -329,40 +317,37 @@ Sub MovePlayer (v As Viewport, p_to As Point) '(x As Integer, y As Integer)
   Dim ScreenPos As Point
   ' Demo1.bas, MovePlayer
   Viewport_PointToScreen v, Dodu.LevPos, ScreenPos
-  Select Case Dodu.ToLeft
-    Case FALSE ' Going right, x > 0
-      If ScreenPos.x < 20 Then
-        Let Dodu.LevPos.x = Dodu.LevPos.x + (p_to.x * WALKING_SPEED#)
-      Else
-        Let Levels(0).PanX = Levels(0).PanX - (p_to.x * WALKING_SPEED#)
-      End If
-    Case TRUE ' Going left, x < 0
-      If ScreenPos.x > 10 Then
-        Let Dodu.LevPos.x = Dodu.LevPos.x + (p_to.x * WALKING_SPEED#)
-      Else
-        Let Levels(0).PanX = Levels(0).PanX - (p_to.x * WALKING_SPEED#)
-      End If
-  End Select
-  If p_to.y > 0 Then
-    ' Going down, y > 0
-    If ScreenPos.y < 20 Then
-      Let Dodu.LevPos.y = Dodu.LevPos.y + (p_to.y * WALKING_SPEED#)
-    Else
-      Let Levels(0).PanY = Levels(0).PanY - (p_to.y * WALKING_SPEED#)
+  Let Dodu.LevPos.x = Dodu.LevPos.x + (p_to.x * WALKING_SPEED#)
+  Let Dodu.LevPos.y = Dodu.LevPos.y + (p_to.y * WALKING_SPEED#)
+  If p_to.x <> 0 Then
+    Select Case Dodu.ToLeft
+      Case FALSE ' Going right, x > 0
+        If ScreenPos.x >= 20 Then
+          Let v.Pan.x = v.Pan.x + (p_to.x * WALKING_SPEED#)
+        End If
+      Case TRUE ' Going left, x < 0
+        If ScreenPos.x <= 10 Then
+          Let v.Pan.x = v.Pan.x + (p_to.x * WALKING_SPEED#)
+        End If
+    End Select
+  End If
+  If p_to.y > 0 Then '   Going down, y > 0
+    If ScreenPos.y >= 20 Then
+      Let v.Pan.y = v.Pan.y + (p_to.y * WALKING_SPEED#)
     End If
-  Else
-    'Going up, y < 0
-    If ScreenPos.y > 10 Then
-      Let Dodu.LevPos.y = Dodu.LevPos.y + (p_to.y * WALKING_SPEED#)
-    Else
-      Let Levels(0).PanY = Levels(0).PanY - (p_to.y * WALKING_SPEED#)
+  ElseIf p_to.y < 0 Then '  Going up, y < 0
+    If ScreenPos.y <= 10 Then
+      Let v.Pan.y = v.Pan.y + (p_to.y * WALKING_SPEED#)
     End If
   End If
 End Sub
 
-Sub HighlightBlock (m As LevelMap, p As Square, c~&)
-  If p.col >= 0 And p.row >= 0 Then
-    Line (p.col * BLOCK_SIZE% + m.PanX, p.row * BLOCK_SIZE% + m.PanY)-((p.col + 1) * BLOCK_SIZE% - 1 + m.PanX, (p.row + 1) * BLOCK_SIZE% - 1 + m.PanY), c~&, B
+Sub HighlightBlock (v As Viewport, m As LevelMap, s As Square, c~&)
+  If Square_IsValid(s) Then
+    Dim p1 As Point, p2 As Point
+    Square_ToPoint s, p1
+    Point_Set p2, p1.x + BLOCK_SIZE% - 1, p1.y + BLOCK_SIZE% - 1
+    Viewport_Line v, p1, p2, c~&, TRUE, FALSE
   End If
 End Sub
 

@@ -16,12 +16,39 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
-declare Sub ClimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
-declare Sub TakeableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+'**
+'* Calculates the vertical line ofo the grid closest to the player.
+'**
+Declare Function SideColumn% (side As Integer, lp As Point, threshold As Integer)
+
+'**
+'* Determines if a square can be climbed on.
+'**
+Declare Sub ClimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+
+'**
+'* Determines if a square can be grabbed.
+'**
+Declare Sub TakeableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+
+'**
+'* Determines if a block can be dropped in a square. 
+'**
 declare Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+
+'**
+'* Determines if a square can be "unclimbed".
+'**
 declare Sub UnclimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
-declare Function SideColumn% (side As Integer, lp As Point, threshold As Integer)
-declare Sub BlockingSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
-declare Sub PoleSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+
+'**
+'* Determines if a square can be block the player from walking.
+'**
+Declare Sub BlockingSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+
+'**
+'* Determines if a square contains the goal.
+'**
+Declare Sub PoleSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

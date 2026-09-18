@@ -17,8 +17,8 @@
 '-----------------------------------------------------------------------------
 
 ' Max height/width of a level
-Const M_W = 30
-Const M_H = 30
+Const M_W% = 30
+Const M_H% = 30
 
 ' Symbols designating level tiles
 Const T_NOTHING = " "
@@ -32,10 +32,24 @@ Type Square
   row As Integer
 End Type
 
+'**
+'* Determines if the coordinates of a square correspond to a valid location
+'* in the level map.
+'**
+Declare Function Square_IsValid% (s as Square)
+
+'**
+'* Converts the coordinate of a square in the level map to the x,y
+'* coordinates of the image buffer (representing the top-left corner of the
+'* corresponding box.
+'**
+Declare Sub Square_ToPoint (s as Square, p as Point)
+
 Type LevelMap
   Width As Integer
   Height As Integer
-  Topo(M_W, M_H) As String
+  'Topo(M_W%, M_H%) As String
+  Topo(30, 30) As String
   StartPoint As Square
   PanX As Integer
   PanY As Integer
