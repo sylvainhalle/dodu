@@ -66,36 +66,53 @@ End Sub
 ' }}}
 
 '**
-'** - Sprite sequence------------------------------------------- {{{
+'** - Ticker    ------------------------------------------------ {{{
 '**
 
-Sub SpriteSequence_Init (s As SpriteSequence, l As Integer, spd As Integer, isloop As Integer)
-	let s.Length = l
-	let s.Loop = TRUE
-	let s.Index = 0
-	let s.TickCnt = 0
-	let s.Speed = spd
-	let s.Flipped = FALSE
+Sub Ticker_Init (t As Ticker, l As Integer, speed As Integer, isloop As Integer)
+	let t.Length = l
+	let t.Speed = speed
+	let t.IsLoop = isloop
+	let t.TickCnt = 0
+	let t.Index = 0
 End Sub
 
-Sub SpriteSequence_Tick (s As SpriteSequence)
-	If s.Index >= 0 Then
-		Let s.TickCnt = (s.TickCnt + 1) Mod s.Speed
-		If s.TickCnt = 0 Then
-			Let s.Index = s.Index + 1
-			If s.Index = s.Length Then
-				If s.Loop Then
-					let s.Index = 0
+Sub Ticker_Tick (t As Ticker)
+	If t.Index >= 0 Then
+		Let t.TickCnt = (t.TickCnt + 1) Mod t.Speed
+		If t.TickCnt = 0 Then
+			Let t.Index = t.Index + 1
+			If t.Index = t.Length Then
+				If t.Loop Then
+					let t.Index = 0
 				Else
-					let s.Index = -1
+					let t.Index = -1
 				End If
 			End If
 		End If
 	End If
 End Sub
 
+Sub Ticker_Reset (t As Ticker)
+	let t.TickCnt = 0
+	let t.Index = 0
+End Sub
+
+'**
+'** - Sprite sequence------------------------------------------- {{{
+'**
+
+Sub SpriteSequence_Init (s As SpriteSequence, l As Integer, spd As Integer, isloop As Integer)
+	Ticker_Init s.Ticker, l, spd, isloop
+	let s.Flipped = FALSE
+End Sub
+
+Sub SpriteSequence_Tick (s As SpriteSequence)
+	Ticker_Tick s.Ticker
+End Sub
+
 Sub SpriteSequence_Current (s as SpriteSequence, spr as Sprite)
-	If s.Index >= 0 Then
+	If s.Ticker.Index >= 0 Then
 		Sprite_Copy spr, s.Sprites(s.Index)
 	End If
 End Sub
@@ -111,6 +128,53 @@ Sub SpriteSequence_BulkLoad (s as SpriteSequence, pattern AS String, length As I
 		Sprite_Load sprl, pattern + _Tostr$(x) + ".gif", offset, offsetflip
 	SpriteSequence_Load s, sprl, x
 	Next
+End Sub
+
+'**
+'** - Trajectory------------------------------------------------ {{{
+'**
+
+Sub Trajectory_Init (t As Trajectory, l As Integer, speed As Integer, flipped As Integer, isloop As Integer)
+	let t.Length = l
+	let t.Speed = speed
+	let t.Flipped = flipped
+	let t.Loop = islooped
+	let t.Index = 0
+	let t.TickCnt = 0
+End Sub
+
+Sub Trajectory_AddPoint (t as Trajectory, p As Point, index As Integer)
+	let t.Points(index) = p
+End Sub
+
+Sub Trajectory_AddCoords (t As Trajectory, x as Integer, y as Integer, index As Integer)
+	dim p As Point
+	Point_Set p, x, y
+	Trajectory_AddPoint t, p, index
+End Sub
+
+Sub Trajectory_Tick (t As Trajectory, p as Point)
+	If t.Index < 0 Then Exit Sub
+	Let t.TickCnt = t.TickCnt + 1
+	If t.TickCnt = t.Speed Then
+		Let t.TickCnt = 0
+		Let t.Index = t.Index + 1
+		if t.Index = t.Length Then
+			if t.Loop Then
+				let t.Index = 0
+			else
+				let t.Index = -1
+			End If
+		End If
+	End If
+	If t.Index >= 0 Then
+		Point_Set p, Points(t.Index).x, Points(t.Index).y
+	End If
+End Sub
+
+Sub Trajectory_Reset (t As Trajectory)
+	let t.Index = 0
+	let t.TickCnt = 0
 End Sub
 
 '**

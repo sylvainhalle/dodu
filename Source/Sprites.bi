@@ -100,15 +100,29 @@ Declare Sub Sprite_Copy (dst As Sprite, src As Sprite)
 ' }}}
 
 '**
-'** - Sprite sequence------------------------------------------- {{{
+'** - Ticker --------------------------------------------------- {{{
 '**
-Type SpriteSequence
-	Sprites(10) As Sprite
+
+Type Ticker
 	Length As Integer
 	Index As Integer
 	Loop As Integer
 	Speed As Integer
 	TickCnt As Integer
+End Type
+
+Declare Sub Ticker_Init (t As Ticker, l As Integer, speed As Integer, isloop As Integer)
+
+Declare Sub Ticker_Tick (t As Ticker)
+
+Declare Sub Ticker_Reset (t As Ticker)
+
+'**
+'** - Sprite sequence------------------------------------------- {{{
+'**
+Type SpriteSequence
+	Ticker As Ticker
+	Sprites(10) As Sprite
 	Flipped As Integer
 End Type
 
@@ -131,6 +145,25 @@ Declare Sub SpriteSequence_Current (s as SpriteSequence, spr as Sprite)
 '* Loads a sprite at a given index in the sequence.
 '**
 Declare Sub SpriteSequence_Load (s As SpriteSequence, spr As Sprite, index As Integer)
+
+Type Trajectory
+	Length As Integer
+	Points(10) As Point
+	Index As Integer
+	Speed As Integer
+	TickCnt As Integer
+	Flipped As Integer
+End Type
+
+Declare Sub Trajectory_Init (t As Trajectory, l As Integer, speed As Integer, flipped As Integer)
+
+Declare Sub Trajectory_AddPoint (t as Trajectory, p As Point)
+
+Declare Sub Trajectory_AddCoords (t As Trajectory, x as Integer, y as Integer)
+
+Declare Sub Trajectory_Tick (t As Trajectory, p as Point)
+
+Declare Sub Trajectory_Reset (t As Trajectory)
 
 '**
 '** - Viewport ------------------------------------------------- {{{

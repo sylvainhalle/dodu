@@ -212,7 +212,7 @@ Do
       End If
     End If
     If Square_IsValid(unclimbP) Then
-      Let CURRENT_SPRITE = DOD_STATIC%
+      Let CURRENT_SPRITE = GetDoduSprite%(FALSE, Dodu.HasBlock)
       Let Dodu.IsFalling = 11
     End If
 
@@ -230,7 +230,7 @@ Do
   End If
 
   ' Unless he is climbing/falling, Dodu can always flip sides
-  If Not Dodu.IsClimbing And Not Dodu.IsFalling Then
+  If Dodu.IsClimbing = 0 And Dodu.IsFalling = 0 Then
     If _KeyDown(K_LEFT) Then
       Let Dodu.ToLeft = TRUE
     End If
