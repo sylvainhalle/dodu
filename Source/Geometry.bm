@@ -69,10 +69,10 @@ Sub TakeableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   If row < 1 Or row >= M_H% Then Exit Sub
 
   ' There must be a block beside Dodu
-  If Not IsBlockAt(col, row, m) Then Exit Sub
+  If Not IsWhiteBlockAt(col, row, m) Then Exit Sub
 
   ' And no block may be resting on it
-  If IsBlockAt(col, row - 1, m) Then Exit Sub
+  If IsWhiteBlockAt(col, row - 1, m) Then Exit Sub
 
   Let p.col = col
   Let p.row = row

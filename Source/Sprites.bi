@@ -82,12 +82,16 @@ Type Sprite
   '** The offset of the sprite, in pixels. This is the location where the
   '* (0,0) coordinate of the sprite should be placed.
   Offset As Point
+  
+  '** The offset of the sprite, in pixels. This is the location where the
+  '* (0,0) coordinate of the sprite should be placed when flipped.
+  OffsetFlip As Point
 End Type
 
 '**
 '* Loads a sprite and sets pink as its transparent color
 '**
-Declare Sub Sprite_Load (s As Sprite, file As String, offset As Point)
+Declare Sub Sprite_Load (s As Sprite, file As String, offset As Point, offsetflip AS Point)
 
 '**
 '* Copies the content of a sprite into another one.

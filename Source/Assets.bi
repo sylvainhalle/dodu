@@ -27,7 +27,7 @@ Let FNT_TINYC = _LoadFont(FNT_DIR$ + "/TinyAndChunkyRegular.ttf", 5, "MONOSPACE"
 Dim DEFAULT_OFFSET As Point
 Let DEFAULT_OFFSET = P_ORIGIN
 
-Dim Shared DoduSprites(2) As SpriteSequence
+Dim Shared DoduSprites(4) As SpriteSequence
 
 ' Character
 Const DOD_STATIC% = 0
@@ -35,34 +35,40 @@ Const DOD_WALKING% = 1
 Const DOD_BLOCK% = 2
 Const DOD_BLOCK_WALKING% = 3
 
+Dim block_offset As Point
+Point_Set block_offset, -5, 0
 SpriteSequence_Init DoduSprites(DOD_STATIC%), 1, 1, TRUE
 Dim sprl As Sprite
-Sprite_Load sprl, IMG_DIR$ + "/Dodu_right_0.gif", DEFAULT_OFFSET
+Sprite_Load sprl, IMG_DIR$ + "/Dodu_right_0.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
 SpriteSequence_Load DoduSprites(DOD_STATIC%), sprl, 0
+Sprite_Load sprl, IMG_DIR$ + "/Dodu_right_block_0.gif", DEFAULT_OFFSET, block_offset
+SpriteSequence_Init DoduSprites(DOD_BLOCK%), 1, 1, TRUE
+SpriteSequence_Load DoduSprites(DOD_BLOCK%), sprl, 0
 
-SpriteSequence_BulkLoad DoduSprites(DOD_WALKING%), IMG_DIR$ + "/Dodu_right_", 4, 2, TRUE
-
+SpriteSequence_BulkLoad DoduSprites(DOD_WALKING%), IMG_DIR$ + "/Dodu_right_", 4, 2, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET
+SpriteSequence_BulkLoad DoduSprites(DOD_BLOCK_WALKING%), IMG_DIR$ + "/Dodu_right_block_", 4, 2, TRUE, DEFAULT_OFFSET, block_offset
 
 ' Blocks
 Dim Shared BlockBlue As Sprite
-Sprite_Load BlockBlue, IMG_DIR$ + "/BlockBlue.gif", DEFAULT_OFFSET
+Sprite_Load BlockBlue, IMG_DIR$ + "/BlockBlue.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
 Dim Shared BlockWhite As Sprite
-Sprite_Load BlockWhite, IMG_DIR$ + "/Block_white.gif", DEFAULT_OFFSET
+Sprite_Load BlockWhite, IMG_DIR$ + "/Block_white.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
 
 ' Goal post
 Dim Shared Pole As Sprite
-Dim PoleOffset As Point
+Dim PoleOffset As Point, PoleOffsetFlip As Point
 Point_Set PoleOffset, 1, -9
-Sprite_Load Pole, IMG_DIR$ + "/Pole.gif", PoleOffset
+Point_Set PoleOffsetFlip, -1, -9
+Sprite_Load Pole, IMG_DIR$ + "/Pole.gif", PoleOffset, PoleOffsetFlip
 
 ' Thermometer
 Dim Shared Thermometer As Sprite
-Sprite_Load Thermometer, IMG_DIR$ + "/Thermometer.gif", DEFAULT_OFFSET
+Sprite_Load Thermometer, IMG_DIR$ + "/Thermometer.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
 Const THERMO_RED~& = _RGB32(170, 0, 0)
 
 ' Background
 Dim Shared Background As Sprite
-Sprite_Load Background, IMG_DIR$ + "/Background.gif", DEFAULT_OFFSET
+Sprite_Load Background, IMG_DIR$ + "/Background.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
 
 ' Other constants
 Const PLAYER_HEIGHT% = 33

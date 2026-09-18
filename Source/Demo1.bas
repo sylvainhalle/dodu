@@ -1,5 +1,6 @@
 Option Base 0
 Option _Explicit
+$ErrorLocation:On
 
 ' --------------------------
 ' Program constants
@@ -42,7 +43,7 @@ Const THERMO_TICK% = 3
 ' Currently, can only be an integer
 Const WALKING_SPEED# = 1
 
-Const PLAY_MUSIC = TRUE
+Const PLAY_MUSIC = FALSE
 
 ' --------------------------
 ' Includes (declarations)
@@ -145,23 +146,14 @@ Do
     GoTo Quit:
   End If
 
-  ' Unless he is climbing/falling, Dodu can always flip sides
-  If Not Dodu.IsClimbing And Not Dodu.IsFalling Then
-    If _KeyDown(K_LEFT) Then
-      Let Dodu.ToLeft = TRUE
-    End If
-    If _KeyDown(K_RIGHT) Then
-      Let Dodu.ToLeft = FALSE
-    End If
-  End If
-
   'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, COLOR_YELLOW
-  'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), climbP, COLOR_RED
+  HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), climbP, COLOR_RED
   'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, COLOR_GREEN
-  'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK
+  HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK
+  HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), blockingP, COLOR_YELLOW
   Viewport_Copy ImgBuffer, MainScreen
 
-  If CURRENT_SPRITE% = DOD_WALKING% And DoduSprites(CURRENT_SPRITE%).TickCnt = 0 And DoduSprites(CURRENT_SPRITE%).Index Mod 2 = 0 Then
+  If (CURRENT_SPRITE% = DOD_WALKING% Or CURRENT_SPRITE% = DOD_BLOCK_WALKING%) And DoduSprites(CURRENT_SPRITE%).TickCnt = 0 And DoduSprites(CURRENT_SPRITE%).Index Mod 2 = 0 Then
     _SndPlay SND_STEP
   End If
 
@@ -193,29 +185,29 @@ Do
   If _KeyDown(K_LEFT) Then
     Dim klp As Point
     If Square_IsValid(climbP) Then
-      Let CURRENT_SPRITE = DOD_WALKING%
+      Let CURRENT_SPRITE = GetDoduSprite%(TRUE, Dodu.HasBlock)
       Let Dodu.IsClimbing = 11
     Else
       If Not Square_IsValid(blockingP) Then
         Point_Set klp, -1, 0
-        Let CURRENT_SPRITE = DOD_WALKING%
+        Let CURRENT_SPRITE = GetDoduSprite%(TRUE, Dodu.HasBlock)
         MovePlayer ImgBuffer, klp
       End If
     End If
     If Square_IsValid(unclimbP) Then
-      Let CURRENT_SPRITE = DOD_STATIC%
+      Let CURRENT_SPRITE = GetDoduSprite%(FALSE, Dodu.HasBlock)
       Let Dodu.IsFalling = 11
     End If
 
   ElseIf _KeyDown(K_RIGHT) Then
     Dim krp As Point
     If Square_IsValid(climbP) Then
-      Let CURRENT_SPRITE = DOD_WALKING%
+      Let CURRENT_SPRITE = GetDoduSprite%(TRUE, Dodu.HasBlock)
       Let Dodu.IsClimbing = 11
     Else
       If Not Square_IsValid(blockingP) Then
         Point_Set krp, 1, 0
-        Let CURRENT_SPRITE = DOD_WALKING%
+        Let CURRENT_SPRITE = GetDoduSprite%(TRUE, Dodu.HasBlock)
         MovePlayer ImgBuffer, krp
       End If
     End If
@@ -233,9 +225,20 @@ Do
     DropBlock Levels(CURRENT_LEVEL), dropP
 
   Else ' No key
-    Let CURRENT_SPRITE% = DOD_STATIC%
+    Let CURRENT_SPRITE% = GetDoduSprite%(FALSE, Dodu.HasBlock)
 
   End If
+
+  ' Unless he is climbing/falling, Dodu can always flip sides
+  If Not Dodu.IsClimbing And Not Dodu.IsFalling Then
+    If _KeyDown(K_LEFT) Then
+      Let Dodu.ToLeft = TRUE
+    End If
+    If _KeyDown(K_RIGHT) Then
+      Let Dodu.ToLeft = FALSE
+    End If
+  End If
+
 Loop
 
 GameOver:
@@ -285,17 +288,9 @@ End Sub
 ' --------------------------
 Sub DrawPlayer (v As Viewport)
   Dim s As Sprite
+  Let DoduSprites(CURRENT_SPRITE).Flipped = Dodu.ToLeft
   Viewport_PutSpriteSequence v, FALSE, DoduSprites(CURRENT_SPRITE), Dodu.LevPos
   SpriteSequence_Tick DoduSprites(CURRENT_SPRITE)
-  Dim p As Point
-  If Dodu.HasBlock Then
-    If Dodu.ToLeft Then
-      Point_Set p, Dodu.LevPos.x - 4, Dodu.LevPos.y + 15
-    Else
-      Point_Set p, Dodu.LevPos.x + 10, Dodu.LevPos.y + 15
-    End If
-    Viewport_PutSprite v, FALSE, BlockWhite, p, Dodu.ToLeft
-  End If
 End Sub
 
 Sub DrawThermometer (v As Viewport)
@@ -306,9 +301,9 @@ Sub DrawThermometer (v As Viewport)
   Let red = THERMO_RED~&
   If Dodu.Temp <= 2 Then
     If Dodu.ThermoFlash < 10 Then
-      red = _RGB32(85, 0, 170)
+      Let red = _RGB32(85, 0, 170)
     Else
-      red = THERMO_RED~&
+      Let red = THERMO_RED~&
     End If
     Let Dodu.ThermoFlash = (Dodu.ThermoFlash + 1) Mod 20
   End If
@@ -366,6 +361,22 @@ Sub HighlightBlock (v As Viewport, m As LevelMap, s As Square, c~&)
     Viewport_Line v, p1, p2, c~&, TRUE, FALSE
   End If
 End Sub
+
+Function GetDoduSprite% (walking As Integer, hasBlock As Integer)
+  If walking Then
+    If hasBlock Then
+      Let GetDoduSprite% = DOD_BLOCK_WALKING%
+    Else
+      Let GetDoduSprite% = DOD_WALKING%
+    End If
+  Else
+    If hasBlock Then
+      Let GetDoduSprite% = DOD_BLOCK%
+    Else
+      Let GetDoduSprite% = DOD_STATIC%
+    End If
+  End If
+End Function
 
 ' --------------------------
 ' Includes (implementations)

@@ -45,10 +45,11 @@ End Function
 '** - Sprite ------------------------------------------------- {{{
 '**
 
-Sub Sprite_Load (s As Sprite, file As String, offset As Point)
+Sub Sprite_Load (s As Sprite, file As String, offset As Point, offsetflip As Point)
   Let s.Content = _LoadImage(file, 32)
   Point_Set s.Size, _Width(s.Content), _Height(s.Content)
   Let s.Offset = offset
+  Let s.OffsetFlip = offsetflip
   _ClearColor COLOR_PINK~&, s.Content
 End Sub
 
@@ -58,6 +59,8 @@ Sub Sprite_Copy (dst As Sprite, src As Sprite)
 	Let dst.Size.y = src.Size.y
 	Let dst.Offset.x = src.Offset.x
 	Let dst.Offset.y = src.Offset.y
+	Let dst.OffsetFlip.x = src.OffsetFlip.x
+	Let dst.OffsetFlip.y = src.OffsetFlip.y
 End Sub
 
 ' }}}
@@ -101,11 +104,11 @@ Sub SpriteSequence_Load (s As SpriteSequence, spr As Sprite, index As Integer)
 	Sprite_Copy s.Sprites(index), spr
 End Sub
 
-Sub SpriteSequence_BulkLoad (s as SpriteSequence, pattern AS String, length As Integer, speed As Integer, isloop As Integer)
+Sub SpriteSequence_BulkLoad (s as SpriteSequence, pattern AS String, length As Integer, speed As Integer, isloop As Integer, offset As Point, offsetFlip As Point)
 	SpriteSequence_Init s, length, speed, isloop
 	Dim x as Integer, sprl As Sprite
 	For x = 0 To length - 1
-		Sprite_Load sprl, pattern + _Tostr$(x) + ".gif", P_ORIGIN
+		Sprite_Load sprl, pattern + _Tostr$(x) + ".gif", offset, offsetflip
 	SpriteSequence_Load s, sprl, x
 	Next
 End Sub
@@ -166,13 +169,13 @@ End Sub
 Sub Viewport_PutSprite (v As Viewport, absolute As Integer, s As Sprite, p As Point, flipped As Integer)
   If absolute = TRUE Then
     If flipped = TRUE Then
-      _PutImage (p.x + s.Offset.x + s.Size.x - 1, p.y + s.Offset.y)-(p.x + s.Offset.x, p.y + s.Offset.y + s.Size.y - 1), s.Content, v.Buffer
+      _PutImage (p.x + s.OffsetFlip.x + s.Size.x - 1, p.y + s.OffsetFlip.y)-(p.x + s.OffsetFlip.x, p.y + s.OffsetFlip.y + s.Size.y - 1), s.Content, v.Buffer
     Else
       _PutImage (p.x + s.Offset.x, p.y + s.Offset.y)-(p.x + s.Offset.x + s.Size.x - 1, p.y + s.Offset.y + s.Size.y - 1), s.Content, v.Buffer
     End If
   Else
     If flipped Then
-      _PutImage (p.x + s.Offset.x + s.Size.x - 1 - v.Pan.x, p.y + s.Offset.y - v.Pan.y)-(p.x + s.Offset.x - v.Pan.x, p.y + s.Offset.y + s.Size.y - 1 - v.Pan.y), s.Content, v.Buffer
+      _PutImage (p.x + s.OffsetFlip.x + s.Size.x - 1 - v.Pan.x, p.y + s.OffsetFlip.y - v.Pan.y)-(p.x + s.OffsetFlip.x - v.Pan.x, p.y + s.OffsetFlip.y + s.Size.y - 1 - v.Pan.y), s.Content, v.Buffer
     Else
       _PutImage (p.x + s.Offset.x - v.Pan.x, p.y + s.Offset.y - v.Pan.y)-(p.x + s.Offset.x + s.Size.x - 1 - v.Pan.x, p.y + s.Offset.y + s.Size.y - 1 - v.Pan.y), s.Content, v.Buffer
     End If
