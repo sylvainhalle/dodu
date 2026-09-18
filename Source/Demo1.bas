@@ -141,7 +141,7 @@ Do
   DrawThermometer ImgBuffer
   Dim sp As Point
   Viewport_PointToScreen ImgBuffer, Dodu.LevPos, sp
-  Viewport_Print ImgBuffer, Point_ToString(sp), P_ORIGIN ' + " " + Point_ToString(ImgBuffer.Pan), P_ORIGIN
+  Viewport_Print ImgBuffer, NbFormat$(Dodu.IsFalling), P_ORIGIN ' + " " + Point_ToString(ImgBuffer.Pan), P_ORIGIN
 
   If _KeyDown(K_ESC) Then
     GoTo Quit:
@@ -157,13 +157,10 @@ Do
     End If
   End If
 
-  'HighlightBlock Levels(CURRENT_LEVEL), takeP, COLOR_YELLOW
-  'HighlightBlock Levels(CURRENT_LEVEL), climbP, COLOR_RED
-  'HighlightBlock Levels(CURRENT_LEVEL), dropP, COLOR_GREEN
-  'HighlightBlock Levels(CURRENT_LEVEL), unclimbP, PINK~&
+  'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, COLOR_YELLOW
   HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), climbP, COLOR_RED
-  '_PrintString (0, 59), Str$(sc) + " " + Str$(blockingP.row) + "," + Str$(blockingP.col)
-  '_PutImage (0, 0)-(SCREEN_DIMS.x * SCALE% - 1, SCREEN_DIMS.h * SCALE% - 1), 0, 0
+  'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, COLOR_GREEN
+  HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK
   Viewport_Copy ImgBuffer, MainScreen
 
   ' If player is climbing, ignore keyboard until on top of block
@@ -181,44 +178,48 @@ Do
     Dim dir_f As Integer
     If Dodu.ToLeft = TRUE Then dir_f% = -WALKING_SPEED% Else dir_f% = WALKING_SPEED%
     Point_Set to_p, dir_f, 1
+    MovePlayer ImgBuffer, to_p
     Let Dodu.IsFalling = Dodu.IsFalling - 1
     _Continue
   End If
 
   ' Is goal reached?
-  If poleP.col >= 0 And poleP.row >= 0 Then
+  If Square_IsValid(poleP) Then
     GoTo Quit:
   End If
 
   If _KeyDown(K_LEFT) Then
     Dim klp As Point
-    If climbP.col >= 0 And climbP.row >= 0 Then
+    If Square_IsValid(climbP) Then
       Let Dodu.IsClimbing = 11
     Else
-      If blockingP.col < 0 Then
+      If Not Square_IsValid(blockingP) Then
         Point_Set klp, -1, 0
         MovePlayer ImgBuffer, klp
       End If
     End If
-    If unclimbP.col >= 0 Then
+    If Square_IsValid(unclimbP) Then
       Let Dodu.IsFalling = 11
     End If
+
   ElseIf _KeyDown(K_RIGHT) Then
     Dim krp As Point
-    If climbP.col >= 0 And climbP.row >= 0 Then
+    If Square_IsValid(climbP) Then
       Let Dodu.IsClimbing = 11
     Else
-      If blockingP.col < 0 Then
+      If Not Square_IsValid(blockingP) Then
         Point_Set krp, 1, 0
         MovePlayer ImgBuffer, krp
       End If
     End If
-    If unclimbP.col >= 0 Then
+    If Square_IsValid(unclimbP) Then
       Let Dodu.IsFalling = 11
     End If
-  ElseIf _KeyDown(K_UP) And takeP.col >= 0 Then
+
+  ElseIf _KeyDown(K_UP) And Square_IsValid(takeP) Then
     TakeBlock Levels(CURRENT_LEVEL), takeP
-  ElseIf _KeyDown(K_DOWN) And dropP.col >= 0 Then
+
+  ElseIf _KeyDown(K_DOWN) And Square_IsValid(dropP) Then
     DropBlock Levels(CURRENT_LEVEL), dropP
   End If
 Loop
@@ -323,21 +324,21 @@ Sub MovePlayer (v As Viewport, p_to As Point) '(x As Integer, y As Integer)
     Select Case Dodu.ToLeft
       Case FALSE ' Going right, x > 0
         If ScreenPos.x >= 20 Then
-          Let v.Pan.x = v.Pan.x + (p_to.x * WALKING_SPEED#)
+          Let v.Pan.x = _Min(v.Pan.x + (p_to.x * WALKING_SPEED#), M_W% * BLOCK_SIZE%)
         End If
       Case TRUE ' Going left, x < 0
         If ScreenPos.x <= 10 Then
-          Let v.Pan.x = v.Pan.x + (p_to.x * WALKING_SPEED#)
+          Let v.Pan.x = _Max(v.Pan.x + (p_to.x * WALKING_SPEED#), 0)
         End If
     End Select
   End If
   If p_to.y > 0 Then '   Going down, y > 0
     If ScreenPos.y >= 20 Then
-      Let v.Pan.y = v.Pan.y + (p_to.y * WALKING_SPEED#)
+      Let v.Pan.y = _Min(v.Pan.y + (p_to.y * WALKING_SPEED#), M_H% * BLOCK_SIZE%)
     End If
   ElseIf p_to.y < 0 Then '  Going up, y < 0
     If ScreenPos.y <= 10 Then
-      Let v.Pan.y = v.Pan.y + (p_to.y * WALKING_SPEED#)
+      Let v.Pan.y = _Max(v.Pan.y + (p_to.y * WALKING_SPEED#), 0)
     End If
   End If
 End Sub

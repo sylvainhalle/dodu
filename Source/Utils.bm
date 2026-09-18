@@ -30,4 +30,12 @@ Function Floor% (x As Single)
   Let Floor% = z
 End Function
 
+Function NbFormat$ (x As Integer)
+	if x < 10 Then
+		let NbFormat$ = " " + _Trim$(Str$(x))
+	else
+		let NbFormat$ = _Trim$(Str$(x))
+	end if
+End Function
+
 ' :mode=visualbasic:folding=explicit:wrap=none:

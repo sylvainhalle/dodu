@@ -84,11 +84,11 @@ End Sub
 Sub Viewport_Line (v As Viewport, p1 As Point, p2 As Point, clr As _Unsigned Long, box As Integer, filled As Integer)
   _Dest v.Buffer
   If box And filled Then
-    Line ((p1.x + v.Pan.x) * v.Scale, (p1.y + v.Pan.y) * v.Scale)-((p2.x + v.Pan.x) * v.Scale, (p2.y + v.Pan.y) * v.Scale), clr, BF
+    Line ((p1.x - v.Pan.x) * v.Scale, (p1.y - v.Pan.y) * v.Scale)-((p2.x - v.Pan.x) * v.Scale, (p2.y - v.Pan.y) * v.Scale), clr, BF
   ElseIf box Then
-    Line ((p1.x + v.Pan.x) * v.Scale, (p1.y + v.Pan.y) * v.Scale)-((p2.x + v.Pan.x) * v.Scale, (p2.y + v.Pan.y) * v.Scale), clr, B
+    Line ((p1.x - v.Pan.x) * v.Scale, (p1.y - v.Pan.y) * v.Scale)-((p2.x - v.Pan.x) * v.Scale, (p2.y - v.Pan.y) * v.Scale), clr, B
   Else
-    Line ((p1.x + v.Pan.x) * v.Scale, (p1.y + v.Pan.y) * v.Scale)-((p2.x + v.Pan.x) * v.Scale, (p2.y + v.Pan.y) * v.Scale), clr
+    Line ((p1.x - v.Pan.x) * v.Scale, (p1.y - v.Pan.y) * v.Scale)-((p2.x - v.Pan.x) * v.Scale, (p2.y - v.Pan.y) * v.Scale), clr
   End If
 End Sub
 
