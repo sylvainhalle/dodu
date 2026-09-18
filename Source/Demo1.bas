@@ -42,7 +42,7 @@ Const THERMO_TICK% = 3
 ' Currently, can only be an integer
 Const WALKING_SPEED# = 1
 
-Const PLAY_MUSIC = FALSE
+Const PLAY_MUSIC = TRUE
 
 ' --------------------------
 ' Includes (declarations)
@@ -102,10 +102,7 @@ Let Dodu.Temp = 10
 ' --------------------------
 Dim snd As Long
 If PLAY_MUSIC Then
-  '_MIDISoundBank ("/home/sylvain/Downloads/FluidR3_GM.sf2")
-  _MIDISoundBank ("/usr/share/sounds/sf2/default-GM.sf2")
-  snd = _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/yaya.mid")
-  _SndPlay (snd)
+  _SndPlay SND_TUNE
 End If
 
 Dim CURRENT_LEVEL As Integer
@@ -118,6 +115,9 @@ Do
   _Limit FPS%
   ' Thermometer
   Let Dodu.ThermoTick = (Dodu.ThermoTick + 1) Mod (FPS% * THERMO_TICK%)
+  If Dodu.ThermoTick = 0 Or (Dodu.Temp < 3 And (Dodu.ThermoTick = 0 Or Dodu.ThermoTick = 12)) Then
+    _SndPlay SND_THERMO
+  End If
   If Dodu.ThermoTick = 0 Then
     Let Dodu.Temp = Dodu.Temp - 1
   End If
@@ -139,7 +139,7 @@ Do
   DrawLevel ImgBuffer, Levels(CURRENT_LEVEL)
   DrawPlayer ImgBuffer
   DrawThermometer ImgBuffer
-  Viewport_Print ImgBuffer, NbFormat$(Dodu.IsFalling), P_ORIGIN ' + " " + Point_ToString(ImgBuffer.Pan), P_ORIGIN
+  'Viewport_Print ImgBuffer, NbFormat$(Dodu.IsFalling), P_ORIGIN ' + " " + Point_ToString(ImgBuffer.Pan), P_ORIGIN
 
   If _KeyDown(K_ESC) Then
     GoTo Quit:
@@ -156,10 +156,14 @@ Do
   End If
 
   'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, COLOR_YELLOW
-  HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), climbP, COLOR_RED
+  'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), climbP, COLOR_RED
   'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, COLOR_GREEN
-  HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK
+  'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK
   Viewport_Copy ImgBuffer, MainScreen
+
+  If CURRENT_SPRITE% = DOD_WALKING% And DoduSprites(CURRENT_SPRITE%).TickCnt = 0 And DoduSprites(CURRENT_SPRITE%).Index Mod 2 = 0 Then
+    _SndPlay SND_STEP
+  End If
 
   ' If player is climbing, ignore keyboard until on top of block
   Dim to_p As Point
@@ -221,9 +225,11 @@ Do
     End If
 
   ElseIf _KeyDown(K_UP) And Square_IsValid(takeP) Then
+    _SndPlay SND_GRAB
     TakeBlock Levels(CURRENT_LEVEL), takeP
 
   ElseIf _KeyDown(K_DOWN) And Square_IsValid(dropP) Then
+    _SndPlay SND_DROP
     DropBlock Levels(CURRENT_LEVEL), dropP
 
   Else ' No key
@@ -266,7 +272,7 @@ Sub DrawLevel (v As Viewport, m As LevelMap)
         Case T_BLOCK_B
           Viewport_PutSprite v, FALSE, BlockBlue, p, FALSE
         Case T_BLOCK_W
-          Viewport_PutSprite v, FALSE, BlockBlue, p, FALSE
+          Viewport_PutSprite v, FALSE, BlockWhite, p, FALSE
         Case T_POLE
           Viewport_PutSprite v, FALSE, Pole, p, FALSE
       End Select

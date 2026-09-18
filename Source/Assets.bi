@@ -32,17 +32,16 @@ Dim Shared DoduSprites(2) As SpriteSequence
 ' Character
 Const DOD_STATIC% = 0
 Const DOD_WALKING% = 1
+Const DOD_BLOCK% = 2
+Const DOD_BLOCK_WALKING% = 3
 
 SpriteSequence_Init DoduSprites(DOD_STATIC%), 1, 1, TRUE
 Dim sprl As Sprite
 Sprite_Load sprl, IMG_DIR$ + "/Dodu_right_0.gif", DEFAULT_OFFSET
 SpriteSequence_Load DoduSprites(DOD_STATIC%), sprl, 0
 
-SpriteSequence_Init DoduSprites(DOD_WALKING%), 2, 5, TRUE
-Sprite_Load sprl, IMG_DIR$ + "/Dodu_right_0.gif", DEFAULT_OFFSET
-SpriteSequence_Load DoduSprites(DOD_WALKING%), sprl, 0
-Sprite_Load sprl, IMG_DIR$ + "/Dodu_right_1.gif", DEFAULT_OFFSET
-SpriteSequence_Load DoduSprites(DOD_WALKING%), sprl, 1
+SpriteSequence_BulkLoad DoduSprites(DOD_WALKING%), IMG_DIR$ + "/Dodu_right_", 4, 2, TRUE
+
 
 ' Blocks
 Dim Shared BlockBlue As Sprite
@@ -69,5 +68,21 @@ Sprite_Load Background, IMG_DIR$ + "/Background.gif", DEFAULT_OFFSET
 Const PLAYER_HEIGHT% = 33
 Const PLAYER_WIDTH% = 19
 Const BLOCK_SIZE% = 11
+
+' Music
+_MIDISoundBank ("/usr/share/sounds/sf2/default-GM.sf2")
+
+Dim Shared SND_TUNE As _Unsigned Long
+Dim Shared SND_STEP As _Unsigned Long
+Dim Shared SND_THERMO As _Unsigned Long
+Dim Shared SND_GRAB As _Unsigned Long
+Dim Shared SND_DROP As _Unsigned Long
+Let SND_TUNE = _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod.mid")
+_SndVol SND_TUNE, 0.4
+Let SND_STEP = _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step.mid")
+_SndVol SND_STEP, 0.5
+Let SND_THERMO = _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/thermo.mid")
+Let SND_GRAB = _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/grab.mid")
+Let SND_DROP = _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/drop.mid")
 
 ' :mode=visualbasic:

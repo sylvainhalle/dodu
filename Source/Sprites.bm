@@ -101,6 +101,15 @@ Sub SpriteSequence_Load (s As SpriteSequence, spr As Sprite, index As Integer)
 	Sprite_Copy s.Sprites(index), spr
 End Sub
 
+Sub SpriteSequence_BulkLoad (s as SpriteSequence, pattern AS String, length As Integer, speed As Integer, isloop As Integer)
+	SpriteSequence_Init s, length, speed, isloop
+	Dim x as Integer, sprl As Sprite
+	For x = 0 To length - 1
+		Sprite_Load sprl, pattern + _Tostr$(x) + ".gif", P_ORIGIN
+	SpriteSequence_Load s, sprl, x
+	Next
+End Sub
+
 '**
 '** - Viewport ------------------------------------------------- {{{
 '**
