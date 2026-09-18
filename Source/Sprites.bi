@@ -88,7 +88,45 @@ End Type
 '* Loads a sprite and sets pink as its transparent color
 '**
 Declare Sub Sprite_Load (s As Sprite, file As String, offset As Point)
+
+'**
+'* Copies the content of a sprite into another one.
+'**
+Declare Sub Sprite_Copy (dst As Sprite, src As Sprite)
 ' }}}
+
+'**
+'** - Sprite sequence------------------------------------------- {{{
+'**
+Type SpriteSequence
+	Sprites(10) As Sprite
+	Length As Integer
+	Index As Integer
+	Loop As Integer
+	Speed As Integer
+	TickCnt As Integer
+	Flipped As Integer
+End Type
+
+'**
+'* Initializes a new sprite sequence.
+'**
+Declare Sub SpriteSequence_Init (s As SpriteSequence, l As Integer, spd As Integer, isloop As Integer)
+
+'**
+'* Advances the sprite sequence by one tick.
+'**
+Declare Sub SpriteSequence_Tick (s As SpriteSequence)
+
+'**
+'* Identifies the current sprite in the sequence.
+'**
+Declare Sub SpriteSequence_Current (s as SpriteSequence, spr as Sprite)
+
+'**
+'* Loads a sprite at a given index in the sequence.
+'**
+Declare Sub SpriteSequence_Load (s As SpriteSequence, spr As Sprite, index As Integer)
 
 '**
 '** - Viewport ------------------------------------------------- {{{
@@ -147,6 +185,12 @@ Declare Sub Viewport_Print (v As Viewport, s As String, p As Point)
 '* Puts a sprite at a location on the viewport.
 '**
 Declare Sub Viewport_PutSprite (v As Viewport, absolute As Integer, s As Sprite, p As Point, flipped As Integer)
+
+'**
+'* Puts the current sprite of a sprite sequence at a location on the viewport.
+'**
+Declare Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point)
+
 
 '**
 '* Sets the font for a viewport.

@@ -110,6 +110,8 @@ End If
 
 Dim CURRENT_LEVEL As Integer
 Let CURRENT_LEVEL = 0
+Dim Shared CURRENT_SPRITE As Integer
+Let CURRENT_SPRITE% = DOD_STATIC%
 
 Screen MainScreen.Buffer
 Do
@@ -132,15 +134,11 @@ Do
   BlockingSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), blockingP
   PoleSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), poleP
 
-
-
   ' Drawing
   DrawBackground ImgBuffer
   DrawLevel ImgBuffer, Levels(CURRENT_LEVEL)
   DrawPlayer ImgBuffer
   DrawThermometer ImgBuffer
-  Dim sp As Point
-  Viewport_PointToScreen ImgBuffer, Dodu.LevPos, sp
   Viewport_Print ImgBuffer, NbFormat$(Dodu.IsFalling), P_ORIGIN ' + " " + Point_ToString(ImgBuffer.Pan), P_ORIGIN
 
   If _KeyDown(K_ESC) Then
@@ -191,28 +189,34 @@ Do
   If _KeyDown(K_LEFT) Then
     Dim klp As Point
     If Square_IsValid(climbP) Then
+      Let CURRENT_SPRITE = DOD_WALKING%
       Let Dodu.IsClimbing = 11
     Else
       If Not Square_IsValid(blockingP) Then
         Point_Set klp, -1, 0
+        Let CURRENT_SPRITE = DOD_WALKING%
         MovePlayer ImgBuffer, klp
       End If
     End If
     If Square_IsValid(unclimbP) Then
+      Let CURRENT_SPRITE = DOD_STATIC%
       Let Dodu.IsFalling = 11
     End If
 
   ElseIf _KeyDown(K_RIGHT) Then
     Dim krp As Point
     If Square_IsValid(climbP) Then
+      Let CURRENT_SPRITE = DOD_WALKING%
       Let Dodu.IsClimbing = 11
     Else
       If Not Square_IsValid(blockingP) Then
         Point_Set krp, 1, 0
+        Let CURRENT_SPRITE = DOD_WALKING%
         MovePlayer ImgBuffer, krp
       End If
     End If
     If Square_IsValid(unclimbP) Then
+      Let CURRENT_SPRITE = DOD_STATIC%
       Let Dodu.IsFalling = 11
     End If
 
@@ -221,6 +225,10 @@ Do
 
   ElseIf _KeyDown(K_DOWN) And Square_IsValid(dropP) Then
     DropBlock Levels(CURRENT_LEVEL), dropP
+
+  Else ' No key
+    Let CURRENT_SPRITE% = DOD_STATIC%
+
   End If
 Loop
 
@@ -271,8 +279,8 @@ End Sub
 ' --------------------------
 Sub DrawPlayer (v As Viewport)
   Dim s As Sprite
-  Let s = CharSprites(Dodu.SpriteIndex)
-  Viewport_PutSprite v, FALSE, s, Dodu.LevPos, Dodu.ToLeft
+  Viewport_PutSpriteSequence v, FALSE, DoduSprites(CURRENT_SPRITE), Dodu.LevPos
+  SpriteSequence_Tick DoduSprites(CURRENT_SPRITE)
   Dim p As Point
   If Dodu.HasBlock Then
     If Dodu.ToLeft Then
@@ -315,6 +323,7 @@ End Sub
 
 Sub MovePlayer (v As Viewport, p_to As Point) '(x As Integer, y As Integer)
   If p_to.x < 0 Then Dodu.ToLeft = TRUE Else Dodu.ToLeft = FALSE
+  Let DoduSprites(CURRENT_SPRITE%).Flipped = Dodu.ToLeft
   Dim ScreenPos As Point
   ' Demo1.bas, MovePlayer
   Viewport_PointToScreen v, Dodu.LevPos, ScreenPos

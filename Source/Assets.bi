@@ -24,12 +24,25 @@ Const FNT_DIR$ = "/home/sylvain/Workspaces/dodu/Source/fonts"
 Dim Shared FNT_TINYC As _Unsigned Long
 Let FNT_TINYC = _LoadFont(FNT_DIR$ + "/TinyAndChunkyRegular.ttf", 5, "MONOSPACE")
 
-Dim Shared CharSprites(1) As Sprite
 Dim DEFAULT_OFFSET As Point
 Let DEFAULT_OFFSET = P_ORIGIN
 
+Dim Shared DoduSprites(2) As SpriteSequence
+
 ' Character
-Sprite_Load CharSprites(0), IMG_DIR$ + "/Dodu_right_0.png", DEFAULT_OFFSET
+Const DOD_STATIC% = 0
+Const DOD_WALKING% = 1
+
+SpriteSequence_Init DoduSprites(DOD_STATIC%), 1, 1, TRUE
+Dim sprl As Sprite
+Sprite_Load sprl, IMG_DIR$ + "/Dodu_right_0.gif", DEFAULT_OFFSET
+SpriteSequence_Load DoduSprites(DOD_STATIC%), sprl, 0
+
+SpriteSequence_Init DoduSprites(DOD_WALKING%), 2, 5, TRUE
+Sprite_Load sprl, IMG_DIR$ + "/Dodu_right_0.gif", DEFAULT_OFFSET
+SpriteSequence_Load DoduSprites(DOD_WALKING%), sprl, 0
+Sprite_Load sprl, IMG_DIR$ + "/Dodu_right_1.gif", DEFAULT_OFFSET
+SpriteSequence_Load DoduSprites(DOD_WALKING%), sprl, 1
 
 ' Blocks
 Dim Shared BlockBlue As Sprite

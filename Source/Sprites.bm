@@ -52,8 +52,54 @@ Sub Sprite_Load (s As Sprite, file As String, offset As Point)
   _ClearColor COLOR_PINK~&, s.Content
 End Sub
 
+Sub Sprite_Copy (dst As Sprite, src As Sprite)
+	Let dst.Content = src.Content
+	Let dst.Size.x = src.Size.x
+	Let dst.Size.y = src.Size.y
+	Let dst.Offset.x = src.Offset.x
+	Let dst.Offset.y = src.Offset.y
+End Sub
+
 ' }}}
 
+'**
+'** - Sprite sequence------------------------------------------- {{{
+'**
+
+Sub SpriteSequence_Init (s As SpriteSequence, l As Integer, spd As Integer, isloop As Integer)
+	let s.Length = l
+	let s.Loop = TRUE
+	let s.Index = 0
+	let s.TickCnt = 0
+	let s.Speed = spd
+	let s.Flipped = FALSE
+End Sub
+
+Sub SpriteSequence_Tick (s As SpriteSequence)
+	If s.Index >= 0 Then
+		Let s.TickCnt = (s.TickCnt + 1) Mod s.Speed
+		If s.TickCnt = 0 Then
+			Let s.Index = s.Index + 1
+			If s.Index = s.Length Then
+				If s.Loop Then
+					let s.Index = 0
+				Else
+					let s.Index = -1
+				End If
+			End If
+		End If
+	End If
+End Sub
+
+Sub SpriteSequence_Current (s as SpriteSequence, spr as Sprite)
+	If s.Index >= 0 Then
+		Sprite_Copy spr, s.Sprites(s.Index)
+	End If
+End Sub
+
+Sub SpriteSequence_Load (s As SpriteSequence, spr As Sprite, index As Integer)
+	Sprite_Copy s.Sprites(index), spr
+End Sub
 
 '**
 '** - Viewport ------------------------------------------------- {{{
@@ -122,6 +168,12 @@ Sub Viewport_PutSprite (v As Viewport, absolute As Integer, s As Sprite, p As Po
       _PutImage (p.x + s.Offset.x - v.Pan.x, p.y + s.Offset.y - v.Pan.y)-(p.x + s.Offset.x + s.Size.x - 1 - v.Pan.x, p.y + s.Offset.y + s.Size.y - 1 - v.Pan.y), s.Content, v.Buffer
     End If
   End If
+End Sub
+
+Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point)
+	Dim spr As Sprite
+	SpriteSequence_Current s, spr
+	Viewport_PutSprite v, absolute, spr, p, s.Flipped
 End Sub
 
 ' }}}
