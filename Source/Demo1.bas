@@ -40,13 +40,13 @@ Const UNCLIMB_THRESHOLD% = 5
 
 
 ' Number of seconds between ticks of the thermometer
-Const THERMO_TICK% = 3
+Const THERMO_TICK% = 4
 
 ' Number of screen pixels per frame
 ' Currently, can only be an integer
 Const WALKING_SPEED# = 1
 
-Const PLAY_MUSIC = FALSE
+Const PLAY_MUSIC = TRUE
 
 ' --------------------------
 ' Includes (declarations)
@@ -107,11 +107,11 @@ Let Dodu.Temp = 10
 ' Main loop
 ' --------------------------
 If PLAY_MUSIC Then
-  _SndPlay SND_TUNE
+  _SndLoop SND_TUNE
 End If
 
 Dim Shared CURRENT_LEVEL As Integer
-Let CURRENT_LEVEL = 1
+Let CURRENT_LEVEL = 0
 
 Dim Shared CURRENT_SPRITE As Integer
 Let CURRENT_SPRITE% = DOD_STATIC%
@@ -167,16 +167,19 @@ Sub DoLevel
       Viewport_Print ImgBuffer, NbFormat$(Trajectories(CURRENT_TRAJECTORY%).Flipped) + " " + Point_ToString(trjP), P_ORIGIN
     End If
 
-    If _KeyDown(K_ESC) Then
+    Dim k As Long
+    Let k = _KeyHit
+
+    If K_ESC = k Then
       GoTo Quit:
     End If
 
-    If _KeyDown(K_SPACE) Then
+    If K_SPACE = k Then
       DoPause
       _Continue
     End If
 
-    If _KeyDown(77) Or _KeyDown(109) Then
+    If 77 = k Or 109 = k Then
       DoMiniMap
       _Continue
     End If
@@ -188,6 +191,7 @@ Sub DoLevel
     'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK
     'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), blockingP, COLOR_YELLOW
     Viewport_Copy ImgBuffer, MainScreen
+    _Display
 
     If (CURRENT_SPRITE% = DOD_WALKING% Or CURRENT_SPRITE% = DOD_BLOCK_WALKING%) And DoduSprites(CURRENT_SPRITE%).Ticker.TickCnt = 0 And DoduSprites(CURRENT_SPRITE%).Ticker.Index Mod 2 = 0 Then
       _SndPlay SND_STEP
@@ -312,25 +316,39 @@ End Sub
 Sub DoMiniMap
   Dim MapBuffer As Viewport
   Viewport_Init_Default MapBuffer, SCREEN_DIMS
-  Viewport_Clear MapBuffer
+  DrawBackground MapBuffer
   DrawMinimap MapBuffer, Levels(CURRENT_LEVEL%)
   Viewport_Copy MapBuffer, MainScreen
   _Display
+
+  'Wait for the SPACE that invoked us to be released
+  Dim k As Long
+  ' Wait for M press
   Do
     _Limit FPS%
-    If _KeyDown(77) Or _KeyDown(109) Then
-      Exit Sub
-    End If
-  Loop
+    k = _KeyHit
+  Loop While k <> 77 And k <> 109
+
+  ' Now wait for that same M to be released
+  Do
+    _Limit FPS%
+    k = _KeyHit
+  Loop While k <> -77 And k <> -109
 End Sub
 
 Sub DoPause
+  Dim p As Point
+  Point_Set p, 30, 24
+  Viewport_Print ImgBuffer, "PAUSE", p
+  Viewport_Copy ImgBuffer, MainScreen
+  _Display
+
+  ' Wait for the SPACE that invoked us to be released
+  Dim k As Long
   Do
     _Limit FPS%
-    If _KeyDown(K_ESC) Or _KeyDown(K_SPACE) Then
-      Exit Sub
-    End If
-  Loop
+    k = _KeyHit
+  Loop While k <> K_SPACE
 End Sub
 
 
