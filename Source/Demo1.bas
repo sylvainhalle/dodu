@@ -170,16 +170,16 @@ Sub DoLevel
     Dim k As Long
     Let k = _KeyHit
 
-    If K_ESC = k Then
+    If _KeyDown(K_ESC) Then
       GoTo Quit:
     End If
 
-    If K_SPACE = k Then
+    If _KeyDown(K_SPACE) Then
       DoPause
       _Continue
     End If
 
-    If 77 = k Or 109 = k Then
+    If _KeyDown(77) Or _KeyDown(109) Then
       DoMiniMap
       _Continue
     End If
@@ -321,29 +321,23 @@ Sub DoMiniMap
   Viewport_Copy MapBuffer, MainScreen
   _Display
 
-  Dim k As Long
-  ' Wait for M press
+  ' Wait until key is released
+  Kbd_WaitRelease
   Do
     _Limit FPS%
+    _Display
     If _KeyDown(K_LEFT) Then
-      Let MapBuffer.Pan.x = MapBuffer.Pan.x - 1
-      _Continue
+      Let MapBuffer.Pan.x = MapBuffer.Pan.x - 2
     ElseIf _KeyDown(K_RIGHT) Then
-      Let MapBuffer.Pan.x = MapBuffer.Pan.x + 1
-      _Continue
+      Let MapBuffer.Pan.x = MapBuffer.Pan.x + 2
     ElseIf _KeyDown(77) Or _KeyDown(109) Then
       Exit Do
     End If
+    DrawMinimap MapBuffer, Levels(CURRENT_LEVEL%)
+    'Viewport_Print MapBuffer, Point_ToString(MapBuffer.Pan), P_ORIGIN
     Viewport_Copy MapBuffer, MainScreen
-    _Display
-
-    'Let k = _KeyHit
   Loop
-
-  'Now wait for that same M to be released
-  Do
-    _Limit FPS%
-  Loop While k <> -77 And k <> -109
+  Kbd_WaitRelease
 End Sub
 
 Sub DoPause
@@ -359,6 +353,14 @@ Sub DoPause
     _Limit FPS%
     k = _KeyHit
   Loop While k <> K_SPACE
+End Sub
+
+Sub Kbd_WaitRelease
+  Dim k As Long
+  Do
+    _Limit FPS%
+    Let k = _KeyHit
+  Loop While k >= 0
 End Sub
 
 
@@ -395,6 +397,7 @@ Sub DrawLevel (v As Viewport, m As LevelMap)
 End Sub
 
 Sub DrawMinimap (v As Viewport, m As LevelMap)
+  DrawBackground v
   Dim col, row As Integer
   For row = 0 To m.Height
     For col = 0 To m.Width
@@ -405,11 +408,11 @@ Sub DrawMinimap (v As Viewport, m As LevelMap)
       Point_Set p, s.col * 5, s.row * 5
       Select Case m.Topo(col, row)
         Case T_BLOCK_B
-          Viewport_PutSprite v, TRUE, MiniBlockBlue, p, FALSE
+          Viewport_PutSprite v, FALSE, MiniBlockBlue, p, FALSE
         Case T_BLOCK_W
-          Viewport_PutSprite v, TRUE, MiniBlockWhite, p, FALSE
+          Viewport_PutSprite v, FALSE, MiniBlockWhite, p, FALSE
         Case T_POLE
-          Viewport_PutSprite v, TRUE, MiniPole, p, FALSE
+          Viewport_PutSprite v, FALSE, MiniPole, p, FALSE
       End Select
     Next
   Next
