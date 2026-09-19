@@ -55,6 +55,7 @@ Const PLAY_MUSIC = TRUE
 '$Include:'Utils.bi'
 '$Include:'Geometry.bi'
 '$Include:'Sprites.bi'
+'$Include:'Sounds.bi'
 '$Include:'Assets.bi'
 '$Include:'Levels.bi'
 
@@ -106,9 +107,7 @@ Let Dodu.Temp = 10
 ' --------------------------
 ' Main loop
 ' --------------------------
-If PLAY_MUSIC Then
-  _SndLoop SND_TUNE
-End If
+SoundPlayer_PlaySong Audio, 0
 
 Dim Shared CURRENT_LEVEL As Integer
 Let CURRENT_LEVEL = 0
@@ -140,7 +139,7 @@ Sub DoLevel
     ' Thermometer
     Let Dodu.ThermoTick = (Dodu.ThermoTick + 1) Mod (FPS% * THERMO_TICK%)
     If Dodu.ThermoTick = 0 Or (Dodu.Temp < 3 And (Dodu.ThermoTick = 0 Or Dodu.ThermoTick = 12)) Then
-      _SndPlay SND_THERMO
+      SoundPlayer_PlayEffect Audio, SND_THERMO%
     End If
     If Dodu.ThermoTick = 0 Then
       Let Dodu.Temp = Dodu.Temp - 1
@@ -194,7 +193,7 @@ Sub DoLevel
     _Display
 
     If (CURRENT_SPRITE% = DOD_WALKING% Or CURRENT_SPRITE% = DOD_BLOCK_WALKING%) And DoduSprites(CURRENT_SPRITE%).Ticker.TickCnt = 0 And DoduSprites(CURRENT_SPRITE%).Ticker.Index Mod 2 = 0 Then
-      _SndPlay SND_STEP
+      SoundPlayer_PlayEffect Audio, SND_STEP%
     End If
 
     ' If a trajectory is playing, ignore keybord input
@@ -278,11 +277,11 @@ Sub DoLevel
       End If
 
     ElseIf _KeyDown(K_UP) And Square_IsValid(takeP) Then
-      _SndPlay SND_GRAB
+      SoundPlayer_PlayEffect Audio, SND_GRAB%
       TakeBlock Levels(CURRENT_LEVEL), takeP
 
     ElseIf _KeyDown(K_DOWN) And Square_IsValid(dropP) Then
-      _SndPlay SND_DROP
+      SoundPlayer_PlayEffect Audio, SND_DROP%
       DropBlock Levels(CURRENT_LEVEL), dropP
 
     Else ' No key
@@ -530,6 +529,7 @@ End Function
 '$Include:'Utils.bm'
 '$Include:'Geometry.bm'
 '$Include:'Sprites.bm'
+'$Include:'Sounds.bm'
 '$Include:'Levels.bm'
 '$Include:'LevelMaps.bm'
 

@@ -1,0 +1,63 @@
+'-----------------------------------------------------------------------------
+'    Dodu, an old-school QuickBasic game
+'    Copyright (C) 2026  Sylvain Hallé
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU General Public License for more details.
+'
+'    You should have received a copy of the GNU General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'-----------------------------------------------------------------------------
+
+Sub SoundPlayer_Init (sp As SoundPlayer)
+	let sp.PlaySong = TRUE
+	let sp.PlayEffects = TRUE
+	let sp.CurrentSong = -1
+End Sub
+
+Sub SoundPlayer_AddSong (sp As SoundPlayer, index As Integer, ptr As _Unsigned Long, vol As Single)
+	let sp.Songs(index) = ptr
+	_SndVol ptr, vol
+End Sub
+
+Sub SoundPlayer_AddEffect (sp As SoundPlayer, index As Integer, ptr As _Unsigned Long, vol As Single)
+	let sp.Effects(index) = ptr
+	_SndVol ptr, vol
+End Sub
+
+Sub SoundPlayer_SetPlayEffects (sp As SoundPlayer, pl As Integer)
+	let sp.PlayEffects = pl
+End Sub
+
+Sub SoundPlayer_PlaySong (sp As SoundPlayer, index As Integer)
+	If sp.PlaySong = TRUE Then
+		_SndLoop sp.Songs(sp.CurrentSong)
+	End If
+End Sub
+
+Sub SoundPlayer_StopSong (sp As SoundPlayer)
+	If sp.PlaySong = TRUE Then
+		_SndStop sp.Songs(sp.CurrentSong)
+	End If
+End Sub
+
+Sub SoundPlayer_SetSongVolume (sp As SoundPlayer, v As Single)
+	If sp.PlaySong = TRUE Then
+		_SndVol sp.Songs(sp.CurrentSong), v
+	End If
+End Sub
+
+Sub SoundPlayer_PlayEffect (sp As SoundPlayer, index As Integer)
+	If sp.PlaySong = TRUE Then
+		_SndPlay sp.Effects(index)
+	End If
+End Sub
+
+' :mode=visualbasic:folding=explicit:wrap=none:

@@ -109,17 +109,20 @@ Const BLOCK_SIZE% = 11
 ' Music
 _MIDISoundBank ("/usr/share/sounds/sf2/default-GM.sf2")
 
-Dim Shared SND_TUNE As _Unsigned Long
-Dim Shared SND_STEP As _Unsigned Long
-Dim Shared SND_THERMO As _Unsigned Long
-Dim Shared SND_GRAB As _Unsigned Long
-Dim Shared SND_DROP As _Unsigned Long
-Let SND_TUNE = _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod.mid")
-_SndVol SND_TUNE, 0.4
-Let SND_STEP = _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step.mid")
-_SndVol SND_STEP, 0.5
-Let SND_THERMO = _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/thermo.mid")
-Let SND_GRAB = _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/grab.mid")
-Let SND_DROP = _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/drop.mid")
+Dim Shared Audio As SoundPlayer
+SoundPlayer_Init Audio
+
+SoundPlayer_AddSong Audio, 0, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod.mid"), 0.4
+SoundPlayer_AddSong Audio, 1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/yaya.mid"), 0.4
+
+Const SND_STEP% = 0
+Const SND_THERMO% = 1
+Const SND_GRAB% = 2
+Const SND_DROP% = 3
+
+SoundPlayer_AddEffect Audio, SND_STEP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step.mid"), 0.4
+SoundPlayer_AddEffect Audio, SND_THERMO%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/thermo.mid"), 1
+SoundPlayer_AddEffect Audio, SND_GRAB%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/grab.mid"), 1
+SoundPlayer_AddEffect Audio, SND_DROP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/drop.mid"), 1
 
 ' :mode=visualbasic:
