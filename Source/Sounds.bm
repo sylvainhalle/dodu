@@ -37,8 +37,9 @@ Sub SoundPlayer_SetPlayEffects (sp As SoundPlayer, pl As Integer)
 End Sub
 
 Sub SoundPlayer_PlaySong (sp As SoundPlayer, index As Integer)
+	Let sp.CurrentSong = index
 	If sp.PlaySong = TRUE Then
-		_SndLoop sp.Songs(sp.CurrentSong)
+		_SndLoop sp.Songs(sp.CurrentSOng)
 	End If
 End Sub
 
