@@ -87,13 +87,17 @@ Viewport_SetFont ImgBuffer, FNT_TINYC
 ' --------------------------
 ' Level loading
 ' --------------------------
-Dim Shared Levels(1) As LevelMap
+Dim Shared Levels(2) As LevelMap
 ' L1
 Restore L1
 LoadLevel Levels(0)
 ' L2
 Restore L2
 LoadLevel Levels(1)
+' L3
+Restore L3
+LoadLevel Levels(2)
+
 
 
 ' Game state
@@ -110,7 +114,7 @@ Let Dodu.Temp = 10
 SoundPlayer_PlaySong Audio, 0
 
 Dim Shared CURRENT_LEVEL As Integer
-Let CURRENT_LEVEL = 0
+Let CURRENT_LEVEL = 2
 
 Dim Shared CURRENT_SPRITE As Integer
 Let CURRENT_SPRITE% = DOD_STATIC%
@@ -393,6 +397,9 @@ Sub DrawLevel (v As Viewport, m As LevelMap)
       End Select
     Next
   Next
+  Dim dod_p As Point
+  Let dod_p = Dodu.LevPos
+
 End Sub
 
 Sub DrawMinimap (v As Viewport, m As LevelMap)
@@ -415,6 +422,12 @@ Sub DrawMinimap (v As Viewport, m As LevelMap)
       End Select
     Next
   Next
+  Dim dod_s As Square
+  Let dod_s.col = Dodu.LevPos.x \ BLOCK_SIZE%
+  Let dod_s.row = Dodu.LevPos.y \ BLOCK_SIZE%
+  Dim dod_p As Point
+  Point_Set dod_p, dod_s.col * 5, (dod_s.row + 2) * 5
+  Viewport_PutSprite v, FALSE, DoduSmall, dod_p, FALSE
 End Sub
 
 

@@ -48,6 +48,9 @@ SpriteSequence_Load DoduSprites(DOD_BLOCK%), sprl, 0
 SpriteSequence_BulkLoad DoduSprites(DOD_WALKING%), IMG_DIR$ + "/Dodu_right_", 4, 2, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET
 SpriteSequence_BulkLoad DoduSprites(DOD_BLOCK_WALKING%), IMG_DIR$ + "/Dodu_right_block_", 4, 2, TRUE, DEFAULT_OFFSET, block_offset
 
+Dim Shared DoduSmall As Sprite
+Sprite_Load DoduSmall, IMG_DIR$ + "/DoduSmall.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
+
 ' Trajectories
 Const TRJ_CLIMBING% = 0
 Const TRJ_FALLING% = 1

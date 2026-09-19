@@ -36,15 +36,22 @@ Sub SoundPlayer_SetPlayEffects (sp As SoundPlayer, pl As Integer)
 	let sp.PlayEffects = pl
 End Sub
 
+Sub SoundPlayer_SetPlaySong (sp As SoundPlayer, pl As Integer)
+	let sp.PlaySong = pl
+	If pl = FALSE Then
+		SoundPlayer_StopSong sp
+	End If
+End Sub
+
 Sub SoundPlayer_PlaySong (sp As SoundPlayer, index As Integer)
 	Let sp.CurrentSong = index
-	If sp.PlaySong = TRUE Then
+	If sp.PlaySong = TRUE And sp.CurrentSong >= 0 Then
 		_SndLoop sp.Songs(sp.CurrentSOng)
 	End If
 End Sub
 
 Sub SoundPlayer_StopSong (sp As SoundPlayer)
-	If sp.PlaySong = TRUE Then
+	If sp.PlaySong = TRUE And sp.CurrentSong >= 0 Then
 		_SndStop sp.Songs(sp.CurrentSong)
 	End If
 End Sub
