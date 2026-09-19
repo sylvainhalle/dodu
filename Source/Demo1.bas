@@ -321,25 +321,35 @@ Sub DoMiniMap
   Viewport_Copy MapBuffer, MainScreen
   _Display
 
-  'Wait for the SPACE that invoked us to be released
   Dim k As Long
   ' Wait for M press
   Do
     _Limit FPS%
-    k = _KeyHit
-  Loop While k <> 77 And k <> 109
+    If _KeyDown(K_LEFT) Then
+      Let MapBuffer.Pan.x = MapBuffer.Pan.x - 1
+      _Continue
+    ElseIf _KeyDown(K_RIGHT) Then
+      Let MapBuffer.Pan.x = MapBuffer.Pan.x + 1
+      _Continue
+    ElseIf _KeyDown(77) Or _KeyDown(109) Then
+      Exit Do
+    End If
+    Viewport_Copy MapBuffer, MainScreen
+    _Display
 
-  ' Now wait for that same M to be released
+    'Let k = _KeyHit
+  Loop
+
+  'Now wait for that same M to be released
   Do
     _Limit FPS%
-    k = _KeyHit
   Loop While k <> -77 And k <> -109
 End Sub
 
 Sub DoPause
   Dim p As Point
   Point_Set p, 30, 24
-  Viewport_Print ImgBuffer, "PAUSE", p
+  Viewport_Print ImgBuffer, " PAUSE ", p
   Viewport_Copy ImgBuffer, MainScreen
   _Display
 
