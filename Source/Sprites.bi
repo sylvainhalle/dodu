@@ -17,14 +17,11 @@
 '-----------------------------------------------------------------------------
 
 ' Colors
-Const COLOR_RED~& = _RGB32(255, 0, 0)
-Const COLOR_GREEN~& = _RGB32(0, 255, 0)
-Const COLOR_YELLOW~& = _RGB32(255, 255, 0)
-Const COLOR_BLACK~& = _RGB32(0, 0, 0)
-Const COLOR_PINK~& = _RGB32(255, 0, 255)
-
-' Transparent color across sprites
-Const COLOR_TRANSPARENT~& = COLOR_PINK~&
+Const COLOR_RED& = _RGB32(255, 0, 0)
+Const COLOR_GREEN& = _RGB32(0, 255, 0)
+Const COLOR_YELLOW& = _RGB32(255, 255, 0)
+Const COLOR_BLACK& = _RGB32(0, 0, 0)
+Const COLOR_PINK& = _RGB32(255, 0, 255)
 
 '**
 '** - Point ------------------------------------------------- {{{
@@ -94,9 +91,9 @@ Type Sprite
 End Type
 
 '**
-'* Loads a sprite and sets pink as its transparent color
+'* Loads a sprite and sets its transparent color
 '**
-Declare Sub Sprite_Load (s As Sprite, file As String, offset As Point, offsetflip AS Point)
+Declare Sub Sprite_Load (s As Sprite, file As String, offset As Point, offsetflip AS Point, clr As Long)
 
 '**
 '* Copies the content of a sprite into another one.
@@ -137,7 +134,7 @@ End Type
 '**
 '* Initializes a new sprite sequence.
 '**
-Declare Sub SpriteSequence_Init (s As SpriteSequence, l As Integer, spd As Integer, isloop As Integer)
+Declare Sub SpriteSequence_Init (s As SpriteSequence, l As Integer, spd As Integer, isloop As Integer, clr As Long)
 
 '**
 '* Advances the sprite sequence by one tick.
@@ -154,7 +151,9 @@ Declare Sub SpriteSequence_Current (s as SpriteSequence, spr as Sprite)
 '**
 Declare Sub SpriteSequence_Load (s As SpriteSequence, spr As Sprite, index As Integer)
 
-declare Sub SpriteSequence_SetFlip (s As SpriteSequence, flipped As Integer)
+Declare Sub SpriteSequence_BulkLoad (s as SpriteSequence, pattern AS String, length As Integer, speed As Integer, isloop As Integer, offset As Point, offsetFlip As Point, clr As Long)
+
+Declare Sub SpriteSequence_SetFlip (s As SpriteSequence, flipped As Integer)
 
 declare Sub SpriteSequence_PutSprite (s As SpriteSequence, v as Viewport, absolute As Integer, p As Point)
 
@@ -184,6 +183,8 @@ Type Viewport
   Pan As Point
   Scale As Single
   Buffer As Long
+  Background As Sprite
+  BackgroundPanRatio As Point
 End Type
 
 '**
@@ -208,9 +209,14 @@ Declare Sub Viewport_PointToScreen (v As Viewport, p_src As Point, p_dest As Poi
 Declare Sub Viewport_Clear (v As Viewport)
 
 '**
+'* Sets the background for the viewport.
+'**
+Declare Sub Viewport_SetBackground (v As Viewport, s As Sprite, ratio As Point)
+
+'**
 '* Equivalent of the LINE command for a viewport.
 '**
-Declare Sub Viewport_Line (v As Viewport, p1 As Point, p2 As Point, clr As _Unsigned Long, box As Integer, filled As Integer)
+Declare Sub Viewport_Line (v As Viewport, p1 As Point, p2 As Point, clr As Long, box As Integer, filled As Integer)
 
 '**
 '* Equivalent of the SCREEN command for a viewport.

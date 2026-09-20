@@ -18,8 +18,17 @@
 
 ' DependsOn: 'Sprites.bi'
 
-Const IMG_DIR$ = "/home/sylvain/Workspaces/dodu/Source/images"
+Const IMG_MODE$ = "cga"
+Dim Shared COLOR_TRANSPARENT AS Long
+If IMG_MODE$ = "cga" Then
+	let COLOR_TRANSPARENT = _RGB32(85, 170, 255, 255) '_RGB32(85, 270, 255)
+Else
+	let COLOR_TRANSPARENT = COLOR_PINK&
+End If
+
+Const IMG_DIR$ = "/home/sylvain/Workspaces/dodu/Source/images/" + IMG_MODE$
 Const FNT_DIR$ = "/home/sylvain/Workspaces/dodu/Source/fonts"
+Const SND_DIR$ = "/home/sylvain/Workspaces/dodu/Source/music"
 
 Dim Shared FNT_TINYC As _Unsigned Long
 Let FNT_TINYC = _LoadFont(FNT_DIR$ + "/TinyAndChunkyRegular.ttf", 5, "MONOSPACE")
@@ -39,17 +48,17 @@ Dim block_offset As Point
 Point_Set block_offset, -5, 0
 SpriteSequence_Init DoduSprites(DOD_STATIC%), 1, 1, TRUE
 Dim sprl As Sprite
-Sprite_Load sprl, IMG_DIR$ + "/Dodu_right_0.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
+Sprite_Load sprl, IMG_DIR$ + "/Dodu_right_0.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_Load DoduSprites(DOD_STATIC%), sprl, 0
-Sprite_Load sprl, IMG_DIR$ + "/Dodu_right_block_0.gif", DEFAULT_OFFSET, block_offset
+Sprite_Load sprl, IMG_DIR$ + "/Dodu_right_block_0.gif", DEFAULT_OFFSET, block_offset, COLOR_TRANSPARENT
 SpriteSequence_Init DoduSprites(DOD_BLOCK%), 1, 1, TRUE
 SpriteSequence_Load DoduSprites(DOD_BLOCK%), sprl, 0
 
-SpriteSequence_BulkLoad DoduSprites(DOD_WALKING%), IMG_DIR$ + "/Dodu_right_", 4, 2, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET
-SpriteSequence_BulkLoad DoduSprites(DOD_BLOCK_WALKING%), IMG_DIR$ + "/Dodu_right_block_", 4, 2, TRUE, DEFAULT_OFFSET, block_offset
+SpriteSequence_BulkLoad DoduSprites(DOD_WALKING%), IMG_DIR$ + "/Dodu_right_", 4, 2, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_BulkLoad DoduSprites(DOD_BLOCK_WALKING%), IMG_DIR$ + "/Dodu_right_block_", 4, 2, TRUE, DEFAULT_OFFSET, block_offset, COLOR_TRANSPARENT
 
 Dim Shared DoduSmall As Sprite
-Sprite_Load DoduSmall, IMG_DIR$ + "/DoduSmall.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
+Sprite_Load DoduSmall, IMG_DIR$ + "/DoduSmall.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 ' Trajectories
 Const TRJ_CLIMBING% = 0
@@ -75,34 +84,34 @@ Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 5, 5
 
 ' Blocks
 Dim Shared BlockBlue As Sprite
-Sprite_Load BlockBlue, IMG_DIR$ + "/BlockBlue.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
+Sprite_Load BlockBlue, IMG_DIR$ + "/BlockBlue.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Dim Shared BlockWhite As Sprite
-Sprite_Load BlockWhite, IMG_DIR$ + "/Block_white.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
+Sprite_Load BlockWhite, IMG_DIR$ + "/BlockWhite.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Dim Shared MiniBlockBlue As Sprite
-Sprite_Load MiniBlockBlue, IMG_DIR$ + "/MiniBlockBlue.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
+Sprite_Load MiniBlockBlue, IMG_DIR$ + "/MiniBlockBlue.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Dim Shared MiniBlockWhite As Sprite
-Sprite_Load MiniBlockWhite, IMG_DIR$ + "/MiniBlockWhite.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
+Sprite_Load MiniBlockWhite, IMG_DIR$ + "/MiniBlockWhite.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 ' Goal post
 Dim Shared Pole As Sprite
 Dim PoleOffset As Point, PoleOffsetFlip As Point
 Point_Set PoleOffset, 1, -9
 Point_Set PoleOffsetFlip, -1, -9
-Sprite_Load Pole, IMG_DIR$ + "/Pole.gif", PoleOffset, PoleOffsetFlip
+Sprite_Load Pole, IMG_DIR$ + "/Pole.gif", PoleOffset, PoleOffsetFlip, COLOR_TRANSPARENT
 Dim Shared MiniPole As Sprite
 Dim MiniPoleOffset As Point, MiniPoleOffsetFlip As Point
 Point_Set MiniPoleOffset, 1, -2
 Point_Set MiniPoleOffsetFlip, 1, 2
-Sprite_Load MiniPole, IMG_DIR$ + "/MiniPole.gif", MiniPoleOffset, MiniPoleOffsetFlip
+Sprite_Load MiniPole, IMG_DIR$ + "/MiniPole.gif", MiniPoleOffset, MiniPoleOffsetFlip, COLOR_TRANSPARENT
 
 ' Thermometer
 Dim Shared Thermometer As Sprite
-Sprite_Load Thermometer, IMG_DIR$ + "/Thermometer.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
+Sprite_Load Thermometer, IMG_DIR$ + "/Thermometer.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Const THERMO_RED~& = _RGB32(170, 0, 0)
 
 ' Background
 Dim Shared Background As Sprite
-Sprite_Load Background, IMG_DIR$ + "/Background.gif", DEFAULT_OFFSET, DEFAULT_OFFSET
+Sprite_Load Background, IMG_DIR$ + "/Background.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
 
 ' Other constants
 Const PLAYER_HEIGHT% = 33

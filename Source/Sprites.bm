@@ -45,12 +45,13 @@ End Function
 '** - Sprite ------------------------------------------------- {{{
 '**
 
-Sub Sprite_Load (s As Sprite, file As String, offset As Point, offsetflip As Point)
+Sub Sprite_Load (s As Sprite, file As String, offset As Point, offsetflip As Point, clr As Long)
   Let s.Content = _LoadImage(file, 32)
   Point_Set s.Size, _Width(s.Content), _Height(s.Content)
   Let s.Offset = offset
   Let s.OffsetFlip = offsetflip
-  _ClearColor COLOR_PINK~&, s.Content
+  '_ClearColor clr, s.Content
+  _SetAlpha 0, clr, s.Content
 End Sub
 
 Sub Sprite_Copy (dst As Sprite, src As Sprite)
@@ -129,11 +130,11 @@ Sub SpriteSequence_Load (s As SpriteSequence, spr As Sprite, index As Integer)
 	Sprite_Copy s.Sprites(index), spr
 End Sub
 
-Sub SpriteSequence_BulkLoad (s as SpriteSequence, pattern AS String, length As Integer, speed As Integer, isloop As Integer, offset As Point, offsetFlip As Point)
+Sub SpriteSequence_BulkLoad (s as SpriteSequence, pattern AS String, length As Integer, speed As Integer, isloop As Integer, offset As Point, offsetFlip As Point, clr As Long)
 	SpriteSequence_Init s, length, speed, isloop
 	Dim x as Integer, sprl As Sprite
 	For x = 0 To length - 1
-		Sprite_Load sprl, pattern + _Tostr$(x) + ".gif", offset, offsetflip
+		Sprite_Load sprl, pattern + _Tostr$(x) + ".gif", offset, offsetflip, clr
 	SpriteSequence_Load s, sprl, x
 	Next
 End Sub
@@ -187,6 +188,8 @@ Sub Viewport_Init (v As Viewport, size As Point, pan As Point, scale As Single)
   Let v.Pan = pan
   Let v.Scale = scale
   Let v.Buffer = _NewImage(size.x * scale, size.y * scale, 32)
+  Let v.BackgroundPanRatio.x = -1
+  Let v.BackgroundPanRatio.y = -1
 End Sub
 
 
@@ -196,11 +199,31 @@ Sub Viewport_PointToScreen (v As Viewport, p_src As Point, p_dest As Point)
 End Sub
 
 Sub Viewport_Clear (v As Viewport)
-  _Dest v.Buffer
-  Line (0, 0)-(v.Size.x * v.Scale - 1, v.Size.y * v.Scale - 1), COLOR_BLACK, BF
+  Dim sq As Point
+  Point_Set sq, v.Size.x * v.Scale - 1, v.Size.y * v.Scale - 1
+  Viewport_Line v, P_ORIGIN, sq, COLOR_BLACK, TRUE, TRUE
+  If v.BackgroundPanRatio.x >= 0 Then ' No background, put black
+	  Dim screen_offset As Point, bg_offset As Point
+	  Point_Set screen_offset, v.Pan.x Mod v.Size.x, v.Pan.y Mod v.Size.y
+	  Point_Set bg_offset, CInt(screen_offset.x / v.BackgroundPanRatio.x), CInt(screen_offset.y / v.BackgroundPanRatio.y)
+	  Dim x As Integer, y As Integer
+	  For x = bg_offset.x - v.Size.x To v.Size.x Step v.Background.Size.x
+		  For y = bg_offset.y - v.Size.y To v.Size.y Step v.Background.Size.y
+			Dim p As Point
+			Point_Set p, x, y
+			Viewport_PutSprite v, TRUE, v.Background, p, FALSE
+		  Next
+	  Next
+  End If
 End Sub
 
-Sub Viewport_Line (v As Viewport, p1 As Point, p2 As Point, clr As _Unsigned Long, box As Integer, filled As Integer)
+Sub Viewport_SetBackground (v As Viewport, s As Sprite, ratio As Point)
+	Sprite_Copy v.Background, s
+	Let v.BackgroundPanRatio.x = ratio.x
+	Let v.BackgroundPanRatio.y = ratio.y
+End Sub
+
+Sub Viewport_Line (v As Viewport, p1 As Point, p2 As Point, clr As Long, box As Integer, filled As Integer)
   _Dest v.Buffer
   If box And filled Then
     Line ((p1.x - v.Pan.x) * v.Scale, (p1.y - v.Pan.y) * v.Scale)-((p2.x - v.Pan.x) * v.Scale, (p2.y - v.Pan.y) * v.Scale), clr, BF

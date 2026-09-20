@@ -114,7 +114,7 @@ Let Dodu.Temp = 10
 SoundPlayer_PlaySong Audio, 0
 
 Dim Shared CURRENT_LEVEL As Integer
-Let CURRENT_LEVEL = 2
+Let CURRENT_LEVEL = 0
 
 Dim Shared CURRENT_SPRITE As Integer
 Let CURRENT_SPRITE% = DOD_STATIC%
@@ -122,6 +122,9 @@ Dim Shared CURRENT_TRAJECTORY As Integer
 Let CURRENT_TRAJECTORY% = -1
 
 Screen MainScreen.Buffer
+Dim parallax As Point
+Point_Set parallax, 2, 2
+Viewport_SetBackground ImgBuffer, Background, parallax
 
 Do
   DoLevel
@@ -140,6 +143,7 @@ Sub DoLevel
   Point_Set trjP, -1, -1
   Do
     _Limit FPS%
+    Viewport_Clear ImgBuffer
     ' Thermometer
     Let Dodu.ThermoTick = (Dodu.ThermoTick + 1) Mod (FPS% * THERMO_TICK%)
     If Dodu.ThermoTick = 0 Or (Dodu.Temp < 3 And (Dodu.ThermoTick = 0 Or Dodu.ThermoTick = 12)) Then
@@ -162,7 +166,6 @@ Sub DoLevel
     PoleSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), poleP
 
     ' Drawing
-    DrawBackground ImgBuffer
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL)
     DrawPlayer ImgBuffer
     DrawThermometer ImgBuffer
@@ -193,6 +196,7 @@ Sub DoLevel
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, COLOR_YELLOW
     'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK
     'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), blockingP, COLOR_YELLOW
+    Viewport_Clear MainScreen
     Viewport_Copy ImgBuffer, MainScreen
     _Display
 
@@ -319,7 +323,6 @@ End Sub
 Sub DoMiniMap
   Dim MapBuffer As Viewport
   Viewport_Init_Default MapBuffer, SCREEN_DIMS
-  DrawBackground MapBuffer
   DrawMinimap MapBuffer, Levels(CURRENT_LEVEL%)
   Viewport_Copy MapBuffer, MainScreen
   _Display
@@ -366,15 +369,6 @@ Sub Kbd_WaitRelease
   Loop While k >= 0
 End Sub
 
-
-' --------------------------
-' Draws the background
-' --------------------------
-Sub DrawBackground (v As Viewport)
-  Viewport_Clear v
-  Viewport_PutSprite v, TRUE, Background, P_ORIGIN, FALSE
-End Sub
-
 ' --------------------------
 ' Draws a level
 ' --------------------------
@@ -403,7 +397,6 @@ Sub DrawLevel (v As Viewport, m As LevelMap)
 End Sub
 
 Sub DrawMinimap (v As Viewport, m As LevelMap)
-  DrawBackground v
   Dim col, row As Integer
   For row = 0 To m.Height
     For col = 0 To m.Width
