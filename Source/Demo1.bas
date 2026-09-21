@@ -132,6 +132,8 @@ Do
 Loop
 
 Sub DoLevel
+  Dim CTRL_PRESSED As Integer
+  Let CTRL_PRESSED = FALSE
   Let Dodu.Temp = 10
   Let Dodu.LevPos.x = Levels(CURRENT_LEVEL).StartPoint.col * BLOCK_SIZE%
   Let Dodu.LevPos.y = (Levels(CURRENT_LEVEL).StartPoint.row - 2) * BLOCK_SIZE%
@@ -226,17 +228,25 @@ Sub DoLevel
     If _KeyDown(K_CTRL) Then
       If _KeyDown(K_LEFT) Then
         ImgBuffer.Pan.x = ImgBuffer.Pan.x - 3
+        Let CTRL_PRESSED = TRUE
         _Continue
       ElseIf _KeyDown(K_RIGHT) Then
         ImgBuffer.Pan.x = ImgBuffer.Pan.x + 3
         _Continue
       ElseIf _KeyDown(K_UP) Then
         ImgBuffer.Pan.y = ImgBuffer.Pan.y - 3
+        Let CTRL_PRESSED = TRUE
         _Continue
       ElseIf _KeyDown(K_DOWN) Then
         ImgBuffer.Pan.y = ImgBuffer.Pan.y + 3
+        Let CTRL_PRESSED = TRUE
         _Continue
       End If
+    End If
+
+    If Not _KeyDown(K_CTRL) And CTRL_PRESSED = TRUE Then
+      Let CTRL_PRESSED = FALSE
+      Let CURRENT_TRAJECTORY% = TRJ_PANBACK%
     End If
 
     If _KeyDown(K_LEFT) Then

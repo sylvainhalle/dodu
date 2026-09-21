@@ -63,7 +63,8 @@ Sprite_Load DoduSmall, IMG_DIR$ + "/DoduSmall.gif", DEFAULT_OFFSET, DEFAULT_OFFS
 ' Trajectories
 Const TRJ_CLIMBING% = 0
 Const TRJ_FALLING% = 1
-Dim Shared Trajectories(2) As Trajectory
+Const TRJ_PANBACK% = 100
+Dim Shared Trajectories(3) As Trajectory
 Dim trj As Trajectory
 Trajectory_Init Trajectories(TRJ_CLIMBING%), 6, 1, FALSE, FALSE
 Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 0, -3, 0
