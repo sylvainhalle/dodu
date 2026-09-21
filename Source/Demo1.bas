@@ -10,15 +10,6 @@ $ErrorLocation:On
 Const TRUE = -1
 Const FALSE = 0
 
-' Keys
-Const K_ENTER = 13
-Const K_ESC = 27
-Const K_SPACE = 32
-Const K_CTRL = 100306
-Const K_LEFT = 19200
-Const K_RIGHT = 19712
-Const K_UP = 18432
-Const K_DOWN = 20480
 
 ' Screen dimensions
 Dim Shared SCREEN_DIMS As Point
@@ -55,6 +46,7 @@ Const PLAY_MUSIC = TRUE
 '$Include:'Utils.bi'
 '$Include:'Geometry.bi'
 '$Include:'Sprites.bi'
+'$Include:'Keyboard.bi'
 '$Include:'Sounds.bi'
 '$Include:'Assets.bi'
 '$Include:'Levels.bi'
@@ -340,7 +332,7 @@ Sub DoMiniMap
   _Display
 
   ' Wait until key is released
-  Kbd_WaitRelease
+  Kbd_WaitRelease FPS%
   Do
     _Limit FPS%
     _Display
@@ -356,7 +348,7 @@ Sub DoMiniMap
     'Viewport_Print MapBuffer, Point_ToString(MapBuffer.Pan), P_ORIGIN
     Viewport_Copy MapBuffer, MainScreen
   Loop
-  Kbd_WaitRelease
+  Kbd_WaitRelease FPS%
 End Sub
 
 Sub DoPause
@@ -374,13 +366,6 @@ Sub DoPause
   Loop While k <> K_SPACE
 End Sub
 
-Sub Kbd_WaitRelease
-  Dim k As Long
-  Do
-    _Limit FPS%
-    Let k = _KeyHit
-  Loop While k >= 0
-End Sub
 
 ' --------------------------
 ' Draws a level
@@ -406,9 +391,11 @@ Sub DrawLevel (v As Viewport, m As LevelMap)
   Next
   Dim dod_p As Point
   Let dod_p = Dodu.LevPos
-
 End Sub
 
+' --------------------------
+' Draws a minimap of a level
+' --------------------------
 Sub DrawMinimap (v As Viewport, m As LevelMap)
   Dim col, row As Integer
   For row = 0 To m.Height
@@ -548,6 +535,7 @@ End Function
 '$Include:'Utils.bm'
 '$Include:'Geometry.bm'
 '$Include:'Sprites.bm'
+'$Include:'Keyboard.bm'
 '$Include:'Sounds.bm'
 '$Include:'Levels.bm'
 '$Include:'LevelMaps.bm'

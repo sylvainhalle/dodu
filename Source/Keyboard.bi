@@ -1,0 +1,33 @@
+'-----------------------------------------------------------------------------
+'    Dodu, an old-school QuickBasic game
+'    Copyright (C) 2026  Sylvain Hallé
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU General Public License for more details.
+'
+'    You should have received a copy of the GNU General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'-----------------------------------------------------------------------------
+
+
+' Keys
+Const K_ENTER = 13
+Const K_ESC = 27
+Const K_SPACE = 32
+Const K_CTRL = 100306
+Const K_LEFT = 19200
+Const K_RIGHT = 19712
+Const K_UP = 18432
+Const K_DOWN = 20480
+
+'**
+'* Waits until the current key being pressed is released.
+'**
+Declare Sub Kbd_WaitRelease(fps As Integer)
