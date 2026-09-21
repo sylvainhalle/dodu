@@ -202,25 +202,51 @@ Sub Viewport_Clear (v As Viewport)
   Dim sq As Point
   Point_Set sq, v.Size.x * v.Scale - 1, v.Size.y * v.Scale - 1
   Viewport_Line v, P_ORIGIN, sq, COLOR_BLACK, TRUE, TRUE
-  If v.BackgroundPanRatio.x >= 0 Then ' No background, put black
-	  Dim screen_offset As Point, bg_offset As Point
+  Dim screen_offset As Point, bg_offset As Point
+  If v.BackgroundPanRatio.x > 0 Then
 	  Point_Set screen_offset, v.Pan.x Mod v.Size.x, v.Pan.y Mod v.Size.y
 	  Point_Set bg_offset, CInt(screen_offset.x / v.BackgroundPanRatio.x), CInt(screen_offset.y / v.BackgroundPanRatio.y)
-	  Dim x As Integer, y As Integer
-	  For x = bg_offset.x - v.Size.x To v.Size.x Step v.Background.Size.x
-		  For y = bg_offset.y - v.Size.y To v.Size.y Step v.Background.Size.y
-			Dim p As Point
-			Point_Set p, x, y
-			Viewport_PutSprite v, TRUE, v.Background, p, FALSE
-		  Next
-	  Next
+  ElseIf v.BackgroundPanRatio.x = 0 Then
+  	  Point_Set screen_offset, 0, 0
+  	  Point_Set bg_offset, 0, 0
+  Else
+  	Exit Sub
   End If
+  Dim x As Integer, y As Integer
+  For x = bg_offset.x - v.Size.x To v.Size.x Step v.Background.Size.x
+	  For y = bg_offset.y - v.Size.y To v.Size.y Step v.Background.Size.y
+		Dim p As Point
+		Point_Set p, x, y
+		Viewport_PutSprite v, TRUE, v.Background, p, FALSE
+	  Next
+  Next
 End Sub
 
 Sub Viewport_SetBackground (v As Viewport, s As Sprite, ratio As Point)
 	Sprite_Copy v.Background, s
 	Let v.BackgroundPanRatio.x = ratio.x
 	Let v.BackgroundPanRatio.y = ratio.y
+End Sub
+
+Sub Viewport_LineC (v As Viewport, absolute As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, clr As Long, box As Integer, filled As Integer)
+  _Dest v.Buffer
+  If absolute Then
+  	  If box And filled Then
+		Line (x1 * v.Scale, y1 * v.Scale)-(x2 * v.Scale, y2 * v.Scale), clr, BF
+	  ElseIf box Then
+		Line (x1 * v.Scale, y1 * v.Scale)-(x2 * v.Scale, y2 * v.Scale), clr, B
+	  Else
+		Line (x1 * v.Scale, y1 * v.Scale)-(x2 * v.Scale, y2 * v.Scale), clr
+	  End If
+  Else
+	  If box And filled Then
+		Line ((x1 - v.Pan.x) * v.Scale, (y1 - v.Pan.y) * v.Scale)-((x2 - v.Pan.x) * v.Scale, (y2 - v.Pan.y) * v.Scale), clr, BF
+	  ElseIf box Then
+		Line ((x1 - v.Pan.x) * v.Scale, (y1 - v.Pan.y) * v.Scale)-((x2 - v.Pan.x) * v.Scale, (y2 - v.Pan.y) * v.Scale), clr, B
+	  Else
+		Line ((x1 - v.Pan.x) * v.Scale, (y1 - v.Pan.y) * v.Scale)-((x2 - v.Pan.x) * v.Scale, (y2 - v.Pan.y) * v.Scale), clr
+	  End If
+  End If
 End Sub
 
 Sub Viewport_Line (v As Viewport, p1 As Point, p2 As Point, clr As Long, box As Integer, filled As Integer)

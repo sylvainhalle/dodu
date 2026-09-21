@@ -191,9 +191,9 @@ Sub DoLevel
     End If
 
 
-    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, COLOR_YELLOW
+    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), climbP, COLOR_RED
-    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, COLOR_YELLOW
+    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
     'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK
     'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), blockingP, COLOR_YELLOW
     Viewport_Clear MainScreen
@@ -323,6 +323,8 @@ End Sub
 Sub DoMiniMap
   Dim MapBuffer As Viewport
   Viewport_Init_Default MapBuffer, SCREEN_DIMS
+  Viewport_SetBackground MapBuffer, Background, P_ORIGIN
+  Viewport_Clear MapBuffer
   DrawMinimap MapBuffer, Levels(CURRENT_LEVEL%)
   Viewport_Copy MapBuffer, MainScreen
   _Display
@@ -339,6 +341,7 @@ Sub DoMiniMap
     ElseIf _KeyDown(77) Or _KeyDown(109) Then
       Exit Do
     End If
+    Viewport_Clear MapBuffer
     DrawMinimap MapBuffer, Levels(CURRENT_LEVEL%)
     'Viewport_Print MapBuffer, Point_ToString(MapBuffer.Pan), P_ORIGIN
     Viewport_Copy MapBuffer, MainScreen
@@ -419,7 +422,7 @@ Sub DrawMinimap (v As Viewport, m As LevelMap)
   Let dod_s.col = Dodu.LevPos.x \ BLOCK_SIZE%
   Let dod_s.row = Dodu.LevPos.y \ BLOCK_SIZE%
   Dim dod_p As Point
-  Point_Set dod_p, dod_s.col * 5, (dod_s.row + 2) * 5
+  Point_Set dod_p, dod_s.col * MINI_BLOCK_SIZE%, (dod_s.row + 1) * MINI_BLOCK_SIZE%
   Viewport_PutSprite v, FALSE, DoduSmall, dod_p, FALSE
 End Sub
 
@@ -438,18 +441,18 @@ Sub DrawThermometer (v As Viewport)
   Dim p As Point
   Point_Set p, 4, 4
   Viewport_PutSprite v, TRUE, Thermometer, p, FALSE
-  Dim red As _Unsigned Long
-  Let red = THERMO_RED~&
+  Dim red As Long
+  Let red = THERMO_RED&
   If Dodu.Temp <= 2 Then
     If Dodu.ThermoFlash < 10 Then
-      Let red = _RGB32(85, 0, 170)
+      Let red = THERMO_BLUE&
     Else
-      Let red = THERMO_RED~&
+      Let red = THERMO_RED&
     End If
     Let Dodu.ThermoFlash = (Dodu.ThermoFlash + 1) Mod 20
   End If
-  Line (6, 15 - Dodu.Temp)-(7, 15), red, BF
-  Line (5, 16)-(8, 18), red, BF
+  Viewport_LineC v, TRUE, 6, 15 - Dodu.Temp, 7, 15, red, TRUE, TRUE
+  Viewport_LineC v, TRUE, 5, 16, 8, 18, red, TRUE, TRUE
 End Sub
 
 

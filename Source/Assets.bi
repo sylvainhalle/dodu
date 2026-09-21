@@ -107,7 +107,17 @@ Sprite_Load MiniPole, IMG_DIR$ + "/MiniPole.gif", MiniPoleOffset, MiniPoleOffset
 ' Thermometer
 Dim Shared Thermometer As Sprite
 Sprite_Load Thermometer, IMG_DIR$ + "/Thermometer.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-Const THERMO_RED~& = _RGB32(170, 0, 0)
+
+Dim Shared THERMO_RED&, THERMO_BLUE&, HIGHLIGHT_COLOR&
+If IMG_MODE = "cga" Then
+	Let THERMO_RED& = COLOR_PINK&
+	Let THERMO_BLUE& = COLOR_BLACK&
+	Let HIGHLIGHT_COLOR& = COLOR_BLACK&
+Else
+	Let THERMO_RED& = _RGB32(170, 0, 0)
+	Let THERMO_BLUE& = _RGB32(85, 0, 170)
+	Let HIGHLIGHT_COLOR& = COLOR_YELLOW&
+End If
 
 ' Background
 Dim Shared Background As Sprite
@@ -117,6 +127,7 @@ Sprite_Load Background, IMG_DIR$ + "/Background.gif", DEFAULT_OFFSET, DEFAULT_OF
 Const PLAYER_HEIGHT% = 33
 Const PLAYER_WIDTH% = 19
 Const BLOCK_SIZE% = 11
+Const MINI_BLOCK_SIZE% = 6
 
 ' Music
 _MIDISoundBank ("/usr/share/sounds/sf2/default-GM.sf2")

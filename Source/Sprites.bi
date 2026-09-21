@@ -219,6 +219,11 @@ Declare Sub Viewport_SetBackground (v As Viewport, s As Sprite, ratio As Point)
 Declare Sub Viewport_Line (v As Viewport, p1 As Point, p2 As Point, clr As Long, box As Integer, filled As Integer)
 
 '**
+'* Equivalent of the LINE command for a viewport.
+'**
+Declare Sub Viewport_LineC (v As Viewport, absolute As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, clr As Long, box As Integer, filled As Integer)
+
+'**
 '* Equivalent of the SCREEN command for a viewport.
 '**
 Declare Sub Viewport_Screen (v as Viewport)
