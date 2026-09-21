@@ -132,6 +132,8 @@ Sub DoLevel
   Dim center As Point
   Point_Set center, Dodu.LevPos.x + (PLAYER_WIDTH% / 2), Dodu.LevPos.y + (PLAYER_HEIGHT% / 2)
   Viewport_SetCenter ImgBuffer, center
+  Dim sq_lastGrabbed As Square, sq_lastDropped As Square
+  Dim dod_lastGrabbed As Point
 
   Dim trjP As Point
   Point_Set trjP, -1, -1
@@ -163,7 +165,7 @@ Sub DoLevel
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL)
     DrawPlayer ImgBuffer
     DrawThermometer ImgBuffer
-    If CURRENT_TRAJECTORY% >= 0 Then
+    If CURRENT_TRAJECTORY% >= 0 And CURRENT_TRAJECTORY% < 100 Then
       Viewport_Print ImgBuffer, NbFormat$(Trajectories(CURRENT_TRAJECTORY%).Flipped) + " " + Point_ToString(trjP), P_ORIGIN
     End If
 
@@ -186,11 +188,7 @@ Sub DoLevel
 
 
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
-    'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), climbP, COLOR_RED
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
-    'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK
-    'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), blockingP, COLOR_YELLOW
-    Viewport_Clear MainScreen
     Viewport_Copy ImgBuffer, MainScreen
     _Display
 
@@ -199,7 +197,7 @@ Sub DoLevel
     End If
 
     ' If a trajectory is playing, ignore keybord input
-    If CURRENT_TRAJECTORY% >= 0 Then
+    If CURRENT_TRAJECTORY% >= 0 And CURRENT_TRAJECTORY% < 100 Then
       Trajectory_Tick Trajectories(CURRENT_TRAJECTORY%), trjP
       MovePlayer ImgBuffer, trjP
       If Ticker_Finished%(Trajectories(CURRENT_TRAJECTORY%).Ticker) Then
@@ -288,11 +286,21 @@ Sub DoLevel
 
     ElseIf _KeyDown(K_UP) And Square_IsValid(takeP) Then
       SoundPlayer_PlayEffect Audio, SND_GRAB%
+      Let sq_lastGrabbed.col = takeP.col
+      Let sq_lastGrabbed.row = takeP.row
+      Point_Set dod_lastGrabbed, Dodu.LevPos.x, Dodu.LevPos.y
       TakeBlock Levels(CURRENT_LEVEL), takeP
 
     ElseIf _KeyDown(K_DOWN) And Square_IsValid(dropP) Then
       SoundPlayer_PlayEffect Audio, SND_DROP%
+      Let sq_lastDropped.col = dropP.col
+      Let sq_lastDropped.row = dropP.row
       DropBlock Levels(CURRENT_LEVEL), dropP
+
+    ElseIf _KeyDown(K_BACKSPACE) Then
+      Let Dodu.LevPos.x = dod_lastGrabbed.x
+      Let Dodu.LevPos.y = dod_lastGrabbed.y
+      Let CURRENT_TRAJECTORY% = TRJ_PANBACK%
 
     Else ' No key
       Let CURRENT_SPRITE% = GetDoduSprite%(FALSE, Dodu.HasBlock)
@@ -331,6 +339,9 @@ Sub DoMiniMap
   Viewport_Copy MapBuffer, MainScreen
   _Display
 
+  ' Reduce music volume
+  Audio_SongLow
+
   ' Wait until key is released
   Kbd_WaitRelease FPS%
   Do
@@ -349,6 +360,9 @@ Sub DoMiniMap
     Viewport_Copy MapBuffer, MainScreen
   Loop
   Kbd_WaitRelease FPS%
+  ' Restore music volume
+  Audio_SongNormal
+
 End Sub
 
 Sub DoPause
@@ -357,15 +371,14 @@ Sub DoPause
   Viewport_Print ImgBuffer, " PAUSE ", p
   Viewport_Copy ImgBuffer, MainScreen
   _Display
-
-  ' Wait for the SPACE that invoked us to be released
-  Dim k As Long
+  Audio_SongPause
+  Kbd_WaitRelease FPS%
   Do
     _Limit FPS%
-    k = _KeyHit
-  Loop While k <> K_SPACE
+  Loop While Not _KeyDown(K_SPACE)
+  Kbd_WaitRelease FPS%
+  Audio_SongResume
 End Sub
-
 
 ' --------------------------
 ' Draws a level
@@ -537,6 +550,7 @@ End Function
 '$Include:'Sprites.bm'
 '$Include:'Keyboard.bm'
 '$Include:'Sounds.bm'
+'$Include:'Assets.bm'
 '$Include:'Levels.bm'
 '$Include:'LevelMaps.bm'
 

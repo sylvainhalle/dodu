@@ -17,11 +17,12 @@
 '-----------------------------------------------------------------------------
 
 ' DependsOn: 'Sprites.bi'
+' DependsOn: 'Sound.bi'
 
-Const IMG_MODE$ = "cga"
+Const IMG_MODE$ = "ega"
 Dim Shared COLOR_TRANSPARENT AS Long
 If IMG_MODE$ = "cga" Then
-	let COLOR_TRANSPARENT = _RGB32(85, 170, 255, 255) '_RGB32(85, 270, 255)
+	let COLOR_TRANSPARENT = _RGB32(85, 170, 255)
 Else
 	let COLOR_TRANSPARENT = COLOR_PINK&
 End If
@@ -136,7 +137,7 @@ _MIDISoundBank ("/usr/share/sounds/sf2/default-GM.sf2")
 Dim Shared Audio As SoundPlayer
 SoundPlayer_Init Audio
 
-SoundPlayer_AddSong Audio, 0, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod.mid"), 0.4
+SoundPlayer_AddSong Audio, 0, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod_fixed.mid"), 0.4
 SoundPlayer_AddSong Audio, 1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/yaya.mid"), 0.4
 
 Const SND_STEP% = 0
@@ -148,5 +149,25 @@ SoundPlayer_AddEffect Audio, SND_STEP%, _SndOpen("/home/sylvain/Workspaces/dodu/
 SoundPlayer_AddEffect Audio, SND_THERMO%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/thermo.mid"), 1
 SoundPlayer_AddEffect Audio, SND_GRAB%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/grab.mid"), 1
 SoundPlayer_AddEffect Audio, SND_DROP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/drop.mid"), 1
+
+'**
+'* Sets the song volume to a low level.
+'**
+Declare Sub Audio_SongLow
+
+'**
+'* Sets the song volume to a normal level.
+'**
+Declare Sub Audio_SongNormal
+
+'**
+'* Pauses the currently playing song.
+'**
+Declare Sub Audio_SongPause
+
+'**
+'* Resumes the playback of the current song.
+'**
+Declare Sub Audio_SongResume
 
 ' :mode=visualbasic:

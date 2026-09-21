@@ -68,4 +68,16 @@ Sub SoundPlayer_PlayEffect (sp As SoundPlayer, index As Integer)
 	End If
 End Sub
 
+Sub SoundPlayer_PauseSong (sp As SoundPlayer)
+	If sp.PlaySong = TRUE Then
+		_SndPause sp.Songs(sp.CurrentSOng)
+	End If
+End Sub
+
+Sub SoundPlayer_ResumeSong (sp As SoundPlayer)
+	If sp.PlaySong = TRUE Then
+		_SndPlay sp.Songs(sp.CurrentSOng)
+	End If
+End Sub
+
 ' :mode=visualbasic:folding=explicit:wrap=none:

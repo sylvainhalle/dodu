@@ -40,6 +40,10 @@ Declare Sub SoundPlayer_PlaySong (sp As SoundPlayer)
 
 Declare Sub SoundPlayer_StopSong (sp As SoundPlayer)
 
+Declare Sub SoundPlayer_PauseSong (sp As SoundPlayer)
+
+Declare Sub SoundPlayer_ResumeSong (sp As SoundPlayer)
+
 Declare Sub SoundPlayer_PlayEffect (sp As SoundPlayer, index As Integer)
 
 Declare Sub SoundPlayer_SetSongVolume (sp As SoundPlayer)

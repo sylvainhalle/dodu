@@ -16,21 +16,20 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
+Sub Audio_SongLow
+  SoundPlayer_SetSongVolume Audio, 0.1
+End Sub
 
-' Keys
-Const K_BACKSPACE = 8
-Const K_ENTER = 13
-Const K_ESC = 27
-Const K_SPACE = 32
-Const K_CTRL = 100306
-Const K_LEFT = 19200
-Const K_RIGHT = 19712
-Const K_UP = 18432
-Const K_DOWN = 20480
+Sub Audio_SongNormal
+  SoundPlayer_SetSongVolume Audio, 0.7
+End Sub
 
-'**
-'* Waits until the current key being pressed is released.
-'**
-Declare Sub Kbd_WaitRelease(fps As Integer)
+Sub Audio_SongPause
+  SoundPlayer_PauseSong Audio
+End Sub
 
-' :mode=visualbasic:folding=explicit:wrap=none:
+Sub Audio_SongResume
+  SoundPlayer_ResumeSong Audio
+End Sub
+
+' :mode=visualbasic:
