@@ -24,3 +24,4 @@ Sub Kbd_WaitRelease (fps As Integer)
   Loop While k >= 0
 End Sub
 
+' :mode=visualbasic:folding=explicit:wrap=none:

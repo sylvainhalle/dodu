@@ -31,8 +31,9 @@ Const IMG_DIR$ = "/home/sylvain/Workspaces/dodu/Source/images/" + IMG_MODE$
 Const FNT_DIR$ = "/home/sylvain/Workspaces/dodu/Source/fonts"
 Const SND_DIR$ = "/home/sylvain/Workspaces/dodu/Source/music"
 
-Dim Shared FNT_TINYC As _Unsigned Long
-Let FNT_TINYC = _LoadFont(FNT_DIR$ + "/TinyAndChunkyRegular.ttf", 5, "MONOSPACE")
+Dim Shared FNT_TINYC As _Unsigned Long, FNT_GRAPE As _Unsigned Long
+Let FNT_TINYC = _LoadFont(FNT_DIR$ + "/TinyAndChunkyRegular.ttf", 5, "MONOSPACE DONTBLEND")
+Let FNT_GRAPE = _LoadFont(FNT_DIR$ + "/GrapeSoda.ttf", 10, "MONOSPACE DONTBLEND")
 
 Dim DEFAULT_OFFSET As Point
 Let DEFAULT_OFFSET = P_ORIGIN

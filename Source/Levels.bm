@@ -16,6 +16,11 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
+Sub Square_Set (s As Square, col As Integer, row As Integer)
+	Let s.col = col
+	Let s.row = row
+End Sub
+
 Function Square_IsValid% (s as Square)
 	If s.col >= 0 _AndAlso s.col < M_W% _AndAlso s.row >= 0 _AndAlso s.row < M_H% Then
 		Square_IsValid% = TRUE

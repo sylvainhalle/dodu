@@ -27,6 +27,8 @@ Const K_LEFT = 19200
 Const K_RIGHT = 19712
 Const K_UP = 18432
 Const K_DOWN = 20480
+Const K_M_UC = 77
+Const K_M_LC = 109
 
 '**
 '* Waits until the current key being pressed is released.

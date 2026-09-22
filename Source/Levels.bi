@@ -33,6 +33,11 @@ Type Square
 End Type
 
 '**
+'* Sets the coordinates of a square.
+'**
+Declare Sub Square_Set (s As Square, col As Integer, row As Integer)
+
+'**
 '* Determines if the coordinates of a square correspond to a valid location
 '* in the level map.
 '**
