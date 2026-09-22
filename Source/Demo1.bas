@@ -10,7 +10,6 @@ $ErrorLocation:On
 Const TRUE = -1
 Const FALSE = 0
 
-
 ' Screen dimensions
 Dim Shared SCREEN_DIMS As Point
 Point_Set SCREEN_DIMS, 80, 64
@@ -30,14 +29,19 @@ Const DROP_THRESHOLD% = 5
 Const UNCLIMB_THRESHOLD% = 5
 
 
-' Number of seconds between ticks of the thermometer
-Const THERMO_TICK% = 4
+' Number of frames between ticks of the thermometer
+Const THERMO_TICK_NORMAL% = 100
+Const THERMO_TICK_FAST% = 35
+
+' Location of level number
+Dim Shared PT_LEVEL_NB As Point
+Point_Set PT_LEVEL_NB, 4, 20
 
 ' Number of screen pixels per frame
 ' Currently, can only be an integer
 Const WALKING_SPEED# = 1
 
-Const PLAY_MUSIC = TRUE
+Const PLAY_MUSIC = FALSE
 
 ' --------------------------
 ' Includes (declarations)
@@ -63,18 +67,20 @@ Type Player
   IsFalling As Integer
   ToLeft As Integer
   Temp As Integer ' 0 to 10
-  ThermoTick As Integer
+  ThermoTick As Ticker
   ThermoFlash As Integer
 End Type
 
 ' --------------------------
 ' Screen setup: 1 main screen and 1 buffer
 ' --------------------------
+_AllowFullScreen _Off
 Dim Shared MainScreen As Viewport, ImgBuffer As Viewport
 Viewport_Init MainScreen, WINDOW_DIMS, P_ORIGIN, 1
 Viewport_Init_Default ImgBuffer, SCREEN_DIMS
-Viewport_SetFont MainScreen, FNT_TINYC
-Viewport_SetFont ImgBuffer, FNT_TINYC
+Viewport_SetFont ImgBuffer, FNT_GRAPE
+Color COLOR_PINK&, , , ImgBuffer.Buffer
+_PrintMode _KeepBackground , ImgBuffer.Buffer
 
 ' --------------------------
 ' Level loading
@@ -103,6 +109,8 @@ Let Dodu.Temp = 10
 ' --------------------------
 ' Main loop
 ' --------------------------
+Let Audio.PlaySong = PLAY_MUSIC%
+Let Audio.PlayEffects = TRUE
 SoundPlayer_PlaySong Audio, 0
 
 Dim Shared CURRENT_LEVEL As Integer
@@ -120,20 +128,29 @@ Viewport_SetBackground ImgBuffer, Background, parallax
 
 Do
   DoLevel
+  SoundPlayer_PlayEffect Audio, SND_LEVELUP
   Let CURRENT_LEVEL = CURRENT_LEVEL + 1
 Loop
 
 Sub DoLevel
-  Dim CTRL_PRESSED As Integer
+  Dim CTRL_PRESSED As Integer, PANBACK_STEPS As Integer
   Let CTRL_PRESSED = FALSE
   Let Dodu.Temp = 10
+  Let PANBACK_STEPS = 8
+  Dim panback_ticker As Ticker
+
+  Ticker_Init Dodu.ThermoTick, 10, THERMO_TICK_NORMAL%, FALSE
+
+  Ticker_Init panback_ticker, PANBACK_STEPS, 1, FALSE
   Let Dodu.LevPos.x = Levels(CURRENT_LEVEL).StartPoint.col * BLOCK_SIZE%
   Let Dodu.LevPos.y = (Levels(CURRENT_LEVEL).StartPoint.row - 2) * BLOCK_SIZE%
-  Dim center As Point
-  Point_Set center, Dodu.LevPos.x + (PLAYER_WIDTH% / 2), Dodu.LevPos.y + (PLAYER_HEIGHT% / 2)
+  Dim dod_lastgrab As Point
+  Dim sq_lastgrab As Square, sq_lastdrop As Square
+  Square_Set sq_lastgrab, -1, -1
+  Square_Set sq_lastdrop, -1, -1
+  Dim center As Point, panbacktarget As Point
+  GetDoduCenter center
   Viewport_SetCenter ImgBuffer, center
-  Dim sq_lastGrabbed As Square, sq_lastDropped As Square
-  Dim dod_lastGrabbed As Point
 
   Dim trjP As Point
   Point_Set trjP, -1, -1
@@ -141,11 +158,11 @@ Sub DoLevel
     _Limit FPS%
     Viewport_Clear ImgBuffer
     ' Thermometer
-    Let Dodu.ThermoTick = (Dodu.ThermoTick + 1) Mod (FPS% * THERMO_TICK%)
-    If Dodu.ThermoTick = 0 Or (Dodu.Temp < 3 And (Dodu.ThermoTick = 0 Or Dodu.ThermoTick = 12)) Then
+    Ticker_Tick Dodu.ThermoTick
+    If Dodu.ThermoTick.TickCnt = 0 Or (Dodu.Temp < 3 And Dodu.ThermoTick.TickCnt Mod FPS% = 0) Then
       SoundPlayer_PlayEffect Audio, SND_THERMO%
     End If
-    If Dodu.ThermoTick = 0 Then
+    If Dodu.ThermoTick.TickCnt = 0 Then
       Let Dodu.Temp = Dodu.Temp - 1
     End If
     If Dodu.Temp = 0 Then GoTo GameOver:
@@ -165,12 +182,7 @@ Sub DoLevel
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL)
     DrawPlayer ImgBuffer
     DrawThermometer ImgBuffer
-    If CURRENT_TRAJECTORY% >= 0 And CURRENT_TRAJECTORY% < 100 Then
-      Viewport_Print ImgBuffer, NbFormat$(Trajectories(CURRENT_TRAJECTORY%).Flipped) + " " + Point_ToString(trjP), P_ORIGIN
-    End If
-
-    Dim k As Long
-    Let k = _KeyHit
+    Viewport_Print ImgBuffer, _Trim$(NbFormat$(CURRENT_LEVEL% + 1)), PT_LEVEL_NB
 
     If _KeyDown(K_ESC) Then
       GoTo Quit:
@@ -181,7 +193,7 @@ Sub DoLevel
       _Continue
     End If
 
-    If _KeyDown(77) Or _KeyDown(109) Then
+    If _KeyDown(K_M_UC) Or _KeyDown(K_M_LC) Then
       DoMiniMap
       _Continue
     End If
@@ -189,6 +201,7 @@ Sub DoLevel
 
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
+    Viewport_Clear MainScreen
     Viewport_Copy ImgBuffer, MainScreen
     _Display
 
@@ -201,7 +214,6 @@ Sub DoLevel
       Trajectory_Tick Trajectories(CURRENT_TRAJECTORY%), trjP
       MovePlayer ImgBuffer, trjP
       If Ticker_Finished%(Trajectories(CURRENT_TRAJECTORY%).Ticker) Then
-        'Let Dodu.ToLeft = Trajectories(CURRENT_TRAJECTORY%).Flipped
         Trajectory_Reset Trajectories(CURRENT_TRAJECTORY)
         Let CURRENT_TRAJECTORY% = -1
       End If
@@ -213,6 +225,24 @@ Sub DoLevel
     ' Is goal reached?
     If Square_IsValid(poleP) Then
       Exit Sub
+    End If
+
+    If Not _KeyDown(K_CTRL) And CTRL_PRESSED = TRUE And CURRENT_TRAJECTORY < 0 Then
+      Let CTRL_PRESSED = FALSE
+      Let CURRENT_TRAJECTORY% = TRJ_PANBACK%
+      GetDoduCenter center
+      Point_Set panbacktarget, (center.x - ImgBuffer.Pan.x - ImgBuffer.Size.x / 2) / PANBACK_STEPS%, (center.y - ImgBuffer.Pan.y - ImgBuffer.Size.y / 2) / PANBACK_STEPS%
+    End If
+
+    If CURRENT_TRAJECTORY% = TRJ_PANBACK% Then
+      Ticker_Tick panback_ticker
+      Let ImgBuffer.Pan.x = ImgBuffer.Pan.x + panbacktarget.x
+      Let ImgBuffer.Pan.y = ImgBuffer.Pan.y + panbacktarget.y
+      If Ticker_Finished%(panback_ticker) Then
+        Let CURRENT_TRAJECTORY% = -1
+        Ticker_Reset panback_ticker
+      End If
+      _Continue
     End If
 
     If _KeyDown(K_CTRL) Then
@@ -232,11 +262,6 @@ Sub DoLevel
         Let CTRL_PRESSED = TRUE
         _Continue
       End If
-    End If
-
-    If Not _KeyDown(K_CTRL) And CTRL_PRESSED = TRUE Then
-      Let CTRL_PRESSED = FALSE
-      Let CURRENT_TRAJECTORY% = TRJ_PANBACK%
     End If
 
     If _KeyDown(K_LEFT) Then
@@ -286,21 +311,30 @@ Sub DoLevel
 
     ElseIf _KeyDown(K_UP) And Square_IsValid(takeP) Then
       SoundPlayer_PlayEffect Audio, SND_GRAB%
-      Let sq_lastGrabbed.col = takeP.col
-      Let sq_lastGrabbed.row = takeP.row
-      Point_Set dod_lastGrabbed, Dodu.LevPos.x, Dodu.LevPos.y
       TakeBlock Levels(CURRENT_LEVEL), takeP
+      Point_Set dod_lastgrab, Dodu.LevPos.x, Dodu.LevPos.y
+      Let sq_lastgrab.col = takeP.col
+      Let sq_lastgrab.row = takeP.row
+      Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
 
     ElseIf _KeyDown(K_DOWN) And Square_IsValid(dropP) Then
       SoundPlayer_PlayEffect Audio, SND_DROP%
-      Let sq_lastDropped.col = dropP.col
-      Let sq_lastDropped.row = dropP.row
+      Let sq_lastdrop.col = dropP.col
+      Let sq_lastdrop.row = dropP.row
       DropBlock Levels(CURRENT_LEVEL), dropP
+      Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
 
-    ElseIf _KeyDown(K_BACKSPACE) Then
-      Let Dodu.LevPos.x = dod_lastGrabbed.x
-      Let Dodu.LevPos.y = dod_lastGrabbed.y
+      ' Undo last block if possible
+    ElseIf _KeyDown(K_BACKSPACE) And Square_IsValid(sq_lastgrab) Then
+      Let Dodu.LevPos.x = dod_lastgrab.x
+      Let Dodu.LevPos.y = dod_lastgrab.y
       Let CURRENT_TRAJECTORY% = TRJ_PANBACK%
+      Let Levels(CURRENT_LEVEL).Topo(sq_lastdrop.col, sq_lastdrop.row) = T_NOTHING
+      Let Levels(CURRENT_LEVEL).Topo(sq_lastgrab.col, sq_lastgrab.row) = T_BLOCK_W
+      Square_Set sq_lastgrab, -1, -1
+      Square_Set sq_lastdrop, -1, -1
+      GetDoduCenter center
+      Point_Set panbacktarget, (center.x - ImgBuffer.Pan.x - ImgBuffer.Size.x / 2) / PANBACK_STEPS%, (center.y - ImgBuffer.Pan.y - ImgBuffer.Size.y / 2) / PANBACK_STEPS%
 
     Else ' No key
       Let CURRENT_SPRITE% = GetDoduSprite%(FALSE, Dodu.HasBlock)
@@ -322,7 +356,7 @@ Sub DoLevel
   GameOver:
   _Dest MainScreen.Buffer
   Cls
-  _PrintString (0, 48), "GAME OVER"
+  _PrintString (0, 48), "GAME OVER" ' Ought to be better
   End
 
   Quit:
@@ -339,9 +373,6 @@ Sub DoMiniMap
   Viewport_Copy MapBuffer, MainScreen
   _Display
 
-  ' Reduce music volume
-  Audio_SongLow
-
   ' Wait until key is released
   Kbd_WaitRelease FPS%
   Do
@@ -351,18 +382,14 @@ Sub DoMiniMap
       Let MapBuffer.Pan.x = MapBuffer.Pan.x - 2
     ElseIf _KeyDown(K_RIGHT) Then
       Let MapBuffer.Pan.x = MapBuffer.Pan.x + 2
-    ElseIf _KeyDown(77) Or _KeyDown(109) Then
+    ElseIf _KeyDown(K_M_UC) Or _KeyDown(K_M_LC) Then
       Exit Do
     End If
     Viewport_Clear MapBuffer
     DrawMinimap MapBuffer, Levels(CURRENT_LEVEL%)
-    'Viewport_Print MapBuffer, Point_ToString(MapBuffer.Pan), P_ORIGIN
     Viewport_Copy MapBuffer, MainScreen
   Loop
   Kbd_WaitRelease FPS%
-  ' Restore music volume
-  Audio_SongNormal
-
 End Sub
 
 Sub DoPause
@@ -371,13 +398,13 @@ Sub DoPause
   Viewport_Print ImgBuffer, " PAUSE ", p
   Viewport_Copy ImgBuffer, MainScreen
   _Display
-  Audio_SongPause
-  Kbd_WaitRelease FPS%
+
+  ' Wait for the SPACE that invoked us to be released
+  Dim k As Long
   Do
     _Limit FPS%
-  Loop While Not _KeyDown(K_SPACE)
-  Kbd_WaitRelease FPS%
-  Audio_SongResume
+    k = _KeyHit
+  Loop While k <> K_SPACE
 End Sub
 
 ' --------------------------
@@ -404,11 +431,9 @@ Sub DrawLevel (v As Viewport, m As LevelMap)
   Next
   Dim dod_p As Point
   Let dod_p = Dodu.LevPos
+
 End Sub
 
-' --------------------------
-' Draws a minimap of a level
-' --------------------------
 Sub DrawMinimap (v As Viewport, m As LevelMap)
   Dim col, row As Integer
   For row = 0 To m.Height
@@ -476,7 +501,7 @@ Sub DropBlock (m As LevelMap, p As Square)
   Let Dodu.HasBlock = FALSE
 End Sub
 
-Sub MovePlayer (v As Viewport, p_to As Point) '(x As Integer, y As Integer)
+Sub MovePlayer (v As Viewport, p_to As Point)
   If p_to.x < 0 Then Dodu.ToLeft = TRUE
   If p_to.x > 0 Then Dodu.ToLeft = FALSE
   ' Otherwise, leave in its current state
@@ -541,6 +566,10 @@ Function GetDoduSprite% (walking As Integer, hasBlock As Integer)
   End If
 End Function
 
+Sub GetDoduCenter (p As Point)
+  Point_Set p, Dodu.LevPos.x + (PLAYER_WIDTH% / 2), Dodu.LevPos.y + (PLAYER_HEIGHT% / 2)
+End Sub
+
 ' --------------------------
 ' Includes (implementations)
 ' --------------------------
@@ -548,9 +577,8 @@ End Function
 '$Include:'Utils.bm'
 '$Include:'Geometry.bm'
 '$Include:'Sprites.bm'
-'$Include:'Keyboard.bm'
 '$Include:'Sounds.bm'
-'$Include:'Assets.bm'
+'$Include:'Keyboard.bm'
 '$Include:'Levels.bm'
 '$Include:'LevelMaps.bm'
 
