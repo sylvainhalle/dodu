@@ -335,6 +335,7 @@ Sub DoLevel
       Square_Set sq_lastdrop, -1, -1
       GetDoduCenter center
       Point_Set panbacktarget, (center.x - ImgBuffer.Pan.x - ImgBuffer.Size.x / 2) / PANBACK_STEPS%, (center.y - ImgBuffer.Pan.y - ImgBuffer.Size.y / 2) / PANBACK_STEPS%
+      SoundPlayer_PlayEffect Audio, SND_UNDO%
 
     Else ' No key
       Let CURRENT_SPRITE% = GetDoduSprite%(FALSE, Dodu.HasBlock)

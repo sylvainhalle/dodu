@@ -19,9 +19,13 @@
 ' DependsOn: 'Sprites.bi'
 ' DependsOn: 'Sound.bi'
 
-Const IMG_MODE$ = "cga"
+' Video modes
+Const IMG_MODE_CGA$ = "cga"
+Const IMG_MODE_EGA$ = "ega"
+Const IMG_MODE$ = IMG_MODE_EGA$
+
 Dim Shared COLOR_TRANSPARENT AS Long
-If IMG_MODE$ = "cga" Then
+If IMG_MODE$ = IMG_MODE_CGA$ Then
 	let COLOR_TRANSPARENT = _RGB32(85, 170, 255)
 Else
 	let COLOR_TRANSPARENT = COLOR_PINK&
@@ -112,7 +116,7 @@ Dim Shared Thermometer As Sprite
 Sprite_Load Thermometer, IMG_DIR$ + "/Thermometer.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 Dim Shared THERMO_RED&, THERMO_BLUE&, HIGHLIGHT_COLOR&
-If IMG_MODE = "cga" Then
+If IMG_MODE = IMG_MODE_CGA$ Then
 	Let THERMO_RED& = COLOR_PINK&
 	Let THERMO_BLUE& = COLOR_BLACK&
 	Let HIGHLIGHT_COLOR& = COLOR_BLACK&
@@ -146,12 +150,14 @@ Const SND_THERMO% = 1
 Const SND_GRAB% = 2
 Const SND_DROP% = 3
 Const SND_LEVELUP% = 4
+Const SND_UNDO% = 5
 
 SoundPlayer_AddEffect Audio, SND_STEP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step.mid"), 0.4
 SoundPlayer_AddEffect Audio, SND_THERMO%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/thermo.mid"), 1
 SoundPlayer_AddEffect Audio, SND_GRAB%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/grab.mid"), 1
 SoundPlayer_AddEffect Audio, SND_DROP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/drop.mid"), 1
-SoundPlayer_AddEffect Audio, SND_LEVELUP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/levelup.mid"), 1
+SoundPlayer_AddEffect Audio, SND_LEVELUP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/levelup.mid"), 0.7
+SoundPlayer_AddEffect Audio, SND_UNDO%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/undo.mid"), 0.7
 
 '**
 '* Sets the song volume to a low level.
