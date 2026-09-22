@@ -63,7 +63,7 @@ Sub SoundPlayer_SetSongVolume (sp As SoundPlayer, v As Single)
 End Sub
 
 Sub SoundPlayer_PlayEffect (sp As SoundPlayer, index As Integer)
-	If sp.PlaySong = TRUE Then
+	If sp.PlayEffects = TRUE Then
 		_SndPlay sp.Effects(index)
 	End If
 End Sub
