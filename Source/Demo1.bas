@@ -6,9 +6,12 @@ $ErrorLocation:On
 ' Program constants
 ' --------------------------
 
-' Booleans
-Const TRUE = -1
-Const FALSE = 0
+' --------------------------
+' Includes (declarations)
+' --------------------------
+'$IncludeOnce
+'$Include:'Utils.bi'
+
 
 ' Screen dimensions
 Dim Shared SCREEN_DIMS As Point
@@ -41,13 +44,11 @@ Point_Set PT_LEVEL_NB, 4, 20
 ' Currently, can only be an integer
 Const WALKING_SPEED# = 1
 
-Const PLAY_MUSIC = TRUE
+Const PLAY_MUSIC = FALSE
 
 ' --------------------------
-' Includes (declarations)
+' Other includes (declarations)
 ' --------------------------
-'$IncludeOnce
-'$Include:'Utils.bi'
 '$Include:'Geometry.bi'
 '$Include:'Sprites.bi'
 '$Include:'Keyboard.bi'
@@ -113,9 +114,9 @@ Let CURRENT_TRAJECTORY% = -1
 Screen MainScreen.Buffer
 Dim parallax As Point
 Point_Set parallax, 2, 2
-Viewport_SetBackground ImgBuffer, Background, parallax
 
 Do
+  Viewport_SetBackground ImgBuffer, Backgrounds(Levels(CURRENT_LEVEL%).Background), parallax
   DoLevel
   SoundPlayer_PlayEffect Audio, SND_LEVELUP
   Let CURRENT_LEVEL = CURRENT_LEVEL + 1
@@ -345,8 +346,7 @@ Sub DoLevel
 
   GameOver:
   SoundPlayer_StopSong Audio
-  SoundPlayer_SetPlaySong Audio, SNG_GAMEOVER%
-  SoundPlayer_PlaySong Audio, SNG_GAMEOVER%
+  SoundPlayer_PlayEffect Audio, SND_GAMEOVER%
   _Dest MainScreen.Buffer
   'Cls
   _PrintString (0, 48), "GAME OVER" ' Ought to be better
@@ -364,7 +364,7 @@ End Sub
 Sub DoMiniMap
   Dim MapBuffer As Viewport
   Viewport_Init_Default MapBuffer, SCREEN_DIMS
-  Viewport_SetBackground MapBuffer, Background, P_ORIGIN
+  Viewport_SetBackground MapBuffer, Backgrounds(Levels(CURRENT_LEVEL).Background), P_ORIGIN
   Viewport_Clear MapBuffer
   DrawMinimap MapBuffer, Levels(CURRENT_LEVEL%)
   Viewport_Copy MapBuffer, MainScreen

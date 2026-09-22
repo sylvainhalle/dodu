@@ -1,6 +1,6 @@
 '-----------------------------------------------------------------------------
 '    Dodu, an old-school QuickBasic game
-'    Copyright (C) 2026  Sylvain Hallé
+'    Copyright (C) 1994-2026  Sylvain Hallé
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU General Public License as published by
@@ -17,28 +17,28 @@
 '-----------------------------------------------------------------------------
 
 Sub Square_Set (s As Square, col As Integer, row As Integer)
-	Let s.col = col
-	Let s.row = row
+    Let s.col = col
+    Let s.row = row
 End Sub
 
 Function Square_IsValid% (s as Square)
-	If s.col >= 0 _AndAlso s.col < M_W% _AndAlso s.row >= 0 _AndAlso s.row < M_H% Then
-		Square_IsValid% = TRUE
-	Else
-		Square_IsValid% = FALSE
-	End If
+    If s.col >= 0 _AndAlso s.col < M_W% _AndAlso s.row >= 0 _AndAlso s.row < M_H% Then
+        Square_IsValid% = TRUE
+    Else
+        Square_IsValid% = FALSE
+    End If
 End Function
 
 Sub Square_ToPoint (s as Square, p as Point)
-	let p.x = s.col * BLOCK_SIZE%
-	let p.y = s.row * BLOCK_SIZE%
+    let p.x = s.col * BLOCK_SIZE%
+    let p.y = s.row * BLOCK_SIZE%
 End Sub
 
 Function IsGoalAt (col As Integer, row As Integer, l As LevelMap)
   If col >= 0 _AndAlso col < M_W% _AndAlso row >= 0 _AndAlso row < M_H% Then
-  	If l.Topo(col, row) = T_POLE Then
-    	Let IsGoalAt = TRUE
-    	Exit Function
+    If l.Topo(col, row) = T_POLE Then
+        Let IsGoalAt = TRUE
+        Exit Function
     End If
   End If
   Let IsGoalAt = FALSE
@@ -72,39 +72,41 @@ End Function
 ' Loads a level
 ' --------------------------
 Sub LoadLevel (l As LevelMap)
-  Dim lline As String, idx As Integer, char As String, row As Integer
+  Dim lline As String, idx As Integer, char As String, row As Integer, bg As Integer
+  Read bg
+  Let l.Background = bg
   Read lline
   Let l.Width = LEN(lline)
   Let row = 0
-  While lline <> "X"
-  	  For idx = 1 TO l.Width
-  	  	Let char = MID$(lline, idx, 1)
-  		If char = "*" Then
-  			Let l.StartPoint.col = idx - 1
-  			Let l.StartPoint.row = row
-  		Else
-  			Let l.Topo(idx - 1, row) = char
-  		End If
-  	  Next
-  	  Read lline
-  	  Let row = row + 1
+  While lline <> T_END
+      For idx = 1 TO l.Width
+        Let char = MID$(lline, idx, 1)
+        If char = "*" Then
+            Let l.StartPoint.col = idx - 1
+            Let l.StartPoint.row = row
+        Else
+            Let l.Topo(idx - 1, row) = char
+        End If
+      Next
+      Read lline
+      Let row = row + 1
   Wend
   Let l.Height = row - 1
 End Sub
 
 Sub LoadLevels()
-	Restore L1
-	LoadLevel Levels(0)
-	Restore L2
-	LoadLevel Levels(1)
-	Restore L3
-	LoadLevel Levels(2)
-	Restore L4
-	LoadLevel Levels(4)
-	Restore L5
-	LoadLevel Levels(5)
-	Restore L6
-	LoadLevel Levels(6)
+    Restore L1
+    LoadLevel Levels(0)
+    Restore L2
+    LoadLevel Levels(1)
+    Restore L3
+    LoadLevel Levels(2)
+    Restore L4
+    LoadLevel Levels(4)
+    Restore L5
+    LoadLevel Levels(5)
+    Restore L6
+    LoadLevel Levels(6)
 End Sub
 
 

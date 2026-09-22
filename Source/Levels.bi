@@ -1,6 +1,6 @@
 '-----------------------------------------------------------------------------
 '    Dodu, an old-school QuickBasic game
-'    Copyright (C) 2026  Sylvain Hallé
+'    Copyright (C) 1994-2026  Sylvain Hallé
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ Const T_BLOCK_B = "@"
 Const T_BLOCK_W = "#"
 Const T_POLE = "!"
 Const T_COOKIE = "*"
+Const T_END = "X"
 
 Type Square
   col As Integer
@@ -53,9 +54,10 @@ Declare Sub Square_ToPoint (s as Square, p as Point)
 Type LevelMap
   Width As Integer
   Height As Integer
-  'Topo(M_W%, M_H%) As String
-  Topo(30, 30) As String
+  Topo(M_W%, M_H%) As String
+  'Topo(30, 30) As String
   StartPoint As Square
+  Background As Integer
   PanX As Integer
   PanY As Integer
 End Type

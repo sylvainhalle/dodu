@@ -1,6 +1,6 @@
 '-----------------------------------------------------------------------------
 '    Dodu, an old-school QuickBasic game
-'    Copyright (C) 2026  Sylvain Hallé
+'    Copyright (C) 1994-2026  Sylvain Hallé
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU General Public License as published by

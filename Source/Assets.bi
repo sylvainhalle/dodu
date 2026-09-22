@@ -1,6 +1,6 @@
 '-----------------------------------------------------------------------------
 '    Dodu, an old-school QuickBasic game
-'    Copyright (C) 2026  Sylvain Hallé
+'    Copyright (C) 1994-2026  Sylvain Hallé
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU General Public License as published by
@@ -126,9 +126,12 @@ Else
 	Let HIGHLIGHT_COLOR& = COLOR_YELLOW&
 End If
 
-' Background
-Dim Shared Background As Sprite
-Sprite_Load Background, IMG_DIR$ + "/Background.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
+' ---------------------
+' Backgrounds
+' ---------------------
+Dim Shared Backgrounds(2) As Sprite
+Sprite_Load Backgrounds(0), IMG_DIR$ + "/Background.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
+Sprite_Load Backgrounds(1), IMG_DIR$ + "/Background2.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
 
 ' Other constants
 Const PLAYER_HEIGHT% = 33
@@ -144,11 +147,10 @@ SoundPlayer_Init Audio
 
 Const SNG_SONG1 = 0
 Const SNG_SONG2 = 1
-Const SNG_GAMEOVER = 2
 
 SoundPlayer_AddSong Audio, SNG_SONG1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod_fixed.mid"), 0.4
 SoundPlayer_AddSong Audio, SNG_SONG2, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/yaya.mid"), 0.4
-SoundPlayer_AddSong Audio, SNG_GAMEOVER, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/gameover.mid"), 0.5
+
 
 Const SND_STEP% = 0
 Const SND_THERMO% = 1
@@ -156,6 +158,7 @@ Const SND_GRAB% = 2
 Const SND_DROP% = 3
 Const SND_LEVELUP% = 4
 Const SND_UNDO% = 5
+Const SND_GAMEOVER% = 6
 
 SoundPlayer_AddEffect Audio, SND_STEP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step.mid"), 0.4
 SoundPlayer_AddEffect Audio, SND_THERMO%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/thermo.mid"), 1
@@ -163,6 +166,7 @@ SoundPlayer_AddEffect Audio, SND_GRAB%, _SndOpen("/home/sylvain/Workspaces/dodu/
 SoundPlayer_AddEffect Audio, SND_DROP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/drop.mid"), 1
 SoundPlayer_AddEffect Audio, SND_LEVELUP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/levelup.mid"), 0.7
 SoundPlayer_AddEffect Audio, SND_UNDO%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/undo.mid"), 0.7
+SoundPlayer_AddEffect Audio, SND_GAMEOVER%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/gameover.mid"), 0.5
 
 '**
 '* Sets the song volume to a low level.

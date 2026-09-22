@@ -1,6 +1,6 @@
 '-----------------------------------------------------------------------------
 '    Dodu, an old-school QuickBasic game
-'    Copyright (C) 2026  Sylvain Hallé
+'    Copyright (C) 1994-2026  Sylvain Hallé
 '
 '    This program is free software: you can redistribute it and/or modify
 '    it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 '$IncludeOnce
 
 L1:
+Data 0
 Data "                  "
 Data "                  "
 Data "@                @"
@@ -32,6 +33,7 @@ Data "@@@@@@@@@@@@@@@@@@"
 Data "X"
 
 L2:
+Data 1
 Data "@              "
 Data "@              "
 Data "@              "
@@ -45,6 +47,7 @@ Data "@@@@@@@@@@@@@@@"
 Data "X"
 
 L3:
+Data 0
 Data "@               "
 Data "@               "
 Data "@               "
@@ -57,6 +60,7 @@ Data "@@@@@@@@@@@@@@@@"
 Data "X"
 
 L4:
+Data 1
 Data "                        "
 Data "                        "
 Data "                        "
@@ -67,6 +71,7 @@ Data "@@@@@@ @@@@@@@@@@@@@@@@@"
 Data "X"
 
 L5:
+Data 0
 Data "                  "
 Data "                  "
 Data "                  "
@@ -77,6 +82,7 @@ Data "@@@@@@@ @ @@@@@@@@"
 Data "X"
 
 L6:
+Data 1
 Data "@#                   @"
 Data "@#                   @"
 Data "@##         @   @    @"
