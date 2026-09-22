@@ -19,7 +19,7 @@
 ' DependsOn: 'Sprites.bi'
 ' DependsOn: 'Sound.bi'
 
-Const IMG_MODE$ = "ega"
+Const IMG_MODE$ = "cga"
 Dim Shared COLOR_TRANSPARENT AS Long
 If IMG_MODE$ = "cga" Then
 	let COLOR_TRANSPARENT = _RGB32(85, 170, 255)
