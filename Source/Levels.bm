@@ -72,24 +72,39 @@ End Function
 ' Loads a level
 ' --------------------------
 Sub LoadLevel (l As LevelMap)
-  Dim w As Integer, h As Integer
-  Dim sx As Integer, sy As Integer
-  Read h
-  Read w
-  Read sx
-  Read sy
-  Let l.Width = w
-  Let l.Height = h
-  Let l.StartPoint.col = sx
-  Let l.StartPoint.row = sy
-  Dim col, row As Integer
-  Dim b As String
-  For row = 1 To h
-    For col = 1 To w
-      Read b
-      Let l.Topo(col - 1, row - 1) = b
-    Next
-  Next
+  Dim lline As String, idx As Integer, char As String, row As Integer
+  Read lline
+  Let l.Width = LEN(lline)
+  Let row = 0
+  While lline <> "X"
+  	  For idx = 1 TO l.Width
+  	  	Let char = MID$(lline, idx, 1)
+  		If char = "*" Then
+  			Let l.StartPoint.col = idx - 1
+  			Let l.StartPoint.row = row
+  		Else
+  			Let l.Topo(idx - 1, row) = char
+  		End If
+  	  Next
+  	  Read lline
+  	  Let row = row + 1
+  Wend
+  Let l.Height = row - 1
+End Sub
+
+Sub LoadLevels()
+	Restore L1
+	LoadLevel Levels(0)
+	Restore L2
+	LoadLevel Levels(1)
+	Restore L3
+	LoadLevel Levels(2)
+	Restore L4
+	LoadLevel Levels(4)
+	Restore L5
+	LoadLevel Levels(5)
+	Restore L6
+	LoadLevel Levels(6)
 End Sub
 
 

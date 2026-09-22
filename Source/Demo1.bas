@@ -41,7 +41,7 @@ Point_Set PT_LEVEL_NB, 4, 20
 ' Currently, can only be an integer
 Const WALKING_SPEED# = 1
 
-Const PLAY_MUSIC = FALSE
+Const PLAY_MUSIC = TRUE
 
 ' --------------------------
 ' Includes (declarations)
@@ -82,21 +82,6 @@ Viewport_SetFont ImgBuffer, FNT_GRAPE
 Color COLOR_PINK&, , , ImgBuffer.Buffer
 _PrintMode _KeepBackground , ImgBuffer.Buffer
 
-' --------------------------
-' Level loading
-' --------------------------
-Dim Shared Levels(2) As LevelMap
-' L1
-Restore L1
-LoadLevel Levels(0)
-' L2
-Restore L2
-LoadLevel Levels(1)
-' L3
-Restore L3
-LoadLevel Levels(2)
-
-
 
 ' Game state
 Dim Shared Dodu As Player
@@ -113,6 +98,10 @@ Let Audio.PlaySong = PLAY_MUSIC%
 Let Audio.PlayEffects = TRUE
 SoundPlayer_PlaySong Audio, 0
 
+' --------------------------
+' Levels
+' --------------------------
+LoadLevels
 Dim Shared CURRENT_LEVEL As Integer
 Let CURRENT_LEVEL = 0
 
@@ -355,9 +344,16 @@ Sub DoLevel
   Loop
 
   GameOver:
+  SoundPlayer_StopSong Audio
+  SoundPlayer_SetPlaySong Audio, SNG_GAMEOVER%
+  SoundPlayer_PlaySong Audio, SNG_GAMEOVER%
   _Dest MainScreen.Buffer
-  Cls
+  'Cls
   _PrintString (0, 48), "GAME OVER" ' Ought to be better
+  _Display
+  Do
+    _Limit FPS%
+  Loop While Not _KeyDown(K_ESC)
   End
 
   Quit:

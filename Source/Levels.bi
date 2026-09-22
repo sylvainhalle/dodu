@@ -64,7 +64,14 @@ Declare Function IsGoalAt (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsBlockAt (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsWhiteBlockAt (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsObstacleAt (col As Integer, row As Integer, l As LevelMap)
+Declare Sub LoadLevels ()
 Declare Sub LoadLevel (l As LevelMap)
 Declare Sub PrintLevel (m As LevelMap)
+
+' --------------------------
+' Level loading
+' --------------------------
+Dim Shared Levels(6) As LevelMap
+
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

@@ -142,8 +142,13 @@ _MIDISoundBank ("/usr/share/sounds/sf2/default-GM.sf2")
 Dim Shared Audio As SoundPlayer
 SoundPlayer_Init Audio
 
-SoundPlayer_AddSong Audio, 0, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod_fixed.mid"), 0.4
-SoundPlayer_AddSong Audio, 1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/yaya.mid"), 0.4
+Const SNG_SONG1 = 0
+Const SNG_SONG2 = 1
+Const SNG_GAMEOVER = 2
+
+SoundPlayer_AddSong Audio, SNG_SONG1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod_fixed.mid"), 0.4
+SoundPlayer_AddSong Audio, SNG_SONG2, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/yaya.mid"), 0.4
+SoundPlayer_AddSong Audio, SNG_GAMEOVER, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/gameover.mid"), 0.5
 
 Const SND_STEP% = 0
 Const SND_THERMO% = 1
