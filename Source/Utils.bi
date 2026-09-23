@@ -17,9 +17,8 @@
 '-----------------------------------------------------------------------------
 
 ' Booleans
-Const TRUE = -1
 Const FALSE = 0
-
+Const TRUE = Not FALSE
 
 Declare Function Ceil% (x As Single)
 Declare Function Floor% (x As Single)
@@ -30,6 +29,6 @@ Declare Function NbFormat$ (x As Integer)
 '* it between min and max
 '* https://qb64phoenix.com/forum/showthread.php?tid=1336&pid=12112#pid12112
 '**
-Declare FUNCTION Clamp% (value%, minimum%, maximum%)
+Declare Function Clamp% (value%, minimum%, maximum%)
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

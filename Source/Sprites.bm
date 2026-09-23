@@ -190,6 +190,7 @@ Sub Viewport_Init (v As Viewport, size As Point, ws As Point, pan As Point, scal
   Let v.Buffer = _NewImage(size.x * scale, size.y * scale, 32)
   Let v.BackgroundPanRatio.x = -1
   Let v.BackgroundPanRatio.y = -1
+  Let v.Scanlines = FALSE
 End Sub
 
 Sub Viewport_PointToScreen (v As Viewport, p_src As Point, p_dest As Point)
@@ -273,6 +274,17 @@ End Sub
 
 Sub Viewport_SetFont (v as Viewport, font As _Unsigned Long)
 	_Font font, v.Buffer
+End Sub
+
+Sub Viewport_Display (v As Viewport)
+	_Dest v.Buffer
+	If v.Scanlines Then
+		Dim y As Integer
+		For y = 0 To v.Size.y * v.Scale Step v.Scale
+			Line (0, y)-(v.Size.x * v.Scale, y), _RGB32(0, 0, 0, 56)
+		Next
+	End If
+	_Display
 End Sub
 
 Sub Viewport_PutSprite (v As Viewport, absolute As Integer, s As Sprite, p As Point, flipped As Integer)

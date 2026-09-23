@@ -186,6 +186,7 @@ Type Viewport
   Buffer As Long
   Background As Sprite
   BackgroundPanRatio As Point
+  Scanlines As Integer
 End Type
 
 '**
@@ -263,6 +264,11 @@ Declare Sub Viewport_SetCenter (v as Viewport, p as Point)
 '* Changes the panning of the viewport.
 '**
 Declare Sub Viewport_MovePan (v as Viewport, p as Point)
+
+'**
+'* Displays the current viewport
+'**
+Declare Sub Viewport_Display (v As Viewport)
 
 ' }}}
 

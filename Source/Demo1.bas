@@ -39,8 +39,6 @@ Const FPS% = 25
 
 ' Window scaling factor
 Const SCALE% = 6
-Dim Shared WINDOW_DIMS As Point
-Point_Set WINDOW_DIMS, SCREEN_DIMS.x * SCALE%, SCREEN_DIMS.y * SCALE%
 
 ' Threshold to enable block holding/dropping (px)
 Const CLIMB_THRESHOLD% = 1
@@ -63,6 +61,9 @@ Const WALKING_SPEED# = 1
 
 Dim PLAY_MUSIC As Integer
 Let PLAY_MUSIC = TRUE
+
+Dim Shared SCANLINES As Integer
+Let SCANLINES = FALSE
 
 ' --------------------------
 ' Other includes (declarations)
@@ -92,6 +93,8 @@ For argc = 1 To _CommandCount
   Select Case Command$(argc)
     Case "--nomusic"
       Let PLAY_MUSIC = FALSE
+    Case "--scanlines"
+      Let SCANLINES = TRUE
     Case "--level"
       Let toset = "level"
     Case Else
@@ -166,7 +169,8 @@ Sub DoLevel
 
   Ticker_Init Dodu.ThermoTick, 10, THERMO_TICK_NORMAL%, FALSE
 
-  Viewport_Init MainScreen, WINDOW_DIMS, P_ORIGIN, WINDOW_DIMS, 1
+  Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
+  Let MainScreen.Scanlines = SCANLINES
   Viewport_Init_Default ImgBuffer, SCREEN_DIMS, ws
   Viewport_SetFont ImgBuffer, FNT_GRAPE
   Viewport_SetBackground ImgBuffer, Backgrounds(Levels(CURRENT_LEVEL%).Background), parallax
@@ -236,9 +240,8 @@ Sub DoLevel
 
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
-    Viewport_Clear MainScreen
     Viewport_Copy ImgBuffer, MainScreen
-    _Display
+    Viewport_Display MainScreen
 
     If (CURRENT_SPRITE% = DOD_WALKING% Or CURRENT_SPRITE% = DOD_BLOCK_WALKING%) And DoduSprites(CURRENT_SPRITE%).Ticker.TickCnt = 0 And DoduSprites(CURRENT_SPRITE%).Ticker.Index Mod 2 = 0 Then
       SoundPlayer_PlayEffect Audio, SND_STEP%
@@ -400,7 +403,7 @@ Sub DoLevel
   _Dest MainScreen.Buffer
   'Cls
   _PrintString (0, 48), "GAME OVER" ' Ought to be better
-  _Display
+  Viewport_Display MainScreen
   Do
     _Limit FPS%
   Loop While Not _KeyDown(K_ESC)
@@ -420,13 +423,13 @@ Sub DoMiniMap
   Viewport_Clear MapBuffer
   DrawMinimap MapBuffer, Levels(CURRENT_LEVEL%)
   Viewport_Copy MapBuffer, MainScreen
-  _Display
+  Viewport_Display MainScreen
 
   ' Wait until key is released
   Kbd_WaitRelease FPS%
   Do
     _Limit FPS%
-    _Display
+    Viewport_Display MainScreen
     If _KeyDown(K_LEFT) Then
       Let MapBuffer.Pan.x = MapBuffer.Pan.x - 2
     ElseIf _KeyDown(K_RIGHT) Then
@@ -446,7 +449,7 @@ Sub DoPause
   Point_Set p, 30, 24
   Viewport_Print ImgBuffer, " PAUSE ", p
   Viewport_Copy ImgBuffer, MainScreen
-  _Display
+  Viewport_Display MainScreen
 
   ' Wait for the SPACE that invoked us to be released
   Dim k As Long
