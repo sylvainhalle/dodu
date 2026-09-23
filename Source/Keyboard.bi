@@ -16,6 +16,9 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
+' Devices
+Dim Shared DeviceCount As Integer
+Let DeviceCount = _Devices
 
 ' Keys
 Const K_BACKSPACE = 8
@@ -29,6 +32,38 @@ Const K_UP = 18432
 Const K_DOWN = 20480
 Const K_M_UC = 77
 Const K_M_LC = 109
+
+' Joystick
+Const J_A = 0
+
+' This part adapted from
+' https://www.qb64tutorial.com/lesson21
+
+Const KBD_CONTROLLER = 1 '               controller is a keyboard
+Const MOUSE_CONTROLLER = 2 '             controller is a mouse
+Const JPAD_CONTROLLER = 3 '              controller is a joystick/game pad
+
+Type TYPE_CONTROLLER '                   CONTROLLER PROPERTIES
+  id As Integer '                      device id number of controller (1 to _DEVICES)
+  Kind As Integer '                    the type of controller         (1, 2, or 3)
+  Buttons As Integer '                 controller buttons
+  Axis As Integer '                    controller Axis
+  Wheels As Integer '                  controller wheels
+  Description As String * 20 '         description of controller
+End Type
+
+Dim Shared Controllers(DeviceCount) As TYPE_CONTROLLER ' controller information array
+
+
+Declare Sub Kbd_FindDevices ()
+
+Declare Function In_Down (k As Integer)
+Declare Function Joy_Down (k As Integer)
+Declare Function Kbd_Down (k As Integer)
+
+Declare Function Kbd_Input ()
+
+
 
 '**
 '* Waits until the current key being pressed is released.

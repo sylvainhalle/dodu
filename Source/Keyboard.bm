@@ -16,6 +16,114 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
+Sub Kbd_FindDevices ()
+  Dim Device As String '                   device description                      (_DEVICE$)
+  Dim Dcount As Integer '                  device loop counter
+  Dim Start As Integer '                   start position of controller description
+  Dim Finish As Integer '                  end position of controller description
+  Dim Format As String '                   format of single chart line
+  Dim a As String '                        axis "YES" or "NO"
+  Dim b As String '                        button "YES" or "NO"
+  Dim w As String '                        wheel "YES" or "NO"
+
+  Do '                                                                               begin device search
+    Let Dcount = Dcount + 1 '                                                          increment device loop counter
+    Device = _Device$(Dcount) '                                                    get controller information
+  let Controllers(Dcount).id = Dcount '                                               record device id number
+  If InStr(Device, "[KEYBOARD]") Then '                                           is this a keyboard?
+    let Controllers(Dcount).Description = "Keyboard" '                              yes, save description
+    Controllers(Dcount).Kind = KBD_CONTROLLER '                                 record device type
+  ElseIf InStr(Device, "[MOUSE]") Then '                                          no, is this a mouse?
+    let Controllers(Dcount).Description = "Mouse" '                                 yes, save description
+    let Controllers(Dcount).Kind = MOUSE_CONTROLLER '                               record device type
+  ElseIf InStr(Device, "[CONTROLLER]") Then '                                     no, is this a controller?
+    If InStr(Device, "[NAME]") Then '                                           yes, with descriptive name?
+      let Start = InStr(Device, "[NAME]") + 7 '                                  yes, get start of description
+      Finish = InStr(Start, Device, "]") '                                   get end of description
+      let Controllers(Dcount).Description = Mid$(Device, Start, Finish - Start) ' parse out descriptive name
+      Controllers(Dcount).Kind = JPAD_CONTROLLER '                            record device type
+    End If
+  End If
+  If InStr(Device, "[BUTTON]") Then Controllers(Dcount).Buttons = TRUE '          record controller has buttons
+  If InStr(Device, "[AXIS]") Then Controllers(Dcount).Axis = TRUE '               record controller has axes
+  If InStr(Device, "[WHEEL]") Then Controllers(Dcount).Wheels = TRUE '            record controller has wheels
+  If Controllers(Dcount).Buttons Then b = "YES" Else b = "NO"
+  If Controllers(Dcount).Axis Then a = "YES" Else a = "NO" '                      print current chart line
+  If Controllers(Dcount).Wheels Then w = "YES" Else w = "NO"
+Loop Until Dcount = DeviceCount '                                                  leave when all devices polled
+End Sub
+
+Function In_Down (k As Integer)
+	Let In_Down = FALSE
+	Dim Device As Integer, cnt As Integer
+	Let Device = _DeviceInput
+	If Device Then
+		While _DeviceInput(Device): Wend
+		If Device = 1 Then
+			Let In_Down = Kbd_Down (k)
+		ElseIf Device = 3 Then
+			Let In_Down = Joy_Down (k)
+		End If
+	End If
+End Function
+
+Function Joy_Down (k As Integer)
+	Let Joy_Down = FALSE
+	Select Case k
+		Case K_DOWN
+			Let Joy_Down = Floor%(_AXIS(2)) < 0
+		Case K_UP
+			Let Joy_Down = Ceil%(_AXIS(2)) > 0
+		Case K_LEFT
+			Let Joy_Down = Floor%(_AXIS(1)) < 0
+		Case K_RIGHT
+			Let Joy_Down = Ceil%(_AXIS(1)) > 0
+	End Select
+End Function
+
+Function Kbd_Down (k As Integer)
+	Let Kbd_Down = _KeyDown (k)
+End Function
+
+Function Kbd_Input ()
+	dim Device As Integer, cnt As Integer
+	Let Device = _DeviceInput
+	Let Kbd_Input = -1
+	If Device Then
+		While _DeviceInput(Device): Wend
+		If Device = 1 Then ' Keyboard
+			Let Kbd_Input = 100
+		ElseIf Device = 3 Then ' Joystick
+			Let cnt = 0
+			If Floor%(_AXIS(1)) < 0 Then
+				Let Kbd_Input = K_LEFT
+				Exit Function
+			ElseIf Ceil%(_AXIS(1)) > 0 Then
+				Let Kbd_Input = K_RIGHT
+				Exit Function
+			End If
+			If Floor%(_AXIS(2)) < 0 Then
+				Let Kbd_Input = K_UP
+				Exit Function
+			ElseIf Ceil%(_AXIS(2)) > 0 Then
+				Let Kbd_Input = K_DOWN
+				Exit Function
+			End If
+			Do
+				Let cnt = cnt + 1
+				If _Button(cnt) Then
+					Select Case cnt
+						Case 1
+							let Kbd_Input = J_A
+					End Select
+					Exit Function
+				End If
+			Loop Until cnt = _LastButton(Device) Or cnt = 10
+		End If
+	End If
+End Function
+
+
 Sub Kbd_WaitRelease (fps As Integer)
   Dim k As Long
   Do

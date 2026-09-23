@@ -17,7 +17,7 @@
 '-----------------------------------------------------------------------------
 
 Option Base 0
-Option _Explicit
+'Option _Explicit
 $ErrorLocation:On
 
 ' --------------------------
@@ -75,6 +75,16 @@ Let SCANLINES = FALSE
 '$Include:'Assets.bi'
 '$Include:'Levels.bi'
 '$Include:'Passwords.bi'
+
+Kbd_FindDevices
+
+'Dim j As Single
+'Do
+'  _Limit 10
+'  Locate 1, 1
+'  Print Time$ + " " + Str$(In_Down(K_DOWN))
+'Loop Until InKey$ = Chr$(27)
+'End
 
 ' --------------------------
 ' Levels
