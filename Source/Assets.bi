@@ -111,6 +111,12 @@ Point_Set MiniPoleOffset, 1, -2
 Point_Set MiniPoleOffsetFlip, 1, 2
 Sprite_Load MiniPole, IMG_DIR$ + "/MiniPole.gif", MiniPoleOffset, MiniPoleOffsetFlip, COLOR_TRANSPARENT
 
+' Cookie
+Dim Shared Cookie As Sprite
+Dim CookieOffset As Point
+Point_Set CookieOffset, 3, 2
+Sprite_Load Cookie, IMG_DIR$ + "/Cookie.gif", CookieOffset, CookieOffset, COLOR_TRANSPARENT
+
 ' Thermometer
 Dim Shared Thermometer As Sprite
 Sprite_Load Thermometer, IMG_DIR$ + "/Thermometer.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT

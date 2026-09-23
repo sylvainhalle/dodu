@@ -50,7 +50,6 @@ Sub Sprite_Load (s As Sprite, file As String, offset As Point, offsetflip As Poi
   Point_Set s.Size, _Width(s.Content), _Height(s.Content)
   Let s.Offset = offset
   Let s.OffsetFlip = offsetflip
-  '_ClearColor clr, s.Content
   _SetAlpha 0, clr, s.Content
 End Sub
 
@@ -179,19 +178,19 @@ End Sub
 '** - Viewport ------------------------------------------------- {{{
 '**
 
-Sub Viewport_Init_Default (v As Viewport, size As Point)
-  Viewport_Init v, size, P_ORIGIN, 1
+Sub Viewport_Init_Default (v As Viewport, size As Point, ws As Point)
+  Viewport_Init v, size, ws, P_ORIGIN, 1
 End Sub
 
-Sub Viewport_Init (v As Viewport, size As Point, pan As Point, scale As Single)
+Sub Viewport_Init (v As Viewport, size As Point, ws As Point, pan As Point, scale As Single)
   Let v.Size = size
+  Let v.WorldSize = ws
   Let v.Pan = pan
   Let v.Scale = scale
   Let v.Buffer = _NewImage(size.x * scale, size.y * scale, 32)
   Let v.BackgroundPanRatio.x = -1
   Let v.BackgroundPanRatio.y = -1
 End Sub
-
 
 Sub Viewport_PointToScreen (v As Viewport, p_src As Point, p_dest As Point)
   Let p_dest.x = p_src.x - v.Pan.x
@@ -301,6 +300,11 @@ End Sub
 Sub Viewport_SetCenter (v as Viewport, p as Point)
 	let v.Pan.x = p.x - v.Size.x \ 2
 	let v.Pan.y = p.y - v.Size.y \ 2
+End Sub
+
+Sub Viewport_MovePan (v as Viewport, p as Point)
+	Let v.Pan.x = Clamp%(v.Pan.x + p.x, 0, v.WorldSize.x - v.Size.x)
+	Let v.Pan.y = Clamp%(v.Pan.y + p.y, 0, v.WorldSize.y - v.Size.y)
 End Sub
 ' }}}
 

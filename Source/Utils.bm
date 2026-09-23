@@ -38,4 +38,14 @@ Function NbFormat$ (x As Integer)
 	end if
 End Function
 
+FUNCTION Clamp% (value%, minimum%, maximum%)
+    IF value% > maximum% THEN
+        Clamp% = maximum%
+    ELSEIF value% < minimum% THEN
+        Clamp% = minimum%
+    ELSE
+        Clamp% = value%
+    END IF
+END FUNCTION
+
 ' :mode=visualbasic:folding=explicit:wrap=none:

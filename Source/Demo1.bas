@@ -44,7 +44,8 @@ Point_Set PT_LEVEL_NB, 4, 20
 ' Currently, can only be an integer
 Const WALKING_SPEED# = 1
 
-Const PLAY_MUSIC = FALSE
+Dim PLAY_MUSIC As Integer
+Let PLAY_MUSIC = TRUE
 
 ' --------------------------
 ' Other includes (declarations)
@@ -55,6 +56,34 @@ Const PLAY_MUSIC = FALSE
 '$Include:'Sounds.bi'
 '$Include:'Assets.bi'
 '$Include:'Levels.bi'
+
+' --------------------------
+' Levels
+' --------------------------
+LoadLevels
+Dim Shared CURRENT_LEVEL As Integer
+Let CURRENT_LEVEL = 0
+
+
+' --------------------------
+' Command line arguments
+' --------------------------
+
+Dim argc As Integer, toset As String
+For argc = 1 To _CommandCount
+  Select Case Command$(argc)
+    Case "--nomusic"
+      Let PLAY_MUSIC = FALSE
+    Case "--level"
+      Let toset = "level"
+    Case Else
+      Select Case toset
+        Case "level"
+          Let CURRENT_LEVEL = Val(Command$(argc)) - 1
+      End Select
+  End Select
+Next
+
 
 ' --------------------------
 ' Player
@@ -77,12 +106,6 @@ End Type
 ' --------------------------
 _AllowFullScreen _Off
 Dim Shared MainScreen As Viewport, ImgBuffer As Viewport
-Viewport_Init MainScreen, WINDOW_DIMS, P_ORIGIN, 1
-Viewport_Init_Default ImgBuffer, SCREEN_DIMS
-Viewport_SetFont ImgBuffer, FNT_GRAPE
-Color COLOR_PINK&, , , ImgBuffer.Buffer
-_PrintMode _KeepBackground , ImgBuffer.Buffer
-
 
 ' Game state
 Dim Shared Dodu As Player
@@ -99,24 +122,16 @@ Let Audio.PlaySong = PLAY_MUSIC%
 Let Audio.PlayEffects = TRUE
 SoundPlayer_PlaySong Audio, 0
 
-' --------------------------
-' Levels
-' --------------------------
-LoadLevels
-Dim Shared CURRENT_LEVEL As Integer
-Let CURRENT_LEVEL = 0
 
 Dim Shared CURRENT_SPRITE As Integer
 Let CURRENT_SPRITE% = DOD_STATIC%
 Dim Shared CURRENT_TRAJECTORY As Integer
 Let CURRENT_TRAJECTORY% = -1
 
-Screen MainScreen.Buffer
-Dim parallax As Point
+Dim Shared parallax As Point
 Point_Set parallax, 2, 2
 
 Do
-  Viewport_SetBackground ImgBuffer, Backgrounds(Levels(CURRENT_LEVEL%).Background), parallax
   DoLevel
   SoundPlayer_PlayEffect Audio, SND_LEVELUP
   Let CURRENT_LEVEL = CURRENT_LEVEL + 1
@@ -128,8 +143,19 @@ Sub DoLevel
   Let Dodu.Temp = 10
   Let PANBACK_STEPS = 8
   Dim panback_ticker As Ticker
+  Dim ws As Point
+  Point_Set ws, Levels(CURRENT_LEVEL).Width * BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * BLOCK_SIZE%
 
   Ticker_Init Dodu.ThermoTick, 10, THERMO_TICK_NORMAL%, FALSE
+
+  Viewport_Init MainScreen, WINDOW_DIMS, P_ORIGIN, WINDOW_DIMS, 1
+  Viewport_Init_Default ImgBuffer, SCREEN_DIMS, ws
+  Viewport_SetFont ImgBuffer, FNT_GRAPE
+  Viewport_SetBackground ImgBuffer, Backgrounds(Levels(CURRENT_LEVEL%).Background), parallax
+  Color COLOR_PINK&, , , ImgBuffer.Buffer
+  _PrintMode _KeepBackground , ImgBuffer.Buffer
+  Screen MainScreen.Buffer
+
 
   Ticker_Init panback_ticker, PANBACK_STEPS, 1, FALSE
   Let Dodu.LevPos.x = Levels(CURRENT_LEVEL).StartPoint.col * BLOCK_SIZE%
@@ -172,6 +198,7 @@ Sub DoLevel
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL)
     DrawPlayer ImgBuffer
     DrawThermometer ImgBuffer
+    Viewport_Print ImgBuffer, Point_ToString(ImgBuffer.Pan) + Point_ToString(ImgBuffer.WorldSize), P_ORIGIN
     Viewport_Print ImgBuffer, _Trim$(NbFormat$(CURRENT_LEVEL% + 1)), PT_LEVEL_NB
 
     If _KeyDown(K_ESC) Then
@@ -226,8 +253,7 @@ Sub DoLevel
 
     If CURRENT_TRAJECTORY% = TRJ_PANBACK% Then
       Ticker_Tick panback_ticker
-      Let ImgBuffer.Pan.x = ImgBuffer.Pan.x + panbacktarget.x
-      Let ImgBuffer.Pan.y = ImgBuffer.Pan.y + panbacktarget.y
+      Viewport_MovePan ImgBuffer, panbacktarget
       If Ticker_Finished%(panback_ticker) Then
         Let CURRENT_TRAJECTORY% = -1
         Ticker_Reset panback_ticker
@@ -236,19 +262,25 @@ Sub DoLevel
     End If
 
     If _KeyDown(K_CTRL) Then
+      Dim panP As Point
       If _KeyDown(K_LEFT) Then
-        ImgBuffer.Pan.x = ImgBuffer.Pan.x - 3
+        Point_Set panP, -3, 0
+        Viewport_MovePan ImgBuffer, panP
         Let CTRL_PRESSED = TRUE
         _Continue
       ElseIf _KeyDown(K_RIGHT) Then
-        ImgBuffer.Pan.x = ImgBuffer.Pan.x + 3
+        Point_Set panP, 3, 0
+        Viewport_MovePan ImgBuffer, panP
+        Let CTRL_PRESSED = TRUE
         _Continue
       ElseIf _KeyDown(K_UP) Then
-        ImgBuffer.Pan.y = ImgBuffer.Pan.y - 3
+        Point_Set panP, 0, -3
+        Viewport_MovePan ImgBuffer, panP
         Let CTRL_PRESSED = TRUE
         _Continue
       ElseIf _KeyDown(K_DOWN) Then
-        ImgBuffer.Pan.y = ImgBuffer.Pan.y + 3
+        Point_Set panP, 0, 3
+        Viewport_MovePan ImgBuffer, panP
         Let CTRL_PRESSED = TRUE
         _Continue
       End If
@@ -363,7 +395,9 @@ End Sub
 
 Sub DoMiniMap
   Dim MapBuffer As Viewport
-  Viewport_Init_Default MapBuffer, SCREEN_DIMS
+  Dim ws As Point
+  Point_Set ws, Levels(CURRENT_LEVEL).Width * MINI_BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * MINI_BLOCK_SIZE%
+  Viewport_Init_Default MapBuffer, SCREEN_DIMS, ws
   Viewport_SetBackground MapBuffer, Backgrounds(Levels(CURRENT_LEVEL).Background), P_ORIGIN
   Viewport_Clear MapBuffer
   DrawMinimap MapBuffer, Levels(CURRENT_LEVEL%)
@@ -423,6 +457,8 @@ Sub DrawLevel (v As Viewport, m As LevelMap)
           Viewport_PutSprite v, FALSE, BlockWhite, p, FALSE
         Case T_POLE
           Viewport_PutSprite v, FALSE, Pole, p, FALSE
+        Case T_COOKIE
+          Viewport_PutSprite v, FALSE, Cookie, p, FALSE
       End Select
     Next
   Next
@@ -512,21 +548,25 @@ Sub MovePlayer (v As Viewport, p_to As Point)
     Select Case Dodu.ToLeft
       Case FALSE ' Going right, x > 0
         If ScreenPos.x >= 20 Then
-          Let v.Pan.x = _Min(v.Pan.x + (p_to.x * WALKING_SPEED#), M_W% * BLOCK_SIZE%)
+          'Let v.Pan.x = _Min(v.Pan.x + (p_to.x * WALKING_SPEED#), M_W% * BLOCK_SIZE%)
+          Viewport_MovePan v, p_to
         End If
       Case TRUE ' Going left, x < 0
         If ScreenPos.x <= 10 Then
-          Let v.Pan.x = _Max(v.Pan.x + (p_to.x * WALKING_SPEED#), 0)
+          Viewport_MovePan v, p_to
+          'Let v.Pan.x = _Max(v.Pan.x + (p_to.x * WALKING_SPEED#), 0)
         End If
     End Select
   End If
   If p_to.y > 0 Then '   Going down, y > 0
     If ScreenPos.y >= 20 Then
-      Let v.Pan.y = _Min(v.Pan.y + (p_to.y * WALKING_SPEED#), M_H% * BLOCK_SIZE%)
+      Viewport_MovePan v, p_to
+      'Let v.Pan.y = _Min(v.Pan.y + (p_to.y * WALKING_SPEED#), M_H% * BLOCK_SIZE%)
     End If
   ElseIf p_to.y < 0 Then '  Going up, y < 0
-    If ScreenPos.y <= 10 Then
-      Let v.Pan.y = _Max(v.Pan.y + (p_to.y * WALKING_SPEED#), 0)
+    If ScreenPos.y <= 25 Then
+      Viewport_MovePan v, p_to
+      'Let v.Pan.y = _Max(v.Pan.y + (p_to.y * WALKING_SPEED#), 0)
     End If
   End If
 End Sub

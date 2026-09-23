@@ -181,6 +181,7 @@ Declare Sub Trajectory_Reset (t As Trajectory)
 Type Viewport
   Size As Point
   Pan As Point
+  WorldSize As Point
   Scale As Single
   Buffer As Long
   Background As Sprite
@@ -190,12 +191,12 @@ End Type
 '**
 '* Initializes a new viewport with default scale and pan.
 '**
-Declare Sub Viewport_Init_Default (v As Viewport, size As Point)
+Declare Sub Viewport_Init_Default (v As Viewport, size As Point, ws As Point)
 
 '**
 '* Initializes a new viewport.
 '**
-Declare Sub Viewport_Init (v As Viewport, size As Point, pan As Point, scale As Single)
+Declare Sub Viewport_Init (v As Viewport, size As Point, ws As Point, pan As Point, scale As Single)
 
 '**
 '* Calculates the physical coordinates of a point in the buffer
@@ -258,6 +259,14 @@ Declare Sub Viewport_SetFont (v as Viewport, font as _Unsigned Long)
 '**
 Declare Sub Viewport_SetCenter (v as Viewport, p as Point)
 
+'**
+'* Changes the panning of the viewport.
+'**
+Declare Sub Viewport_MovePan (v as Viewport, p as Point)
+
 ' }}}
 
 ' :mode=visualbasic:folding=explicit:wrap=none:
+
+
+

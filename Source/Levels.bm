@@ -91,7 +91,7 @@ Sub LoadLevel (l As LevelMap)
       Read lline
       Let row = row + 1
   Wend
-  Let l.Height = row - 1
+  Let l.Height = row
 End Sub
 
 Sub LoadLevels()
@@ -102,11 +102,11 @@ Sub LoadLevels()
     Restore L3
     LoadLevel Levels(2)
     Restore L4
-    LoadLevel Levels(4)
+    LoadLevel Levels(3)
     Restore L5
-    LoadLevel Levels(5)
+    LoadLevel Levels(4)
     Restore L6
-    LoadLevel Levels(6)
+    LoadLevel Levels(5)
 End Sub
 
 

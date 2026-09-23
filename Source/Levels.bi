@@ -25,7 +25,7 @@ Const T_NOTHING = " "
 Const T_BLOCK_B = "@"
 Const T_BLOCK_W = "#"
 Const T_POLE = "!"
-Const T_COOKIE = "*"
+Const T_COOKIE = "$"
 Const T_END = "X"
 
 Type Square
