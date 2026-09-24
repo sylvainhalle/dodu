@@ -178,11 +178,8 @@ Do
     Let MainScreen.Scanlines = SCANLINES
     Viewport_Init_Default ImgBuffer, SCREEN_DIMS, ws
     Viewport_SetFont ImgBuffer, FNT_TINYC
-    'Screen MainScreen.Buffer
     DoLevel
-    'SoundPlayer_PlayEffect Audio, SND_LEVELUP
-    'DoGameOver
-    'End
+    SoundPlayer_PlayEffect Audio, SND_LEVELUP
     Let CURRENT_LEVEL = CURRENT_LEVEL + 1
   Loop
 Loop
@@ -669,16 +666,43 @@ Sub DisplayCard (v As Viewport, p As Point, value As Integer)
   Dim p1 As Point, p2 As Point
   Let suit = value \ 13
   Let nb = value Mod 13
-  Viewport_PutSprite v, TRUE, Card, p, FALSE
+  Viewport_PutSprite v, FALSE, Card, p, FALSE
   Point_Set p1, p.x + 5, p.y + 9
-  Viewport_PutSprite v, TRUE, Suits(suit), p1, FALSE
+  Viewport_PutSprite v, FALSE, Suits(suit), p1, FALSE
   Point_Set p2, p.x + 2, p.y + 2
-  Viewport_PutSprite v, TRUE, Numbers(nb), p2, FALSE
+  Viewport_PutSprite v, FALSE, Numbers(nb), p2, FALSE
 End Sub
 
 Sub DoPasswordInput
-  Viewport_Clear ImgBuffer
-  Dim x As Integer, y As Integer
+  Dim PwBuffer As Viewport, ws As Point
+  Point_Set ws, SCREEN_DIMS.x, 1000
+  Viewport_Init_Default PwBuffer, SCREEN_DIMS, ws
+  Viewport_Clear PwBuffer
+  Dim x As Integer, y As Integer, p As Point
+  Dim down As Point, up As Point
+  Do
+    _Limit FPS%
+    Point_Set up, 0, -4
+    Point_Set down, 0, 4
+    For y = 0 To 12
+      For x = 0 To 3
+        Point_Set p, x * 18 + 4, y * 22
+        DisplayCard PwBuffer, p, x * 4 + y
+      Next
+    Next
+    Viewport_Copy PwBuffer, MainScreen
+    Viewport_Display MainScreen
+
+    ReadJoystick
+    If IsDown% Then
+      Viewport_MovePan PwBuffer, down
+    ElseIf IsUp% Then
+      Viewport_MovePan PwBuffer, up
+    End If
+    If _KeyDown(K_ENTER) Or _KeyDown(K_SPACE) Then
+      Exit Sub
+    End If
+  Loop
 End Sub
 
 Sub DoIntroduction
