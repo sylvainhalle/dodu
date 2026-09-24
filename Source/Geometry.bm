@@ -92,7 +92,7 @@ Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   If col < 0 Or col >= M_W% Then Exit Sub
 
   Let row = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%) - 1
-  If row < 0 Or row >= M_H% Then Exit Sub
+  If row < 0 Or row > m.Height Then Exit Sub
 
   ' If a block is already beside Dodu, try putting
   ' the carried block on top of it.
@@ -109,6 +109,10 @@ Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
     If IsBlockAt(col, r, m) Then
       Let p.col = col
       Let p.row = r - 1
+      Exit Sub
+    elseif r = m.Height - 1 Then
+      Let p.col = col
+      Let p.row = r 
       Exit Sub
     End If
   Next

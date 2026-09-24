@@ -16,6 +16,14 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
-Dim PASSWORDS(20, 4) As String
+Type Password
+	Elements(4) As Integer
+End Type
+
+Dim Shared PASSWORDS(20, 4) As Password
+
+Declare Sub LoadPasswords ()
+
+Declare Function GetPassword (p As Password, level As Integer, hasmittens As Integer, hastuque As Integer)
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

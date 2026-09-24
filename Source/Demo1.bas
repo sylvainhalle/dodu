@@ -17,7 +17,7 @@
 '-----------------------------------------------------------------------------
 
 Option Base 0
-'Option _Explicit
+Option _Explicit
 $ErrorLocation:On
 
 ' --------------------------
@@ -76,22 +76,12 @@ Let SCANLINES = FALSE
 '$Include:'Levels.bi'
 '$Include:'Passwords.bi'
 
-Kbd_FindDevices
-
-'Dim j As Single
-'Do
-'  _Limit 10
-'  Locate 1, 1
-'  Print Time$ + " " + Str$(In_Down(K_DOWN))
-'Loop Until InKey$ = Chr$(27)
-'End
-
 ' --------------------------
 ' Levels
 ' --------------------------
 LoadLevels
 Dim Shared CURRENT_LEVEL As Integer
-Let CURRENT_LEVEL = 0
+Let CURRENT_LEVEL = 2
 
 
 ' --------------------------
@@ -130,6 +120,8 @@ Type Player
   Temp As Integer ' 0 to 10
   ThermoTick As Ticker
   ThermoFlash As Integer
+  HasMittens As Integer
+  HasTuque As Integer
 End Type
 
 ' --------------------------
@@ -144,7 +136,8 @@ Let Dodu.SpriteIndex = 0
 Let Dodu.HasBlock = FALSE
 Let Dodu.IsClimbing = 0
 Let Dodu.Temp = 10
-
+Let Dodu.HasMittens = FALSE
+Let Dodu.HasTuque = FALSE
 
 ' --------------------------
 ' Main loop
@@ -162,9 +155,21 @@ Let CURRENT_TRAJECTORY% = -1
 Dim Shared parallax As Point
 Point_Set parallax, 2, 2
 
+LoadPasswords
+'Screen MainScreen.Buffer
+
 Do
-  DoLevel
-  SoundPlayer_PlayEffect Audio, SND_LEVELUP
+  Dim ws As Point
+  Point_Set ws, Levels(CURRENT_LEVEL).Width * BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * BLOCK_SIZE%
+  Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
+  Let MainScreen.Scanlines = SCANLINES
+  Viewport_Init_Default ImgBuffer, SCREEN_DIMS, ws
+  Viewport_SetFont ImgBuffer, FNT_GRAPE
+  Screen MainScreen.Buffer
+  'DoLevel
+  'SoundPlayer_PlayEffect Audio, SND_LEVELUP
+  DoGameOver
+  End
   Let CURRENT_LEVEL = CURRENT_LEVEL + 1
 Loop
 
@@ -174,15 +179,11 @@ Sub DoLevel
   Let Dodu.Temp = 10
   Let PANBACK_STEPS = 8
   Dim panback_ticker As Ticker
-  Dim ws As Point
-  Point_Set ws, Levels(CURRENT_LEVEL).Width * BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * BLOCK_SIZE%
+
+
 
   Ticker_Init Dodu.ThermoTick, 10, THERMO_TICK_NORMAL%, FALSE
 
-  Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
-  Let MainScreen.Scanlines = SCANLINES
-  Viewport_Init_Default ImgBuffer, SCREEN_DIMS, ws
-  Viewport_SetFont ImgBuffer, FNT_GRAPE
   Viewport_SetBackground ImgBuffer, Backgrounds(Levels(CURRENT_LEVEL%).Background), parallax
   Color COLOR_PINK&, , , ImgBuffer.Buffer
   _PrintMode _KeepBackground , ImgBuffer.Buffer
@@ -408,20 +409,31 @@ Sub DoLevel
   Loop
 
   GameOver:
-  SoundPlayer_StopSong Audio
-  SoundPlayer_PlayEffect Audio, SND_GAMEOVER%
-  _Dest MainScreen.Buffer
-  'Cls
-  _PrintString (0, 48), "GAME OVER" ' Ought to be better
-  Viewport_Display MainScreen
-  Do
-    _Limit FPS%
-  Loop While Not _KeyDown(K_ESC)
+  DoGameOver
   End
 
   Quit:
   Cls
   End
+End Sub
+
+Sub DoGameOver
+  SoundPlayer_StopSong Audio
+  SoundPlayer_PlayEffect Audio, SND_GAMEOVER%
+  'Cls
+  Dim pw As Password
+  GetPassword pw, CURRENT_LEVEL, Dodu.HasMittens, Dodu.HasTuque
+  Viewport_Print ImgBuffer, "GAME OVER", P_ORIGIN
+  Dim x As Integer, pws As String, cardP As Point
+  For x = 0 To 3
+    Point_Set cardP, 4 + x * 16, 20
+    DisplayCard ImgBuffer, cardP, pw.Elements(x)
+  Next
+  Viewport_Copy ImgBuffer, MainScreen
+  Viewport_Display MainScreen
+  Do
+    _Limit FPS%
+  Loop While Not _KeyDown(K_ESC)
 End Sub
 
 Sub DoMiniMap
@@ -638,6 +650,18 @@ Sub GetDoduCenter (p As Point)
   Point_Set p, Dodu.LevPos.x + (PLAYER_WIDTH% / 2), Dodu.LevPos.y + (PLAYER_HEIGHT% / 2)
 End Sub
 
+Sub DisplayCard (v As Viewport, p As Point, value As Integer)
+  Dim suit As Integer, nb As Integer
+  Dim p1 As Point, p2 As Point
+  Let suit = value \ 13
+  Let nb = value Mod 13
+  Viewport_PutSprite v, TRUE, Card, p, FALSE
+  Point_Set p1, p.x + 5, p.y + 9
+  Viewport_PutSprite v, TRUE, Suits(suit), p1, FALSE
+  Point_Set p2, p.x + 2, p.y + 2
+  Viewport_PutSprite v, TRUE, Numbers(nb), p2, FALSE
+End Sub
+
 ' --------------------------
 ' Includes (implementations)
 ' --------------------------
@@ -649,5 +673,6 @@ End Sub
 '$Include:'Keyboard.bm'
 '$Include:'Levels.bm'
 '$Include:'LevelMaps.bm'
+'$Include:'Passwords.bm'
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

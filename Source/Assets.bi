@@ -132,6 +132,29 @@ Else
 	Let HIGHLIGHT_COLOR& = COLOR_YELLOW&
 End If
 
+' Playing cards
+Dim Shared Card As Sprite
+Sprite_Load Card, IMG_DIR$ + "/Sprite_Card.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Dim Shared Suits(4) As Sprite
+Sprite_Load Suits(0), IMG_DIR$ + "/Sprite_Hearts.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load Suits(1), IMG_DIR$ + "/Sprite_Spades.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load Suits(2), IMG_DIR$ + "/Sprite_Diamonds.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load Suits(3), IMG_DIR$ + "/Sprite_Clubs.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Dim Shared Numbers(13) As Sprite
+Sprite_Load Numbers(0), IMG_DIR$ + "/Digit_A.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load Numbers(1), IMG_DIR$ + "/Digit_2.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load Numbers(2), IMG_DIR$ + "/Digit_3.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load Numbers(3), IMG_DIR$ + "/Digit_4.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load Numbers(4), IMG_DIR$ + "/Digit_5.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load Numbers(5), IMG_DIR$ + "/Digit_6.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load Numbers(6), IMG_DIR$ + "/Digit_7.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load Numbers(7), IMG_DIR$ + "/Digit_8.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load Numbers(8), IMG_DIR$ + "/Digit_9.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load Numbers(9), IMG_DIR$ + "/Digit_10.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load Numbers(10), IMG_DIR$ + "/Digit_J.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load Numbers(11), IMG_DIR$ + "/Digit_Q.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load Numbers(12), IMG_DIR$ + "/Digit_K.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+
 ' ---------------------
 ' Backgrounds
 ' ---------------------
