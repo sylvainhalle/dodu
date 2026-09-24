@@ -156,21 +156,26 @@ Dim Shared parallax As Point
 Point_Set parallax, 2, 2
 
 LoadPasswords
-'Screen MainScreen.Buffer
 
 Do
-  Dim ws As Point
-  Point_Set ws, Levels(CURRENT_LEVEL).Width * BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * BLOCK_SIZE%
   Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
-  Let MainScreen.Scanlines = SCANLINES
-  Viewport_Init_Default ImgBuffer, SCREEN_DIMS, ws
-  Viewport_SetFont ImgBuffer, FNT_GRAPE
+  Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS
   Screen MainScreen.Buffer
-  'DoLevel
-  'SoundPlayer_PlayEffect Audio, SND_LEVELUP
-  DoGameOver
-  End
-  Let CURRENT_LEVEL = CURRENT_LEVEL + 1
+  DoIntroduction
+  Do
+    Dim ws As Point
+    Point_Set ws, Levels(CURRENT_LEVEL).Width * BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * BLOCK_SIZE%
+    Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
+    Let MainScreen.Scanlines = SCANLINES
+    Viewport_Init_Default ImgBuffer, SCREEN_DIMS, ws
+    Viewport_SetFont ImgBuffer, FNT_TINYC
+    'Screen MainScreen.Buffer
+    'DoLevel
+    'SoundPlayer_PlayEffect Audio, SND_LEVELUP
+    DoGameOver
+    End
+    Let CURRENT_LEVEL = CURRENT_LEVEL + 1
+  Loop
 Loop
 
 Sub DoLevel
@@ -660,6 +665,31 @@ Sub DisplayCard (v As Viewport, p As Point, value As Integer)
   Viewport_PutSprite v, TRUE, Suits(suit), p1, FALSE
   Point_Set p2, p.x + 2, p.y + 2
   Viewport_PutSprite v, TRUE, Numbers(nb), p2, FALSE
+End Sub
+
+Sub DoPasswordInput
+  Viewport_Clear ImgBuffer
+  Dim x As Integer, y As Integer
+End Sub
+
+Sub DoIntroduction
+  Dim p As Point
+  Viewport_Clear ImgBuffer
+  Point_Set p, 30, 26
+  Viewport_Print ImgBuffer, "START", p
+  Point_Set p, 30, 32
+  Viewport_Print ImgBuffer, "PASSWORD", p
+  Viewport_Copy ImgBuffer, MainScreen
+  Viewport_Display MainScreen
+  Do
+    _Limit FPS%
+    If _KeyDown(K_ENTER) Or _KeyDown(K_SPACE) Then
+      Exit Do
+    ElseIf _KeyDown(K_BACKSPACE) Then
+      DoPasswordInput
+      Exit Sub
+    End If
+  Loop
 End Sub
 
 ' --------------------------
