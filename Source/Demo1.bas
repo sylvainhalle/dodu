@@ -81,7 +81,7 @@ Let SCANLINES = FALSE
 ' --------------------------
 LoadLevels
 Dim Shared CURRENT_LEVEL As Integer
-Let CURRENT_LEVEL = 2
+Let CURRENT_LEVEL = 0
 
 
 ' --------------------------
@@ -139,14 +139,14 @@ Let Dodu.Temp = 10
 Let Dodu.HasMittens = FALSE
 Let Dodu.HasTuque = FALSE
 
-Do
-  _Limit FPS%
-  Locate 1, 1
-  ReadJoystick
-  Print Str$(JOYSTICK.H) + " " + Str$(JOYSTICK.V)
-  Print Str$(In_Down(K_DOWN)) + " " + Str$(In_Down(K_UP)) + " " + Str$(In_Down(K_LEFT)) + " " + Str$(In_Down(K_RIGHT))
-  Print Str$(In_Down(J_1)) + " " + Str$(In_Down(J_2)) + " " + Str$(In_Down(J_3)) + " " + Str$(In_Down(J_4))
-Loop
+'Do
+'  _Limit FPS%
+'  Locate 1, 1
+'  ReadJoystick
+'  Print Str$(JOYSTICK.H) + " " + Str$(JOYSTICK.V)
+'  Print Str$(In_Down(K_DOWN)) + " " + Str$(In_Down(K_UP)) + " " + Str$(In_Down(K_LEFT)) + " " + Str$(In_Down(K_RIGHT))
+'  Print Str$(In_Down(J_1)) + " " + Str$(In_Down(J_2)) + " " + Str$(In_Down(J_3)) + " " + Str$(In_Down(J_4))
+'Loop
 
 ' --------------------------
 ' Main loop
@@ -164,7 +164,7 @@ Let CURRENT_TRAJECTORY% = -1
 Dim Shared parallax As Point
 Point_Set parallax, 2, 2
 
-LoadPasswords
+'LoadPasswords
 
 Do
   Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
@@ -179,10 +179,10 @@ Do
     Viewport_Init_Default ImgBuffer, SCREEN_DIMS, ws
     Viewport_SetFont ImgBuffer, FNT_TINYC
     'Screen MainScreen.Buffer
-    'DoLevel
+    DoLevel
     'SoundPlayer_PlayEffect Audio, SND_LEVELUP
-    DoGameOver
-    End
+    'DoGameOver
+    'End
     Let CURRENT_LEVEL = CURRENT_LEVEL + 1
   Loop
 Loop
@@ -193,7 +193,6 @@ Sub DoLevel
   Let Dodu.Temp = 10
   Let PANBACK_STEPS = 8
   Dim panback_ticker As Ticker
-
 
 
   Ticker_Init Dodu.ThermoTick, 10, THERMO_TICK_NORMAL%, FALSE
@@ -219,6 +218,7 @@ Sub DoLevel
   Point_Set trjP, -1, -1
   Do
     _Limit FPS%
+    ReadJoystick
     Viewport_Clear ImgBuffer
     ' Thermometer
     Ticker_Tick Dodu.ThermoTick
@@ -309,22 +309,22 @@ Sub DoLevel
 
     If _KeyDown(K_CTRL) Then
       Dim panP As Point
-      If _KeyDown(K_LEFT) Then
+      If IsLeft% Then
         Point_Set panP, -3, 0
         Viewport_MovePan ImgBuffer, panP
         Let CTRL_PRESSED = TRUE
         _Continue
-      ElseIf _KeyDown(K_RIGHT) Then
+      ElseIf IsRight% Then
         Point_Set panP, 3, 0
         Viewport_MovePan ImgBuffer, panP
         Let CTRL_PRESSED = TRUE
         _Continue
-      ElseIf _KeyDown(K_UP) Then
+      ElseIf IsUp% Then
         Point_Set panP, 0, -3
         Viewport_MovePan ImgBuffer, panP
         Let CTRL_PRESSED = TRUE
         _Continue
-      ElseIf _KeyDown(K_DOWN) Then
+      ElseIf IsDown% Then
         Point_Set panP, 0, 3
         Viewport_MovePan ImgBuffer, panP
         Let CTRL_PRESSED = TRUE
@@ -332,7 +332,7 @@ Sub DoLevel
       End If
     End If
 
-    If _KeyDown(K_LEFT) Then
+    If IsLeft% Then
       Let Dodu.ToLeft = TRUE
       Dim klp As Point
       If Square_IsValid(climbP) Then
@@ -355,7 +355,7 @@ Sub DoLevel
         Let DoduSprites(CURRENT_SPRITE).Flipped = TRUE
       End If
 
-    ElseIf _KeyDown(K_RIGHT) Then
+    ElseIf IsRight% Then
       Let Dodu.ToLeft = FALSE
       Dim krp As Point
       If Square_IsValid(climbP) Then
@@ -377,7 +377,7 @@ Sub DoLevel
         Let DoduSprites(CURRENT_SPRITE).Flipped = FALSE
       End If
 
-    ElseIf _KeyDown(K_UP) And Square_IsValid(takeP) Then
+    ElseIf IsUp% And Square_IsValid(takeP) Then
       SoundPlayer_PlayEffect Audio, SND_GRAB%
       TakeBlock Levels(CURRENT_LEVEL), takeP
       Point_Set dod_lastgrab, Dodu.LevPos.x, Dodu.LevPos.y
@@ -385,7 +385,7 @@ Sub DoLevel
       Let sq_lastgrab.row = takeP.row
       Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
 
-    ElseIf _KeyDown(K_DOWN) And Square_IsValid(dropP) Then
+    ElseIf IsDown% And Square_IsValid(dropP) Then
       SoundPlayer_PlayEffect Audio, SND_DROP%
       Let sq_lastdrop.col = dropP.col
       Let sq_lastdrop.row = dropP.row
@@ -412,10 +412,10 @@ Sub DoLevel
 
     ' Unless he is climbing/falling, Dodu can always flip sides
     If CURRENT_TRAJECTORY% < 0 Then
-      If _KeyDown(K_LEFT) Then
+      If IsLeft% Then
         Let Dodu.ToLeft = TRUE
       End If
-      If _KeyDown(K_RIGHT) Then
+      If IsRight% Then
         Let Dodu.ToLeft = FALSE
       End If
     End If
@@ -700,6 +700,24 @@ Sub DoIntroduction
     End If
   Loop
 End Sub
+
+Function IsLeft% ()
+  Let IsLeft% = In_Down(K_LEFT)
+End Function
+
+Function IsRight% ()
+  Let IsRight% = In_Down(K_RIGHT)
+End Function
+
+Function IsUp% ()
+  Let IsUp% = In_Down(K_UP)
+End Function
+
+Function IsDown% ()
+  Let IsDown% = In_Down(K_DOWN)
+End Function
+
+
 
 ' --------------------------
 ' Includes (implementations)
