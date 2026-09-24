@@ -32,9 +32,10 @@ Const K_UP = 18432
 Const K_DOWN = 20480
 Const K_M_UC = 77
 Const K_M_LC = 109
-
-' Joystick
-Const J_A = 0
+Const J_1 = 0
+Const J_2 = 1
+Const J_3 = 2
+Const J_4 = 3
 
 ' This part adapted from
 ' https://www.qb64tutorial.com/lesson21
@@ -52,16 +53,22 @@ Type TYPE_CONTROLLER '                   CONTROLLER PROPERTIES
   Description As String * 20 '         description of controller
 End Type
 
-Dim Shared Controllers(DeviceCount) As TYPE_CONTROLLER ' controller information array
+ReDim Shared Controllers(0) As TYPE_CONTROLLER ' controller information array
 
+Type JoystickState
+	Active As _Byte
+	H As Single
+	V As Single
+	Buttons(4) As Long
+End Type
+
+Dim Shared JOYSTICK As JoystickState
+
+Declare Function In_Down% (k As Integer)
+Declare Function Joy_Down% (k As Integer)
+Declare Function Kbd_Down% (k As Integer)
 
 Declare Sub Kbd_FindDevices ()
-
-Declare Function In_Down (k As Integer)
-Declare Function Joy_Down (k As Integer)
-Declare Function Kbd_Down (k As Integer)
-
-Declare Function Kbd_Input ()
 
 
 

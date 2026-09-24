@@ -53,17 +53,32 @@ Sub Kbd_FindDevices ()
 Loop Until Dcount = DeviceCount '                                                  leave when all devices polled
 End Sub
 
+Sub ReadJoystick
+	Dim di As Integer
+	Do
+		Let di = _DeviceInput
+		Select Case di
+			Case 3
+				Let JOYSTICK.H = _AXIS(1)
+				Let JOYSTICK.V = _AXIS(2)
+				Let JOYSTICK.Buttons(0) = _BUTTON(1)
+				Let JOYSTICK.Buttons(1) = _BUTTON(2)
+				Let JOYSTICK.Buttons(2) = _BUTTON(3)
+				Let JOYSTICK.Buttons(3) = _BUTTON(4)
+				Let JOYSTICK.Buttons(4) = _BUTTON(5)
+				Let JOYSTICK.Buttons(5) = _BUTTON(6)
+		End Select
+	Loop Until di = 0
+End Sub
+
 Function In_Down (k As Integer)
 	Let In_Down = FALSE
-	Dim Device As Integer, cnt As Integer
-	Let Device = _DeviceInput
-	If Device Then
-		While _DeviceInput(Device): Wend
-		If Device = 1 Then
-			Let In_Down = Kbd_Down (k)
-		ElseIf Device = 3 Then
-			Let In_Down = Joy_Down (k)
-		End If
+	If k = J_1 Or k = J_2 Or k = J_3 Or k = J_4 Then
+		Let In_Down = Joy_Down (k)
+	ElseIf Kbd_Down (k) Then
+		Let In_Down = TRUE
+	ElseIf Joy_Down (k) Then
+		Let In_Down = TRUE
 	End If
 End Function
 
@@ -71,58 +86,27 @@ Function Joy_Down (k As Integer)
 	Let Joy_Down = FALSE
 	Select Case k
 		Case K_DOWN
-			Let Joy_Down = Floor%(_AXIS(2)) < 0
+			Let Joy_Down = JOYSTICK.V > 0.5
 		Case K_UP
-			Let Joy_Down = Ceil%(_AXIS(2)) > 0
+			Let Joy_Down = JOYSTICK.V < 0 And Abs(JOYSTICK.V) > 0.5
 		Case K_LEFT
-			Let Joy_Down = Floor%(_AXIS(1)) < 0
+			Let Joy_Down = JOYSTICK.H < 0 And Abs(JOYSTICK.H) > 0.5
 		Case K_RIGHT
-			Let Joy_Down = Ceil%(_AXIS(1)) > 0
+			Let Joy_Down = JOYSTICK.H > 0.5
+		Case J_1
+			Let Joy_Down = JOYSTICK.Buttons(0)
+		Case J_2
+			Let Joy_Down = JOYSTICK.Buttons(1)
+		Case J_3
+			Let Joy_Down = JOYSTICK.Buttons(2)
+		Case J_4
+			Let Joy_Down = JOYSTICK.Buttons(3)
 	End Select
 End Function
 
 Function Kbd_Down (k As Integer)
 	Let Kbd_Down = _KeyDown (k)
 End Function
-
-Function Kbd_Input ()
-	dim Device As Integer, cnt As Integer
-	Let Device = _DeviceInput
-	Let Kbd_Input = -1
-	If Device Then
-		While _DeviceInput(Device): Wend
-		If Device = 1 Then ' Keyboard
-			Let Kbd_Input = 100
-		ElseIf Device = 3 Then ' Joystick
-			Let cnt = 0
-			If Floor%(_AXIS(1)) < 0 Then
-				Let Kbd_Input = K_LEFT
-				Exit Function
-			ElseIf Ceil%(_AXIS(1)) > 0 Then
-				Let Kbd_Input = K_RIGHT
-				Exit Function
-			End If
-			If Floor%(_AXIS(2)) < 0 Then
-				Let Kbd_Input = K_UP
-				Exit Function
-			ElseIf Ceil%(_AXIS(2)) > 0 Then
-				Let Kbd_Input = K_DOWN
-				Exit Function
-			End If
-			Do
-				Let cnt = cnt + 1
-				If _Button(cnt) Then
-					Select Case cnt
-						Case 1
-							let Kbd_Input = J_A
-					End Select
-					Exit Function
-				End If
-			Loop Until cnt = _LastButton(Device) Or cnt = 10
-		End If
-	End If
-End Function
-
 
 Sub Kbd_WaitRelease (fps As Integer)
   Dim k As Long

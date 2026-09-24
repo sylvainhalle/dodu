@@ -139,6 +139,15 @@ Let Dodu.Temp = 10
 Let Dodu.HasMittens = FALSE
 Let Dodu.HasTuque = FALSE
 
+Do
+  _Limit FPS%
+  Locate 1, 1
+  ReadJoystick
+  Print Str$(JOYSTICK.H) + " " + Str$(JOYSTICK.V)
+  Print Str$(In_Down(K_DOWN)) + " " + Str$(In_Down(K_UP)) + " " + Str$(In_Down(K_LEFT)) + " " + Str$(In_Down(K_RIGHT))
+  Print Str$(In_Down(J_1)) + " " + Str$(In_Down(J_2)) + " " + Str$(In_Down(J_3)) + " " + Str$(In_Down(J_4))
+Loop
+
 ' --------------------------
 ' Main loop
 ' --------------------------
