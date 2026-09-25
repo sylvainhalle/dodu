@@ -424,6 +424,7 @@ Sub DoLevel
   End
 
   Quit:
+  SoundPlayer_StopSong Audio
   Cls
   End
 End Sub
