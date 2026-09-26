@@ -153,7 +153,6 @@ Let Dodu.HasTuque = FALSE
 ' --------------------------
 Let Audio.PlaySong = PLAY_MUSIC%
 Let Audio.PlayEffects = TRUE
-SoundPlayer_PlaySong Audio, 0
 
 
 Dim Shared CURRENT_SPRITE As Integer
@@ -171,6 +170,7 @@ Do
   Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS
   Screen MainScreen.Buffer
   DoIntroduction
+  SoundPlayer_PlaySong Audio, 0
   Do
     Dim ws As Point
     Point_Set ws, Levels(CURRENT_LEVEL).Width * BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * BLOCK_SIZE%
@@ -630,7 +630,7 @@ Sub HighlightBlock (v As Viewport, m As LevelMap, s As Square, c~&)
     Dim p1 As Point, p2 As Point
     Square_ToPoint s, p1
     Point_Set p2, p1.x + BLOCK_SIZE% - 1, p1.y + BLOCK_SIZE% - 1
-    Viewport_Line v, p1, p2, c~&, TRUE, FALSE
+    Viewport_Line v, FALSE, p1, p2, c~&, TRUE, FALSE
   End If
 End Sub
 
@@ -678,18 +678,31 @@ Sub DoPasswordInput
   Point_Set ws, SCREEN_DIMS.x, 1000
   Viewport_Init_Default PwBuffer, SCREEN_DIMS, ws
   Viewport_Clear PwBuffer
-  Dim x As Integer, y As Integer, p As Point
+  Dim x As Integer, y As Integer, p As Point, q As Point
   Dim down As Point, up As Point
+  Dim coord_row As Integer, coord_col As Integer
+  Dim selection(4) As Integer
+  Dim selindex As Integer
+  Let selindex = 0
+  Let coord_row = 0
+  Let coord_col = 0
   Do
     _Limit FPS%
+
+    ' Show cards
     Point_Set up, 0, -4
     Point_Set down, 0, 4
     For y = 0 To 12
       For x = 0 To 3
-        Point_Set p, x * 18 + 4, y * 22
-        DisplayCard PwBuffer, p, x * 4 + y
+        Point_Set p, x * 18 + 5, y * 22
+        DisplayCard PwBuffer, p, x * 13 + y
       Next
     Next
+
+    ' Show selected card
+    Point_Set p, coord_col * 18 + 5, coord_row * 22
+    Point_Set q, p.x + 16, p.y + 22
+    Viewport_Line PwBuffer, FALSE, p, q, COLOR_RED, TRUE, FALSE
     Viewport_Copy PwBuffer, MainScreen
     Viewport_Display MainScreen
 

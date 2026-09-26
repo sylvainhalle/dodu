@@ -34,10 +34,19 @@ Function Point_ToString$ (p As Point)
   Let Point_ToString$ = "(" + _Trim$(Str$(p.x)) + "," + _Trim$(Str$(p.y)) + ")"
 End Function
 
-Function Point_Scale (p2 As Point, s as Single, p1 As Point)
-	let p2.x = p1.x * s
-	let p2.y = p1.y * s
-End Function
+Sub Point_Scale (p As Point, s as Single)
+	Point_Set p, p.x * s, p.y * s
+End Sub
+
+Sub Point_Add (p1 As Point, vector As Point)
+	Let p1.x = p1.x + vector.x
+	Let p1.y = p1.y + vector.y
+End Sub
+
+Sub Point_Subtract (p1 As Point, vector As Point)
+	Let p1.x = p1.x - vector.x
+	Let p1.y = p1.y - vector.y
+End Sub
 
 ' }}}
 
@@ -201,7 +210,7 @@ End Sub
 Sub Viewport_Clear (v As Viewport)
   Dim sq As Point
   Point_Set sq, v.Size.x * v.Scale - 1, v.Size.y * v.Scale - 1
-  Viewport_Line v, P_ORIGIN, sq, COLOR_BLACK, TRUE, TRUE
+  Viewport_Line v, TRUE, P_ORIGIN, sq, COLOR_BLACK, TRUE, TRUE
   Dim screen_offset As Point, bg_offset As Point
   If v.BackgroundPanRatio.x > 0 Then
 	  Point_Set screen_offset, v.Pan.x Mod v.Size.x, v.Pan.y Mod v.Size.y
@@ -230,34 +239,26 @@ End Sub
 
 Sub Viewport_LineC (v As Viewport, absolute As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, clr As Long, box As Integer, filled As Integer)
   _Dest v.Buffer
-  If absolute Then
-  	  If box And filled Then
-		Line (x1 * v.Scale, y1 * v.Scale)-(x2 * v.Scale, y2 * v.Scale), clr, BF
-	  ElseIf box Then
-		Line (x1 * v.Scale, y1 * v.Scale)-(x2 * v.Scale, y2 * v.Scale), clr, B
-	  Else
-		Line (x1 * v.Scale, y1 * v.Scale)-(x2 * v.Scale, y2 * v.Scale), clr
-	  End If
+  Dim p1 As Point, p2 As Point
+  Point_Set p1, x1, y1
+  Point_Set p2, x2, y2
+  If Not absolute Then
+  	  Point_Subtract p1, v.Pan
+  	  Point_Subtract p2, v.Pan
+  End If
+  Point_Scale p1, v.Scale
+  Point_Scale p2, v.Scale
+  If box And filled Then
+	Line (p1.x, p1.y) - (p2.x, p2.y), clr, BF
+  ElseIf box Then
+	Line (p1.x, p1.y) - (p2.x, p2.y), clr, B
   Else
-	  If box And filled Then
-		Line ((x1 - v.Pan.x) * v.Scale, (y1 - v.Pan.y) * v.Scale)-((x2 - v.Pan.x) * v.Scale, (y2 - v.Pan.y) * v.Scale), clr, BF
-	  ElseIf box Then
-		Line ((x1 - v.Pan.x) * v.Scale, (y1 - v.Pan.y) * v.Scale)-((x2 - v.Pan.x) * v.Scale, (y2 - v.Pan.y) * v.Scale), clr, B
-	  Else
-		Line ((x1 - v.Pan.x) * v.Scale, (y1 - v.Pan.y) * v.Scale)-((x2 - v.Pan.x) * v.Scale, (y2 - v.Pan.y) * v.Scale), clr
-	  End If
+	Line (p1.x, p1.y) - (p2.x, p2.y), clr
   End If
 End Sub
 
-Sub Viewport_Line (v As Viewport, p1 As Point, p2 As Point, clr As Long, box As Integer, filled As Integer)
-  _Dest v.Buffer
-  If box And filled Then
-    Line ((p1.x - v.Pan.x) * v.Scale, (p1.y - v.Pan.y) * v.Scale)-((p2.x - v.Pan.x) * v.Scale, (p2.y - v.Pan.y) * v.Scale), clr, BF
-  ElseIf box Then
-    Line ((p1.x - v.Pan.x) * v.Scale, (p1.y - v.Pan.y) * v.Scale)-((p2.x - v.Pan.x) * v.Scale, (p2.y - v.Pan.y) * v.Scale), clr, B
-  Else
-    Line ((p1.x - v.Pan.x) * v.Scale, (p1.y - v.Pan.y) * v.Scale)-((p2.x - v.Pan.x) * v.Scale, (p2.y - v.Pan.y) * v.Scale), clr
-  End If
+Sub Viewport_Line (v As Viewport, absolute As Integer, p1 As Point, p2 As Point, clr As Long, box As Integer, filled As Integer)
+  Viewport_LineC v, absolute, p1.x, p1.y, p2.x, p2.y, clr, box, filled
 End Sub
 
 Sub Viewport_Screen (v as Viewport)

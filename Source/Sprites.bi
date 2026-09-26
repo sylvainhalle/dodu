@@ -43,9 +43,9 @@ End Type
 Declare Sub Point_Set (p As Point, x As Integer, y As Integer)
 
 '**
-'* Sets the coordinates of p2 as s * those of p1.
+'* Sets the coordinates of p1 by s.
 '**
-Declare Function Point_Scale (p2 As Point, s as Single, p1 As Point)
+Declare Sub Point_Scale (p As Point, s as Single)
 
 '**
 '* Checks if a point is valid.
@@ -58,6 +58,16 @@ Declare Function Point_IsValid (p As Point)
 '* @return The coordinates as a string
 '**
 Declare	Function Point_ToString$ (p As Point)
+
+'**
+'* Translates a point.
+'**
+Declare Sub Point_Add(p1 As Point, p2 As Point)
+
+'**
+'* Translates a point.
+'**
+Declare Sub Point_Subtract(p1 As Point, p2 As Point)
 
 '**
 '* A instance of the point (0,0).
