@@ -51,6 +51,9 @@ Const UNCLIMB_THRESHOLD% = 5
 Const THERMO_TICK_NORMAL% = 100
 Const THERMO_TICK_FAST% = 35
 
+' Number of frames between ticks of the slip ticker
+Const SLIP_TICK_NORMAL% = 2
+
 ' Location of level number
 Dim Shared PT_LEVEL_NB As Point
 Point_Set PT_LEVEL_NB, 4, 20
@@ -69,6 +72,7 @@ Let SCANLINES = FALSE
 ' Other includes (declarations)
 ' --------------------------
 '$Include:'Geometry.bi'
+'$Include:'Ticker.bi'
 '$Include:'Sprites.bi'
 '$Include:'Keyboard.bi'
 '$Include:'Sounds.bi'
@@ -122,6 +126,8 @@ Type Player
   ThermoFlash As Integer
   HasMittens As Integer
   HasTuque As Integer
+  SlipTick As Ticker
+  SlipDir As Integer
 End Type
 
 ' --------------------------
@@ -139,14 +145,6 @@ Let Dodu.Temp = 10
 Let Dodu.HasMittens = FALSE
 Let Dodu.HasTuque = FALSE
 
-'Do
-'  _Limit FPS%
-'  Locate 1, 1
-'  ReadJoystick
-'  Print Str$(JOYSTICK.H) + " " + Str$(JOYSTICK.V)
-'  Print Str$(In_Down(K_DOWN)) + " " + Str$(In_Down(K_UP)) + " " + Str$(In_Down(K_LEFT)) + " " + Str$(In_Down(K_RIGHT))
-'  Print Str$(In_Down(J_1)) + " " + Str$(In_Down(J_2)) + " " + Str$(In_Down(J_3)) + " " + Str$(In_Down(J_4))
-'Loop
 
 ' --------------------------
 ' Main loop
@@ -163,13 +161,20 @@ Let CURRENT_TRAJECTORY% = -1
 Dim Shared parallax As Point
 Point_Set parallax, 2, 2
 
-'LoadPasswords
+LoadPasswords
 
 Do
   Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
   Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS
+  Dim rst As RestorePoint
   Screen MainScreen.Buffer
-  DoIntroduction
+
+  DoIntroduction rst
+  If rst.Level >= 0 Then
+    Let CURRENT_LEVEL = rst.Level
+    Let Dodu.HasMittens = rst.HasMittens
+    Let Dodu.HasTuque = rst.HasTuque
+  End If
   SoundPlayer_PlaySong Audio, 0
   Do
     Dim ws As Point
@@ -193,6 +198,7 @@ Sub DoLevel
 
 
   Ticker_Init Dodu.ThermoTick, 10, THERMO_TICK_NORMAL%, FALSE
+  Ticker_Init Dodu.SlipTick, 6, SLIP_TICK_NORMAL%, FALSE
 
   Viewport_SetBackground ImgBuffer, Backgrounds(Levels(CURRENT_LEVEL%).Background), parallax
   Color COLOR_PINK&, , , ImgBuffer.Buffer
@@ -242,8 +248,8 @@ Sub DoLevel
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL)
     DrawPlayer ImgBuffer
     DrawThermometer ImgBuffer
-    Viewport_Print ImgBuffer, Point_ToString(ImgBuffer.Pan) + Point_ToString(ImgBuffer.WorldSize), P_ORIGIN
-    Viewport_Print ImgBuffer, _Trim$(NbFormat$(CURRENT_LEVEL% + 1)), PT_LEVEL_NB
+    'Viewport_Print ImgBuffer, Point_ToString(ImgBuffer.Pan) + Point_ToString(ImgBuffer.WorldSize), P_ORIGIN
+    'Viewport_Print ImgBuffer, _Trim$(NbFormat$(CURRENT_LEVEL% + 1)), PT_LEVEL_NB
 
     If _KeyDown(K_ESC) Then
       GoTo Quit:
@@ -262,6 +268,7 @@ Sub DoLevel
 
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
+    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK&
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
 
@@ -331,6 +338,7 @@ Sub DoLevel
 
     If IsLeft% Then
       Let Dodu.ToLeft = TRUE
+      Let Dodu.SlipDir = -1
       Dim klp As Point
       If Square_IsValid(climbP) Then
         Let CURRENT_SPRITE = GetDoduSprite%(TRUE, Dodu.HasBlock)
@@ -354,6 +362,7 @@ Sub DoLevel
 
     ElseIf IsRight% Then
       Let Dodu.ToLeft = FALSE
+      Let Dodu.SlipDir = 1
       Dim krp As Point
       If Square_IsValid(climbP) Then
         Let CURRENT_SPRITE = GetDoduSprite%(TRUE, Dodu.HasBlock)
@@ -404,6 +413,19 @@ Sub DoLevel
 
     Else ' No key
       Let CURRENT_SPRITE% = GetDoduSprite%(FALSE, Dodu.HasBlock)
+      If Dodu.SlipDir <> 0 Then
+        Ticker_Tick Dodu.SlipTick
+      End If
+      If Not Ticker_Finished%(Dodu.SlipTick) Then
+        If Dodu.SlipTick.TickCnt = 0 Then
+          Dim slipP As Point
+          Point_Set slipP, Dodu.SlipDir, 0
+          MovePlayer ImgBuffer, slipP
+        End If
+      Else
+        Let Dodu.SlipDir = 0
+        Ticker_Reset Dodu.SlipTick
+      End If
 
     End If
 
@@ -424,7 +446,6 @@ Sub DoLevel
   End
 
   Quit:
-  SoundPlayer_StopSong Audio
   Cls
   End
 End Sub
@@ -674,11 +695,12 @@ Sub DisplayCard (v As Viewport, p As Point, value As Integer)
   Viewport_PutSprite v, FALSE, Numbers(nb), p2, FALSE
 End Sub
 
-Sub DoPasswordInput
+Sub DoPasswordInput (rst As RestorePoint)
   Dim PwBuffer As Viewport, ws As Point
   Point_Set ws, SCREEN_DIMS.x, 1000
   Viewport_Init_Default PwBuffer, SCREEN_DIMS, ws
   Viewport_Clear PwBuffer
+  Viewport_SetBackground PwBuffer, Backgrounds(2), P_ORIGIN
   Dim x As Integer, y As Integer, p As Point, q As Point
   Dim down As Point, up As Point
   Dim coord_row As Integer, coord_col As Integer
@@ -690,6 +712,7 @@ Sub DoPasswordInput
   Do
     _Limit FPS%
 
+    Viewport_Clear PwBuffer
     ' Show cards
     Point_Set up, 0, -4
     Point_Set down, 0, 4
@@ -700,41 +723,80 @@ Sub DoPasswordInput
       Next
     Next
 
+    ' Show previously selected cards
+    Dim n As Integer, scr As Integer, scc As Integer
+    For n = 0 To selindex - 1
+      Let scr = selection(n) Mod 13
+      Let scc = selection(n) \ 13
+      Point_Set p, scc * 18 + 5, scr * 22
+      Point_Set q, p.x + 16, p.y + 22
+      Viewport_Line PwBuffer, FALSE, p, q, COLOR_YELLOW, TRUE, FALSE
+    Next
+
+    'Viewport_Print PwBuffer, Str$(selection(0)) + Str$(selection(1)) + Str$(selection(2)) + Str$(selection(3)), P_ORIGIN
+
     ' Show selected card
     Point_Set p, coord_col * 18 + 5, coord_row * 22
     Point_Set q, p.x + 16, p.y + 22
     Viewport_Line PwBuffer, FALSE, p, q, COLOR_RED, TRUE, FALSE
+    Point_Set p, coord_col * 18 + 5, coord_row * 22
+    Viewport_SetCenter PwBuffer, p
+
     Viewport_Copy PwBuffer, MainScreen
     Viewport_Display MainScreen
 
     ReadJoystick
     If IsDown% Then
-      Viewport_MovePan PwBuffer, down
+      Let coord_row = Clamp%(coord_row + 1, 0, 12)
+      Kbd_WaitRelease FPS%
     ElseIf IsUp% Then
-      Viewport_MovePan PwBuffer, up
+      Let coord_row = Clamp%(coord_row - 1, 0, 12)
+      Kbd_WaitRelease FPS%
+    ElseIf IsLeft% Then
+      Let coord_col = Clamp%(coord_col - 1, 0, 3)
+      Kbd_WaitRelease FPS%
+    ElseIf IsRight% Then
+      Let coord_col = Clamp%(coord_col + 1, 0, 3)
+      Kbd_WaitRelease FPS%
     End If
-    If _KeyDown(K_ENTER) Or _KeyDown(K_SPACE) Then
+    If _KeyDown(K_ENTER) Then
+      Let selection(selindex) = coord_col * 13 + coord_row
+      Let selindex = selindex + 1
+      Kbd_WaitRelease FPS%
+      If selindex = 4 Then
+        Screen 0
+        LookupPassword rst, selection()
+        Exit Sub
+      End If
+    End If
+    If _KeyDown(K_SPACE) Then
       Exit Sub
     End If
   Loop
+
 End Sub
 
-Sub DoIntroduction
+Sub DoIntroduction (rst As RestorePoint)
   Dim p As Point
-  Viewport_Clear ImgBuffer
-  Point_Set p, 30, 26
-  Viewport_Print ImgBuffer, "START", p
-  Point_Set p, 30, 32
-  Viewport_Print ImgBuffer, "PASSWORD", p
-  Viewport_Copy ImgBuffer, MainScreen
-  Viewport_Display MainScreen
+  Let rst.Level = -1
   Do
     _Limit FPS%
+    Viewport_Clear ImgBuffer
+    Point_Set p, 30, 26
+    Viewport_Print ImgBuffer, "START", p
+    Point_Set p, 30, 32
+    Viewport_Print ImgBuffer, "PASSWORD", p
+    Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Display MainScreen
     If _KeyDown(K_ENTER) Or _KeyDown(K_SPACE) Then
       Exit Do
     ElseIf _KeyDown(K_BACKSPACE) Then
-      DoPasswordInput
-      Exit Sub
+      DoPasswordInput rst
+      If rst.Level < 0 Then
+        _Continue
+      Else ' Valid password
+        Exit Sub
+      End If
     End If
   Loop
 End Sub
@@ -763,6 +825,7 @@ End Function
 '$IncludeOnce
 '$Include:'Utils.bm'
 '$Include:'Geometry.bm'
+'$Include:'Ticker.bm'
 '$Include:'Sprites.bm'
 '$Include:'Sounds.bm'
 '$Include:'Keyboard.bm'

@@ -113,26 +113,6 @@ Declare Sub Sprite_Copy (dst As Sprite, src As Sprite)
 ' }}}
 
 '**
-'** - Ticker --------------------------------------------------- {{{
-'**
-
-Type Ticker
-	Length As Integer
-	Index As Integer
-	Loop As Integer
-	Speed As Integer
-	TickCnt As Integer
-End Type
-
-Declare Sub Ticker_Init (t As Ticker, l As Integer, speed As Integer, isloop As Integer)
-
-Declare Sub Ticker_Tick (t As Ticker)
-
-Declare Sub Ticker_Reset (t As Ticker)
-
-Declare Function Ticker_Finished% (t As Ticker)
-
-'**
 '** - Sprite sequence------------------------------------------- {{{
 '**
 Type SpriteSequence

@@ -16,47 +16,41 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
-Function Ceil% (x As Single)
-  Dim z As Integer
-  Let z = CInt(x)
-  If z < x Then z = z + 1
-  Let Ceil% = z
-End Function
+Sub Ticker_Init (t As Ticker, l As Integer, speed As Integer, isloop As Integer)
+	let t.Length = l
+	let t.Speed = speed
+	let t.Loop = isloop
+	let t.TickCnt = 0
+	let t.Index = 0
+End Sub
 
-Function Floor% (x As Single)
-  Dim z As Integer
-  Let z = CInt(x)
-  If z > x Then z = z - 1
-  Let Floor% = z
-End Function
-
-Function NbFormat$ (x As Integer)
-	if x < 10 Then
-		let NbFormat$ = " " + _Trim$(Str$(x))
-	else
-		let NbFormat$ = _Trim$(Str$(x))
-	end if
-End Function
-
-FUNCTION Clamp% (value%, minimum%, maximum%)
-    IF value% > maximum% THEN
-        Clamp% = maximum%
-    ELSEIF value% < minimum% THEN
-        Clamp% = minimum%
-    ELSE
-        Clamp% = value%
-    END IF
-END FUNCTION
-
-Function Array_Contains% (a() As Integer, v As Integer)
-	Dim i As Integer
-	Let Array_Contains% = FALSE
-	For i = 0 To UBOUND(a)
-		If a(i) = v Then
-			Let Array_Contains% = TRUE
-			Exit Function
+Sub Ticker_Tick (t As Ticker)
+	If t.Index >= 0 Then
+		Let t.TickCnt = (t.TickCnt + 1) Mod t.Speed
+		If t.TickCnt = 0 Then
+			Let t.Index = t.Index + 1
+			If t.Index = t.Length Then
+				If t.Loop Then
+					let t.Index = 0
+				Else
+					let t.Index = -1
+				End If
+			End If
 		End If
-	Next
-End Function
+	End If
+End Sub
 
-' :mode=visualbasic:folding=explicit:wrap=none:
+Sub Ticker_Reset (t As Ticker)
+	let t.TickCnt = 0
+	let t.Index = 0
+End Sub
+
+Function Ticker_Finished% (t as Ticker)
+	if t.Index < 0 Then
+		let Ticker_Finished% = TRUE
+	else
+		let Ticker_Finished% = FALSE
+	end if
+End Sub
+
+' :mode=visualbasic:

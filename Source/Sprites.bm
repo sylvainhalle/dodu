@@ -20,6 +20,7 @@
 ' Sprite functions
 ' --------------------------
 
+' DependsOn: Ticker
 
 '**
 '** - Point ------------------------------------------------- {{{
@@ -73,47 +74,6 @@ Sub Sprite_Copy (dst As Sprite, src As Sprite)
 End Sub
 
 ' }}}
-
-'**
-'** - Ticker    ------------------------------------------------ {{{
-'**
-
-Sub Ticker_Init (t As Ticker, l As Integer, speed As Integer, isloop As Integer)
-	let t.Length = l
-	let t.Speed = speed
-	let t.Loop = isloop
-	let t.TickCnt = 0
-	let t.Index = 0
-End Sub
-
-Sub Ticker_Tick (t As Ticker)
-	If t.Index >= 0 Then
-		Let t.TickCnt = (t.TickCnt + 1) Mod t.Speed
-		If t.TickCnt = 0 Then
-			Let t.Index = t.Index + 1
-			If t.Index = t.Length Then
-				If t.Loop Then
-					let t.Index = 0
-				Else
-					let t.Index = -1
-				End If
-			End If
-		End If
-	End If
-End Sub
-
-Sub Ticker_Reset (t As Ticker)
-	let t.TickCnt = 0
-	let t.Index = 0
-End Sub
-
-Function Ticker_Finished% (t as Ticker)
-	if t.Index < 0 Then
-		let Ticker_Finished% = TRUE
-	else
-		let Ticker_Finished% = FALSE
-	end if
-End Sub
 
 '**
 '** - Sprite sequence------------------------------------------- {{{
@@ -311,8 +271,8 @@ Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteS
 End Sub
 
 Sub Viewport_SetCenter (v as Viewport, p as Point)
-	let v.Pan.x = p.x - v.Size.x \ 2
-	let v.Pan.y = p.y - v.Size.y \ 2
+	let v.Pan.x = Clamp%(p.x - v.Size.x \ 2, 0, v.WorldSize.x - v.Size.x)
+	let v.Pan.y = Clamp%(p.y - v.Size.y \ 2, 0, v.WorldSize.y - v.Size.y)
 End Sub
 
 Sub Viewport_MovePan (v as Viewport, p as Point)

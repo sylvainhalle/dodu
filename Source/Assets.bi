@@ -158,9 +158,10 @@ Sprite_Load Numbers(12), IMG_DIR$ + "/Digit_K.gif", DEFAULT_OFFSET, DEFAULT_OFFS
 ' ---------------------
 ' Backgrounds
 ' ---------------------
-Dim Shared Backgrounds(2) As Sprite
+Dim Shared Backgrounds(3) As Sprite
 Sprite_Load Backgrounds(0), IMG_DIR$ + "/Background.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
 Sprite_Load Backgrounds(1), IMG_DIR$ + "/Background2.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
+Sprite_Load Backgrounds(2), IMG_DIR$ + "/Background_Cards.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
 
 ' Other constants
 Const PLAYER_HEIGHT% = 33

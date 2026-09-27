@@ -31,4 +31,6 @@ Declare Function NbFormat$ (x As Integer)
 '**
 Declare Function Clamp% (value%, minimum%, maximum%)
 
+Declare Function Array_Contains% (a() As Integer, v As Integer)
+
 ' :mode=visualbasic:folding=explicit:wrap=none:

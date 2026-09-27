@@ -16,47 +16,24 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
-Function Ceil% (x As Single)
-  Dim z As Integer
-  Let z = CInt(x)
-  If z < x Then z = z + 1
-  Let Ceil% = z
-End Function
+'**
+'** - Ticker --------------------------------------------------- {{{
+'**
 
-Function Floor% (x As Single)
-  Dim z As Integer
-  Let z = CInt(x)
-  If z > x Then z = z - 1
-  Let Floor% = z
-End Function
+Type Ticker
+	Length As Integer
+	Index As Integer
+	Loop As Integer
+	Speed As Integer
+	TickCnt As Integer
+End Type
 
-Function NbFormat$ (x As Integer)
-	if x < 10 Then
-		let NbFormat$ = " " + _Trim$(Str$(x))
-	else
-		let NbFormat$ = _Trim$(Str$(x))
-	end if
-End Function
+Declare Sub Ticker_Init (t As Ticker, l As Integer, speed As Integer, isloop As Integer)
 
-FUNCTION Clamp% (value%, minimum%, maximum%)
-    IF value% > maximum% THEN
-        Clamp% = maximum%
-    ELSEIF value% < minimum% THEN
-        Clamp% = minimum%
-    ELSE
-        Clamp% = value%
-    END IF
-END FUNCTION
+Declare Sub Ticker_Tick (t As Ticker)
 
-Function Array_Contains% (a() As Integer, v As Integer)
-	Dim i As Integer
-	Let Array_Contains% = FALSE
-	For i = 0 To UBOUND(a)
-		If a(i) = v Then
-			Let Array_Contains% = TRUE
-			Exit Function
-		End If
-	Next
-End Function
+Declare Sub Ticker_Reset (t As Ticker)
 
-' :mode=visualbasic:folding=explicit:wrap=none:
+Declare Function Ticker_Finished% (t As Ticker)
+
+' :mode=visualbasic:
