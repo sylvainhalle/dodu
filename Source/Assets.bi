@@ -42,26 +42,31 @@ Let FNT_GRAPE = _LoadFont(FNT_DIR$ + "/GrapeSoda.ttf", 10, "MONOSPACE DONTBLEND"
 Dim DEFAULT_OFFSET As Point
 Let DEFAULT_OFFSET = P_ORIGIN
 
-Dim Shared DoduSprites(4) As SpriteSequence
+Dim Shared DoduSprites(10) As SpriteSequence
 
-' Character
-Const DOD_STATIC% = 0
-Const DOD_WALKING% = 1
-Const DOD_BLOCK% = 2
-Const DOD_BLOCK_WALKING% = 3
+Dim Shared DOD_SPRITES(2, 2, 2, 2) As SpriteSequence
 
-Dim block_offset As Point
-Point_Set block_offset, -5, 0
-SpriteSequence_Init DoduSprites(DOD_STATIC%), 1, 1, TRUE
-Dim sprl As Sprite
-Sprite_Load sprl, IMG_DIR$ + "/Dodu_right_0.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_Load DoduSprites(DOD_STATIC%), sprl, 0
-Sprite_Load sprl, IMG_DIR$ + "/Dodu_right_block_0.gif", DEFAULT_OFFSET, block_offset, COLOR_TRANSPARENT
-SpriteSequence_Init DoduSprites(DOD_BLOCK%), 1, 1, TRUE
-SpriteSequence_Load DoduSprites(DOD_BLOCK%), sprl, 0
+Dim walking As Integer, block As Integer, mittens As Integer, tuque As Integer
+Dim filename As String
+For walking = 0 To 1
+	For block = 0 To 1
+		For mittens = 0 To 1
+			For tuque = 0 To 1
+				Let filename = GetFilename$(walking, block, mittens, tuque)
+				SpriteSequence_BulkLoad DOD_SPRITES(walking, block, mittens, tuque), IMG_DIR$ + "/" + filename + "_", 4, 2, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+			Next
+		Next
+	Next
+Next
 
-SpriteSequence_BulkLoad DoduSprites(DOD_WALKING%), IMG_DIR$ + "/Dodu_right_", 4, 2, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_BulkLoad DoduSprites(DOD_BLOCK_WALKING%), IMG_DIR$ + "/Dodu_right_block_", 4, 2, TRUE, DEFAULT_OFFSET, block_offset, COLOR_TRANSPARENT
+Function GetFilename$ (walking As Integer, block As Integer, mittens As Integer, tuque As Integer)
+	Dim filename As String
+	If walking = 0 Then Let filename = "Dodu_static" Else Let filename = "Dodu_walking"
+	If block = 0 Then Let filename = filename + "_noblock" Else Let filename = filename + "_block"
+	If mittens = 0 Then Let filename = filename + "_nomittens" Else Let filename = filename + "_mittens"
+	If tuque = 0 Then Let filename = filename + "_notuque" Else Let filename = filename + "_tuque"
+	Let GetFilename$ = filename
+End Function
 
 Dim Shared DoduSmall As Sprite
 Sprite_Load DoduSmall, IMG_DIR$ + "/DoduSmall.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
