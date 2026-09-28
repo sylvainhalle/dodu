@@ -177,6 +177,8 @@ Type Viewport
   Background As Sprite
   BackgroundPanRatio As Point
   Scanlines As Integer
+  PanTick As Ticker
+  PanTarget As Point
 End Type
 
 '**
@@ -256,9 +258,23 @@ Declare Sub Viewport_SetCenter (v as Viewport, p as Point)
 Declare Sub Viewport_MovePan (v as Viewport, p as Point)
 
 '**
+'* Changes the panning of the viewport, by progressively moving it towards
+'* a target point.
+'* @param v The viewport on which to apply the operation
+'* @param target The target pan point to reach
+'* @param nbframes The total number of frames to reach the target
+'**
+Declare Sub Viewport_ScrollPan (v as Viewport, target as Point, nbframes As Integer)
+
+'**
 '* Displays the current viewport
 '**
 Declare Sub Viewport_Display (v As Viewport)
+
+'**
+'* Ticks the viewport.
+'**
+Declare Sub Viewport_Tick (v As Viewport)
 
 ' }}}
 

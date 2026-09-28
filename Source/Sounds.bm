@@ -44,21 +44,21 @@ Sub SoundPlayer_SetPlaySong (sp As SoundPlayer, pl As Integer)
 End Sub
 
 Sub SoundPlayer_PlaySong (sp As SoundPlayer, index As Integer)
-	Let sp.CurrentSong = index
-	If sp.PlaySong = TRUE And sp.CurrentSong >= 0 Then
-		_SndLoop sp.Songs(sp.CurrentSOng)
+	If sp.PlaySong = TRUE Then
+		Let sp.CurrentSong = sp.Songs(index)
+		_SndLoop sp.CurrentSong
 	End If
 End Sub
 
 Sub SoundPlayer_StopSong (sp As SoundPlayer)
 	If sp.PlaySong = TRUE And sp.CurrentSong >= 0 Then
-		_SndStop sp.Songs(sp.CurrentSong)
+		_SndStop sp.CurrentSong
 	End If
 End Sub
 
 Sub SoundPlayer_SetSongVolume (sp As SoundPlayer, v As Single)
-	If sp.PlaySong = TRUE Then
-		_SndVol sp.Songs(sp.CurrentSong), v
+	If sp.PlaySong = TRUE And sp.CurrentSong >= 0 Then
+		_SndVol sp.CurrentSong, v
 	End If
 End Sub
 
@@ -69,14 +69,14 @@ Sub SoundPlayer_PlayEffect (sp As SoundPlayer, index As Integer)
 End Sub
 
 Sub SoundPlayer_PauseSong (sp As SoundPlayer)
-	If sp.PlaySong = TRUE Then
-		_SndPause sp.Songs(sp.CurrentSOng)
+	If sp.PlaySong = TRUE And sp.CurrentSong >= 0 Then
+		_SndPause sp.CurrentSong
 	End If
 End Sub
 
 Sub SoundPlayer_ResumeSong (sp As SoundPlayer)
-	If sp.PlaySong = TRUE Then
-		_SndPlay sp.Songs(sp.CurrentSOng)
+	If sp.PlaySong = TRUE And sp.CurrentSong >= 0 Then
+		_SndPlay sp.CurrentSong
 	End If
 End Sub
 

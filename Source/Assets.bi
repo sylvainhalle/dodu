@@ -177,9 +177,11 @@ SoundPlayer_Init Audio
 
 Const SNG_SONG1 = 0
 Const SNG_SONG2 = 1
+Const SNG_CARDS = 2
 
 SoundPlayer_AddSong Audio, SNG_SONG1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod_fixed.mid"), 0.4
 SoundPlayer_AddSong Audio, SNG_SONG2, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/yaya.mid"), 0.4
+SoundPlayer_AddSong Audio, SNG_CARDS, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cards.mid"), 0.4
 
 
 Const SND_STEP% = 0
@@ -189,6 +191,9 @@ Const SND_DROP% = 3
 Const SND_LEVELUP% = 4
 Const SND_UNDO% = 5
 Const SND_GAMEOVER% = 6
+Const SND_TICK% = 7
+Const SND_TACK% = 8
+Const SND_WRONG1% = 9
 
 SoundPlayer_AddEffect Audio, SND_STEP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step.mid"), 0.4
 SoundPlayer_AddEffect Audio, SND_THERMO%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/thermo.mid"), 1
@@ -197,6 +202,9 @@ SoundPlayer_AddEffect Audio, SND_DROP%, _SndOpen("/home/sylvain/Workspaces/dodu/
 SoundPlayer_AddEffect Audio, SND_LEVELUP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/levelup.mid"), 0.7
 SoundPlayer_AddEffect Audio, SND_UNDO%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/undo.mid"), 0.7
 SoundPlayer_AddEffect Audio, SND_GAMEOVER%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/gameover.mid"), 0.5
+SoundPlayer_AddEffect Audio, SND_TICK%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/tick.mid"), 0.7
+SoundPlayer_AddEffect Audio, SND_TACK%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/tack.mid"), 0.7
+SoundPlayer_AddEffect Audio, SND_WRONG1%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/wrong.mid"), 1
 
 '**
 '* Sets the song volume to a low level.

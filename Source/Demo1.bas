@@ -162,32 +162,40 @@ Dim Shared parallax As Point
 Point_Set parallax, 2, 2
 
 LoadPasswords
+MainLoop
 
-Do
-  Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
-  Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS
-  Dim rst As RestorePoint
-  Screen MainScreen.Buffer
-
-  DoIntroduction rst
-  If rst.Level >= 0 Then
-    Let CURRENT_LEVEL = rst.Level
-    Let Dodu.HasMittens = rst.HasMittens
-    Let Dodu.HasTuque = rst.HasTuque
-  End If
-  SoundPlayer_PlaySong Audio, 0
+Sub MainLoop
   Do
-    Dim ws As Point
-    Point_Set ws, Levels(CURRENT_LEVEL).Width * BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * BLOCK_SIZE%
     Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
-    Let MainScreen.Scanlines = SCANLINES
-    Viewport_Init_Default ImgBuffer, SCREEN_DIMS, ws
-    Viewport_SetFont ImgBuffer, FNT_TINYC
-    DoLevel
-    SoundPlayer_PlayEffect Audio, SND_LEVELUP
-    Let CURRENT_LEVEL = CURRENT_LEVEL + 1
+    Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS
+    Dim rst As RestorePoint
+    Screen MainScreen.Buffer
+
+    DoIntroduction rst
+    If rst.Level >= 0 Then
+      Let CURRENT_LEVEL = rst.Level
+      Let Dodu.HasMittens = rst.HasMittens
+      Let Dodu.HasTuque = rst.HasTuque
+    End If
+    Dim dummy As Integer
+    ' Wait 1 sec
+    For dummy = 0 To FPS%
+      _Limit FPS%
+    Next
+    SoundPlayer_PlaySong Audio, 0
+    Do
+      Dim ws As Point
+      Point_Set ws, Levels(CURRENT_LEVEL).Width * BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * BLOCK_SIZE%
+      Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
+      Let MainScreen.Scanlines = SCANLINES
+      Viewport_Init_Default ImgBuffer, SCREEN_DIMS, ws
+      Viewport_SetFont ImgBuffer, FNT_TINYC
+      DoLevel
+      SoundPlayer_PlayEffect Audio, SND_LEVELUP
+      Let CURRENT_LEVEL = CURRENT_LEVEL + 1
+    Loop
   Loop
-Loop
+End Sub
 
 Sub DoLevel
   Dim CTRL_PRESSED As Integer, PANBACK_STEPS As Integer
@@ -696,6 +704,8 @@ Sub DisplayCard (v As Viewport, p As Point, value As Integer)
 End Sub
 
 Sub DoPasswordInput (rst As RestorePoint)
+  SoundPlayer_StopSong Audio
+  SoundPlayer_PlaySong Audio, SNG_CARDS%
   Dim PwBuffer As Viewport, ws As Point
   Point_Set ws, SCREEN_DIMS.x, 1000
   Viewport_Init_Default PwBuffer, SCREEN_DIMS, ws
@@ -748,32 +758,44 @@ Sub DoPasswordInput (rst As RestorePoint)
     ReadJoystick
     If IsDown% Then
       Let coord_row = Clamp%(coord_row + 1, 0, 12)
+      SoundPlayer_PlayEffect Audio, SND_TICK%
       Kbd_WaitRelease FPS%
     ElseIf IsUp% Then
       Let coord_row = Clamp%(coord_row - 1, 0, 12)
+      SoundPlayer_PlayEffect Audio, SND_TICK%
       Kbd_WaitRelease FPS%
     ElseIf IsLeft% Then
       Let coord_col = Clamp%(coord_col - 1, 0, 3)
+      SoundPlayer_PlayEffect Audio, SND_TICK%
       Kbd_WaitRelease FPS%
     ElseIf IsRight% Then
       Let coord_col = Clamp%(coord_col + 1, 0, 3)
+      SoundPlayer_PlayEffect Audio, SND_TICK%
       Kbd_WaitRelease FPS%
     End If
     If _KeyDown(K_ENTER) Then
       Let selection(selindex) = coord_col * 13 + coord_row
       Let selindex = selindex + 1
+      SoundPlayer_PlayEffect Audio, SND_TACK%
       Kbd_WaitRelease FPS%
       If selindex = 4 Then
         Screen 0
         LookupPassword rst, selection()
+        If rst.Level < 0 Then
+          SoundPlayer_PlayEffect Audio, SND_WRONG1%
+        Else
+          SoundPlayer_PlayEffect Audio, SND_LEVELUP%
+        End If
+        SoundPlayer_StopSong Audio
         Exit Sub
       End If
     End If
     If _KeyDown(K_SPACE) Then
+      SoundPlayer_StopSong Audio
       Exit Sub
     End If
   Loop
-
+  SoundPlayer_StopSong Audio
 End Sub
 
 Sub DoIntroduction (rst As RestorePoint)

@@ -36,7 +36,7 @@ Declare Sub SoundPlayer_SetPlayEffects (sp As SoundPlayer, pl As Integer)
 
 Declare Sub SoundPlayer_SetSong (sp As SoundPlayer, ref As _Unsigned Long)
 
-Declare Sub SoundPlayer_PlaySong (sp As SoundPlayer)
+Declare Sub SoundPlayer_PlaySong (sp As SoundPlayer, index As Integer)
 
 Declare Sub SoundPlayer_StopSong (sp As SoundPlayer)
 

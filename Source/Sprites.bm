@@ -279,6 +279,10 @@ Sub Viewport_MovePan (v as Viewport, p as Point)
 	Let v.Pan.x = Clamp%(v.Pan.x + p.x, 0, v.WorldSize.x - v.Size.x)
 	Let v.Pan.y = Clamp%(v.Pan.y + p.y, 0, v.WorldSize.y - v.Size.y)
 End Sub
+
+Sub Viewport_ScrollPan (v as Viewport, target as Point, nbframes As Integer)
+	
+End Sub
 ' }}}
 
 
