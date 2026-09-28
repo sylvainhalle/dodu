@@ -179,6 +179,7 @@ Type Viewport
   Scanlines As Integer
   PanTick As Ticker
   PanTarget As Point
+  PanAmount As Point
 End Type
 
 '**
@@ -265,6 +266,8 @@ Declare Sub Viewport_MovePan (v as Viewport, p as Point)
 '* @param nbframes The total number of frames to reach the target
 '**
 Declare Sub Viewport_ScrollPan (v as Viewport, target as Point, nbframes As Integer)
+
+Declare Sub Viewport_ScrollCenter (v As Viewport, p As Point, nbframes As Integer)
 
 '**
 '* Displays the current viewport

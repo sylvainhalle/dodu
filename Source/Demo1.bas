@@ -231,6 +231,7 @@ Sub DoLevel
     _Limit FPS%
     ReadJoystick
     Viewport_Clear ImgBuffer
+    Viewport_Tick ImgBuffer
     ' Thermometer
     Ticker_Tick Dodu.ThermoTick
     If Dodu.ThermoTick.TickCnt = 0 Or (Dodu.Temp < 3 And Dodu.ThermoTick.TickCnt Mod FPS% = 0) Then
@@ -288,7 +289,7 @@ Sub DoLevel
     If CURRENT_TRAJECTORY% >= 0 And CURRENT_TRAJECTORY% < 100 Then
       Trajectory_Tick Trajectories(CURRENT_TRAJECTORY%), trjP
       MovePlayer ImgBuffer, trjP
-      If Ticker_Finished%(Trajectories(CURRENT_TRAJECTORY%).Ticker) Then
+      If Ticker_IsFinished%(Trajectories(CURRENT_TRAJECTORY%).Ticker) Then
         Trajectory_Reset Trajectories(CURRENT_TRAJECTORY)
         Let CURRENT_TRAJECTORY% = -1
       End If
@@ -312,7 +313,7 @@ Sub DoLevel
     If CURRENT_TRAJECTORY% = TRJ_PANBACK% Then
       Ticker_Tick panback_ticker
       Viewport_MovePan ImgBuffer, panbacktarget
-      If Ticker_Finished%(panback_ticker) Then
+      If Ticker_IsFinished%(panback_ticker) Then
         Let CURRENT_TRAJECTORY% = -1
         Ticker_Reset panback_ticker
       End If
@@ -424,7 +425,7 @@ Sub DoLevel
       If Dodu.SlipDir <> 0 Then
         Ticker_Tick Dodu.SlipTick
       End If
-      If Not Ticker_Finished%(Dodu.SlipTick) Then
+      If Not Ticker_IsFinished%(Dodu.SlipTick) Then
         If Dodu.SlipTick.TickCnt = 0 Then
           Dim slipP As Point
           Point_Set slipP, Dodu.SlipDir, 0
@@ -710,7 +711,9 @@ Sub DoPasswordInput (rst As RestorePoint)
   Point_Set ws, SCREEN_DIMS.x, 1000
   Viewport_Init_Default PwBuffer, SCREEN_DIMS, ws
   Viewport_Clear PwBuffer
-  Viewport_SetBackground PwBuffer, Backgrounds(2), P_ORIGIN
+  Dim prlx As Point
+  Point_Set prlx, 2, 2
+  Viewport_SetBackground PwBuffer, Backgrounds(2), prlx
   Dim x As Integer, y As Integer, p As Point, q As Point
   Dim down As Point, up As Point
   Dim coord_row As Integer, coord_col As Integer
@@ -723,6 +726,8 @@ Sub DoPasswordInput (rst As RestorePoint)
     _Limit FPS%
 
     Viewport_Clear PwBuffer
+    Viewport_Tick PwBuffer
+
     ' Show cards
     Point_Set up, 0, -4
     Point_Set down, 0, 4
@@ -749,29 +754,36 @@ Sub DoPasswordInput (rst As RestorePoint)
     Point_Set p, coord_col * 18 + 5, coord_row * 22
     Point_Set q, p.x + 16, p.y + 22
     Viewport_Line PwBuffer, FALSE, p, q, COLOR_RED, TRUE, FALSE
-    Point_Set p, coord_col * 18 + 5, coord_row * 22
-    Viewport_SetCenter PwBuffer, p
 
     Viewport_Copy PwBuffer, MainScreen
     Viewport_Display MainScreen
 
     ReadJoystick
+    Dim moves As Integer: Let moves = FALSE
     If IsDown% Then
       Let coord_row = Clamp%(coord_row + 1, 0, 12)
       SoundPlayer_PlayEffect Audio, SND_TICK%
       Kbd_WaitRelease FPS%
+      Let moves = TRUE
     ElseIf IsUp% Then
       Let coord_row = Clamp%(coord_row - 1, 0, 12)
       SoundPlayer_PlayEffect Audio, SND_TICK%
       Kbd_WaitRelease FPS%
+      Let moves = TRUE
     ElseIf IsLeft% Then
       Let coord_col = Clamp%(coord_col - 1, 0, 3)
       SoundPlayer_PlayEffect Audio, SND_TICK%
       Kbd_WaitRelease FPS%
+      Let moves = TRUE
     ElseIf IsRight% Then
       Let coord_col = Clamp%(coord_col + 1, 0, 3)
       SoundPlayer_PlayEffect Audio, SND_TICK%
       Kbd_WaitRelease FPS%
+      Let moves = TRUE
+    End If
+    If moves Then
+      Point_Set p, coord_col * 18 + 5, coord_row * 22
+      Viewport_ScrollCenter PwBuffer, p, 6
     End If
     If _KeyDown(K_ENTER) Then
       Let selection(selindex) = coord_col * 13 + coord_row

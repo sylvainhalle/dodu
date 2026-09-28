@@ -281,7 +281,27 @@ Sub Viewport_MovePan (v as Viewport, p as Point)
 End Sub
 
 Sub Viewport_ScrollPan (v as Viewport, target as Point, nbframes As Integer)
-	
+	Ticker_Init v.PanTick, nbframes, 1, FALSE
+	Point_Set v.PanTarget, target.x, target.y
+	Point_Set v.PanAmount, (target.x - v.Pan.x) \ nbframes, (target.y - v.Pan.y) \ nbframes
+End Sub
+
+Sub Viewport_ScrollCenter (v As Viewport, p As Point, nbframes As Integer)
+	Dim target As Point
+	let target.x = Clamp%(p.x - v.Size.x \ 2, 0, v.WorldSize.x - v.Size.x)
+	let target.y = Clamp%(p.y - v.Size.y \ 2, 0, v.WorldSize.y - v.Size.y)
+	Viewport_ScrollPan v, target, nbframes
+End Sub
+
+Sub Viewport_Tick (v as Viewport)
+	If Ticker_IsRunning%(v.PanTick) Then
+		Viewport_MovePan v, v.PanAmount
+		Ticker_Tick v.PanTick
+		If Ticker_IsFinished%(v.PanTick) Then
+			Point_Set v.PanTarget, -1, -1
+			Point_Set v.PanAmount, 0, 0
+		End If
+	End If
 End Sub
 ' }}}
 

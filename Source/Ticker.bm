@@ -25,7 +25,7 @@ Sub Ticker_Init (t As Ticker, l As Integer, speed As Integer, isloop As Integer)
 End Sub
 
 Sub Ticker_Tick (t As Ticker)
-	If t.Index >= 0 Then
+	If t.Index >= 0 and t.Speed > 0 Then
 		Let t.TickCnt = (t.TickCnt + 1) Mod t.Speed
 		If t.TickCnt = 0 Then
 			Let t.Index = t.Index + 1
@@ -45,11 +45,19 @@ Sub Ticker_Reset (t As Ticker)
 	let t.Index = 0
 End Sub
 
-Function Ticker_Finished% (t as Ticker)
+Function Ticker_IsRunning% (t as Ticker)
 	if t.Index < 0 Then
-		let Ticker_Finished% = TRUE
+		let Ticker_IsRunning% = FALSE
 	else
-		let Ticker_Finished% = FALSE
+		let Ticker_IsRunning% = TRUE
+	end if
+End Function
+
+Function Ticker_IsFinished% (t as Ticker)
+	if t.Index < 0 Then
+		let Ticker_IsFinished% = TRUE
+	else
+		let Ticker_IsFinished% = FALSE
 	end if
 End Sub
 
