@@ -138,7 +138,7 @@ _AllowFullScreen _Off
 Dim Shared MainScreen As Viewport, ImgBuffer As Viewport
 
 ' Game state
-Dim Shared Dodu As Player
+Dim Shared Dodu As Player, DoduPast As Player
 Let Dodu.SpriteIndex = 0
 Let Dodu.HasBlock = FALSE
 Let Dodu.IsClimbing = 0
@@ -198,72 +198,70 @@ End Sub
 
 Sub DoLevel
   Dim CTRL_PRESSED As Integer, PANBACK_STEPS As Integer
-  Let CTRL_PRESSED = FALSE
-  Let Dodu.Temp = 10
-  Let PANBACK_STEPS = 8
   Dim panback_ticker As Ticker
+  Dim dod_lastgrab As Point
+  Dim sq_lastgrab As Square, sq_lastdrop As Square
+  Dim center As Point, panbacktarget As Point
+  Dim trjP As Point, lp As Point, moveP As Point, panP As Point
 
+  Dim climbP As Square, takeP As Square, dropP As Square
+  Dim unclimbP As Square, blockingP As Square, poleP As Square
+
+  Let CTRL_PRESSED = FALSE
+  Let PANBACK_STEPS = 8
+  Let Dodu.Temp = 10
 
   Ticker_Init Dodu.ThermoTick, 10, THERMO_TICK_NORMAL%, FALSE
   Ticker_Init Dodu.SlipTick, 6, SLIP_TICK_NORMAL%, FALSE
+  Ticker_Init panback_ticker, PANBACK_STEPS, 1, FALSE
 
-  GetDoduSprite CurrentSprite, Dodu.IsWalking, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
+  Viewport_SetBackground ImgBuffer, _
+    Backgrounds(Levels(CURRENT_LEVEL%).Background), parallax
 
-  Viewport_SetBackground ImgBuffer, Backgrounds(Levels(CURRENT_LEVEL%).Background), parallax
   Color COLOR_PINK&, , , ImgBuffer.Buffer
   _PrintMode _KeepBackground , ImgBuffer.Buffer
   Screen MainScreen.Buffer
 
-
-  Ticker_Init panback_ticker, PANBACK_STEPS, 1, FALSE
   Let Dodu.LevPos.x = Levels(CURRENT_LEVEL).StartPoint.col * BLOCK_SIZE%
   Let Dodu.LevPos.y = (Levels(CURRENT_LEVEL).StartPoint.row - 2) * BLOCK_SIZE%
-  Dim dod_lastgrab As Point
-  Dim sq_lastgrab As Square, sq_lastdrop As Square
+
   Square_Set sq_lastgrab, -1, -1
   Square_Set sq_lastdrop, -1, -1
-  Dim center As Point, panbacktarget As Point
+  Point_Set trjP, -1, -1
+
   GetDoduCenter center
   Viewport_SetCenter ImgBuffer, center
 
-  Dim trjP As Point
-  Point_Set trjP, -1, -1
+  ' Force initial animation selection
+  Let DoduPast.HasBlock = 10
+  GetDoduSprite CurrentSprite, Dodu, DoduPast
+
   Do
     _Limit FPS%
+
+    ' ---------------------------------------
+    ' 1. Input and ordinary simulation
+    ' ---------------------------------------
+
     ReadJoystick
-    Viewport_Clear ImgBuffer
     Viewport_Tick ImgBuffer
+
     ' Thermometer
     Ticker_Tick Dodu.ThermoTick
-    If Dodu.ThermoTick.TickCnt = 0 Or (Dodu.Temp < 3 And Dodu.ThermoTick.TickCnt Mod FPS% = 0) Then
+
+    If Dodu.ThermoTick.TickCnt = 0 Or _
+       (Dodu.Temp < 3 And Dodu.ThermoTick.TickCnt Mod FPS% = 0) Then
       SoundPlayer_PlayEffect Audio, SND_THERMO%
     End If
+
     If Dodu.ThermoTick.TickCnt = 0 Then
       Let Dodu.Temp = Dodu.Temp - 1
     End If
+
     If Dodu.Temp = 0 Then GoTo GameOver:
 
-    ' Squares of interest
-    Dim lp As Point
-    Let lp = Dodu.LevPos
-    Dim climbP As Square, takeP As Square, dropP As Square, unclimbP As Square, blockingP As Square, poleP As Square
-    ClimbableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), climbP
-    TakeableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), takeP
-    DroppableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), dropP
-    UnclimbableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), unclimbP
-    BlockingSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), blockingP
-    PoleSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), poleP
-
-    ' Drawing
-    DrawLevel ImgBuffer, Levels(CURRENT_LEVEL)
-    DrawPlayer ImgBuffer
-    DrawThermometer ImgBuffer
-    'Viewport_Print ImgBuffer, Point_ToString(ImgBuffer.Pan) + Point_ToString(ImgBuffer.WorldSize), P_ORIGIN
-    'Viewport_Print ImgBuffer, _Trim$(NbFormat$(CURRENT_LEVEL% + 1)), PT_LEVEL_NB
-
-    If _KeyDown(K_ESC) Then
-      GoTo Quit:
-    End If
+    ' Modal commands
+    If _KeyDown(K_ESC) Then GoTo Quit:
 
     If _KeyDown(K_SPACE) Then
       DoPause
@@ -275,179 +273,270 @@ Sub DoLevel
       _Continue
     End If
 
+    ' ---------------------------------------
+    ' 2. Calculate squares of interest
+    ' ---------------------------------------
 
-    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
-    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
-    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK&
-    Viewport_Copy ImgBuffer, MainScreen
-    Viewport_Display MainScreen
+    Let lp = Dodu.LevPos
 
-    If Dodu.IsWalking And CurrentSprite.Ticker.TickCnt = 0 And CurrentSprite.Ticker.Index Mod 2 = 0 Then
-      SoundPlayer_PlayEffect Audio, SND_STEP%
-    End If
+    ClimbableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), climbP
+    TakeableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), takeP
+    DroppableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), dropP
+    UnclimbableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), unclimbP
+    BlockingSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), blockingP
+    PoleSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), poleP
 
-    ' If a trajectory is playing, ignore keybord input
+    ' ---------------------------------------
+    ' 3. Active movement trajectory
+    ' ---------------------------------------
+
     If CURRENT_TRAJECTORY% >= 0 And CURRENT_TRAJECTORY% < 100 Then
+
       Trajectory_Tick Trajectories(CURRENT_TRAJECTORY%), trjP
       MovePlayer ImgBuffer, trjP
+
       If Ticker_IsFinished%(Trajectories(CURRENT_TRAJECTORY%).Ticker) Then
         Trajectory_Reset Trajectories(CURRENT_TRAJECTORY)
         Let CURRENT_TRAJECTORY% = -1
       End If
-      _Continue
+
+      GoTo RenderFrame:
     End If
 
-    Dim to_p As Point
+    ' ---------------------------------------
+    ' 4. Goal
+    ' ---------------------------------------
 
-    ' Is goal reached?
-    If Square_IsValid(poleP) Then
-      Exit Sub
-    End If
+    If Square_IsValid(poleP) Then Exit Sub
 
-    If Not _KeyDown(K_CTRL) And CTRL_PRESSED = TRUE And CURRENT_TRAJECTORY < 0 Then
+    ' ---------------------------------------
+    ' 5. Pan-back initiation
+    ' ---------------------------------------
+
+    If Not _KeyDown(K_CTRL) And CTRL_PRESSED = TRUE And _
+       CURRENT_TRAJECTORY < 0 Then
+
       Let CTRL_PRESSED = FALSE
       Let CURRENT_TRAJECTORY% = TRJ_PANBACK%
+
       GetDoduCenter center
-      Point_Set panbacktarget, (center.x - ImgBuffer.Pan.x - ImgBuffer.Size.x / 2) / PANBACK_STEPS%, (center.y - ImgBuffer.Pan.y - ImgBuffer.Size.y / 2) / PANBACK_STEPS%
+
+      Point_Set panbacktarget, _
+        (center.x - ImgBuffer.Pan.x - ImgBuffer.Size.x / 2) / PANBACK_STEPS%, _
+        (center.y - ImgBuffer.Pan.y - ImgBuffer.Size.y / 2) / PANBACK_STEPS%
     End If
 
+    ' ---------------------------------------
+    ' 6. Pan-back trajectory
+    ' ---------------------------------------
+
     If CURRENT_TRAJECTORY% = TRJ_PANBACK% Then
+
       Ticker_Tick panback_ticker
       Viewport_MovePan ImgBuffer, panbacktarget
+
       If Ticker_IsFinished%(panback_ticker) Then
         Let CURRENT_TRAJECTORY% = -1
         Ticker_Reset panback_ticker
       End If
-      _Continue
+
+      GoTo RenderFrame:
     End If
+
+    ' ---------------------------------------
+    ' 7. Manual viewport panning
+    ' ---------------------------------------
 
     If _KeyDown(K_CTRL) Then
-      Dim panP As Point
+
       If IsLeft% Then
         Point_Set panP, -3, 0
-        Viewport_MovePan ImgBuffer, panP
-        Let CTRL_PRESSED = TRUE
-        _Continue
       ElseIf IsRight% Then
         Point_Set panP, 3, 0
-        Viewport_MovePan ImgBuffer, panP
-        Let CTRL_PRESSED = TRUE
-        _Continue
       ElseIf IsUp% Then
         Point_Set panP, 0, -3
-        Viewport_MovePan ImgBuffer, panP
-        Let CTRL_PRESSED = TRUE
-        _Continue
       ElseIf IsDown% Then
         Point_Set panP, 0, 3
-        Viewport_MovePan ImgBuffer, panP
-        Let CTRL_PRESSED = TRUE
-        _Continue
+      Else
+        GoTo RenderFrame:
       End If
+
+      Viewport_MovePan ImgBuffer, panP
+      Let CTRL_PRESSED = TRUE
+
+      GoTo RenderFrame:
     End If
 
+    ' ---------------------------------------
+    ' 8. Ordinary player controls
+    ' ---------------------------------------
+
     If IsLeft% Then
+
       Let Dodu.ToLeft = TRUE
       Let Dodu.SlipDir = -1
-      Dim klp As Point
+
       If Square_IsValid(climbP) Then
-        GetDoduSprite CurrentSprite, TRUE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
+
+        Let Dodu.IsWalking = TRUE
         Let CURRENT_TRAJECTORY% = TRJ_CLIMBING%
-        Let Dodu.ToLeft = TRUE
         Let Trajectories(CURRENT_TRAJECTORY%).Flipped = TRUE
-        Let CurrentSprite.Flipped = TRUE
+
       Else
+
         If Not Square_IsValid(blockingP) Then
-          Point_Set klp, -1, 0
-          GetDoduSprite CurrentSprite, TRUE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
-          MovePlayer ImgBuffer, klp
+          Point_Set moveP, -1, 0
+          Let Dodu.IsWalking = TRUE
+          MovePlayer ImgBuffer, moveP
+        Else
+          Let Dodu.IsWalking = FALSE
         End If
+
       End If
+
       If Square_IsValid(unclimbP) Then
-        GetDoduSprite CurrentSprite, FALSE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
+        Let Dodu.IsWalking = FALSE
         Let CURRENT_TRAJECTORY% = TRJ_FALLING%
         Let Trajectories(CURRENT_TRAJECTORY%).Flipped = TRUE
-        Let CurrentSprite.Flipped = TRUE
       End If
 
     ElseIf IsRight% Then
+
       Let Dodu.ToLeft = FALSE
       Let Dodu.SlipDir = 1
-      Dim krp As Point
+
       If Square_IsValid(climbP) Then
-        GetDoduSprite CurrentSprite, TRUE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
+
+        Let Dodu.IsWalking = TRUE
         Let CURRENT_TRAJECTORY% = TRJ_CLIMBING%
         Let Trajectories(CURRENT_TRAJECTORY%).Flipped = FALSE
-        Let CurrentSprite.Flipped = FALSE
+
       Else
+
         If Not Square_IsValid(blockingP) Then
-          Point_Set krp, 1, 0
-          GetDoduSprite CurrentSprite, TRUE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
-          MovePlayer ImgBuffer, krp
+          Point_Set moveP, 1, 0
+          Let Dodu.IsWalking = TRUE
+          MovePlayer ImgBuffer, moveP
+        Else
+          Let Dodu.IsWalking = FALSE
         End If
+
       End If
+
       If Square_IsValid(unclimbP) Then
-        GetDoduSprite CurrentSprite, FALSE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
+        Let Dodu.IsWalking = FALSE
         Let CURRENT_TRAJECTORY% = TRJ_FALLING%
         Let Trajectories(CURRENT_TRAJECTORY%).Flipped = FALSE
-        Let CurrentSprite.Flipped = FALSE
       End If
 
     ElseIf IsUp% And Square_IsValid(takeP) Then
+
       SoundPlayer_PlayEffect Audio, SND_GRAB%
       TakeBlock Levels(CURRENT_LEVEL), takeP
+
       Point_Set dod_lastgrab, Dodu.LevPos.x, Dodu.LevPos.y
       Let sq_lastgrab.col = takeP.col
       Let sq_lastgrab.row = takeP.row
       Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
 
+      Let Dodu.IsWalking = FALSE
+
     ElseIf IsDown% And Square_IsValid(dropP) Then
+
       SoundPlayer_PlayEffect Audio, SND_DROP%
+
       Let sq_lastdrop.col = dropP.col
       Let sq_lastdrop.row = dropP.row
+
       DropBlock Levels(CURRENT_LEVEL), dropP
       Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
 
-      ' Undo last block if possible
-    ElseIf _KeyDown(K_BACKSPACE) And Square_IsValid(sq_lastgrab) Then
+      Let Dodu.IsWalking = FALSE
+
+    ElseIf _KeyDown(K_BACKSPACE) And _
+           Square_IsValid(sq_lastgrab) And _
+           Square_IsValid(sq_lastdrop) Then
+
+      ' Undo last block
       Let Dodu.LevPos.x = dod_lastgrab.x
       Let Dodu.LevPos.y = dod_lastgrab.y
+
       Let CURRENT_TRAJECTORY% = TRJ_PANBACK%
+
       Let Levels(CURRENT_LEVEL).Topo(sq_lastdrop.col, sq_lastdrop.row) = T_NOTHING
       Let Levels(CURRENT_LEVEL).Topo(sq_lastgrab.col, sq_lastgrab.row) = T_BLOCK_W
+
       Square_Set sq_lastgrab, -1, -1
       Square_Set sq_lastdrop, -1, -1
+
       GetDoduCenter center
-      Point_Set panbacktarget, (center.x - ImgBuffer.Pan.x - ImgBuffer.Size.x / 2) / PANBACK_STEPS%, (center.y - ImgBuffer.Pan.y - ImgBuffer.Size.y / 2) / PANBACK_STEPS%
+
+      Point_Set panbacktarget, _
+        (center.x - ImgBuffer.Pan.x - ImgBuffer.Size.x / 2) / PANBACK_STEPS%, _
+        (center.y - ImgBuffer.Pan.y - ImgBuffer.Size.y / 2) / PANBACK_STEPS%
+
+      Let Dodu.IsWalking = FALSE
       SoundPlayer_PlayEffect Audio, SND_UNDO%
 
-    Else ' No key
-      GetDoduSprite CurrentSprite, FALSE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
+    Else
+
+      ' No applicable control
+      Let Dodu.IsWalking = FALSE
+
       If Dodu.SlipDir <> 0 Then
         Ticker_Tick Dodu.SlipTick
       End If
+
       If Not Ticker_IsFinished%(Dodu.SlipTick) Then
+
         If Dodu.SlipTick.TickCnt = 0 Then
           Dim slipP As Point
           Point_Set slipP, Dodu.SlipDir, 0
           MovePlayer ImgBuffer, slipP
         End If
+
       Else
+
         Let Dodu.SlipDir = 0
         Ticker_Reset Dodu.SlipTick
+
       End If
 
     End If
 
-    ' Unless he is climbing/falling, Dodu can always flip sides
-    If CURRENT_TRAJECTORY% < 0 Then
-      If IsLeft% Then
-        Let Dodu.ToLeft = TRUE
-      End If
-      If IsRight% Then
-        Let Dodu.ToLeft = FALSE
-      End If
+    ' ---------------------------------------
+    ' 9. Common animation and rendering
+    ' ---------------------------------------
+
+    RenderFrame:
+
+    ' Select a different sequence only when the player state changes.
+    GetDoduSprite CurrentSprite, Dodu, DoduPast
+
+    ' Orientation is independent of animation selection.
+    Let CurrentSprite.Flipped = Dodu.ToLeft
+
+    ' Advance exactly once per game frame.
+    SpriteSequence_Tick CurrentSprite
+
+    If Dodu.IsWalking And CurrentSprite.Ticker.TickCnt = 0 And _
+       CurrentSprite.Ticker.Index Mod 2 = 0 Then
+      SoundPlayer_PlayEffect Audio, SND_STEP%
     End If
+
+    ' Draw the complete frame.
+    Viewport_Clear ImgBuffer
+
+    DrawLevel ImgBuffer, Levels(CURRENT_LEVEL)
+    DrawPlayer ImgBuffer
+    DrawThermometer ImgBuffer
+
+    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
+    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
+    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK&
+
+    Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Display MainScreen
 
   Loop
 
@@ -588,7 +677,6 @@ Sub DrawPlayer (v As Viewport)
   Dim s As Sprite
   CurrentSprite.Flipped = Dodu.ToLeft
   Viewport_PutSpriteSequence v, FALSE, CurrentSprite, Dodu.LevPos
-  SpriteSequence_Tick CurrentSprite
 End Sub
 
 Sub DrawThermometer (v As Viewport)
@@ -673,9 +761,20 @@ Sub SetFlipSprites (flipped As Integer)
   Next
 End Sub
 
-Sub GetDoduSprite (s As SpriteSequence, walking As Integer, hasBlock As Integer, hasMittens As Integer, hasTuque As Integer)
-  Let s = DOD_SPRITES(Abs(walking), Abs(hasBlock), Abs(hasMittens), Abs(hasTuque))
+Sub GetDoduSprite (s As SpriteSequence, DoduNow As Player, DoduPast As Player)
+  If PlayerChanged(DoduNow, DoduPast) Then
+    Let s = DOD_SPRITES(Abs(DoduNow.IsWalking), _
+      Abs(DoduNow.HasBlock), _
+      Abs(DoduNow.HasMittens), _
+      Abs(DoduNow.HasTuque))
+
+    Let DoduPast = DoduNow
+  End If
 End Sub
+
+Function PlayerChanged (p_now As Player, p_past As Player)
+  Let PlayerChanged = Not (p_now.HasBlock = p_past.HasBlock And p_now.HasMittens = p_past.HasMittens And p_now.HasTuque = p_past.HasTuque And p_now.IsWalking = p_past.IsWalking)
+End Function
 
 Sub GetDoduCenter (p As Point)
   Point_Set p, Dodu.LevPos.x + (PLAYER_WIDTH% / 2), Dodu.LevPos.y + (PLAYER_HEIGHT% / 2)
