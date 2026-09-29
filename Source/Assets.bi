@@ -39,25 +39,38 @@ Dim Shared FNT_TINYC As _Unsigned Long, FNT_GRAPE As _Unsigned Long
 Let FNT_TINYC = _LoadFont(FNT_DIR$ + "/TinyAndChunkyRegular.ttf", 5, "MONOSPACE DONTBLEND")
 Let FNT_GRAPE = _LoadFont(FNT_DIR$ + "/GrapeSoda.ttf", 10, "MONOSPACE DONTBLEND")
 
-Dim DEFAULT_OFFSET As Point
+Dim DEFAULT_OFFSET As Point, TUQUE_OFFSET As Point
 Let DEFAULT_OFFSET = P_ORIGIN
+Point_Set TUQUE_OFFSET, 0, -10
 
 Dim Shared DoduSprites(10) As SpriteSequence
 
 Dim Shared DOD_SPRITES(2, 2, 2, 2) As SpriteSequence
+Dim offset As Point
 
 Dim walking As Integer, block As Integer, mittens As Integer, tuque As Integer
 Dim filename As String
-For walking = 0 To 1
-	For block = 0 To 1
-		For mittens = 0 To 1
-			For tuque = 0 To 1
-				Let filename = GetFilename$(walking, block, mittens, tuque)
-				SpriteSequence_BulkLoad DOD_SPRITES(walking, block, mittens, tuque), IMG_DIR$ + "/" + filename + "_", 4, 2, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-			Next
+' Static
+For block = 0 To 0
+	For mittens = 0 To 1
+		For tuque = 0 To 1
+			Let filename = GetFilename$(1, block, mittens, tuque)
+			If tuque = 1 Then Let offset = TUQUE_OFFSET Else Let offset = DEFAULT_OFFSET
+			SpriteSequence_BulkLoad DOD_SPRITES(0, block, mittens, tuque), IMG_DIR$ + "/" + filename + "_", 1, 2, TRUE, offset, offset, COLOR_TRANSPARENT
 		Next
 	Next
 Next
+' Walking
+For block = 0 To 0
+	For mittens = 0 To 1
+		For tuque = 0 To 1
+			Let filename = GetFilename$(1, block, mittens, tuque)
+			If tuque = 1 Then Let offset = TUQUE_OFFSET Else Let offset = DEFAULT_OFFSET
+			SpriteSequence_BulkLoad DOD_SPRITES(1, block, mittens, tuque), IMG_DIR$ + "/" + filename + "_", 4, 2, TRUE, offset, offset, COLOR_TRANSPARENT
+		Next
+	Next
+Next
+
 
 Function GetFilename$ (walking As Integer, block As Integer, mittens As Integer, tuque As Integer)
 	Dim filename As String

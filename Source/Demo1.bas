@@ -117,6 +117,7 @@ Next
 Type Player
   LevPos As Point
   SpriteIndex As Integer
+  IsWalking As Integer
   HasBlock As Integer
   IsClimbing As Integer
   IsFalling As Integer
@@ -142,8 +143,8 @@ Let Dodu.SpriteIndex = 0
 Let Dodu.HasBlock = FALSE
 Let Dodu.IsClimbing = 0
 Let Dodu.Temp = 10
-Let Dodu.HasMittens = FALSE
-Let Dodu.HasTuque = FALSE
+Let Dodu.HasMittens = TRUE
+Let Dodu.HasTuque = TRUE
 
 
 ' --------------------------
@@ -152,11 +153,9 @@ Let Dodu.HasTuque = FALSE
 Let Audio.PlaySong = PLAY_MUSIC%
 Let Audio.PlayEffects = TRUE
 
-
-Dim Shared CURRENT_SPRITE As Integer
-Let CURRENT_SPRITE% = DOD_STATIC%
 Dim Shared CURRENT_TRAJECTORY As Integer
 Let CURRENT_TRAJECTORY% = -1
+Dim Shared CurrentSprite As SpriteSequence
 
 Dim Shared parallax As Point
 Point_Set parallax, 2, 2
@@ -207,6 +206,8 @@ Sub DoLevel
 
   Ticker_Init Dodu.ThermoTick, 10, THERMO_TICK_NORMAL%, FALSE
   Ticker_Init Dodu.SlipTick, 6, SLIP_TICK_NORMAL%, FALSE
+
+  GetDoduSprite CurrentSprite, Dodu.IsWalking, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
 
   Viewport_SetBackground ImgBuffer, Backgrounds(Levels(CURRENT_LEVEL%).Background), parallax
   Color COLOR_PINK&, , , ImgBuffer.Buffer
@@ -281,7 +282,7 @@ Sub DoLevel
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
 
-    If (CURRENT_SPRITE% = DOD_WALKING% Or CURRENT_SPRITE% = DOD_BLOCK_WALKING%) And DoduSprites(CURRENT_SPRITE%).Ticker.TickCnt = 0 And DoduSprites(CURRENT_SPRITE%).Ticker.Index Mod 2 = 0 Then
+    If Dodu.IsWalking And CurrentSprite.Ticker.TickCnt = 0 And CurrentSprite.Ticker.Index Mod 2 = 0 Then
       SoundPlayer_PlayEffect Audio, SND_STEP%
     End If
 
@@ -350,23 +351,23 @@ Sub DoLevel
       Let Dodu.SlipDir = -1
       Dim klp As Point
       If Square_IsValid(climbP) Then
-        Let CURRENT_SPRITE = GetDoduSprite%(TRUE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque)
+        GetDoduSprite CurrentSprite, TRUE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
         Let CURRENT_TRAJECTORY% = TRJ_CLIMBING%
         Let Dodu.ToLeft = TRUE
         Let Trajectories(CURRENT_TRAJECTORY%).Flipped = TRUE
-        Let DoduSprites(CURRENT_SPRITE).Flipped = TRUE
+        Let CurrentSprite.Flipped = TRUE
       Else
         If Not Square_IsValid(blockingP) Then
           Point_Set klp, -1, 0
-          Let CURRENT_SPRITE = GetDoduSprite%(TRUE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque)
+          GetDoduSprite CurrentSprite, TRUE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
           MovePlayer ImgBuffer, klp
         End If
       End If
       If Square_IsValid(unclimbP) Then
-        Let CURRENT_SPRITE = GetDoduSprite%(FALSE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque)
+        GetDoduSprite CurrentSprite, FALSE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
         Let CURRENT_TRAJECTORY% = TRJ_FALLING%
         Let Trajectories(CURRENT_TRAJECTORY%).Flipped = TRUE
-        Let DoduSprites(CURRENT_SPRITE).Flipped = TRUE
+        Let CurrentSprite.Flipped = TRUE
       End If
 
     ElseIf IsRight% Then
@@ -374,22 +375,22 @@ Sub DoLevel
       Let Dodu.SlipDir = 1
       Dim krp As Point
       If Square_IsValid(climbP) Then
-        Let CURRENT_SPRITE = GetDoduSprite%(TRUE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque)
+        GetDoduSprite CurrentSprite, TRUE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
         Let CURRENT_TRAJECTORY% = TRJ_CLIMBING%
         Let Trajectories(CURRENT_TRAJECTORY%).Flipped = FALSE
-        Let DoduSprites(CURRENT_SPRITE).Flipped = FALSE
+        Let CurrentSprite.Flipped = FALSE
       Else
         If Not Square_IsValid(blockingP) Then
           Point_Set krp, 1, 0
-          Let CURRENT_SPRITE = GetDoduSprite%(TRUE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque)
+          GetDoduSprite CurrentSprite, TRUE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
           MovePlayer ImgBuffer, krp
         End If
       End If
       If Square_IsValid(unclimbP) Then
-        Let CURRENT_SPRITE = GetDoduSprite%(FALSE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque)
+        GetDoduSprite CurrentSprite, FALSE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
         Let CURRENT_TRAJECTORY% = TRJ_FALLING%
         Let Trajectories(CURRENT_TRAJECTORY%).Flipped = FALSE
-        Let DoduSprites(CURRENT_SPRITE).Flipped = FALSE
+        Let CurrentSprite.Flipped = FALSE
       End If
 
     ElseIf IsUp% And Square_IsValid(takeP) Then
@@ -421,7 +422,7 @@ Sub DoLevel
       SoundPlayer_PlayEffect Audio, SND_UNDO%
 
     Else ' No key
-      Let CURRENT_SPRITE% = GetDoduSprite%(FALSE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque)
+      GetDoduSprite CurrentSprite, FALSE, Dodu.HasBlock, Dodu.HasMittens, Dodu.HasTuque
       If Dodu.SlipDir <> 0 Then
         Ticker_Tick Dodu.SlipTick
       End If
@@ -585,9 +586,9 @@ End Sub
 ' --------------------------
 Sub DrawPlayer (v As Viewport)
   Dim s As Sprite
-  DoduSprites(CURRENT_SPRITE).Flipped = Dodu.ToLeft
-  Viewport_PutSpriteSequence v, FALSE, DoduSprites(CURRENT_SPRITE), Dodu.LevPos
-  SpriteSequence_Tick DoduSprites(CURRENT_SPRITE)
+  CurrentSprite.Flipped = Dodu.ToLeft
+  Viewport_PutSpriteSequence v, FALSE, CurrentSprite, Dodu.LevPos
+  SpriteSequence_Tick CurrentSprite
 End Sub
 
 Sub DrawThermometer (v As Viewport)
@@ -623,7 +624,7 @@ Sub MovePlayer (v As Viewport, p_to As Point)
   If p_to.x < 0 Then Dodu.ToLeft = TRUE
   If p_to.x > 0 Then Dodu.ToLeft = FALSE
   ' Otherwise, leave in its current state
-  Let DoduSprites(CURRENT_SPRITE%).Flipped = Dodu.ToLeft
+  Let CurrentSprite.Flipped = Dodu.ToLeft
   Dim ScreenPos As Point
   ' Demo1.bas, MovePlayer
   Viewport_PointToScreen v, Dodu.LevPos, ScreenPos
@@ -672,37 +673,9 @@ Sub SetFlipSprites (flipped As Integer)
   Next
 End Sub
 
-Function GetDoduSprite% (walking As Integer, hasBlock As Integer, hasMittens As Integer, hasTuque As Integer)
-  If walking Then
-    If hasBlock Then
-      If Not hasTuque And Not hasMittens Then
-        Let GetDoduSprite% = DOD_BLOCK_WALKING%
-      ElseIf Not hasTuque And hasMittens Then
-        Let GetDoduSprite% = DOD_BLOCK_MITTENS_WALKING%
-      ElseIf hasTuque And Not hasMittens Then
-      Let GetDoduSprite% = DOD_BLOCK_TUQUE_WALKING%
-      ElseIf hasTuque And hasMittens Then
-      Let GetDoduSprite% = DOD_BLOCK_TUQUE_MITTENS_WALKING%
-      End If
-    Else
-      If Not hasTuque And Not hasMittens Then
-        Let GetDoduSprite% = DOD_BLOCK%
-      ElseIf Not hasTuque And hasMittens Then
-        Let GetDoduSprite% = DOD_BLOCK_MITTENS%
-      ElseIf hasTuque And Not hasMittens Then
-      Let GetDoduSprite% = DOD_BLOCK_TUQUE%
-      ElseIf hasTuque And hasMittens Then
-      Let GetDoduSprite% = DOD_BLOCK_TUQUE_MITTENS%
-      End If
-    End If
-  Else
-    If hasBlock Then
-      Let GetDoduSprite% = DOD_BLOCK%
-    Else
-      Let GetDoduSprite% = DOD_STATIC%
-    End If
-  End If
-End Function
+Sub GetDoduSprite (s As SpriteSequence, walking As Integer, hasBlock As Integer, hasMittens As Integer, hasTuque As Integer)
+  Let s = DOD_SPRITES(Abs(walking), Abs(hasBlock), Abs(hasMittens), Abs(hasTuque))
+End Sub
 
 Sub GetDoduCenter (p As Point)
   Point_Set p, Dodu.LevPos.x + (PLAYER_WIDTH% / 2), Dodu.LevPos.y + (PLAYER_HEIGHT% / 2)
