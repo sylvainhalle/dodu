@@ -363,6 +363,11 @@ Sub DoLevel
       TakeTuque Levels(CURRENT_LEVEL), tuqueP
     End If
 
+    If Square_IsValid(cookieP) Then
+      TakeCookie Levels(CURRENT_LEVEL), cookieP
+    End If
+
+
 
     ' ---------------------------------------
     ' 5. Pan-back initiation
@@ -766,6 +771,12 @@ Sub TakeTuque (m As LevelMap, p As Square)
   Let m.Topo(p.col, p.row) = T_NOTHING
   Let Dodu.HasTuque = TRUE
 End Sub
+
+Sub TakeCookie (m As LevelMap, p As Square)
+  Let m.Topo(p.col, p.row) = T_NOTHING
+  Let Dodu.Temp = Clamp%(Dodu.Temp + 3, 0, 10)
+End Sub
+
 
 Sub TakeMittens (m As LevelMap, p As Square)
   Let m.Topo(p.col, p.row) = T_NOTHING
