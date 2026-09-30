@@ -68,6 +68,31 @@ Function IsObstacleAt (col As Integer, row As Integer, l As LevelMap)
   End If
 End Function
 
+Function IsCookieAt (col As Integer, row As Integer, l As LevelMap)
+  If l.Topo(col, row) = T_COOKIE Then
+    Let IsCookieAt = TRUE
+  Else
+    Let IsCookieAt = FALSE
+  End If
+End Function
+
+Function IsTuqueAt (col As Integer, row As Integer, l As LevelMap)
+  If l.Topo(col, row) = T_TUQUE Then
+  	End
+    Let IsTuqueAt = TRUE
+  Else
+    Let IsTuqueAt = FALSE
+  End If
+End Function
+
+Function IsMittenAt (col As Integer, row As Integer, l As LevelMap)
+  If l.Topo(col, row) = T_MITTENS Then
+    Let IsMittenAt = TRUE
+  Else
+    Let IsMittenAt = FALSE
+  End If
+End Function
+
 ' --------------------------
 ' Loads a level
 ' --------------------------

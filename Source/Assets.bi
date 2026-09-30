@@ -20,7 +20,7 @@
 ' DependsOn: 'Sound.bi'
 
 Dim Shared COLOR_TRANSPARENT AS Long
-If IMG_MODE$ = IMG_MODE_EGA$ Then
+If IMG_MODE$ = IMG_MODE_CGA$ Then
 	let COLOR_TRANSPARENT = _RGB32(85, 170, 255)
 Else
 	let COLOR_TRANSPARENT = COLOR_PINK&
@@ -130,6 +130,18 @@ Dim Shared Cookie As Sprite
 Dim CookieOffset As Point
 Point_Set CookieOffset, 3, 2
 Sprite_Load Cookie, IMG_DIR$ + "/Cookie.gif", CookieOffset, CookieOffset, COLOR_TRANSPARENT
+
+' Mittens
+Dim Shared SprMittens As Sprite
+Dim SprMittensOffset As Point
+Point_Set SprMittensOffset, -2, 2
+Sprite_Load SprMittens, IMG_DIR$ + "/Mittens.gif", SprMittensOffset, SprMittensOffset, COLOR_TRANSPARENT
+
+' Tuque
+Dim Shared SprTuque As Sprite
+Dim SprTuqueOffset As Point
+Point_Set SprTuqueOffset, 1, -3
+Sprite_Load SprTuque, IMG_DIR$ + "/Tuque.gif", SprTuqueOffset, SprTuqueOffset, COLOR_TRANSPARENT
 
 ' Thermometer
 Dim Shared Thermometer As Sprite

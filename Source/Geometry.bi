@@ -42,7 +42,7 @@ declare Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As S
 declare Sub UnclimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 
 '**
-'* Determines if a square can be block the player from walking.
+'* Determines if a square can block the player from walking.
 '**
 Declare Sub BlockingSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 
@@ -50,5 +50,25 @@ Declare Sub BlockingSquare (side As Integer, lp As Point, m As LevelMap, p As Sq
 '* Determines if a square contains the goal.
 '**
 Declare Sub PoleSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+
+'**
+'* Determines if a square contains mittens.
+'**
+Declare Sub MittensSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+
+'**
+'* Determines if a square contains a tuque.
+'**
+Declare Sub TuqueSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+
+'**
+'* Determines if a square contains a cookie.
+'**
+Declare Sub CookieSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+
+'**
+'* Calculates the square of interaction with the character.
+'**
+Declare Sub FeetSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

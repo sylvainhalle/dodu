@@ -25,7 +25,9 @@ Const T_NOTHING = " "
 Const T_BLOCK_B = "@"
 Const T_BLOCK_W = "#"
 Const T_POLE = "!"
-Const T_COOKIE = "$"
+Const T_COOKIE = "c"
+Const T_MITTENS = "m"
+Const T_TUQUE = "t"
 Const T_END = "X"
 
 Type Square
@@ -55,7 +57,6 @@ Type LevelMap
   Width As Integer
   Height As Integer
   Topo(M_W%, M_H%) As String
-  'Topo(30, 30) As String
   StartPoint As Square
   Background As Integer
   PanX As Integer
@@ -65,7 +66,10 @@ End Type
 Declare Function IsGoalAt (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsBlockAt (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsWhiteBlockAt (col As Integer, row As Integer, l As LevelMap)
-Declare Function IsObstacleAt (col As Integer, row As Integer, l As LevelMap)
+Declare Function IsObstacleAt% (col As Integer, row As Integer, l As LevelMap)
+Declare Function IsCookieAt% (col As Integer, row As Integer, l As LevelMap)
+Declare Function IsMittenAt% (col As Integer, row As Integer, l As LevelMap)
+Declare Function IsTuqueAt% (col As Integer, row As Integer, l As LevelMap)
 Declare Sub LoadLevels ()
 Declare Sub LoadLevel (l As LevelMap)
 Declare Sub PrintLevel (m As LevelMap)

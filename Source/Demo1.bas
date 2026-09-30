@@ -225,6 +225,7 @@ Sub DoLevel
 
   Dim climbP As Square, takeP As Square, dropP As Square
   Dim unclimbP As Square, blockingP As Square, poleP As Square
+  Dim mittensP As Square, tuqueP As Square, cookieP As Square
 
   Let CTRL_PRESSED = FALSE
   Let PANBACK_STEPS = 8
@@ -277,7 +278,27 @@ Sub DoLevel
       Let Dodu.Temp = Dodu.Temp - 1
     End If
 
-    If Dodu.Temp = 0 Then GoTo GameOver:
+    If Dodu.Temp = 0 Then
+      If Dodu.HasMittens And Not Dodu.HasTuque Then
+        Let Dodu.HasMittens = FALSE
+        Let Dodu.Temp = 5
+        Ticker_Reset Dodu.ThermoTick
+      ElseIf Not Dodu.HasMittens And Dodu.HasTuque Then
+        Let Dodu.HasTuque = FALSE
+        Let Dodu.Temp = 5
+        Ticker_Reset Dodu.ThermoTick
+      ElseIf Dodu.HasMittens And Dodu.HasTuque Then
+        If Dodu.HasBlock Then
+          Let Dodu.HasMittens = FALSE
+        Else
+          Let Dodu.HasTuque = FALSE
+        End If
+        Let Dodu.Temp = 5
+        Ticker_Reset Dodu.ThermoTick
+      Else
+        GoTo GameOver:
+      End If
+    End If
 
     ' Modal commands
     If _KeyDown(K_ESC) Then GoTo Quit:
@@ -304,6 +325,9 @@ Sub DoLevel
     UnclimbableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), unclimbP
     BlockingSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), blockingP
     PoleSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), poleP
+    MittensSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), mittensP
+    TuqueSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), tuqueP
+    CookieSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), cookieP
 
     ' ---------------------------------------
     ' 3. Active movement trajectory
@@ -327,6 +351,18 @@ Sub DoLevel
     ' ---------------------------------------
 
     If Square_IsValid(poleP) Then Exit Sub
+
+    ' ---------------------------------------
+    ' 4'. Power-ups
+    ' ---------------------------------------
+    If Square_IsValid(mittensP) Then
+      TakeMittens Levels(CURRENT_LEVEL), mittensP
+    End If
+
+    If Square_IsValid(tuqueP) Then
+      TakeTuque Levels(CURRENT_LEVEL), tuqueP
+    End If
+
 
     ' ---------------------------------------
     ' 5. Pan-back initiation
@@ -552,7 +588,7 @@ Sub DoLevel
 
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
-    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK&
+    'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), mittensP, COLOR_PINK&
 
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
@@ -653,6 +689,10 @@ Sub DrawLevel (v As Viewport, m As LevelMap)
           Viewport_PutSprite v, FALSE, Pole, p, FALSE
         Case T_COOKIE
           Viewport_PutSprite v, FALSE, Cookie, p, FALSE
+        Case T_MITTENS
+          Viewport_PutSprite v, FALSE, SprMittens, p, FALSE
+        Case T_TUQUE
+          Viewport_PutSprite v, FALSE, SprTuque, p, FALSE
       End Select
     Next
   Next
@@ -722,6 +762,16 @@ Sub TakeBlock (m As LevelMap, p As Square)
   Let Dodu.HasBlock = TRUE
 End Sub
 
+Sub TakeTuque (m As LevelMap, p As Square)
+  Let m.Topo(p.col, p.row) = T_NOTHING
+  Let Dodu.HasTuque = TRUE
+End Sub
+
+Sub TakeMittens (m As LevelMap, p As Square)
+  Let m.Topo(p.col, p.row) = T_NOTHING
+  Let Dodu.HasMittens = TRUE
+End Sub
+
 Sub DropBlock (m As LevelMap, p As Square)
   Let m.Topo(p.col, p.row) = T_BLOCK_W
   Let Dodu.HasBlock = FALSE
@@ -786,7 +836,6 @@ Sub GetDoduSprite (s As SpriteSequence, DoduNow As Player, DoduPast As Player)
       Abs(DoduNow.HasBlock), _
       Abs(DoduNow.HasMittens), _
       Abs(DoduNow.HasTuque))
-
     Let DoduPast = DoduNow
   End If
 End Sub

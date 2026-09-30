@@ -118,6 +118,10 @@ Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   Next
 End Sub
 
+Sub SquareFeet (lp As Point, m As LevelMap, p As Square)
+	Let p.col = lp.x \ BLOCK_SIZE%
+End Sub
+
 Sub UnclimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   Dim col As Integer, row As Integer, x As Integer, overlap As Integer
   Dim r As Integer
@@ -249,6 +253,79 @@ Sub PoleSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
     Let p.col = col
     Let p.row = feet
   End If
+End Sub
+
+Sub FeetSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+  Dim x As Integer
+  Dim col As Integer
+  Dim feet As Integer
+  Dim overlap As Integer
+
+  Let p.col = -1
+  Let p.row = -1
+
+  ' Leading edge after the next movement
+  If side Then ' left
+    Let x = lp.x - WALKING_SPEED%
+    Let col = Floor%((x - 1) / BLOCK_SIZE%)
+    Let overlap = (col + 1) * BLOCK_SIZE% - x
+  Else ' right
+    Let x = lp.x + PLAYER_WIDTH% + WALKING_SPEED%
+    Let col = Floor%(x / BLOCK_SIZE%)
+    Let overlap = x - col * BLOCK_SIZE%
+  End If
+
+  ' Still within the permitted penetration
+  If overlap <= 4 Then Exit Sub
+
+  If col < 0 Or col >= M_W% Then Exit Sub
+
+  Let feet = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%)' - 1
+
+  ' Check the two rows alongside Dodu
+  If feet >= 1 Then
+      Let p.col = col
+      Let p.row = feet - 1
+      Exit Sub
+  End If
+  If feet < 3 Then ' 3, since otherwise Dodu cannot climb
+    Let p.col = col
+    Let p.row = feet
+    Exit Sub
+  End If
+End Sub
+
+Sub MittensSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+	FeetSquare side, lp, m, p
+	If p.col < 0 Or p.row < 0 Then
+		Exit Sub
+	End If
+	If Not IsMittenAt(p.col, p.row, m) Then
+		Let p.col = -1
+		Let p.row = -1
+	End If
+End Sub
+
+Sub TuqueSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+	FeetSquare side, lp, m, p
+	If p.col < 0 Or p.row < 0 Then
+		Exit Sub
+	End If
+	If Not IsTuqueAt(p.col, p.row, m) Then
+		Let p.col = -1
+		Let p.row = -1
+	End If
+End Sub
+
+Sub CookieSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+	FeetSquare side, lp, m, p
+	If p.col < 0 Or p.row < 0 Then
+		Exit Sub
+	End If
+	If Not IsCookieAt(p.col, p.row, m) Then
+		Let p.col = -1
+		Let p.row = -1
+	End If
 End Sub
 
 ' :mode=visualbasic:folding=explicit:wrap=none:
