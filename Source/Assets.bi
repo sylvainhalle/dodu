@@ -19,21 +19,17 @@
 ' DependsOn: 'Sprites.bi'
 ' DependsOn: 'Sound.bi'
 
-' Video modes
-Const IMG_MODE_CGA$ = "cga"
-Const IMG_MODE_EGA$ = "ega"
-Const IMG_MODE$ = IMG_MODE_EGA$
-
 Dim Shared COLOR_TRANSPARENT AS Long
-If IMG_MODE$ = IMG_MODE_CGA$ Then
+If IMG_MODE$ = IMG_MODE_EGA$ Then
 	let COLOR_TRANSPARENT = _RGB32(85, 170, 255)
 Else
 	let COLOR_TRANSPARENT = COLOR_PINK&
 End If
 
-Const IMG_DIR$ = "/home/sylvain/Workspaces/dodu/Source/images/" + IMG_MODE$
-Const FNT_DIR$ = "/home/sylvain/Workspaces/dodu/Source/fonts"
-Const SND_DIR$ = "/home/sylvain/Workspaces/dodu/Source/music"
+Dim Shared IMG_DIR As String, FNT_DIR As String, SND_DIR As String
+Let IMG_DIR$ = "/home/sylvain/Workspaces/dodu/Source/images/" + IMG_MODE$
+Let FNT_DIR$ = "/home/sylvain/Workspaces/dodu/Source/fonts"
+Let SND_DIR$ = "/home/sylvain/Workspaces/dodu/Source/music"
 
 Dim Shared FNT_TINYC As _Unsigned Long, FNT_GRAPE As _Unsigned Long
 Let FNT_TINYC = _LoadFont(FNT_DIR$ + "/TinyAndChunkyRegular.ttf", 5, "MONOSPACE DONTBLEND")
@@ -144,10 +140,14 @@ If IMG_MODE = IMG_MODE_CGA$ Then
 	Let THERMO_RED& = COLOR_PINK&
 	Let THERMO_BLUE& = COLOR_BLACK&
 	Let HIGHLIGHT_COLOR& = COLOR_BLACK&
-Else
+ElseIf IMG_MODE = IMG_MODE_EGA$ Then
 	Let THERMO_RED& = _RGB32(170, 0, 0)
 	Let THERMO_BLUE& = _RGB32(85, 0, 170)
 	Let HIGHLIGHT_COLOR& = COLOR_YELLOW&
+Else
+	Let THERMO_RED& = COLOR_BLACK%
+	Let THERMO_BLUE& = COLOR_BLACK%
+	Let HIGHLIGHT_COLOR& = COLOR_BLACK&
 End If
 
 ' Playing cards

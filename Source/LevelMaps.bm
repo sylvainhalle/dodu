@@ -22,7 +22,7 @@
 
 '$IncludeOnce
 
-L1:
+L9:
 Data 0
 Data "                  "
 Data "                  "
@@ -34,7 +34,7 @@ Data "@@@@@@@@@@@@@@@@@@"
 Data "X"
 
 
-L9:
+L1:
 Data 0
 Data "                  "
 Data "                  "

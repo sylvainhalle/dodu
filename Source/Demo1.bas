@@ -76,7 +76,6 @@ Let SCANLINES = FALSE
 '$Include:'Sprites.bi'
 '$Include:'Keyboard.bi'
 '$Include:'Sounds.bi'
-'$Include:'Assets.bi'
 '$Include:'Levels.bi'
 '$Include:'Passwords.bi'
 
@@ -91,6 +90,13 @@ Let CURRENT_LEVEL = 0
 ' --------------------------
 ' Command line arguments
 ' --------------------------
+' Video modes
+Const IMG_MODE_CGA$ = "cga"
+Const IMG_MODE_EGA$ = "ega"
+Const IMG_MODE_HER$ = "her"
+
+Dim Shared IMG_MODE As String
+Let IMG_MODE = IMG_MODE_EGA$
 
 Dim argc As Integer, toset As String
 For argc = 1 To _CommandCount
@@ -101,14 +107,27 @@ For argc = 1 To _CommandCount
       Let SCANLINES = TRUE
     Case "--level"
       Let toset = "level"
+    Case "--video"
+      Let toset = "video"
     Case Else
       Select Case toset
         Case "level"
           Let CURRENT_LEVEL = Val(Command$(argc)) - 1
+        Case "video"
+          Select Case UCase$(Command$(argc))
+            Case "HER"
+              Let IMG_MODE$ = IMG_MODE_HER$
+            Case "CGA"
+              Let IMG_MODE$ = IMG_MODE_CGA$
+            Case "EGA"
+              Let IMG_MODE$ = IMG_MODE_EGA$
+          End Select
       End Select
   End Select
 Next
 
+' Loading assets
+'$Include:'Assets.bi'
 
 ' --------------------------
 ' Player
@@ -143,8 +162,8 @@ Let Dodu.SpriteIndex = 0
 Let Dodu.HasBlock = FALSE
 Let Dodu.IsClimbing = 0
 Let Dodu.Temp = 10
-Let Dodu.HasMittens = TRUE
-Let Dodu.HasTuque = TRUE
+Let Dodu.HasMittens = FALSE
+Let Dodu.HasTuque = FALSE
 
 
 ' --------------------------

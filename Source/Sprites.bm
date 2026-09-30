@@ -56,12 +56,13 @@ End Sub
 '**
 
 Sub Sprite_Load (s As Sprite, file As String, offset As Point, offsetflip As Point, clr As Long)
-  Let s.Content = _LoadImage(file, 32)
-Print file
-  Point_Set s.Size, _Width(s.Content), _Height(s.Content)
-  Let s.Offset = offset
-  Let s.OffsetFlip = offsetflip
-  _SetAlpha 0, clr, s.Content
+  If _FileExists(file) Then
+	  Let s.Content = _LoadImage(file, 32)
+	  Point_Set s.Size, _Width(s.Content), _Height(s.Content)
+	  Let s.Offset = offset
+	  Let s.OffsetFlip = offsetflip
+	  _SetAlpha 0, clr, s.Content
+  End If
 End Sub
 
 Sub Sprite_Copy (dst As Sprite, src As Sprite)
@@ -104,7 +105,7 @@ Sub SpriteSequence_BulkLoad (s as SpriteSequence, pattern AS String, length As I
 	Dim x as Integer, sprl As Sprite
 	For x = 0 To length - 1
 		Sprite_Load sprl, pattern + _Tostr$(x) + ".gif", offset, offsetflip, clr
-	SpriteSequence_Load s, sprl, x
+		SpriteSequence_Load s, sprl, x
 	Next
 End Sub
 
