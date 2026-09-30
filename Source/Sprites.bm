@@ -57,6 +57,7 @@ End Sub
 
 Sub Sprite_Load (s As Sprite, file As String, offset As Point, offsetflip As Point, clr As Long)
   Let s.Content = _LoadImage(file, 32)
+Print file
   Point_Set s.Size, _Width(s.Content), _Height(s.Content)
   Let s.Offset = offset
   Let s.OffsetFlip = offsetflip

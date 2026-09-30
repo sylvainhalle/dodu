@@ -51,7 +51,7 @@ Dim offset As Point
 Dim walking As Integer, block As Integer, mittens As Integer, tuque As Integer
 Dim filename As String
 ' Static
-For block = 0 To 0
+For block = 0 To 1
 	For mittens = 0 To 1
 		For tuque = 0 To 1
 			Let filename = GetFilename$(1, block, mittens, tuque)
@@ -61,7 +61,7 @@ For block = 0 To 0
 	Next
 Next
 ' Walking
-For block = 0 To 0
+For block = 0 To 1
 	For mittens = 0 To 1
 		For tuque = 0 To 1
 			Let filename = GetFilename$(1, block, mittens, tuque)
