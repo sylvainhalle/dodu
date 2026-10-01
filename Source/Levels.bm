@@ -78,7 +78,6 @@ End Function
 
 Function IsTuqueAt (col As Integer, row As Integer, l As LevelMap)
   If l.Topo(col, row) = T_TUQUE Then
-  	End
     Let IsTuqueAt = TRUE
   Else
     Let IsTuqueAt = FALSE

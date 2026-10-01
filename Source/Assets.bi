@@ -102,6 +102,9 @@ Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 2, 3
 Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 3, 4
 Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 5, 5
 
+' Splash screen
+Dim Shared SplashScreen As Sprite
+Sprite_Load SplashScreen, IMG_DIR$ + "/Splash.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 ' Blocks
 Dim Shared BlockBlue As Sprite

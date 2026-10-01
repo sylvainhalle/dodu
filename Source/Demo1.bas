@@ -200,7 +200,7 @@ Sub MainLoop
     For dummy = 0 To FPS%
       _Limit FPS%
     Next
-    SoundPlayer_PlaySong Audio, 0
+    SoundPlayer_PlaySong Audio, 2
     Do
       Dim ws As Point
       Point_Set ws, Levels(CURRENT_LEVEL).Width * BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * BLOCK_SIZE%
@@ -980,27 +980,43 @@ End Sub
 Sub DoIntroduction (rst As RestorePoint)
   Dim p As Point
   Let rst.Level = -1
+  Dim sel As Integer
   Do
     _Limit FPS%
     Viewport_Clear ImgBuffer
-    Point_Set p, 30, 26
-    Viewport_Print ImgBuffer, "START", p
-    Point_Set p, 30, 32
-    Viewport_Print ImgBuffer, "PASSWORD", p
+    'Viewport_SetBackground ImgBuffer, SplashScreen, P_ORIGIN
+    If sel = 0 Then
+      Viewport_LineC ImgBuffer, TRUE, 20, 35, 34, 46, COLOR_YELLOW, TRUE, FALSE
+    Else
+      Viewport_LineC ImgBuffer, TRUE, 43, 35, 57, 46, COLOR_YELLOW, TRUE, FALSE
+    End If
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
-    If _KeyDown(K_ENTER) Or _KeyDown(K_SPACE) Then
-      Exit Do
-    ElseIf _KeyDown(K_BACKSPACE) Then
-      DoPasswordInput rst
-      If rst.Level < 0 Then
-        _Continue
-      Else ' Valid password
+    If IsLeft% Or IsRight% Then
+      Let sel = (sel + 1) Mod 2
+      Kbd_WaitRelease FPS%
+    ElseIf IsButton1% Then
+      If sel = 1 Then
+        DoPasswordInput rst
+        If rst.Level < 0 Then
+          _Continue
+        Else ' Valid password
+          Exit Sub
+        End If
+      Else
         Exit Sub
       End If
     End If
   Loop
 End Sub
+
+Function IsButton1% ()
+  Let IsButton1% = In_Down(K_ENTER) Or In_Down(J_1)
+End Function
+
+Function IsButton2% ()
+  Let IsButton2% = In_Down(K_BACKSPACE) Or In_Down(J_2)
+End Function
 
 Function IsLeft% ()
   Let IsLeft% = In_Down(K_LEFT)
