@@ -49,7 +49,9 @@ Const UNCLIMB_THRESHOLD% = 5
 
 ' Number of frames between ticks of the thermometer
 Const THERMO_TICK_NORMAL% = 100
+Const THERMO_TICK_NORMAL_TUQUE% = 150
 Const THERMO_TICK_FAST% = 35
+Const THERMO_TICK_FAST_MITTENS% = 70
 
 ' Number of frames between ticks of the slip ticker
 Const SLIP_TICK_NORMAL% = 2
@@ -200,7 +202,7 @@ Sub MainLoop
     For dummy = 0 To FPS%
       _Limit FPS%
     Next
-    SoundPlayer_PlaySong Audio, 2
+    SoundPlayer_PlaySong Audio, 1
     Do
       Dim ws As Point
       Point_Set ws, Levels(CURRENT_LEVEL).Width * BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * BLOCK_SIZE%
@@ -282,16 +284,28 @@ Sub DoLevel
       If Dodu.HasMittens And Not Dodu.HasTuque Then
         Let Dodu.HasMittens = FALSE
         Let Dodu.Temp = 5
+        If Dodu.HasBlock Then
+          Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
+        Else
+          Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
+        End If
         Ticker_Reset Dodu.ThermoTick
       ElseIf Not Dodu.HasMittens And Dodu.HasTuque Then
         Let Dodu.HasTuque = FALSE
         Let Dodu.Temp = 5
+        If Dodu.HasBlock Then
+          Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
+        Else
+          Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
+        End If
         Ticker_Reset Dodu.ThermoTick
       ElseIf Dodu.HasMittens And Dodu.HasTuque Then
         If Dodu.HasBlock Then
           Let Dodu.HasMittens = FALSE
+          Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
         Else
           Let Dodu.HasTuque = FALSE
+          Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
         End If
         Let Dodu.Temp = 5
         Ticker_Reset Dodu.ThermoTick
@@ -497,7 +511,11 @@ Sub DoLevel
       Point_Set dod_lastgrab, Dodu.LevPos.x, Dodu.LevPos.y
       Let sq_lastgrab.col = takeP.col
       Let sq_lastgrab.row = takeP.row
-      Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
+      If Dodu.HasMittens Then
+        Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST_MITTENS%
+      Else
+        Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
+      End If
 
       Let Dodu.IsWalking = FALSE
 
@@ -509,8 +527,11 @@ Sub DoLevel
       Let sq_lastdrop.row = dropP.row
 
       DropBlock Levels(CURRENT_LEVEL), dropP
-      Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
-
+      If Dodu.HasTuque Then
+        Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL_TUQUE%
+      Else
+        Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
+      End If
       Let Dodu.IsWalking = FALSE
 
     ElseIf _KeyDown(K_BACKSPACE) And _
@@ -770,6 +791,9 @@ End Sub
 Sub TakeTuque (m As LevelMap, p As Square)
   Let m.Topo(p.col, p.row) = T_NOTHING
   Let Dodu.HasTuque = TRUE
+  If Not Dodu.HasBlock Then
+    Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL_TUQUE%
+  End If
 End Sub
 
 Sub TakeCookie (m As LevelMap, p As Square)
@@ -781,6 +805,9 @@ End Sub
 Sub TakeMittens (m As LevelMap, p As Square)
   Let m.Topo(p.col, p.row) = T_NOTHING
   Let Dodu.HasMittens = TRUE
+  If Dodu.HasBlock Then
+    Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST_MITTENS%
+  End If
 End Sub
 
 Sub DropBlock (m As LevelMap, p As Square)
@@ -912,7 +939,7 @@ Sub DoPasswordInput (rst As RestorePoint)
       Let scc = selection(n) \ 13
       Point_Set p, scc * 18 + 5, scr * 22
       Point_Set q, p.x + 16, p.y + 22
-      Viewport_Line PwBuffer, FALSE, p, q, COLOR_YELLOW, TRUE, FALSE
+      Viewport_Line PwBuffer, FALSE, p, q, COLOR_HIGHLIGHT2, TRUE, FALSE
     Next
 
     'Viewport_Print PwBuffer, Str$(selection(0)) + Str$(selection(1)) + Str$(selection(2)) + Str$(selection(3)), P_ORIGIN
@@ -920,7 +947,7 @@ Sub DoPasswordInput (rst As RestorePoint)
     ' Show selected card
     Point_Set p, coord_col * 18 + 5, coord_row * 22
     Point_Set q, p.x + 16, p.y + 22
-    Viewport_Line PwBuffer, FALSE, p, q, COLOR_RED, TRUE, FALSE
+    Viewport_Line PwBuffer, FALSE, p, q, COLOR_HIGHLIGHT, TRUE, FALSE
 
     Viewport_Copy PwBuffer, MainScreen
     Viewport_Display MainScreen
@@ -984,7 +1011,7 @@ Sub DoIntroduction (rst As RestorePoint)
   Do
     _Limit FPS%
     Viewport_Clear ImgBuffer
-    'Viewport_SetBackground ImgBuffer, SplashScreen, P_ORIGIN
+    Viewport_SetBackground ImgBuffer, SplashScreen, P_ORIGIN
     If sel = 0 Then
       Viewport_LineC ImgBuffer, TRUE, 20, 35, 34, 46, COLOR_YELLOW, TRUE, FALSE
     Else

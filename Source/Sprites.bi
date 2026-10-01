@@ -17,11 +17,13 @@
 '-----------------------------------------------------------------------------
 
 ' Colors
+Const COLOR_WHITE& = _RGB32(255, 255, 255)
 Const COLOR_RED& = _RGB32(255, 0, 0)
 Const COLOR_GREEN& = _RGB32(0, 255, 0)
 Const COLOR_YELLOW& = _RGB32(255, 255, 0)
 Const COLOR_BLACK& = _RGB32(0, 0, 0)
 Const COLOR_PINK& = _RGB32(255, 0, 255)
+Const COLOR_CYAN& = _RGB32(0, 255, 255)
 
 '**
 '** - Point ------------------------------------------------- {{{
