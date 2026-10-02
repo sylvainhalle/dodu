@@ -17,8 +17,8 @@
 '-----------------------------------------------------------------------------
 
 ' Max height/width of a level
-Const M_W% = 30
-Const M_H% = 30
+Const M_W% = 50
+Const M_H% = 50
 
 ' Symbols designating level tiles
 Const T_NOTHING = " "

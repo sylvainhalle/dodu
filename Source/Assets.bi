@@ -211,8 +211,9 @@ Sprite_Load LevelDigits(9), IMG_DIR$ + "/Dg_9.gif", DEFAULT_OFFSET, DEFAULT_OFFS
 ' Cut scenes
 ' ---------------------
 Dim Shared CutScenes(10) As Sprite
-Sprite_Load CutScenes(0), IMG_DIR$ + "/Cutscene_1.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-Sprite_Load CutScenes(1), IMG_DIR$ + "/Cutscene_2.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load CutScenes(0), IMG_DIR$ + "/Cutscene_0.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load CutScenes(1), IMG_DIR$ + "/Cutscene_1.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load CutScenes(2), IMG_DIR$ + "/Cutscene_2.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 
 ' ---------------------

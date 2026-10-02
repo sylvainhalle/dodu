@@ -114,10 +114,18 @@ For argc = 1 To _CommandCount
       Let toset = "level"
     Case "--video"
       Let toset = "video"
+    Case "--width"
+      Let toset = "width"
+    Case "--height"
+      Let toset = "height"
     Case Else
       Select Case toset
         Case "level"
           Let CURRENT_LEVEL = Val(Command$(argc)) - 1
+        Case "width"
+          Point_Set SCREEN_DIMS, Val(Command$(argc)) - 1, SCREEN_DIMS.y
+        Case "height"
+          Point_Set SCREEN_DIMS, SCREEN_DIMS.x, Val(Command$(argc)) - 1
         Case "video"
           Select Case UCase$(Command$(argc))
             Case "HER"

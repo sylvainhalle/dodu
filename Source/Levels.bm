@@ -139,8 +139,10 @@ Sub LoadLevels()
     LoadLevel Levels(6)
     Restore L8
     LoadLevel Levels(7)
-    'Restore L9
-    'LoadLevel Levels(8)
+    Restore L9
+    LoadLevel Levels(8)
+    Restore L10
+    LoadLevel Levels(9)
 End Sub
 
 
