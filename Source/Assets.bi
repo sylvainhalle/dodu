@@ -195,6 +195,18 @@ Sprite_Load Numbers(10), IMG_DIR$ + "/Digit_J.gif", DEFAULT_OFFSET, DEFAULT_OFFS
 Sprite_Load Numbers(11), IMG_DIR$ + "/Digit_Q.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Sprite_Load Numbers(12), IMG_DIR$ + "/Digit_K.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
+Dim Shared LevelDigits(10) As Sprite
+Sprite_Load LevelDigits(0), IMG_DIR$ + "/Dg_0.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load LevelDigits(1), IMG_DIR$ + "/Dg_1.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load LevelDigits(2), IMG_DIR$ + "/Dg_2.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load LevelDigits(3), IMG_DIR$ + "/Dg_3.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load LevelDigits(4), IMG_DIR$ + "/Dg_4.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load LevelDigits(5), IMG_DIR$ + "/Dg_5.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load LevelDigits(6), IMG_DIR$ + "/Dg_6.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load LevelDigits(7), IMG_DIR$ + "/Dg_7.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load LevelDigits(8), IMG_DIR$ + "/Dg_8.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load LevelDigits(9), IMG_DIR$ + "/Dg_9.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+
 ' ---------------------
 ' Backgrounds
 ' ---------------------

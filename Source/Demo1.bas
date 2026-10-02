@@ -58,7 +58,7 @@ Const SLIP_TICK_NORMAL% = 2
 
 ' Location of level number
 Dim Shared PT_LEVEL_NB As Point
-Point_Set PT_LEVEL_NB, 4, 20
+Point_Set PT_LEVEL_NB, 2, 20
 
 ' Number of screen pixels per frame
 ' Currently, can only be an integer
@@ -190,6 +190,8 @@ Sub MainLoop
     Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS
     Dim rst As RestorePoint
     Screen MainScreen.Buffer
+    'DoGameOver
+    'End
 
     DoIntroduction rst
     If rst.Level >= 0 Then
@@ -611,6 +613,7 @@ Sub DoLevel
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL)
     DrawPlayer ImgBuffer
     DrawThermometer ImgBuffer
+    DrawLevelNumber ImgBuffer
 
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
@@ -630,6 +633,21 @@ Sub DoLevel
   End
 End Sub
 
+Sub DrawLevelNumber (v As Viewport)
+  Dim dg1 As Integer, dg2 As Integer
+  Let dg1 = (CURRENT_LEVEL + 1) \ 10
+  Let dg2 = (CURRENT_LEVEL + 1) Mod 10
+  Dim p2 As Point
+  If dg1 = 0 Then
+    Point_Set p2, PT_LEVEL_NB.x + 3, PT_LEVEL_NB.y
+    Viewport_PutSprite v, TRUE, LevelDigits(dg2), p2, FALSE
+  Else
+    Point_Set p2, PT_LEVEL_NB.x + 5, PT_LEVEL_NB.y
+    Viewport_PutSprite v, TRUE, LevelDigits(dg1), PT_LEVEL_NB, FALSE
+    Viewport_PutSprite v, TRUE, LevelDigits(dg2), p2, FALSE
+  End If
+End Sub
+
 Sub DoGameOver
   SoundPlayer_StopSong Audio
   SoundPlayer_PlayEffect Audio, SND_GAMEOVER%
@@ -639,8 +657,8 @@ Sub DoGameOver
   Viewport_Print ImgBuffer, "GAME OVER", P_ORIGIN
   Dim x As Integer, pws As String, cardP As Point
   For x = 0 To 3
-    Point_Set cardP, 4 + x * 16, 20
-    DisplayCard ImgBuffer, cardP, pw.Elements(x)
+    Point_Set cardP, 6 + x * 17, 20
+    DisplayCard ImgBuffer, TRUE, cardP, pw.Elements(x)
   Next
   Viewport_Copy ImgBuffer, MainScreen
   Viewport_Display MainScreen
@@ -886,16 +904,16 @@ Sub GetDoduCenter (p As Point)
   Point_Set p, Dodu.LevPos.x + (PLAYER_WIDTH% / 2), Dodu.LevPos.y + (PLAYER_HEIGHT% / 2)
 End Sub
 
-Sub DisplayCard (v As Viewport, p As Point, value As Integer)
+Sub DisplayCard (v As Viewport, absolute As Integer, p As Point, value As Integer)
   Dim suit As Integer, nb As Integer
   Dim p1 As Point, p2 As Point
   Let suit = value \ 13
   Let nb = value Mod 13
-  Viewport_PutSprite v, FALSE, Card, p, FALSE
+  Viewport_PutSprite v, absolute, Card, p, FALSE
   Point_Set p1, p.x + 5, p.y + 9
-  Viewport_PutSprite v, FALSE, Suits(suit), p1, FALSE
+  Viewport_PutSprite v, absolute, Suits(suit), p1, FALSE
   Point_Set p2, p.x + 2, p.y + 2
-  Viewport_PutSprite v, FALSE, Numbers(nb), p2, FALSE
+  Viewport_PutSprite v, absolute, Numbers(nb), p2, FALSE
 End Sub
 
 Sub DoPasswordInput (rst As RestorePoint)
@@ -928,7 +946,7 @@ Sub DoPasswordInput (rst As RestorePoint)
     For y = 0 To 12
       For x = 0 To 3
         Point_Set p, x * 18 + 5, y * 22
-        DisplayCard PwBuffer, p, x * 13 + y
+        DisplayCard PwBuffer, FALSE, p, x * 13 + y
       Next
     Next
 
