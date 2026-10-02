@@ -85,9 +85,12 @@ Let SCANLINES = FALSE
 ' Levels
 ' --------------------------
 LoadLevels
-Dim Shared CURRENT_LEVEL As Integer
+Dim Shared CURRENT_LEVEL As Integer, LAST_LEVEL As Integer
+Dim Shared LAST_TUQUE As Integer, LAST_MITTENS As Integer
 Let CURRENT_LEVEL = 0
-
+Let LAST_LEVEL = -1
+Let LAST_TUQUE = FALSE
+Let LAST_MITTENS = FALSE
 
 ' --------------------------
 ' Command line arguments
@@ -186,12 +189,11 @@ MainLoop
 
 Sub MainLoop
   Do
+    Dim snd_index As Integer
     Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
     Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS
     Dim rst As RestorePoint
     Screen MainScreen.Buffer
-    'DoGameOver
-    'End
 
     DoIntroduction rst
     If rst.Level >= 0 Then
@@ -199,13 +201,18 @@ Sub MainLoop
       Let Dodu.HasMittens = rst.HasMittens
       Let Dodu.HasTuque = rst.HasTuque
     End If
-    Dim dummy As Integer
-    ' Wait 1 sec
-    For dummy = 0 To FPS%
-      _Limit FPS%
-    Next
-    SoundPlayer_PlaySong Audio, 1
+
+    DummyWait 0.5, FPS%
     Do
+      If Levels(CURRENT_LEVEL).CutScene >= 0 Then
+        SoundPlayer_StopSong Audio
+        DoCutScene Levels(CURRENT_LEVEL).CutScene
+        SoundPlayer_StopSong Audio
+        DummyWait 0.5, FPS%
+      End If
+      If Not SoundPlayer_IsPlayingSong(Audio) Then
+        SoundPlayer_PlaySong Audio, Levels(CURRENT_LEVEL).SongIndex
+      End If
       Dim ws As Point
       Point_Set ws, Levels(CURRENT_LEVEL).Width * BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * BLOCK_SIZE%
       Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
@@ -214,7 +221,10 @@ Sub MainLoop
       Viewport_SetFont ImgBuffer, FNT_TINYC
       DoLevel
       SoundPlayer_PlayEffect Audio, SND_LEVELUP
+      Let LAST_LEVEL = CURRENT_LEVEL
       Let CURRENT_LEVEL = CURRENT_LEVEL + 1
+      Let LAST_MITTENS = Dodu.HasMittens
+      Let LAST_TUQUE = Dodu.HasTuque
     Loop
   Loop
 End Sub
@@ -284,6 +294,7 @@ Sub DoLevel
 
     If Dodu.Temp = 0 Then
       If Dodu.HasMittens And Not Dodu.HasTuque Then
+        SoundPlayer_PlayEffect Audio, SND_POWERDOWN%
         Let Dodu.HasMittens = FALSE
         Let Dodu.Temp = 5
         If Dodu.HasBlock Then
@@ -293,6 +304,7 @@ Sub DoLevel
         End If
         Ticker_Reset Dodu.ThermoTick
       ElseIf Not Dodu.HasMittens And Dodu.HasTuque Then
+        SoundPlayer_PlayEffect Audio, SND_POWERDOWN%
         Let Dodu.HasTuque = FALSE
         Let Dodu.Temp = 5
         If Dodu.HasBlock Then
@@ -302,6 +314,7 @@ Sub DoLevel
         End If
         Ticker_Reset Dodu.ThermoTick
       ElseIf Dodu.HasMittens And Dodu.HasTuque Then
+        SoundPlayer_PlayEffect Audio, SND_POWERDOWN%
         If Dodu.HasBlock Then
           Let Dodu.HasMittens = FALSE
           Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
@@ -373,14 +386,17 @@ Sub DoLevel
     ' ---------------------------------------
     If Square_IsValid(mittensP) Then
       TakeMittens Levels(CURRENT_LEVEL), mittensP
+      SoundPlayer_PlayEffect Audio, SND_POWERUP%
     End If
 
     If Square_IsValid(tuqueP) Then
       TakeTuque Levels(CURRENT_LEVEL), tuqueP
+      SoundPlayer_PlayEffect Audio, SND_POWERUP%
     End If
 
     If Square_IsValid(cookieP) Then
       TakeCookie Levels(CURRENT_LEVEL), cookieP
+      SoundPlayer_PlayEffect Audio, SND_COOKIE%
     End If
 
 
@@ -653,7 +669,7 @@ Sub DoGameOver
   SoundPlayer_PlayEffect Audio, SND_GAMEOVER%
   'Cls
   Dim pw As Password
-  GetPassword pw, CURRENT_LEVEL, Dodu.HasMittens, Dodu.HasTuque
+  GetPassword pw, CURRENT_LEVEL, LAST_MITTENS, LAST_TUQUE
   Viewport_Print ImgBuffer, "GAME OVER", P_ORIGIN
   Dim x As Integer, pws As String, cardP As Point
   For x = 0 To 3
@@ -665,6 +681,33 @@ Sub DoGameOver
   Do
     _Limit FPS%
   Loop While Not _KeyDown(K_ESC)
+End Sub
+
+Sub DoCutScene (nb As Integer)
+  SoundPlayer_PlaySong Audio, SNG_CUTSCENE1%
+
+  Dim ps As Ticker, alpha As Integer
+  Ticker_Init ps, 7, FPS%, FALSE
+  For alpha = 240 To 0 Step -20
+    _Limit FPS%
+    Viewport_PutSprite ImgBuffer, TRUE, CutScenes(nb), P_ORIGIN, FALSE
+    Viewport_Line ImgBuffer, TRUE, P_ORIGIN, SCREEN_DIMS, _RGBA(0, 0, 0, alpha), TRUE, TRUE
+    Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Display MainScreen
+  Next
+  Do
+    _Limit FPS%
+    Ticker_Tick ps
+  Loop Until Ticker_IsFinished(ps)
+  For alpha = 0 To 240 Step 20
+    _Limit FPS%
+    Viewport_PutSprite ImgBuffer, TRUE, CutScenes(nb), P_ORIGIN, FALSE
+    Viewport_Line ImgBuffer, TRUE, P_ORIGIN, SCREEN_DIMS, _RGBA(0, 0, 0, alpha), TRUE, TRUE
+    Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Display MainScreen
+  Next
+  Viewport_Clear ImgBuffer
+  Viewport_Clear MainScreen
 End Sub
 
 Sub DoMiniMap
@@ -816,7 +859,7 @@ End Sub
 
 Sub TakeCookie (m As LevelMap, p As Square)
   Let m.Topo(p.col, p.row) = T_NOTHING
-  Let Dodu.Temp = Clamp%(Dodu.Temp + 3, 0, 10)
+  Let Dodu.Temp = Clamp%(Dodu.Temp + 5, 0, 10)
 End Sub
 
 

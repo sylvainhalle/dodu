@@ -281,6 +281,11 @@ Declare Sub Viewport_Display (v As Viewport)
 '**
 Declare Sub Viewport_Tick (v As Viewport)
 
+'**
+'* Changes the viewport's transparency.
+'**
+Declare Sub Viewport_SetAlpha (v As Viewport, alpha As Integer)
+
 ' }}}
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

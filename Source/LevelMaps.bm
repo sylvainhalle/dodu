@@ -22,30 +22,18 @@
 
 '$IncludeOnce
 
-L9:
-Data 0
-Data "                  "
-Data "                  "
-Data "         *        "
-Data "@       @@       @"
-Data "@       @@@     @@"
-Data "@@      @@@@  ! @@"
-Data "@@@@@@@@@@@@@@@@@@"
-Data "X"
-
-
 L1:
-Data 0
+Data 0, 0, 0
 Data "                  "
 Data "                  "
-Data "@         m      @"
+Data "@                @"
 Data "@        @@     @@"
 Data "@@* #@@  @@@  ! @@"
 Data "@@@@@@@@@@@@@@@@@@"
 Data "X"
 
 L2:
-Data 1
+Data 1, -1, 0
 Data "@              "
 Data "@              "
 Data "@              "
@@ -54,12 +42,12 @@ Data "@       @ *  #@"
 Data "@    @  @@@@@@@"
 Data "@    @        @"
 Data "@    @        @"
-Data "@    @  t   ! @"
+Data "@    @      ! @"
 Data "@@@@@@@@@@@@@@@"
 Data "X"
 
 L3:
-Data 0
+Data 0, -1, 0
 Data "@               "
 Data "@               "
 Data "@               "
@@ -73,34 +61,54 @@ Data "@@@@@@@@@@@@@@@@"
 Data "X"
 
 L4:
-Data 1
+Data 1, -1, 0
 Data "                        "
 Data "                        "
 Data "                        "
-Data "@              @       @"
+Data "@            c @       @"
 Data "@ !          @@@@@     @"
-Data "@@@@@  $# * @@@@@@   ##@"
+Data "@@@@@       @@@@@@ * ##@"
 Data "@@@@@@ @@@@@@@@@@@@@@@@@"
 Data "X"
 
 L5:
-Data 0
-Data "                  "
-Data "                  "
-Data "                  "
-Data "#            @    "
-Data "@#         # @    "
-Data "@##  *    @@ @ ! @"
-Data "@@@@@@@ @ @@@@@@@@"
+Data 3, 1, 1
+Data "                   "
+Data "@                  "
+Data "@                  "
+Data "@#            @   @"
+Data "@@#        c# @   @"
+Data "@@##  *    @@ @ ! @"
+Data "@@@@@@@@ @ @@@@@@@@"
 Data "X"
 
 L6:
-Data 1
-Data "@#                   @"
-Data "@#                   @"
-Data "@##         @   @    @"
-Data "@@##        @   @  ! @"
-Data "@@@@@@@@@@@@@   @@@@@@"
+Data 4, -1, 1
+Data "                    "
+Data "                   @"
+Data "@                 #@"
+Data "@    @   @#      ##@"
+Data "@!   @   @c# *  ##@@"
+Data "@@@@@@   @@@@@@@@@@@"
+Data "X"
+
+L7:
+Data 3, -1, 1
+Data "                    "
+Data "                   !"
+Data "@c        @        @"
+Data "@#   @#   @##      @"
+Data "@### @#* #@##m  @@@@"
+Data "@@@@@@@@@@@@@@@@@@@@"
+Data "X"
+
+L8:
+Data 4, -1, 1
+Data "@     #                 "
+Data "@ c   @     #     !     "
+Data "@@@@@@@    ##  @  @    @"
+Data "@@@@@@@#*  ##  @  @    @"
+Data "@@@@@@@@@@@@@@@@@@@    @"
 Data "X"
 
 ' :mode=visualbasic:

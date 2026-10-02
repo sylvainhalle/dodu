@@ -305,6 +305,11 @@ Sub Viewport_Tick (v as Viewport)
 		End If
 	End If
 End Sub
+
+Sub Viewport_SetAlpha (v As Viewport, alpha As Integer)
+	_Dest v.Buffer
+	_SetAlpha alpha
+End Sub
 ' }}}
 
 

@@ -59,4 +59,13 @@ Function Array_Contains% (a() As Integer, v As Integer)
 	Next
 End Function
 
+Sub DummyWait (secs As Single, units As Integer)
+	Dim n As Integer
+	Let n = CInt(secs * units)
+	While n > 0
+		_Limit units
+		Let n = n - 1
+	Wend
+End Sub
+
 ' :mode=visualbasic:folding=explicit:wrap=none:

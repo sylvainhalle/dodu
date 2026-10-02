@@ -37,6 +37,19 @@ Const J_2 = 1
 Const J_3 = 2
 Const J_4 = 3
 
+Type InputEvent
+	Backspace As Integer
+	Esc As Integer
+	SpaceBar As Integer
+	Ctrl As Integer
+	KLeft As Integer
+	KRight As Integer
+	KTop As Integer
+	KBottom As Integer
+	KMUC As Integer
+	KMLC As Integer
+End Type
+
 ' This part adapted from
 ' https://www.qb64tutorial.com/lesson21
 

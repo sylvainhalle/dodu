@@ -54,6 +54,8 @@ Declare Function Square_IsValid% (s as Square)
 Declare Sub Square_ToPoint (s as Square, p as Point)
 
 Type LevelMap
+  CutScene As Integer
+  SongIndex As Integer
   Width As Integer
   Height As Integer
   Topo(M_W%, M_H%) As String
@@ -77,7 +79,7 @@ Declare Sub PrintLevel (m As LevelMap)
 ' --------------------------
 ' Level loading
 ' --------------------------
-Dim Shared Levels(6) As LevelMap
+Dim Shared Levels(10) As LevelMap
 
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

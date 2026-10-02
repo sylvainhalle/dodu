@@ -24,6 +24,8 @@ Declare Function Ceil% (x As Single)
 Declare Function Floor% (x As Single)
 Declare Function NbFormat$ (x As Integer)
 
+Declare Sub DummyWait (secs As Single, units As Integer)
+
 '**
 '* Force int to be between a min and a max, when greater - clamp 
 '* it between min and max

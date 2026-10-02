@@ -208,12 +208,22 @@ Sprite_Load LevelDigits(8), IMG_DIR$ + "/Dg_8.gif", DEFAULT_OFFSET, DEFAULT_OFFS
 Sprite_Load LevelDigits(9), IMG_DIR$ + "/Dg_9.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 ' ---------------------
+' Cut scenes
+' ---------------------
+Dim Shared CutScenes(10) As Sprite
+Sprite_Load CutScenes(0), IMG_DIR$ + "/Cutscene_1.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Sprite_Load CutScenes(1), IMG_DIR$ + "/Cutscene_2.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+
+
+' ---------------------
 ' Backgrounds
 ' ---------------------
-Dim Shared Backgrounds(3) As Sprite
+Dim Shared Backgrounds(5) As Sprite
 Sprite_Load Backgrounds(0), IMG_DIR$ + "/Background.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
 Sprite_Load Backgrounds(1), IMG_DIR$ + "/Background2.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
 Sprite_Load Backgrounds(2), IMG_DIR$ + "/Background_Cards.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
+Sprite_Load Backgrounds(3), IMG_DIR$ + "/Background3.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
+Sprite_Load Backgrounds(4), IMG_DIR$ + "/Background4.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
 
 ' Other constants
 Const PLAYER_HEIGHT% = 33
@@ -230,10 +240,12 @@ SoundPlayer_Init Audio
 Const SNG_SONG1 = 0
 Const SNG_SONG2 = 1
 Const SNG_CARDS = 2
+Const SNG_CUTSCENE1 = 3
 
 SoundPlayer_AddSong Audio, SNG_SONG1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod_fixed.mid"), 0.4
 SoundPlayer_AddSong Audio, SNG_SONG2, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/yaya.mid"), 0.4
 SoundPlayer_AddSong Audio, SNG_CARDS, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cards.mid"), 0.4
+SoundPlayer_AddSong Audio, SNG_CUTSCENE1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cutscene1.mid"), 0.6
 
 
 Const SND_STEP% = 0
@@ -246,6 +258,9 @@ Const SND_GAMEOVER% = 6
 Const SND_TICK% = 7
 Const SND_TACK% = 8
 Const SND_WRONG1% = 9
+Const SND_COOKIE% = 10
+Const SND_POWERUP% = 11
+Const SND_POWERDOWN% = 12
 
 SoundPlayer_AddEffect Audio, SND_STEP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step.mid"), 0.4
 SoundPlayer_AddEffect Audio, SND_THERMO%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/thermo.mid"), 1
@@ -257,6 +272,9 @@ SoundPlayer_AddEffect Audio, SND_GAMEOVER%, _SndOpen("/home/sylvain/Workspaces/d
 SoundPlayer_AddEffect Audio, SND_TICK%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/tick.mid"), 0.7
 SoundPlayer_AddEffect Audio, SND_TACK%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/tack.mid"), 0.7
 SoundPlayer_AddEffect Audio, SND_WRONG1%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/wrong.mid"), 1
+SoundPlayer_AddEffect Audio, SND_COOKIE%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cookie.mid"), 1
+SoundPlayer_AddEffect Audio, SND_POWERUP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/powerup.mid"), 1
+SoundPlayer_AddEffect Audio, SND_POWERDOWN%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/powerdown.mid"), 1
 
 '**
 '* Sets the song volume to a low level.

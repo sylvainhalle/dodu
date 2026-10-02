@@ -96,9 +96,13 @@ End Function
 ' Loads a level
 ' --------------------------
 Sub LoadLevel (l As LevelMap)
-  Dim lline As String, idx As Integer, char As String, row As Integer, bg As Integer
+  Dim lline As String, idx As Integer, char As String, row As Integer, bg As Integer, cutscene As Integer, songindex As Integer
   Read bg
+  Read cutscene
+  Read songindex
   Let l.Background = bg
+  Let l.CutScene = cutscene
+  Let l.SongIndex = songindex
   Read lline
   Let l.Width = LEN(lline)
   Let row = 0
@@ -131,6 +135,12 @@ Sub LoadLevels()
     LoadLevel Levels(4)
     Restore L6
     LoadLevel Levels(5)
+    Restore L7
+    LoadLevel Levels(6)
+    Restore L8
+    LoadLevel Levels(7)
+    'Restore L9
+    'LoadLevel Levels(8)
 End Sub
 
 
