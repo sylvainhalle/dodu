@@ -1090,12 +1090,14 @@ Sub DoIntroduction (rst As RestorePoint)
     Viewport_Display MainScreen
     If IsLeft% Or IsRight% Then
       Let sel = (sel + 1) Mod 2
+      SoundPlayer_PlayEffect Audio, SND_TICK%
       Kbd_WaitRelease FPS%
     ElseIf IsButton1% Then
       If sel = 1 Then
+        Kbd_WaitRelease FPS%
         DoPasswordInput rst
         If rst.Level < 0 Then
-          _Continue
+          Exit Do
         Else ' Valid password
           Exit Sub
         End If
