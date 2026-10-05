@@ -129,8 +129,8 @@ SpriteSequence_InitFile MiniPole, IMG_DIR$ + "/MiniPole.gif",1, 1, TRUE, MiniPol
 ' Cookie
 Dim Shared Cookie As SpriteSequence
 Dim CookieOffset As Point
-Point_Set CookieOffset, 3, 2
-SpriteSequence_InitFile Cookie, IMG_DIR$ + "/Cookie.gif",1, 1, TRUE, CookieOffset, CookieOffset, COLOR_TRANSPARENT
+Point_Set CookieOffset, 2, 2
+SpriteSequence_InitFile Cookie, IMG_DIR$ + "/refactored/Cookie.png",8, 3, TRUE, CookieOffset, CookieOffset, COLOR_TRANSPARENT
 
 ' Mittens
 Dim Shared SprMittens As SpriteSequence

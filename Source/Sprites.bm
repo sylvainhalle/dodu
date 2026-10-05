@@ -345,6 +345,7 @@ Sub Viewport_Tick (v as Viewport)
 			Point_Set v.PanAmount, 0, 0
 		End If
 	End If
+	SpriteSequence_Tick v.Background
 	Ticker_Tick v.FadeInTicker
 	Ticker_Tick v.FadeOutTicker
 End Sub

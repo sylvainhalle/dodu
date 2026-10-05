@@ -325,7 +325,7 @@ Sub DoLevel
     End If
   Loop Until Ticker_IsFinished%(ImgBuffer.PanTick)
 
-  'Viewport_SetCenter ImgBuffer, center
+  Viewport_SetCenter ImgBuffer, center
 
   Do
     _Limit FPS%
@@ -693,6 +693,7 @@ Sub DoLevel
     Viewport_Clear ImgBuffer
 
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL), FALSE
+    TickLevel
     DrawPlayer ImgBuffer, CurrentSprite()
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL), TRUE
     DrawThermometer ImgBuffer
@@ -821,6 +822,17 @@ Sub DoPause
     k = _KeyHit
   Loop While k <> K_SPACE
 End Sub
+' --------------------------
+' Ticks animations
+' --------------------------
+Sub TickLevel
+  SpriteSequence_Tick BlockBlue
+  SpriteSequence_Tick BlockWhite
+  SpriteSequence_Tick Pole
+  SpriteSequence_Tick Cookie
+  SpriteSequence_Tick SprMittens
+  SpriteSequence_Tick SprTuque
+End Sub
 
 ' --------------------------
 ' Draws a level
@@ -867,9 +879,9 @@ End Sub
 
 Sub DrawSnow (v As Viewport, m As LevelMap, col As Integer, row As Integer, p As Point)
   Dim hasleft As Integer, hasright As Integer, hastop As Integer
-  Let hastop = ((row > 0 And m.Topo(col, row - 1) = T_SNOW) Or row = 0)
-  Let hasleft = ((col > 0 And m.Topo(col - 1, row) = T_SNOW) Or col = 0)
-  Let hasright = ((col < m.Width - 1 And m.Topo(col + 1, row) = T_SNOW) Or col = m.Width - 1)
+  Let hastop = (row > 0 _AndAlso m.Topo(col, row - 1) = T_SNOW) _OrElse row = 0
+  Let hasleft = (col > 0 _AndAlso (m.Topo(col - 1, row) = T_SNOW _OrElse IsBlockAt(col, row, m))) _OrElse col = 0
+  Let hasright = (col < m.Width - 1 _AndAlso (m.Topo(col - 1, row) = T_SNOW _OrElse IsBlockAt(col, row, m))) _OrElse col = m.Width - 1
   If hastop Then
     Viewport_PutSpriteSequence v, FALSE, SnowM, p, FALSE
   Else
