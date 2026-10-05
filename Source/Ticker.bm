@@ -45,6 +45,11 @@ Sub Ticker_Reset (t As Ticker)
 	let t.Index = 0
 End Sub
 
+Sub Ticker_Stop (t As Ticker)
+	let t.TickCnt = -1
+	let t.Index = -1
+End Sub
+
 Function Ticker_IsRunning% (t as Ticker)
 	if t.Index < 0 Then
 		let Ticker_IsRunning% = FALSE

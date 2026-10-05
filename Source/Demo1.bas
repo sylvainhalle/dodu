@@ -1,3 +1,4 @@
+$Debug
 '-----------------------------------------------------------------------------
 '    Dodu, an old-school QuickBasic game
 '    Copyright (C) 1994-2026  Sylvain Hallé
@@ -152,7 +153,6 @@ Next
 
 Type Player
   LevPos As Point
-  SpriteIndex As Integer
   IsWalking As Integer
   HasBlock As Integer
   IsClimbing As Integer
@@ -176,7 +176,6 @@ Dim Shared MainScreen As Viewport, ImgBuffer As Viewport
 
 ' Game state
 Dim Shared Dodu As Player, DoduPast As Player
-Let Dodu.SpriteIndex = 0
 Let Dodu.HasBlock = FALSE
 Let Dodu.IsClimbing = 0
 Let Dodu.Temp = 10
@@ -279,7 +278,7 @@ Sub DoLevel
 
   ' Force initial animation selection
   Let DoduPast.HasBlock = 10
-  GetDoduSprite CurrentSprite(), Dodu, DoduPast
+  Let DoduPast.IsWalking = 10
 
   ' ---------------------------------------
   ' 0. Initial pan
@@ -307,6 +306,10 @@ Sub DoLevel
     Viewport_Tick ImgBuffer
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
+    If IsEsc% Or IsEnter% Then
+      Ticker_Stop ImgBuffer.PanTick
+      Exit Do
+    End If
   Loop Until Ticker_IsFinished%(ImgBuffer.PanTick)
 
 
@@ -660,11 +663,7 @@ Sub DoLevel
 
     RenderFrame:
 
-    ' Select a different sequence only when the player state changes.
-    'GetDoduSprite CurrentSprite, Dodu, DoduPast
-
-    ' Orientation is independent of animation selection.
-    'Let CurrentSprite.Flipped = Dodu.ToLeft
+    GetDoduSprite CurrentSprite(), Dodu, DoduPast
 
     ' Advance exactly once per game frame.
     SpriteSequence_Tick CurrentSprite(0)
@@ -688,6 +687,7 @@ Sub DoLevel
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), snowP, COLOR_PINK&
+    Viewport_Print ImgBuffer, Str$(Dodu.IsWalking) + Str$(CurrentSprite(1).Ticker.Index), P_ORIGIN
 
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
@@ -752,6 +752,9 @@ Sub DoCutScene (nb As Integer)
   Do
     _Limit FPS%
     Ticker_Tick ps
+    If IsEsc% Or IsEnter% Then
+      Exit Do
+    End If
   Loop Until Ticker_IsFinished(ps)
   For alpha = 0 To 240 Step 20
     _Limit FPS%
@@ -1019,6 +1022,15 @@ Sub GetDoduSprite (s() As SpriteSequence, DoduNow As Player, DoduPast As Player)
     Let s(0) = SPR_DOD_TUQUE(Abs(Dodu.HasTuque))
     Let s(1) = SPR_DOD_HEAD
     Let s(2) = SPR_DOD_BODY(Abs(Dodu.HasBlock), Abs(Dodu.HasMittens))
+    If Not DoduNow.IsWalking Then
+      SpriteSequence_Stop s(0)
+      SpriteSequence_Stop s(1)
+      SpriteSequence_Stop s(2)
+    ElseIf Not DoduPast.IsWalking And DoduNow.IsWalking Then
+      SpriteSequence_Start s(0)
+      SpriteSequence_Start s(1)
+      SpriteSequence_Start s(2)
+    End If
     Let DoduPast = DoduNow
   End If
 End Sub
@@ -1155,15 +1167,6 @@ Sub DoIntroduction (rst As RestorePoint)
   Dim sel As Integer
   Do
     _Limit FPS%
-    Viewport_PutSpriteSequence ImgBuffer, TRUE, SPR_DOD_TUQUE(1), P_ORIGIN, FALSE
-    Viewport_LineC ImgBuffer, TRUE, 0, 0, 40, 40, COLOR_YELLOW, TRUE, TRUE
-    Viewport_Print ImgBuffer, Time$, P_ORIGIN
-    Viewport_Copy ImgBuffer, MainScreen
-    Viewport_Display MainScreen
-  Loop
-  End
-  Do
-    _Limit FPS%
     Viewport_SetBackground ImgBuffer, SplashScreen, P_ORIGIN
     Viewport_Clear ImgBuffer
     If sel = 0 Then
@@ -1217,6 +1220,16 @@ End Function
 Function IsDown% ()
   Let IsDown% = In_Down(K_DOWN)
 End Function
+
+Function IsEsc% ()
+  Let IsEsc% = In_Down(K_ESC)
+End Function
+
+Function IsEnter% ()
+  Let IsEnter% = In_Down(K_ENTER)
+End Function
+
+
 
 ' --------------------------
 ' Includes (implementations)

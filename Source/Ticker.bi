@@ -34,6 +34,8 @@ Declare Sub Ticker_Tick (t As Ticker)
 
 Declare Sub Ticker_Reset (t As Ticker)
 
+Declare Sub Ticker_Stop (t As Ticker)
+
 Declare Function Ticker_IsRunning% (t As Ticker)
 
 Declare Function Ticker_IsFinished% (t As Ticker)

@@ -102,6 +102,16 @@ Declare Sub SpriteSequence_InitFile (s As SpriteSequence, filename As String, fr
 '**
 Declare Sub SpriteSequence_Tick (s As SpriteSequence)
 
+Declare Sub SpriteSequence_Start (s As SpriteSequence)
+
+Declare Sub SpriteSequence_Stop (s As SpriteSequence)
+
+'**
+'* Duplicates a sprite sequence. Note that the duplicate will share the
+'* same reference to the bitmap as its original.
+'**
+Declare Sub SpriteSequence_Copy (target As SpriteSequence, source As SpriteSequence)
+
 '**
 '* Identifies the current sprite in the sequence.
 '**
