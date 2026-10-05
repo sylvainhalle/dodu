@@ -47,7 +47,7 @@ Let DEFAULT_OFFSET = P_ORIGIN
 
 
 Dim Shared SPR_DOD_TUQUE(2) As SpriteSequence, TUQUE_OFFSET As Point
-Point_Set TUQUE_OFFSET, 0, -14
+Point_Set TUQUE_OFFSET, 0, -11
 SpriteSequence_InitFile SPR_DOD_TUQUE(0), IMG_DIR$ + "/refactored/NoTuque.png", 4, 2, TRUE, TUQUE_OFFSET, TUQUE_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_TUQUE(1), IMG_DIR$ + "/refactored/Tuque.png", 4, 2, TRUE, TUQUE_OFFSET, TUQUE_OFFSET, COLOR_TRANSPARENT
 
@@ -56,12 +56,13 @@ Dim Shared SPR_DOD_HEAD As SpriteSequence, HEAD_OFFSET As Point
 Point_Set HEAD_OFFSET, 0, 0
 SpriteSequence_InitFile SPR_DOD_HEAD, IMG_DIR$ + "/refactored/Head.png", 4, 2, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 
-Dim Shared SPR_DOD_BODY(2, 2) As SpriteSequence, BODY_OFFSET As Point
-Point_Set BODY_OFFSET, 0, 13
-SpriteSequence_InitFile SPR_DOD_BODY(0, 0), IMG_DIR$ + "/refactored/Body_noblock_nomittens.png", 4, 2, TRUE, BODY_OFFSET, BODY_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 0), IMG_DIR$ + "/refactored/Body_block_nomittens.png", 4,  2, TRUE, BODY_OFFSET, BODY_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(0, 1), IMG_DIR$ + "/refactored/Body_noblock_mittens.png", 4,  2, TRUE, BODY_OFFSET, BODY_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 1), IMG_DIR$ + "/refactored/Body_block_mittens.png", 4,  2, TRUE, BODY_OFFSET, BODY_OFFSET, COLOR_TRANSPARENT
+Dim Shared SPR_DOD_BODY(2, 2) As SpriteSequence, BODY_OFFSET_NOBLOCK As Point, BODY_OFFSET_BLOCK As Point
+Point_Set BODY_OFFSET_NOBLOCK, 0, 13
+Point_Set BODY_OFFSET_BLOCK, 0, 12
+SpriteSequence_InitFile SPR_DOD_BODY(0, 0), IMG_DIR$ + "/refactored/Body_noblock_nomittens.png", 4, 2, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(1, 0), IMG_DIR$ + "/refactored/Body_block_nomittens.png", 4,  2, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(0, 1), IMG_DIR$ + "/refactored/Body_noblock_mittens.png", 4,  2, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(1, 1), IMG_DIR$ + "/refactored/Body_block_mittens.png", 4,  2, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
 
 Dim Shared DoduSmall As SpriteSequence
 SpriteSequence_InitFile DoduSmall, IMG_DIR$ + "/DoduSmall.gif", 1,  1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT

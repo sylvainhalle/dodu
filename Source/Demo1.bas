@@ -110,6 +110,35 @@ Const IMG_MODE_HER$ = "her"
 Dim Shared IMG_MODE As String
 Let IMG_MODE = IMG_MODE_EGA$
 
+' --------------------------
+' Player
+' --------------------------
+
+Type Player
+  LevPos As Point
+  IsWalking As Integer
+  HasBlock As Integer
+  IsClimbing As Integer
+  IsFalling As Integer
+  ToLeft As Integer
+  Temp As Integer ' 0 to 10
+  ThermoTick As Ticker
+  ThermoFlash As Integer
+  HasMittens As Integer
+  HasTuque As Integer
+  HasRackets As Integer
+  SlipTick As Ticker
+  SlipDir As Integer
+End Type
+
+' Game state
+Dim Shared Dodu As Player, DoduPast As Player
+Let Dodu.HasBlock = FALSE
+Let Dodu.IsClimbing = 0
+Let Dodu.Temp = 10
+Let Dodu.HasMittens = FALSE
+Let Dodu.HasTuque = FALSE
+
 Dim argc As Integer, toset As String
 For argc = 1 To _CommandCount
   Select Case Command$(argc)
@@ -117,6 +146,10 @@ For argc = 1 To _CommandCount
       Let PLAY_MUSIC = FALSE
     Case "--nocutscenes"
       Let CFG_CUTSCENES = FALSE
+    Case "--tuque"
+      Let Dodu.HasTuque = TRUE
+    Case "--mittens"
+      Let Dodu.HasMittens = TRUE
     Case "--scanlines"
       Let SCANLINES = TRUE
     Case "--level"
@@ -152,40 +185,10 @@ Next
 '$Include:'Assets.bi'
 
 ' --------------------------
-' Player
-' --------------------------
-
-Type Player
-  LevPos As Point
-  IsWalking As Integer
-  HasBlock As Integer
-  IsClimbing As Integer
-  IsFalling As Integer
-  ToLeft As Integer
-  Temp As Integer ' 0 to 10
-  ThermoTick As Ticker
-  ThermoFlash As Integer
-  HasMittens As Integer
-  HasTuque As Integer
-  HasRackets As Integer
-  SlipTick As Ticker
-  SlipDir As Integer
-End Type
-
-' --------------------------
 ' Screen setup: 1 main screen and 1 buffer
 ' --------------------------
 _AllowFullScreen _Off
 Dim Shared MainScreen As Viewport, ImgBuffer As Viewport
-
-' Game state
-Dim Shared Dodu As Player, DoduPast As Player
-Let Dodu.HasBlock = FALSE
-Let Dodu.IsClimbing = 0
-Let Dodu.Temp = 10
-Let Dodu.HasMittens = FALSE
-Let Dodu.HasTuque = FALSE
-
 
 ' --------------------------
 ' Main loop
