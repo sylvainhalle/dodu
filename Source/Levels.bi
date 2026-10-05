@@ -28,7 +28,11 @@ Const T_POLE = "!"
 Const T_COOKIE = "c"
 Const T_MITTENS = "m"
 Const T_TUQUE = "t"
-Const T_END = "X"
+Const T_SNOW = "S"
+Const T_SNOWSHOES = "h"
+Const T_BEAR = "B"
+Const T_END = "x"
+Const T_ENDALL = "X"
 
 Type Square
   col As Integer
@@ -65,6 +69,8 @@ Type LevelMap
   PanY As Integer
 End Type
 
+Declare Sub Level_GoalSquare(l As LevelMap, s As Square)
+
 Declare Function IsGoalAt (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsBlockAt (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsWhiteBlockAt (col As Integer, row As Integer, l As LevelMap)
@@ -72,14 +78,15 @@ Declare Function IsObstacleAt% (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsCookieAt% (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsMittenAt% (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsTuqueAt% (col As Integer, row As Integer, l As LevelMap)
+Declare Function IsSnowAt% (col As Integer, row As Integer, l As LevelMap)
+Declare Function LoadLevel% (l As LevelMap)
 Declare Sub LoadLevels ()
-Declare Sub LoadLevel (l As LevelMap)
 Declare Sub PrintLevel (m As LevelMap)
 
 ' --------------------------
 ' Level loading
 ' --------------------------
-Dim Shared Levels(10) As LevelMap
+Dim Shared Levels(20) As LevelMap
 
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

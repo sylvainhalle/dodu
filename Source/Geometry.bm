@@ -118,10 +118,6 @@ Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   Next
 End Sub
 
-Sub SquareFeet (lp As Point, m As LevelMap, p As Square)
-	Let p.col = lp.x \ BLOCK_SIZE%
-End Sub
-
 Sub UnclimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   Dim col As Integer, row As Integer, x As Integer, overlap As Integer
   Dim r As Integer
@@ -301,6 +297,18 @@ Sub MittensSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 		Exit Sub
 	End If
 	If Not IsMittenAt(p.col, p.row, m) Then
+		Let p.col = -1
+		Let p.row = -1
+	End If
+End Sub
+
+Sub SnowSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+	FeetSquare side, lp, m, p
+	If p.col < 0 Or p.row < 0 Or p.row > m.Height - 2 Then
+		Exit Sub
+	End If
+	Let p.row = p.row + 1
+	If Not IsSnowAt(p.col, p.row, m) Then
 		Let p.col = -1
 		Let p.row = -1
 	End If

@@ -122,6 +122,16 @@ Dim Shared MiniBlockBlue As Sprite
 Sprite_Load MiniBlockBlue, IMG_DIR$ + "/MiniBlockBlue.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Dim Shared MiniBlockWhite As Sprite
 Sprite_Load MiniBlockWhite, IMG_DIR$ + "/MiniBlockWhite.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Dim Shared SnowC As Sprite
+Dim Coffset As Point
+Point_Set Coffset, 0, -12
+Sprite_Load SnowC, IMG_DIR$ + "/Snow_C.gif", Coffset, Coffset, COLOR_TRANSPARENT
+Dim Shared SnowL As Sprite
+Sprite_Load SnowL, IMG_DIR$ + "/Snow_L.gif", Coffset, Coffset, COLOR_TRANSPARENT
+Dim Shared SnowR As Sprite
+Sprite_Load SnowR, IMG_DIR$ + "/Snow_R.gif", Coffset, Coffset, COLOR_TRANSPARENT
+Dim Shared SnowM As Sprite
+Sprite_Load SnowM, IMG_DIR$ + "/Snow_M.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 ' Goal post
 Dim Shared Pole As Sprite
@@ -219,12 +229,13 @@ Sprite_Load CutScenes(2), IMG_DIR$ + "/Cutscene_2.gif", DEFAULT_OFFSET, DEFAULT_
 ' ---------------------
 ' Backgrounds
 ' ---------------------
-Dim Shared Backgrounds(5) As Sprite
+Dim Shared Backgrounds(10) As Sprite
 Sprite_Load Backgrounds(0), IMG_DIR$ + "/Background.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
 Sprite_Load Backgrounds(1), IMG_DIR$ + "/Background2.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
 Sprite_Load Backgrounds(2), IMG_DIR$ + "/Background_Cards.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
 Sprite_Load Backgrounds(3), IMG_DIR$ + "/Background3.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
 Sprite_Load Backgrounds(4), IMG_DIR$ + "/Background4.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
+Sprite_Load Backgrounds(5), IMG_DIR$ + "/Background_5.gif", DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_BLACK
 
 ' Other constants
 Const PLAYER_HEIGHT% = 33

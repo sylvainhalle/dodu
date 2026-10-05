@@ -63,6 +63,10 @@ Point_Set PT_LEVEL_NB, 2, 20
 ' Number of screen pixels per frame
 ' Currently, can only be an integer
 Const WALKING_SPEED# = 1
+Const WALKING_SPEED_SNOW# = 0.3
+
+Dim Shared WalkingTicker As Ticker
+Ticker_Init WalkingTicker, Ceil%(1 / WALKING_SPEED), 1, TRUE
 
 Dim PLAY_MUSIC As Integer
 Let PLAY_MUSIC = TRUE
@@ -159,6 +163,7 @@ Type Player
   ThermoFlash As Integer
   HasMittens As Integer
   HasTuque As Integer
+  HasRackets As Integer
   SlipTick As Ticker
   SlipDir As Integer
 End Type
@@ -248,6 +253,7 @@ Sub DoLevel
   Dim climbP As Square, takeP As Square, dropP As Square
   Dim unclimbP As Square, blockingP As Square, poleP As Square
   Dim mittensP As Square, tuqueP As Square, cookieP As Square
+  Dim snowP As Square
 
   Let CTRL_PRESSED = FALSE
   Let PANBACK_STEPS = 8
@@ -260,7 +266,7 @@ Sub DoLevel
   Viewport_SetBackground ImgBuffer, _
     Backgrounds(Levels(CURRENT_LEVEL%).Background), parallax
 
-  Color COLOR_PINK&, , , ImgBuffer.Buffer
+  Color COLOR_WHITE&, , , ImgBuffer.Buffer
   _PrintMode _KeepBackground , ImgBuffer.Buffer
   Screen MainScreen.Buffer
 
@@ -271,12 +277,40 @@ Sub DoLevel
   Square_Set sq_lastdrop, -1, -1
   Point_Set trjP, -1, -1
 
-  GetDoduCenter center
-  Viewport_SetCenter ImgBuffer, center
-
   ' Force initial animation selection
   Let DoduPast.HasBlock = 10
   GetDoduSprite CurrentSprite, Dodu, DoduPast
+
+  ' ---------------------------------------
+  ' 0. Initial pan
+  ' ---------------------------------------
+  GetDoduCenter center
+  Dim target_s As Square, target_p As Point
+  Level_GoalSquare Levels(CURRENT_LEVEL%), target_s
+  Square_ToPoint target_s, target_p
+  Viewport_SetCenter ImgBuffer, target_p
+  Viewport_ScrollCenter ImgBuffer, center, 5 * FPS%
+  Viewport_Clear ImgBuffer
+  DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), TRUE
+  DrawThermometer ImgBuffer
+  DrawLevelNumber ImgBuffer
+  Viewport_Copy ImgBuffer, MainScreen
+  Viewport_Display MainScreen
+  DummyWait 1, FPS%
+  Do
+    _Limit FPS%
+    Viewport_Clear ImgBuffer
+    DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), TRUE
+    DrawThermometer ImgBuffer
+    DrawLevelNumber ImgBuffer
+    Viewport_Print ImgBuffer, Point_ToString(center) + " " + Point_ToString(ImgBuffer.Pan), P_ORIGIN
+    Viewport_Tick ImgBuffer
+    Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Display MainScreen
+  Loop Until Ticker_IsFinished%(ImgBuffer.PanTick)
+
+
+  Viewport_SetCenter ImgBuffer, center
 
   Do
     _Limit FPS%
@@ -365,6 +399,13 @@ Sub DoLevel
     MittensSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), mittensP
     TuqueSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), tuqueP
     CookieSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), cookieP
+    SnowSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), snowP
+
+    If Square_IsValid(snowP) Then
+      Let WalkingTicker.Speed = Ceil%(1 / WALKING_SPEED_SNOW)
+    Else
+      Let WalkingTicker.Speed = Ceil%(1 / WALKING_SPEED)
+    End If
 
     ' ---------------------------------------
     ' 3. Active movement trajectory
@@ -487,6 +528,7 @@ Sub DoLevel
         If Not Square_IsValid(blockingP) Then
           Point_Set moveP, -1, 0
           Let Dodu.IsWalking = TRUE
+          Ticker_Tick WalkingTicker
           MovePlayer ImgBuffer, moveP
         Else
           Let Dodu.IsWalking = FALSE
@@ -516,6 +558,7 @@ Sub DoLevel
         If Not Square_IsValid(blockingP) Then
           Point_Set moveP, 1, 0
           Let Dodu.IsWalking = TRUE
+          Ticker_Tick WalkingTicker
           MovePlayer ImgBuffer, moveP
         Else
           Let Dodu.IsWalking = FALSE
@@ -634,14 +677,15 @@ Sub DoLevel
     ' Draw the complete frame.
     Viewport_Clear ImgBuffer
 
-    DrawLevel ImgBuffer, Levels(CURRENT_LEVEL)
+    DrawLevel ImgBuffer, Levels(CURRENT_LEVEL), FALSE
     DrawPlayer ImgBuffer
+    DrawLevel ImgBuffer, Levels(CURRENT_LEVEL), TRUE
     DrawThermometer ImgBuffer
     DrawLevelNumber ImgBuffer
 
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
-    'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), mittensP, COLOR_PINK&
+    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), snowP, COLOR_PINK&
 
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
@@ -738,7 +782,12 @@ Sub DoMiniMap
       Let MapBuffer.Pan.x = MapBuffer.Pan.x - 2
     ElseIf _KeyDown(K_RIGHT) Then
       Let MapBuffer.Pan.x = MapBuffer.Pan.x + 2
-    ElseIf _KeyDown(K_M_UC) Or _KeyDown(K_M_LC) Then
+    ElseIf _KeyDown(K_UP) Then
+      Let MapBuffer.Pan.y = MapBuffer.Pan.y - 2
+    ElseIf _KeyDown(K_DOWN) Then
+      Let MapBuffer.Pan.y = MapBuffer.Pan.y + 2
+
+    ElseIf _KeyDown(K_M_UC) Or _KeyDown(K_M_LC) Or _KeyDown(K_ESC) Then
       Exit Do
     End If
     Viewport_Clear MapBuffer
@@ -766,7 +815,7 @@ End Sub
 ' --------------------------
 ' Draws a level
 ' --------------------------
-Sub DrawLevel (v As Viewport, m As LevelMap)
+Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
   Dim col, row As Integer
   For row = 0 To m.Height
     For col = 0 To m.Width
@@ -775,24 +824,53 @@ Sub DrawLevel (v As Viewport, m As LevelMap)
       Let s.row = row
       Dim p As Point
       Square_ToPoint s, p
-      Select Case m.Topo(col, row)
-        Case T_BLOCK_B
-          Viewport_PutSprite v, FALSE, BlockBlue, p, FALSE
-        Case T_BLOCK_W
-          Viewport_PutSprite v, FALSE, BlockWhite, p, FALSE
-        Case T_POLE
-          Viewport_PutSprite v, FALSE, Pole, p, FALSE
-        Case T_COOKIE
-          Viewport_PutSprite v, FALSE, Cookie, p, FALSE
-        Case T_MITTENS
-          Viewport_PutSprite v, FALSE, SprMittens, p, FALSE
-        Case T_TUQUE
-          Viewport_PutSprite v, FALSE, SprTuque, p, FALSE
-      End Select
+      If Not isfront Then
+        Select Case m.Topo(col, row)
+          Case T_BLOCK_B
+            Viewport_PutSprite v, FALSE, BlockBlue, p, FALSE
+          Case T_BLOCK_W
+            Viewport_PutSprite v, FALSE, BlockWhite, p, FALSE
+          Case T_POLE
+            Viewport_PutSprite v, FALSE, Pole, p, FALSE
+          Case T_COOKIE
+            Viewport_PutSprite v, FALSE, Cookie, p, FALSE
+          Case T_MITTENS
+            Viewport_PutSprite v, FALSE, SprMittens, p, FALSE
+          Case T_TUQUE
+            Viewport_PutSprite v, FALSE, SprTuque, p, FALSE
+          Case T_SNOW
+            DrawSnow v, m, col, row, p
+        End Select
+      Else
+        Select Case m.Topo(col, row)
+          Case T_SNOW
+            If Not Dodu.HasRackets Then
+              DrawSnow v, m, col, row, p
+            End If
+        End Select
+      End If
     Next
   Next
   Dim dod_p As Point
   Let dod_p = Dodu.LevPos
+End Sub
+
+Sub DrawSnow (v As Viewport, m As LevelMap, col As Integer, row As Integer, p As Point)
+  Dim hasleft As Integer, hasright As Integer, hastop As Integer
+  Let hastop = ((row > 0 And m.Topo(col, row - 1) = T_SNOW) Or row = 0)
+  Let hasleft = ((col > 0 And m.Topo(col - 1, row) = T_SNOW) Or col = 0)
+  Let hasright = ((col < m.Width - 1 And m.Topo(col + 1, row) = T_SNOW) Or col = m.Width - 1)
+  If hastop Then
+    Viewport_PutSprite v, FALSE, SnowM, p, FALSE
+  Else
+    If hasleft And hasright Then
+      Viewport_PutSprite v, FALSE, SnowC, p, FALSE
+    ElseIf hasleft And Not hasright Then
+      Viewport_PutSprite v, FALSE, SnowR, p, FALSE
+    ElseIf Not hasleft And hasright Then
+      Viewport_PutSprite v, FALSE, SnowL, p, FALSE
+    End If
+  End If
 
 End Sub
 
@@ -885,6 +963,7 @@ Sub DropBlock (m As LevelMap, p As Square)
 End Sub
 
 Sub MovePlayer (v As Viewport, p_to As Point)
+  If WalkingTicker.TickCnt <> 0 Then Exit Sub
   If p_to.x < 0 Then Dodu.ToLeft = TRUE
   If p_to.x > 0 Then Dodu.ToLeft = FALSE
   ' Otherwise, leave in its current state

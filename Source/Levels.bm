@@ -29,6 +29,19 @@ Function Square_IsValid% (s as Square)
     End If
 End Function
 
+Sub Level_GoalSquare(l As LevelMap, s As Square)
+	Dim r As Integer, c As Integer
+	For r = 0 To l.Height
+		For c = 0 To l.Width
+			If IsGoalAt(c, r, l) Then
+				Let s.row = r
+				Let s.col = c
+				Exit Sub
+			End If
+		Next
+	Next
+End Sub
+
 Sub Square_ToPoint (s as Square, p as Point)
     let p.x = s.col * BLOCK_SIZE%
     let p.y = s.row * BLOCK_SIZE%
@@ -45,7 +58,7 @@ Function IsGoalAt (col As Integer, row As Integer, l As LevelMap)
 End Function
 
 Function IsBlockAt (col As Integer, row As Integer, l As LevelMap)
-  If l.Topo(col, row) = T_BLOCK_B Or l.Topo(col, row) = T_BLOCK_W Then
+  If l.Topo(col, row) = T_BLOCK_B Or l.Topo(col, row) = T_BLOCK_W Or l.Topo(col, row) = T_SNOW Then
     Let IsBlockAt = TRUE
   Else
     Let IsBlockAt = FALSE
@@ -61,7 +74,7 @@ Function IsWhiteBlockAt (col As Integer, row As Integer, l As LevelMap)
 End Function
 
 Function IsObstacleAt (col As Integer, row As Integer, l As LevelMap)
-  If l.Topo(col, row) = T_BLOCK_B Or l.Topo(col, row) = T_BLOCK_W Or l.Topo(col, row) = T_POLE Then
+  If l.Topo(col, row) = T_BLOCK_B Or l.Topo(col, row) = T_BLOCK_W Or l.Topo(col, row) = T_SNOW Or l.Topo(col, row) = T_POLE Then
     Let IsObstacleAt = TRUE
   Else
     Let IsObstacleAt = FALSE
@@ -92,10 +105,18 @@ Function IsMittenAt (col As Integer, row As Integer, l As LevelMap)
   End If
 End Function
 
+Function IsSnowAt (col As Integer, row As Integer, l As LevelMap)
+  If l.Topo(col, row) = T_SNOW Then
+    Let IsSnowAt = TRUE
+  Else
+    Let IsSnowAt = FALSE
+  End If
+End Function
+
 ' --------------------------
 ' Loads a level
 ' --------------------------
-Sub LoadLevel (l As LevelMap)
+Function LoadLevel% (l As LevelMap)
   Dim lline As String, idx As Integer, char As String, row As Integer, bg As Integer, cutscene As Integer, songindex As Integer
   Read bg
   Read cutscene
@@ -106,7 +127,7 @@ Sub LoadLevel (l As LevelMap)
   Read lline
   Let l.Width = LEN(lline)
   Let row = 0
-  While lline <> T_END
+  While lline <> T_END And lline <> T_ENDALL
       For idx = 1 TO l.Width
         Let char = MID$(lline, idx, 1)
         If char = "*" Then
@@ -120,29 +141,21 @@ Sub LoadLevel (l As LevelMap)
       Let row = row + 1
   Wend
   Let l.Height = row
-End Sub
+  If lline = T_ENDALL Then
+  	  Let LoadLevel% = TRUE
+  Else
+  	  Let LoadLevel% = FALSE
+  End If
+End Function
 
 Sub LoadLevels()
-    Restore L1
-    LoadLevel Levels(0)
-    Restore L2
-    LoadLevel Levels(1)
-    Restore L3
-    LoadLevel Levels(2)
-    Restore L4
-    LoadLevel Levels(3)
-    Restore L5
-    LoadLevel Levels(4)
-    Restore L6
-    LoadLevel Levels(5)
-    Restore L7
-    LoadLevel Levels(6)
-    Restore L8
-    LoadLevel Levels(7)
-    Restore L9
-    LoadLevel Levels(8)
-    Restore L10
-    LoadLevel Levels(9)
+    Restore LevelData
+	Dim last As Integer, n As Integer
+	Let last = FALSE
+	Do
+    	Let last = LoadLevel%(Levels(n))
+    	Let n = n + 1
+    Loop Until last
 End Sub
 
 

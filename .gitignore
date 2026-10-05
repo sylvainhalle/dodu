@@ -1,5 +1,5 @@
 \#*
-*.lock.*.rg\#
+*.~lock.*.rg\#
 *.bak
 *~
 .DS_Store/
