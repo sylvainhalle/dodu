@@ -127,6 +127,7 @@ Type Player
   HasMittens As Integer
   HasTuque As Integer
   HasRackets As Integer
+  InSnow As Integer
   SlipTick As Ticker
   SlipDir As Integer
 End Type
@@ -416,8 +417,10 @@ Sub DoLevel
     SnowSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), snowP
 
     If Square_IsValid(snowP) Then
+      Let Dodu.InSnow = TRUE
       Let WalkingTicker.Speed = Ceil%(1 / WALKING_SPEED_SNOW)
     Else
+      Let Dodu.InSnow = FALSE
       Let WalkingTicker.Speed = Ceil%(1 / WALKING_SPEED)
     End If
 
@@ -1022,7 +1025,7 @@ End Sub
 Sub GetDoduSprite (s() As SpriteSequence, DoduNow As Player, DoduPast As Player)
   If PlayerChanged(DoduNow, DoduPast) Then
     Let s(0) = SPR_DOD_TUQUE(Abs(Dodu.HasTuque))
-    Let s(1) = SPR_DOD_HEAD
+    Let s(1) = SPR_DOD_HEAD(Abs(Dodu.InSnow))
     Let s(2) = SPR_DOD_BODY(Abs(Dodu.HasBlock), Abs(Dodu.HasMittens))
     If Not DoduNow.IsWalking Then
       SpriteSequence_Stop s(0)

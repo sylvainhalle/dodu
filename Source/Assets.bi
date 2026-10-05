@@ -52,9 +52,10 @@ SpriteSequence_InitFile SPR_DOD_TUQUE(0), IMG_DIR$ + "/refactored/NoTuque.png", 
 SpriteSequence_InitFile SPR_DOD_TUQUE(1), IMG_DIR$ + "/refactored/Tuque.png", 4, 2, TRUE, TUQUE_OFFSET, TUQUE_OFFSET, COLOR_TRANSPARENT
 
 
-Dim Shared SPR_DOD_HEAD As SpriteSequence, HEAD_OFFSET As Point
+Dim Shared SPR_DOD_HEAD(2) As SpriteSequence, HEAD_OFFSET As Point
 Point_Set HEAD_OFFSET, 0, 0
-SpriteSequence_InitFile SPR_DOD_HEAD, IMG_DIR$ + "/refactored/Head.png", 4, 2, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_HEAD(0), IMG_DIR$ + "/refactored/Head.png", 4, 2, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_HEAD(1), IMG_DIR$ + "/refactored/Head_tired.png", 4, 2, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 
 Dim Shared SPR_DOD_BODY(2, 2) As SpriteSequence, BODY_OFFSET_NOBLOCK As Point, BODY_OFFSET_BLOCK As Point
 Point_Set BODY_OFFSET_NOBLOCK, 0, 13
