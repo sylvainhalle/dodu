@@ -264,6 +264,8 @@ Sub DoLevel
   Let CTRL_PRESSED = FALSE
   Let PANBACK_STEPS = 8
   Let Dodu.Temp = 10
+  Let Dodu.IsWalking = FALSE
+  GetDoduSprite CurrentSprite(), Dodu, DoduPast
 
   Ticker_Init Dodu.ThermoTick, 10, THERMO_TICK_NORMAL%, FALSE
   Ticker_Init Dodu.SlipTick, 6, SLIP_TICK_NORMAL%, FALSE
@@ -291,35 +293,38 @@ Sub DoLevel
   ' 0. Initial pan
   ' ---------------------------------------
   GetDoduCenter center
+  Viewport_StopPan ImgBuffer
   Dim target_s As Square, target_p As Point
   Level_GoalSquare Levels(CURRENT_LEVEL%), target_s
   Square_ToPoint target_s, target_p
-  Viewport_SetCenter ImgBuffer, target_p
-  Viewport_ScrollCenter ImgBuffer, center, 5 * FPS%
   Viewport_Clear ImgBuffer
+  DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), FALSE
   DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), TRUE
+  Viewport_SetCenter ImgBuffer, target_p
   DrawThermometer ImgBuffer
   DrawLevelNumber ImgBuffer
   Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
-  Viewport_Wait ImgBuffer, MainScreen, 0.8, FPS%
-  'Do
-  '  _Limit FPS%
-  '  Viewport_Clear ImgBuffer
-  '  DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), TRUE
-  '  DrawThermometer ImgBuffer
-  '  DrawLevelNumber ImgBuffer
-  '  Viewport_Print ImgBuffer, Point_ToString(center) + " " + Point_ToString(ImgBuffer.Pan), P_ORIGIN
-  '  Viewport_Tick ImgBuffer
-  '  Viewport_Copy ImgBuffer, MainScreen
-  '  Viewport_Display MainScreen
-  '  If IsEsc% Or IsEnter% Then
-  '    Ticker_Stop ImgBuffer.PanTick
-  '    Exit Do
-  '  End If
-  'Loop Until Ticker_IsFinished%(ImgBuffer.PanTick)
+  'Viewport_Wait ImgBuffer, MainScreen, 0.8, FPS%
+  Viewport_ScrollCenter ImgBuffer, center, 3 * FPS%
+  Do
+    _Limit FPS%
+    Viewport_Clear ImgBuffer
+    DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), FALSE
+    DrawPlayer ImgBuffer, CurrentSprite()
+    DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), TRUE
+    DrawThermometer ImgBuffer
+    DrawLevelNumber ImgBuffer
+    Viewport_Tick ImgBuffer
+    Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Tick MainScreen
+    Viewport_Display MainScreen
+    If IsEsc% Or IsEnter% Then
+      Ticker_Stop ImgBuffer.PanTick
+      Exit Do
+    End If
+  Loop Until Ticker_IsFinished%(ImgBuffer.PanTick)
 
-
-  Viewport_SetCenter ImgBuffer, center
+  'Viewport_SetCenter ImgBuffer, center
 
   Do
     _Limit FPS%

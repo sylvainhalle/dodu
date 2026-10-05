@@ -311,6 +311,7 @@ Sub Viewport_SetCenter (v as Viewport, p as Point)
 End Sub
 
 Sub Viewport_MovePan (v as Viewport, p as Point)
+	Viewport_Print v, Point_ToString(p), P_ORIGIN
 	Let v.Pan.x = Clamp%(v.Pan.x + p.x, 0, v.WorldSize.x - v.Size.x)
 	Let v.Pan.y = Clamp%(v.Pan.y + p.y, 0, v.WorldSize.y - v.Size.y)
 End Sub
@@ -328,17 +329,24 @@ Sub Viewport_ScrollCenter (v As Viewport, p As Point, nbframes As Integer)
 	Viewport_ScrollPan v, target, nbframes
 End Sub
 
+Sub Viewport_StopPan (v as Viewport)
+	Ticker_Stop v.PanTick
+End Sub
+
 Sub Viewport_Tick (v as Viewport)
 	If Ticker_IsRunning%(v.PanTick) Then
-		Viewport_MovePan v, v.PanAmount
+		Dim panamt As Point
+		Point_Set panamt, _Round((v.PanTarget.x - v.Pan.x) / (v.PanTick.Length - v.PanTick.Index)), _Round((v.PanTarget.y - v.Pan.y) / (v.PanTick.Length - v.PanTick.Index))
+		Viewport_MovePan v, panamt
+		Viewport_Print ImgBuffer, Point_ToString(panamt), P_ORIGIN
 		Ticker_Tick v.PanTick
 		If Ticker_IsFinished%(v.PanTick) Then
 			Point_Set v.PanTarget, -1, -1
 			Point_Set v.PanAmount, 0, 0
 		End If
-		Ticker_Tick v.FadeInTicker
-		Ticker_Tick v.FadeOutTicker
 	End If
+	Ticker_Tick v.FadeInTicker
+	Ticker_Tick v.FadeOutTicker
 End Sub
 
 Sub Viewport_SetAlpha (v As Viewport, alpha As Integer)

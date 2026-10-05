@@ -247,6 +247,8 @@ Declare Sub Viewport_ScrollPan (v as Viewport, target as Point, nbframes As Inte
 
 Declare Sub Viewport_ScrollCenter (v As Viewport, p As Point, nbframes As Integer)
 
+Declare Sub Viewport_StopPan (v as Viewport)
+
 '**
 '* Displays the current viewport
 '**
