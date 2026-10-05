@@ -156,6 +156,8 @@ Type Viewport
   PanTick As Ticker
   PanTarget As Point
   PanAmount As Point
+  FadeInTicker As Ticker
+  FadeOutTicker As Ticker
 End Type
 
 '**
@@ -259,6 +261,15 @@ Declare Sub Viewport_Tick (v As Viewport)
 '* Changes the viewport's transparency.
 '**
 Declare Sub Viewport_SetAlpha (v As Viewport, alpha As Integer)
+
+Declare Sub Viewport_FadeIn (v As Viewport, frames As Integer)
+
+Declare Sub Viewport_FadeOut (v As Viewport, frames As Integer)
+
+'**
+'* Asks the viewport to wait a number of frames.
+'**
+Declare Sub Viewport_Wait (src As Viewport, dst As Viewport, dur As Single, fps As Integer)
 
 ' }}}
 

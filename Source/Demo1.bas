@@ -1,4 +1,3 @@
-$Debug
 '-----------------------------------------------------------------------------
 '    Dodu, an old-school QuickBasic game
 '    Copyright (C) 1994-2026  Sylvain Hallé
@@ -72,6 +71,9 @@ Ticker_Init WalkingTicker, Ceil%(1 / WALKING_SPEED), 1, TRUE
 Dim PLAY_MUSIC As Integer
 Let PLAY_MUSIC = TRUE
 
+Dim Shared CFG_CUTSCENES As Integer
+Let CFG_CUTSCENES = TRUE
+
 Dim Shared SCANLINES As Integer
 Let SCANLINES = FALSE
 
@@ -113,6 +115,8 @@ For argc = 1 To _CommandCount
   Select Case Command$(argc)
     Case "--nomusic"
       Let PLAY_MUSIC = FALSE
+    Case "--nocutscenes"
+      Let CFG_CUTSCENES = FALSE
     Case "--scanlines"
       Let SCANLINES = TRUE
     Case "--level"
@@ -214,13 +218,13 @@ Sub MainLoop
       Let Dodu.HasTuque = rst.HasTuque
     End If
 
-    DummyWait 0.5, FPS%
+    Viewport_FadeOut MainScreen, Ceil%(0.3 * FPS)
+    Viewport_Wait ImgBuffer, MainScreen, 0.4, FPS%
     Do
-      If Levels(CURRENT_LEVEL).CutScene >= 0 Then
+      If Levels(CURRENT_LEVEL).CutScene >= 0 And CFG_CUTSCENES Then
         SoundPlayer_StopSong Audio
         DoCutScene Levels(CURRENT_LEVEL).CutScene
         SoundPlayer_StopSong Audio
-        DummyWait 0.5, FPS%
       End If
       If Not SoundPlayer_IsPlayingSong(Audio) Then
         SoundPlayer_PlaySong Audio, Levels(CURRENT_LEVEL).SongIndex
@@ -293,24 +297,23 @@ Sub DoLevel
   DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), TRUE
   DrawThermometer ImgBuffer
   DrawLevelNumber ImgBuffer
-  Viewport_Copy ImgBuffer, MainScreen
-  Viewport_Display MainScreen
-  DummyWait 1, FPS%
-  Do
-    _Limit FPS%
-    Viewport_Clear ImgBuffer
-    DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), TRUE
-    DrawThermometer ImgBuffer
-    DrawLevelNumber ImgBuffer
-    Viewport_Print ImgBuffer, Point_ToString(center) + " " + Point_ToString(ImgBuffer.Pan), P_ORIGIN
-    Viewport_Tick ImgBuffer
-    Viewport_Copy ImgBuffer, MainScreen
-    Viewport_Display MainScreen
-    If IsEsc% Or IsEnter% Then
-      Ticker_Stop ImgBuffer.PanTick
-      Exit Do
-    End If
-  Loop Until Ticker_IsFinished%(ImgBuffer.PanTick)
+  Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
+  Viewport_Wait ImgBuffer, MainScreen, 0.8, FPS%
+  'Do
+  '  _Limit FPS%
+  '  Viewport_Clear ImgBuffer
+  '  DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), TRUE
+  '  DrawThermometer ImgBuffer
+  '  DrawLevelNumber ImgBuffer
+  '  Viewport_Print ImgBuffer, Point_ToString(center) + " " + Point_ToString(ImgBuffer.Pan), P_ORIGIN
+  '  Viewport_Tick ImgBuffer
+  '  Viewport_Copy ImgBuffer, MainScreen
+  '  Viewport_Display MainScreen
+  '  If IsEsc% Or IsEnter% Then
+  '    Ticker_Stop ImgBuffer.PanTick
+  '    Exit Do
+  '  End If
+  'Loop Until Ticker_IsFinished%(ImgBuffer.PanTick)
 
 
   Viewport_SetCenter ImgBuffer, center
@@ -741,14 +744,10 @@ Sub DoCutScene (nb As Integer)
   SoundPlayer_PlaySong Audio, SNG_CUTSCENE1%
 
   Dim ps As Ticker, alpha As Integer
+  Viewport_PutSpriteSequence ImgBuffer, TRUE, CutScenes(nb), P_ORIGIN, FALSE
   Ticker_Init ps, 7, FPS%, FALSE
-  For alpha = 240 To 0 Step -20
-    _Limit FPS%
-    Viewport_PutSpriteSequence ImgBuffer, TRUE, CutScenes(nb), P_ORIGIN, FALSE
-    Viewport_Line ImgBuffer, TRUE, P_ORIGIN, SCREEN_DIMS, _RGBA(0, 0, 0, alpha), TRUE, TRUE
-    Viewport_Copy ImgBuffer, MainScreen
-    Viewport_Display MainScreen
-  Next
+  Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
+  Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
   Do
     _Limit FPS%
     Ticker_Tick ps
@@ -756,13 +755,8 @@ Sub DoCutScene (nb As Integer)
       Exit Do
     End If
   Loop Until Ticker_IsFinished(ps)
-  For alpha = 0 To 240 Step 20
-    _Limit FPS%
-    Viewport_PutSpriteSequence ImgBuffer, TRUE, CutScenes(nb), P_ORIGIN, FALSE
-    Viewport_Line ImgBuffer, TRUE, P_ORIGIN, SCREEN_DIMS, _RGBA(0, 0, 0, alpha), TRUE, TRUE
-    Viewport_Copy ImgBuffer, MainScreen
-    Viewport_Display MainScreen
-  Next
+  Viewport_FadeOut MainScreen, Ceil%(0.5 * FPS)
+  Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
   Viewport_Clear ImgBuffer
   Viewport_Clear MainScreen
 End Sub

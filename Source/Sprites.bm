@@ -175,6 +175,8 @@ Sub Viewport_Init (v As Viewport, size As Point, ws As Point, pan As Point, scal
   Let v.BackgroundPanRatio.x = -1
   Let v.BackgroundPanRatio.y = -1
   Let v.Scanlines = FALSE
+  Ticker_Stop v.FadeInTicker
+  Ticker_Stop v.FadeOutTicker
 End Sub
 
 Sub Viewport_PointToScreen (v As Viewport, p_src As Point, p_dest As Point)
@@ -254,6 +256,12 @@ End Sub
 
 Sub Viewport_Display (v As Viewport)
 	_Dest v.Buffer
+	If Ticker_IsRunning%(v.FadeInTicker) Then
+		Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 - (255 * v.FadeInTicker.Index / v.FadeInTicker.Length))), BF
+	End If
+	If Ticker_IsRunning%(v.FadeOutTicker) Then
+		Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 * v.FadeInTicker.Index / v.FadeOutTicker.Length)), BF
+	End If
 	If v.Scanlines Then
 		Dim y As Integer
 		For y = 0 To v.Size.y * v.Scale Step v.Scale
@@ -261,6 +269,19 @@ Sub Viewport_Display (v As Viewport)
 		Next
 	End If
 	_Display
+End Sub
+
+Sub Viewport_Wait (src As Viewport, dst As Viewport, dur As Single, fps As Integer)
+	Dim ticks As Integer
+	Let ticks = Ceil%(dur * fps)
+	While ticks > 0
+		_Limit fps
+		Let ticks = ticks - 1
+		Viewport_Tick src
+		Viewport_Copy src, dst
+		Viewport_Tick dst
+		Viewport_Display dst
+	Wend
 End Sub
 
 Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point, flipped As Integer)
@@ -315,12 +336,24 @@ Sub Viewport_Tick (v as Viewport)
 			Point_Set v.PanTarget, -1, -1
 			Point_Set v.PanAmount, 0, 0
 		End If
+		Ticker_Tick v.FadeInTicker
+		Ticker_Tick v.FadeOutTicker
 	End If
 End Sub
 
 Sub Viewport_SetAlpha (v As Viewport, alpha As Integer)
 	_Dest v.Buffer
 	_SetAlpha alpha
+End Sub
+
+Sub Viewport_FadeIn (v As Viewport, numticks As Integer)
+	Ticker_Stop v.FadeOutTicker
+	Ticker_Init v.FadeInTicker, numticks, 1, FALSE
+End Sub
+
+Sub Viewport_FadeOut (v As Viewport, numticks As Integer)
+	Ticker_Stop v.FadeInTicker
+	Ticker_Init v.FadeOutTicker, numticks, 1, FALSE
 End Sub
 ' }}}
 
