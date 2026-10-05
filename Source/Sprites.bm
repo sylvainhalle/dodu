@@ -73,26 +73,28 @@ Sub SpriteSequence_Copy (target As SpriteSequence, source As SpriteSequence)
 	Let target.OffsetL = source.OffsetL
 	Let target.OffsetR = source.OffsetR
 	Let target.Size = source.Size
+	Let target.Animate = source.Animate
 End Sub
 
-Sub SpriteSequence_InitFile (s As SpriteSequence, filename As String, frames As Integer, spd As Integer, isloop As Integer, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
+Sub SpriteSequence_InitFile (s As SpriteSequence, filename As String, frames As Integer, spd As Integer, animate As Integer, isloop As Integer, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
 	Dim e As Long
-	Let e = _LoadImage(filename, 32)
+	Let e = _LoadImage(filename, SPRITE_MODE%)
 	If e = -1 Then
 		Let ERRFILE = filename
-		Error 97
+		Error 97 ' 97 is the user-defined code
 	End If
-	SpriteSequence_Init s, e, frames, spd, isloop, offsetL, offsetR, clr
+	SpriteSequence_Init s, e, frames, spd, animate, isloop, offsetL, offsetR, clr
 End Sub
 
 
-Sub SpriteSequence_Init (s As SpriteSequence, content As Long, frames As Integer, spd As Integer, isloop As Integer, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
+Sub SpriteSequence_Init (s As SpriteSequence, content As Long, frames As Integer, spd As Integer, animate As Integer, isloop As Integer, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
 	If content = -1 Then
 		Let ERRFILE = "FOO"
 		Error 97
 	End If
 	_ClearColor clr, content
 	Ticker_Init s.Ticker, frames, spd, isloop
+	Let s.Animate = animate
 	Let s.Content = content
 	Let s.Size.x = _Width(content)
 	Let s.Size.y = _Height(content)
@@ -102,7 +104,9 @@ Sub SpriteSequence_Init (s As SpriteSequence, content As Long, frames As Integer
 End Sub
 
 Sub SpriteSequence_Tick (s As SpriteSequence)
-	Ticker_Tick s.Ticker
+	If s.Animate Then
+		Ticker_Tick s.Ticker
+	End If
 End Sub
 
 Sub SpriteSequence_Stop (s As SpriteSequence)
@@ -112,7 +116,6 @@ End Sub
 Sub SpriteSequence_Start (s As SpriteSequence)
 	Ticker_Reset s.Ticker
 End Sub
-
 
 Sub SpriteSequence_Current (s as SpriteSequence, p1 As Point, p2 As Point)
 	Dim ind As Integer
@@ -171,9 +174,11 @@ Sub Viewport_Init (v As Viewport, size As Point, ws As Point, pan As Point, scal
   Let v.WorldSize = ws
   Let v.Pan = pan
   Let v.Scale = scale
-  Let v.Buffer = _NewImage(size.x * scale, size.y * scale, 32)
+  Let v.Buffer = _NewImage(size.x * scale, size.y * scale, SPRITE_MODE%)
   Let v.BackgroundPanRatio.x = -1
   Let v.BackgroundPanRatio.y = -1
+  Let v.ForegroundPanRatio.x = -1
+  Let v.ForegroundPanRatio.y = -1
   Let v.Scanlines = FALSE
   Ticker_Stop v.FadeInTicker
   Ticker_Stop v.FadeOutTicker
@@ -199,7 +204,7 @@ Sub Viewport_Clear (v As Viewport)
   	Exit Sub
   End If
   Dim x As Integer, y As Integer
-  For x = bg_offset.x - v.Size.x To v.Size.x Step v.Background.Size.x
+  For x = bg_offset.x - v.Size.x To v.Size.x + SpriteSequence_Width%(v.Background) Step SpriteSequence_Width%(v.Background)
 	  For y = bg_offset.y - v.Size.y To v.Size.y Step v.Background.Size.y
 		Dim p As Point
 		Point_Set p, x, y
@@ -212,6 +217,12 @@ Sub Viewport_SetBackground (v As Viewport, s As SpriteSequence, ratio As Point)
 	Let v.Background = s
 	Let v.BackgroundPanRatio.x = ratio.x
 	Let v.BackgroundPanRatio.y = ratio.y
+End Sub
+
+Sub Viewport_SetForeground (v As Viewport, s As SpriteSequence, ratio As Point)
+	Let v.Foreground = s
+	Let v.ForegroundPanRatio.x = ratio.x
+	Let v.ForegroundPanRatio.y = ratio.y
 End Sub
 
 Sub Viewport_LineC (v As Viewport, absolute As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, clr As Long, box As Integer, filled As Integer)
@@ -346,6 +357,7 @@ Sub Viewport_Tick (v as Viewport)
 		End If
 	End If
 	SpriteSequence_Tick v.Background
+	SpriteSequence_Tick v.Foreground
 	Ticker_Tick v.FadeInTicker
 	Ticker_Tick v.FadeOutTicker
 End Sub

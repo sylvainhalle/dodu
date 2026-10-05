@@ -65,6 +65,7 @@ Type LevelMap
   Topo(M_W%, M_H%) As String
   StartPoint As Square
   Background As Integer
+  Foreground As Integer
   PanX As Integer
   PanY As Integer
 End Type

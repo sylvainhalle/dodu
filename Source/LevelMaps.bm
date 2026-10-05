@@ -24,7 +24,7 @@
 
 LevelData:
 
-Data 0, 0, 0
+Data 0, -1, 0, 0
 
 Data "             "
 Data "             "
@@ -35,7 +35,7 @@ Data "@@@@@@@@@@@@@"
 Data "x"
 
 
-Data 1, -1, 0
+Data 1, -1, -1, 0
 Data "                                       "
 Data "                                       "
 Data "                                       "
@@ -48,7 +48,7 @@ Data "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 Data "x"
 
 
-Data 0, -1, 0
+Data 0, -1, -1, 0
 Data "                                "
 Data "                                "
 Data "               *                "
@@ -72,7 +72,7 @@ Data "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 Data "x"
 
 
-Data 0, 1, 0
+Data 0, -1, 1, 0
 Data "                  "
 Data "                  "
 Data "@                @"
@@ -82,7 +82,7 @@ Data "@@@@@@@@@@@@@@@@@@"
 Data "x"
 
 
-Data 1, -1, 0
+Data 1, -1, -1, 0
 Data "@              "
 Data "@              "
 Data "@              "
@@ -96,7 +96,7 @@ Data "@@@@@@@@@@@@@@@"
 Data "x"
 
 
-Data 0, -1, 0
+Data 0, -1, -1, 0
 Data "@               "
 Data "@               "
 Data "@               "
@@ -110,7 +110,7 @@ Data "@@@@@@@@@@@@@@@@"
 Data "x"
 
 
-Data 1, -1, 0
+Data 1, -1, -1, 0
 Data "                            "
 Data "                            "
 Data "                            "
@@ -121,7 +121,7 @@ Data "@@@@@@ @@@@@@@@@@@@@@@@@@@@@"
 Data "x"
 
 
-Data 3, 2, 1
+Data 3, -1, 2, 1
 Data "                   "
 Data "@                  "
 Data "@                  "
@@ -132,7 +132,7 @@ Data "@@@@@@@@ @ @@@@@@@@"
 Data "x"
 
 
-Data 3, 2, 1
+Data 3, -1, 2, 1
 Data "                   "
 Data "                   "
 Data "         *         "
@@ -168,7 +168,7 @@ Data "x"
 
 
 
-Data 4, -1, 1
+Data 4, -1, -1, 1
 Data "                    "
 Data "                   @"
 Data "@                 #@"
@@ -178,7 +178,7 @@ Data "@@@@@@   @@@@@@@@@@@"
 Data "x"
 
 
-Data 3, -1, 1
+Data 3, -1, -1, 1
 Data "                    "
 Data "                   !"
 Data "@c        @        @"
@@ -188,7 +188,7 @@ Data "@@@@@@@@@@@@@@@@@@@@"
 Data "x"
 
 
-Data 4, -1, 1
+Data 4, -1, -1, 1
 Data "@                       "
 Data "@                       "
 Data "@     #                 "
@@ -198,7 +198,7 @@ Data "@@@@@@@#*  ##  @  @    @"
 Data "@@@@@@@@@@@@@@@@@@@    @"
 Data "x"
 
-Data 5, -1, 1
+Data 5, 5, -1, 1
 Data "@                                "
 Data "@                                "
 Data "@                                "

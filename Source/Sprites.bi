@@ -25,6 +25,9 @@ Const COLOR_BLACK& = _RGB32(0, 0, 0)
 Const COLOR_PINK& = _RGB32(255, 0, 255)
 Const COLOR_CYAN& = _RGB32(0, 255, 255)
 
+' Sprite mode (32 = software, 33 = hardware)
+Const SPRITE_MODE% = 32
+
 '**
 '** - Point ------------------------------------------------- {{{
 '**
@@ -88,14 +91,15 @@ Type SpriteSequence
 	Flipped As Integer
 	OffsetR As Point
 	OffsetL As Point
+	Animate As Integer
 End Type
 
 '**
 '* Initializes a new sprite sequence.
 '**
-Declare Sub SpriteSequence_Init (s As SpriteSequence, content As Long, frames As Integer, spd As Integer, isloop As Integer, clr As Long, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
+Declare Sub SpriteSequence_Init (s As SpriteSequence, content As Long, frames As Integer, spd As Integer, animate As Integer, isloop As Integer, clr As Long, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
 
-Declare Sub SpriteSequence_InitFile (s As SpriteSequence, filename As String, frames As Integer, spd As Integer, isloop As Integer, clr As Long, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
+Declare Sub SpriteSequence_InitFile (s As SpriteSequence, filename As String, frames As Integer, spd As Integer, animate As Integer, isloop As Integer, clr As Long, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
 
 '**
 '* Advances the sprite sequence by one tick.
@@ -152,6 +156,8 @@ Type Viewport
   Buffer As Long
   Background As SpriteSequence
   BackgroundPanRatio As Point
+  Foreground As SpriteSequence
+  ForegroundPanRatio As Point
   Scanlines As Integer
   PanTick As Ticker
   PanTarget As Point
@@ -184,7 +190,12 @@ Declare Sub Viewport_Clear (v As Viewport)
 '**
 '* Sets the background for the viewport.
 '**
-Declare Sub Viewport_SetBackground (v As Viewport, s As Sprite, ratio As Point)
+Declare Sub Viewport_SetBackground (v As Viewport, s As SpriteSequence, ratio As Point)
+
+'**
+'* Sets the foreground for the viewport.
+'**
+Declare Sub Viewport_SetForeground (v As Viewport, s As SpriteSequence, ratio As Point)
 
 '**
 '* Equivalent of the LINE command for a viewport.

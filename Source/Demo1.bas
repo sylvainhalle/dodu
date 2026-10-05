@@ -1,3 +1,4 @@
+$Debug
 '-----------------------------------------------------------------------------
 '    Dodu, an old-school QuickBasic game
 '    Copyright (C) 1994-2026  Sylvain Hallé
@@ -266,6 +267,8 @@ Sub DoLevel
   Let PANBACK_STEPS = 8
   Let Dodu.Temp = 10
   Let Dodu.IsWalking = FALSE
+  Let DoduPast.IsWalking = TRUE
+  Let DoduPast.InSnow = TRUE
   GetDoduSprite CurrentSprite(), Dodu, DoduPast
 
   Ticker_Init Dodu.ThermoTick, 10, THERMO_TICK_NORMAL%, FALSE
@@ -701,11 +704,13 @@ Sub DoLevel
 
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
-    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), snowP, COLOR_PINK&
-    Viewport_Print ImgBuffer, Str$(Dodu.IsWalking) + Str$(CurrentSprite(1).Ticker.Index), P_ORIGIN
+    'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), snowP, COLOR_PINK&
+    'Viewport_Print ImgBuffer, Str$(Dodu.IsWalking) + Str$(CurrentSprite(1).Ticker.Index), P_ORIGIN
 
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
+    Viewport_Tick ImgBuffer
+    Viewport_Tick MainScreen
 
   Loop
 
@@ -893,7 +898,6 @@ Sub DrawSnow (v As Viewport, m As LevelMap, col As Integer, row As Integer, p As
       Viewport_PutSpriteSequence v, FALSE, SnowL, p, FALSE
     End If
   End If
-
 End Sub
 
 Sub DrawMinimap (v As Viewport, m As LevelMap)
@@ -1036,24 +1040,28 @@ End Sub
 
 Sub GetDoduSprite (s() As SpriteSequence, DoduNow As Player, DoduPast As Player)
   If PlayerChanged(DoduNow, DoduPast) Then
-    Let s(0) = SPR_DOD_TUQUE(Abs(Dodu.HasTuque))
-    Let s(1) = SPR_DOD_HEAD(Abs(Dodu.InSnow))
-    Let s(2) = SPR_DOD_BODY(Abs(Dodu.HasBlock), Abs(Dodu.HasMittens))
-    If Not DoduNow.IsWalking Then
-      SpriteSequence_Stop s(0)
-      SpriteSequence_Stop s(1)
-      SpriteSequence_Stop s(2)
-    ElseIf Not DoduPast.IsWalking And DoduNow.IsWalking Then
-      SpriteSequence_Start s(0)
-      SpriteSequence_Start s(1)
-      SpriteSequence_Start s(2)
+    Let s(0) = SPR_DOD_TUQUE(Abs(DoduNow.IsWalking), Abs(DoduNow.HasTuque))
+    If Dodu.Temp <= 3 Then
+      Let s(1) = SPR_DOD_HEAD(Abs(DoduNow.IsWalking), 2)
+    Else
+      Let s(1) = SPR_DOD_HEAD(Abs(DoduNow.IsWalking), Abs(DoduNow.InSnow))
     End If
+    Let s(2) = SPR_DOD_BODY(Abs(DoduNow.IsWalking), Abs(DoduNow.HasBlock), Abs(DoduNow.HasMittens))
+    'If Not DoduNow.IsWalking Then
+    '  SpriteSequence_Stop s(0)
+    'SpriteSequence_Stop s(1)
+    '  SpriteSequence_Stop s(2)
+    'ElseIf Not DoduPast.IsWalking And DoduNow.IsWalking Then
+    '  SpriteSequence_Start s(0)
+    '  SpriteSequence_Start s(1)
+    '  SpriteSequence_Start s(2)
+    'End If
     Let DoduPast = DoduNow
   End If
 End Sub
 
 Function PlayerChanged (p_now As Player, p_past As Player)
-  Let PlayerChanged = Not (p_now.HasBlock = p_past.HasBlock And p_now.HasMittens = p_past.HasMittens And p_now.HasTuque = p_past.HasTuque And p_now.IsWalking = p_past.IsWalking)
+  Let PlayerChanged = Not (p_now.HasBlock = p_past.HasBlock And p_now.HasMittens = p_past.HasMittens And p_now.HasTuque = p_past.HasTuque And p_now.IsWalking = p_past.IsWalking And p_past.InSnow = p_now.InSnow)
 End Function
 
 Sub GetDoduCenter (p As Point)
@@ -1191,7 +1199,6 @@ Sub DoIntroduction (rst As RestorePoint)
     Else
       Viewport_LineC ImgBuffer, TRUE, 43, 35, 57, 46, COLOR_YELLOW, TRUE, FALSE
     End If
-    Viewport_Print ImgBuffer, Time$, P_ORIGIN
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
     If IsLeft% Or IsRight% Then

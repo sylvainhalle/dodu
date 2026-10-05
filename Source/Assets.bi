@@ -45,28 +45,43 @@ Let FNT_GRAPE = _LoadFont(FNT_DIR$ + "/GrapeSoda.ttf", 10, "MONOSPACE DONTBLEND"
 Dim DEFAULT_OFFSET As Point
 Let DEFAULT_OFFSET = P_ORIGIN
 
-
-Dim Shared SPR_DOD_TUQUE(2) As SpriteSequence, TUQUE_OFFSET As Point
+' 1st coordinate: 0 = not walking, 1 = walking
+' 2nd coordinate: 0 = no tuque, 1 = with tuque
+Dim Shared SPR_DOD_TUQUE(2, 2) As SpriteSequence, TUQUE_OFFSET As Point
 Point_Set TUQUE_OFFSET, 0, -11
-SpriteSequence_InitFile SPR_DOD_TUQUE(0), IMG_DIR$ + "/refactored/NoTuque.png", 4, 2, TRUE, TUQUE_OFFSET, TUQUE_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_TUQUE(1), IMG_DIR$ + "/refactored/Tuque.png", 4, 2, TRUE, TUQUE_OFFSET, TUQUE_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_TUQUE(0, 0), IMG_DIR$ + "/refactored/NoTuque.png", 4, 2, FALSE, TRUE, TUQUE_OFFSET, TUQUE_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_TUQUE(0, 1), IMG_DIR$ + "/refactored/Tuque.png", 4, 2, FALSE, TRUE, TUQUE_OFFSET, TUQUE_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_TUQUE(1, 0), IMG_DIR$ + "/refactored/NoTuque.png", 4, 2, TRUE, TRUE, TUQUE_OFFSET, TUQUE_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_TUQUE(1, 1), IMG_DIR$ + "/refactored/Tuque.png", 4, 2, TRUE, TRUE, TUQUE_OFFSET, TUQUE_OFFSET, COLOR_TRANSPARENT
 
-
-Dim Shared SPR_DOD_HEAD(2) As SpriteSequence, HEAD_OFFSET As Point
+' 1st coordinate: 0 = not walking, 1 = walking
+' 2nd coordinate: 0 = normal, 1 = tired, 2 = freezing
+Dim Shared SPR_DOD_HEAD(2, 3) As SpriteSequence, HEAD_OFFSET As Point
 Point_Set HEAD_OFFSET, 0, 0
-SpriteSequence_InitFile SPR_DOD_HEAD(0), IMG_DIR$ + "/refactored/Head.png", 4, 2, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_HEAD(1), IMG_DIR$ + "/refactored/Head_tired.png", 4, 2, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_HEAD(0, 0), IMG_DIR$ + "/refactored/Head.png", 4, 2, FALSE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_HEAD(0, 1), IMG_DIR$ + "/refactored/Head_tired.png", 4, 2, FALSE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_HEAD(0, 2), IMG_DIR$ + "/refactored/Head_freezing.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_HEAD(1, 0), IMG_DIR$ + "/refactored/Head.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_HEAD(1, 1), IMG_DIR$ + "/refactored/Head_tired.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_HEAD(1, 2), IMG_DIR$ + "/refactored/Head_freezing.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 
-Dim Shared SPR_DOD_BODY(2, 2) As SpriteSequence, BODY_OFFSET_NOBLOCK As Point, BODY_OFFSET_BLOCK As Point
+' 1st coordinate: 0 = not walking, 1 = walking
+' 2nd coordinate: 0 = no block, 1 = has block
+' 3rd coordinate: 0 = no mittens, 1 = with mittens
+Dim Shared SPR_DOD_BODY(2, 2, 2) As SpriteSequence, BODY_OFFSET_NOBLOCK As Point, BODY_OFFSET_BLOCK As Point
 Point_Set BODY_OFFSET_NOBLOCK, 0, 13
 Point_Set BODY_OFFSET_BLOCK, 0, 12
-SpriteSequence_InitFile SPR_DOD_BODY(0, 0), IMG_DIR$ + "/refactored/Body_noblock_nomittens.png", 4, 2, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 0), IMG_DIR$ + "/refactored/Body_block_nomittens.png", 4,  2, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(0, 1), IMG_DIR$ + "/refactored/Body_noblock_mittens.png", 4,  2, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 1), IMG_DIR$ + "/refactored/Body_block_mittens.png", 4,  2, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(0, 0, 0), IMG_DIR$ + "/refactored/Body_noblock_nomittens.png", 4, 2, FALSE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(0, 1, 0), IMG_DIR$ + "/refactored/Body_block_nomittens.png", 4,  2, FALSE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(0, 0, 1), IMG_DIR$ + "/refactored/Body_noblock_mittens.png", 4,  2, FALSE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(0, 1, 1), IMG_DIR$ + "/refactored/Body_block_mittens.png", 4,  2, FALSE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(1, 0, 0), IMG_DIR$ + "/refactored/Body_noblock_nomittens.png", 4, 2, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(1, 1, 0), IMG_DIR$ + "/refactored/Body_block_nomittens.png", 4,  2, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(1, 0, 1), IMG_DIR$ + "/refactored/Body_noblock_mittens.png", 4,  2, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(1, 1, 1), IMG_DIR$ + "/refactored/Body_block_mittens.png", 4,  2, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
 
 Dim Shared DoduSmall As SpriteSequence
-SpriteSequence_InitFile DoduSmall, IMG_DIR$ + "/DoduSmall.gif", 1,  1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile DoduSmall, IMG_DIR$ + "/DoduSmall.gif", 1,  1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 ' Trajectories
 Const TRJ_CLIMBING% = 0
@@ -92,61 +107,61 @@ Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 5, 5
 
 ' Splash screen
 Dim Shared SplashScreen As SpriteSequence
-SpriteSequence_InitFile SplashScreen, IMG_DIR$ + "/Splash.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SplashScreen, IMG_DIR$ + "/Splash.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 ' Blocks
 Dim Shared BlockBlue As SpriteSequence
-SpriteSequence_InitFile BlockBlue, IMG_DIR$ + "/BlockBlue.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile BlockBlue, IMG_DIR$ + "/BlockBlue.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Dim Shared BlockWhite As SpriteSequence
-SpriteSequence_InitFile BlockWhite, IMG_DIR$ + "/BlockWhite.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile BlockWhite, IMG_DIR$ + "/BlockWhite.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Dim Shared MiniBlockBlue As SpriteSequence
-SpriteSequence_InitFile MiniBlockBlue, IMG_DIR$ + "/MiniBlockBlue.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile MiniBlockBlue, IMG_DIR$ + "/MiniBlockBlue.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Dim Shared MiniBlockWhite As SpriteSequence
-SpriteSequence_InitFile MiniBlockWhite, IMG_DIR$ + "/MiniBlockWhite.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile MiniBlockWhite, IMG_DIR$ + "/MiniBlockWhite.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Dim Shared SnowC As SpriteSequence
 Dim Coffset As Point
 Point_Set Coffset, 0, -12
-SpriteSequence_InitFile SnowC, IMG_DIR$ + "/Snow_C.gif",1, 1, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SnowC, IMG_DIR$ + "/Snow_C.gif",1, 1, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
 Dim Shared SnowL As SpriteSequence
-SpriteSequence_InitFile SnowL, IMG_DIR$ + "/Snow_L.gif",1, 1, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SnowL, IMG_DIR$ + "/Snow_L.gif",1, 1, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
 Dim Shared SnowR As SpriteSequence
-SpriteSequence_InitFile SnowR, IMG_DIR$ + "/Snow_R.gif",1, 1, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SnowR, IMG_DIR$ + "/Snow_R.gif",1, 1, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
 Dim Shared SnowM As SpriteSequence
-SpriteSequence_InitFile SnowM, IMG_DIR$ + "/Snow_M.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SnowM, IMG_DIR$ + "/Snow_M.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 ' Goal post
 Dim Shared Pole As SpriteSequence
 Dim PoleOffset As Point, PoleOffsetFlip As Point
 Point_Set PoleOffset, 1, -9
 Point_Set PoleOffsetFlip, -1, -9
-SpriteSequence_InitFile Pole, IMG_DIR$ + "/Pole.gif",1, 1, TRUE, PoleOffset, PoleOffsetFlip, COLOR_TRANSPARENT
+SpriteSequence_InitFile Pole, IMG_DIR$ + "/Pole.gif",1, 1, TRUE, TRUE, PoleOffset, PoleOffsetFlip, COLOR_TRANSPARENT
 Dim Shared MiniPole As SpriteSequence
 Dim MiniPoleOffset As Point, MiniPoleOffsetFlip As Point
 Point_Set MiniPoleOffset, 1, -2
 Point_Set MiniPoleOffsetFlip, 1, 2
-SpriteSequence_InitFile MiniPole, IMG_DIR$ + "/MiniPole.gif",1, 1, TRUE, MiniPoleOffset, MiniPoleOffsetFlip, COLOR_TRANSPARENT
+SpriteSequence_InitFile MiniPole, IMG_DIR$ + "/MiniPole.gif",1, 1, TRUE, TRUE, MiniPoleOffset, MiniPoleOffsetFlip, COLOR_TRANSPARENT
 
 ' Cookie
 Dim Shared Cookie As SpriteSequence
 Dim CookieOffset As Point
 Point_Set CookieOffset, 2, 2
-SpriteSequence_InitFile Cookie, IMG_DIR$ + "/refactored/Cookie.png",8, 3, TRUE, CookieOffset, CookieOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile Cookie, IMG_DIR$ + "/refactored/Cookie.png",8, 3, TRUE, TRUE, CookieOffset, CookieOffset, COLOR_TRANSPARENT
 
 ' Mittens
 Dim Shared SprMittens As SpriteSequence
 Dim SprMittensOffset As Point
 Point_Set SprMittensOffset, -2, 2
-SpriteSequence_InitFile SprMittens, IMG_DIR$ + "/Mittens.gif",1, 1, TRUE, SprMittensOffset, SprMittensOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMittens, IMG_DIR$ + "/Mittens.gif",1, 1, TRUE, TRUE, SprMittensOffset, SprMittensOffset, COLOR_TRANSPARENT
 
 ' Tuque
 Dim Shared SprTuque As SpriteSequence
 Dim SprTuqueOffset As Point
 Point_Set SprTuqueOffset, 1, -3
-SpriteSequence_InitFile SprTuque, IMG_DIR$ + "/Tuque.gif",1, 1, TRUE, SprTuqueOffset, SprTuqueOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprTuque, IMG_DIR$ + "/Tuque.gif",1, 1, TRUE, TRUE, SprTuqueOffset, SprTuqueOffset, COLOR_TRANSPARENT
 
 ' Thermometer
 Dim Shared Thermometer As SpriteSequence
-SpriteSequence_InitFile Thermometer, IMG_DIR$ + "/Thermometer.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Thermometer, IMG_DIR$ + "/Thermometer.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 Dim Shared THERMO_RED&, THERMO_BLUE&, HIGHLIGHT_COLOR&
 If IMG_MODE = IMG_MODE_CGA$ Then
@@ -165,58 +180,70 @@ End If
 
 ' Playing cards
 Dim Shared Card As SpriteSequence
-SpriteSequence_InitFile Card, IMG_DIR$ + "/Sprite_Card.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Card, IMG_DIR$ + "/Sprite_Card.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Dim Shared Suits(4) As SpriteSequence
-SpriteSequence_InitFile Suits(0), IMG_DIR$ + "/Sprite_Hearts.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Suits(1), IMG_DIR$ + "/Sprite_Spades.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Suits(2), IMG_DIR$ + "/Sprite_Diamonds.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Suits(3), IMG_DIR$ + "/Sprite_Clubs.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Suits(0), IMG_DIR$ + "/Sprite_Hearts.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Suits(1), IMG_DIR$ + "/Sprite_Spades.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Suits(2), IMG_DIR$ + "/Sprite_Diamonds.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Suits(3), IMG_DIR$ + "/Sprite_Clubs.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Dim Shared Numbers(13) As SpriteSequence
-SpriteSequence_InitFile Numbers(0), IMG_DIR$ + "/Digit_A.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Numbers(1), IMG_DIR$ + "/Digit_2.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Numbers(2), IMG_DIR$ + "/Digit_3.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Numbers(3), IMG_DIR$ + "/Digit_4.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Numbers(4), IMG_DIR$ + "/Digit_5.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Numbers(5), IMG_DIR$ + "/Digit_6.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Numbers(6), IMG_DIR$ + "/Digit_7.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Numbers(7), IMG_DIR$ + "/Digit_8.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Numbers(8), IMG_DIR$ + "/Digit_9.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Numbers(9), IMG_DIR$ + "/Digit_10.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Numbers(10), IMG_DIR$ + "/Digit_J.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Numbers(11), IMG_DIR$ + "/Digit_Q.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Numbers(12), IMG_DIR$ + "/Digit_K.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Numbers(0), IMG_DIR$ + "/Digit_A.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Numbers(1), IMG_DIR$ + "/Digit_2.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Numbers(2), IMG_DIR$ + "/Digit_3.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Numbers(3), IMG_DIR$ + "/Digit_4.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Numbers(4), IMG_DIR$ + "/Digit_5.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Numbers(5), IMG_DIR$ + "/Digit_6.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Numbers(6), IMG_DIR$ + "/Digit_7.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Numbers(7), IMG_DIR$ + "/Digit_8.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Numbers(8), IMG_DIR$ + "/Digit_9.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Numbers(9), IMG_DIR$ + "/Digit_10.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Numbers(10), IMG_DIR$ + "/Digit_J.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Numbers(11), IMG_DIR$ + "/Digit_Q.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Numbers(12), IMG_DIR$ + "/Digit_K.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 Dim Shared LevelDigits(10) As SpriteSequence
-SpriteSequence_InitFile LevelDigits(0), IMG_DIR$ + "/Dg_0.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile LevelDigits(1), IMG_DIR$ + "/Dg_1.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile LevelDigits(2), IMG_DIR$ + "/Dg_2.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile LevelDigits(3), IMG_DIR$ + "/Dg_3.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile LevelDigits(4), IMG_DIR$ + "/Dg_4.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile LevelDigits(5), IMG_DIR$ + "/Dg_5.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile LevelDigits(6), IMG_DIR$ + "/Dg_6.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile LevelDigits(7), IMG_DIR$ + "/Dg_7.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile LevelDigits(8), IMG_DIR$ + "/Dg_8.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile LevelDigits(9), IMG_DIR$ + "/Dg_9.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile LevelDigits(0), IMG_DIR$ + "/Dg_0.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile LevelDigits(1), IMG_DIR$ + "/Dg_1.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile LevelDigits(2), IMG_DIR$ + "/Dg_2.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile LevelDigits(3), IMG_DIR$ + "/Dg_3.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile LevelDigits(4), IMG_DIR$ + "/Dg_4.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile LevelDigits(5), IMG_DIR$ + "/Dg_5.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile LevelDigits(6), IMG_DIR$ + "/Dg_6.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile LevelDigits(7), IMG_DIR$ + "/Dg_7.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile LevelDigits(8), IMG_DIR$ + "/Dg_8.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile LevelDigits(9), IMG_DIR$ + "/Dg_9.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 ' ---------------------
 ' Cut scenes
 ' ---------------------
 Dim Shared CutScenes(10) As SpriteSequence
-SpriteSequence_InitFile CutScenes(0), IMG_DIR$ + "/Cutscene_0.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile CutScenes(1), IMG_DIR$ + "/Cutscene_1.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile CutScenes(2), IMG_DIR$ + "/Cutscene_2.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile CutScenes(0), IMG_DIR$ + "/Cutscene_0.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile CutScenes(1), IMG_DIR$ + "/Cutscene_1.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile CutScenes(2), IMG_DIR$ + "/Cutscene_2.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 
 ' ---------------------
 ' Backgrounds
 ' ---------------------
 Dim Shared Backgrounds(10) As SpriteSequence
-SpriteSequence_InitFile Backgrounds(0), IMG_DIR$ + "/Background.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Backgrounds(1), IMG_DIR$ + "/Background2.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Backgrounds(2), IMG_DIR$ + "/Background_Cards.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Backgrounds(3), IMG_DIR$ + "/Background3.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Backgrounds(4), IMG_DIR$ + "/Background4.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Backgrounds(5), IMG_DIR$ + "/Background_5.gif",1, 1, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(0), IMG_DIR$ + "/Background.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(1), IMG_DIR$ + "/Background2.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(2), IMG_DIR$ + "/Background_Cards.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(3), IMG_DIR$ + "/Background3.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(4), IMG_DIR$ + "/Background4.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(5), IMG_DIR$ + "/refactored/Background_5.png", 20, 4, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+
+' ---------------------
+' Foregrounds
+' ---------------------
+Dim Shared Foregrounds(10) As SpriteSequence
+SpriteSequence_InitFile Foregrounds(0), IMG_DIR$ + "/Background.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Foregrounds(1), IMG_DIR$ + "/Background2.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Foregrounds(2), IMG_DIR$ + "/Background_Cards.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Foregrounds(3), IMG_DIR$ + "/Background3.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Foregrounds(4), IMG_DIR$ + "/Background4.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Foregrounds(5), IMG_DIR$ + "/refactored/Background_5.png", 20, 3, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+
 
 ' Other constants
 Const PLAYER_HEIGHT% = 33
