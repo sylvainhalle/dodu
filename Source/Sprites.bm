@@ -20,6 +20,9 @@
 ' Sprite functions
 ' --------------------------
 
+On Error Goto ErrHandler
+Dim Shared ERRFILE As String
+
 ' DependsOn: Ticker
 
 '**
@@ -52,62 +55,54 @@ End Sub
 ' }}}
 
 '**
-'** - Sprite ------------------------------------------------- {{{
-'**
-
-Sub Sprite_Load (s As Sprite, file As String, offset As Point, offsetflip As Point, clr As Long)
-  If _FileExists(file) Then
-	  Let s.Content = _LoadImage(file, 32)
-	  Point_Set s.Size, _Width(s.Content), _Height(s.Content)
-	  Let s.Offset = offset
-	  Let s.OffsetFlip = offsetflip
-	  _SetAlpha 0, clr, s.Content
-  End If
-End Sub
-
-Sub Sprite_Copy (dst As Sprite, src As Sprite)
-	Let dst.Content = src.Content
-	Let dst.Size.x = src.Size.x
-	Let dst.Size.y = src.Size.y
-	Let dst.Offset.x = src.Offset.x
-	Let dst.Offset.y = src.Offset.y
-	Let dst.OffsetFlip.x = src.OffsetFlip.x
-	Let dst.OffsetFlip.y = src.OffsetFlip.y
-End Sub
-
-' }}}
-
-'**
 '** - Sprite sequence------------------------------------------- {{{
 '**
 
-Sub SpriteSequence_Init (s As SpriteSequence, l As Integer, spd As Integer, isloop As Integer)
-	Ticker_Init s.Ticker, l, spd, isloop
-	let s.Flipped = FALSE
+Function SpriteSequence_Width% (s As SpriteSequence)
+	Let SpriteSequence_Width% = s.Size.x \ s.Ticker.Speed
+End Function
+
+Function SpriteSequence_Height% (s As SpriteSequence)
+	Let SpriteSequence_Height% = s.Size.y
+End Function
+
+Sub SpriteSequence_InitFile (s As SpriteSequence, filename As String, frames As Integer, spd As Integer, isloop As Integer, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
+	Dim e As Long
+	Let e = _LoadImage(filename, 32)
+	If e = -1 Then
+		Let ERRFILE = filename
+		Error 97
+	End If
+	SpriteSequence_Init s, e, frames, spd, isloop, offsetL, offsetR, clr
+End Sub
+
+
+Sub SpriteSequence_Init (s As SpriteSequence, content As Long, frames As Integer, spd As Integer, isloop As Integer, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
+	If content = -1 Then
+		Let ERRFILE = "FOO"
+		Error 97
+	End If
+	_ClearColor clr, content
+	Ticker_Init s.Ticker, frames, spd, isloop
+	Let s.Content = content
+	Let s.Size.x = _Width(content)
+	Let s.Size.y = _Height(content)
+	Let s.OffsetL = offsetL
+	Let s.OffsetR = offsetR
+	Let s.Flipped = FALSE
 End Sub
 
 Sub SpriteSequence_Tick (s As SpriteSequence)
 	Ticker_Tick s.Ticker
 End Sub
 
-Sub SpriteSequence_Current (s as SpriteSequence, spr as Sprite)
+Sub SpriteSequence_Current (s as SpriteSequence, p1 As Point, p2 As Point)
 	If s.Ticker.Index >= 0 Then
-		Sprite_Copy spr, s.Sprites(s.Ticker.Index)
+		Point_Set p1, s.Ticker.Index * (s.Size.x \ s.Ticker.Length), 0
+		Point_Set p2, (s.Ticker.Index + 1) * (s.Size.x \ s.Ticker.Length) - 1, s.Size.y - 1
 	End If
 End Sub
 
-Sub SpriteSequence_Load (s As SpriteSequence, spr As Sprite, index As Integer)
-	Sprite_Copy s.Sprites(index), spr
-End Sub
-
-Sub SpriteSequence_BulkLoad (s as SpriteSequence, pattern AS String, length As Integer, speed As Integer, isloop As Integer, offset As Point, offsetFlip As Point, clr As Long)
-	SpriteSequence_Init s, length, speed, isloop
-	Dim x as Integer, sprl As Sprite
-	For x = 0 To length - 1
-		Sprite_Load sprl, pattern + _Tostr$(x) + ".gif", offset, offsetflip, clr
-		SpriteSequence_Load s, sprl, x
-	Next
-End Sub
 
 '**
 '** - Trajectory------------------------------------------------ {{{
@@ -188,13 +183,13 @@ Sub Viewport_Clear (v As Viewport)
 	  For y = bg_offset.y - v.Size.y To v.Size.y Step v.Background.Size.y
 		Dim p As Point
 		Point_Set p, x, y
-		Viewport_PutSprite v, TRUE, v.Background, p, FALSE
+		Viewport_PutSpriteSequence v, TRUE, v.Background, p, FALSE
 	  Next
   Next
 End Sub
 
-Sub Viewport_SetBackground (v As Viewport, s As Sprite, ratio As Point)
-	Sprite_Copy v.Background, s
+Sub Viewport_SetBackground (v As Viewport, s As SpriteSequence, ratio As Point)
+	Let v.Background = s
 	Let v.BackgroundPanRatio.x = ratio.x
 	Let v.BackgroundPanRatio.y = ratio.y
 End Sub
@@ -250,26 +245,25 @@ Sub Viewport_Display (v As Viewport)
 	_Display
 End Sub
 
-Sub Viewport_PutSprite (v As Viewport, absolute As Integer, s As Sprite, p As Point, flipped As Integer)
-  If absolute = TRUE Then
-    If flipped = TRUE Then
-      _PutImage (p.x + s.OffsetFlip.x + s.Size.x - 1, p.y + s.OffsetFlip.y)-(p.x + s.OffsetFlip.x, p.y + s.OffsetFlip.y + s.Size.y - 1), s.Content, v.Buffer
+Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point, flipped As Integer)
+	Dim p1 As Point, p2 As Point
+	Dim s_w As Integer, s_h As Integer
+	Let s_w = SpriteSequence_Width%(s)
+	Let s_h = SpriteSequence_Height%(s)
+	SpriteSequence_Current s, p1, p2
+	If absolute Then
+    If flipped Then
+      _PutImage (p.x + s.OffsetR.x + s_w - 1, p.y + s.OffsetR.y)-(p.x + s.OffsetR.x, p.y + s.OffsetR.y + s_h - 1), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
     Else
-      _PutImage (p.x + s.Offset.x, p.y + s.Offset.y)-(p.x + s.Offset.x + s.Size.x - 1, p.y + s.Offset.y + s.Size.y - 1), s.Content, v.Buffer
+      _PutImage (p.x + s.OffsetL.x, p.y + s.OffsetL.y)-(p.x + s.OffsetL.x + s_w - 1, p.y + s.OffsetL.y + s_h - 1), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
     End If
   Else
     If flipped Then
-      _PutImage (p.x + s.OffsetFlip.x + s.Size.x - 1 - v.Pan.x, p.y + s.OffsetFlip.y - v.Pan.y)-(p.x + s.OffsetFlip.x - v.Pan.x, p.y + s.OffsetFlip.y + s.Size.y - 1 - v.Pan.y), s.Content, v.Buffer
+      _PutImage (p.x + s.OffsetR.x + s_w - 1 - v.Pan.x, p.y + s.OffsetR.y - v.Pan.y)-(p.x + s.OffsetR.x - v.Pan.x, p.y + s.OffsetR.y + s_h - 1 - v.Pan.y), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
     Else
-      _PutImage (p.x + s.Offset.x - v.Pan.x, p.y + s.Offset.y - v.Pan.y)-(p.x + s.Offset.x + s.Size.x - 1 - v.Pan.x, p.y + s.Offset.y + s.Size.y - 1 - v.Pan.y), s.Content, v.Buffer
+      _PutImage (p.x + s.OffsetL.x - v.Pan.x, p.y + s.OffsetL.y - v.Pan.y)-(p.x + s.OffsetL.x + s_w - 1 - v.Pan.x, p.y + s.OffsetL.y + s_h - 1 - v.Pan.y), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
     End If
   End If
-End Sub
-
-Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point)
-	Dim spr As Sprite
-	SpriteSequence_Current s, spr
-	Viewport_PutSprite v, absolute, spr, p, s.Flipped
 End Sub
 
 Sub Viewport_SetCenter (v as Viewport, p as Point)
@@ -311,6 +305,10 @@ Sub Viewport_SetAlpha (v As Viewport, alpha As Integer)
 	_SetAlpha alpha
 End Sub
 ' }}}
+
+ErrHandler:
+print ERRFILE
+End
 
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

@@ -192,7 +192,7 @@ Let Audio.PlayEffects = TRUE
 
 Dim Shared CURRENT_TRAJECTORY As Integer
 Let CURRENT_TRAJECTORY% = -1
-Dim Shared CurrentSprite As SpriteSequence
+Dim Shared CurrentSprite(3) As SpriteSequence
 
 Dim Shared parallax As Point
 Point_Set parallax, 2, 2
@@ -279,7 +279,7 @@ Sub DoLevel
 
   ' Force initial animation selection
   Let DoduPast.HasBlock = 10
-  GetDoduSprite CurrentSprite, Dodu, DoduPast
+  GetDoduSprite CurrentSprite(), Dodu, DoduPast
 
   ' ---------------------------------------
   ' 0. Initial pan
@@ -661,16 +661,18 @@ Sub DoLevel
     RenderFrame:
 
     ' Select a different sequence only when the player state changes.
-    GetDoduSprite CurrentSprite, Dodu, DoduPast
+    'GetDoduSprite CurrentSprite, Dodu, DoduPast
 
     ' Orientation is independent of animation selection.
-    Let CurrentSprite.Flipped = Dodu.ToLeft
+    'Let CurrentSprite.Flipped = Dodu.ToLeft
 
     ' Advance exactly once per game frame.
-    SpriteSequence_Tick CurrentSprite
+    SpriteSequence_Tick CurrentSprite(0)
+    SpriteSequence_Tick CurrentSprite(1)
+    SpriteSequence_Tick CurrentSprite(2)
 
-    If Dodu.IsWalking And CurrentSprite.Ticker.TickCnt = 0 And _
-       CurrentSprite.Ticker.Index Mod 2 = 0 Then
+    If Dodu.IsWalking And CurrentSprite(2).Ticker.TickCnt = 0 And _
+       CurrentSprite(2).Ticker.Index Mod 2 = 0 Then
       SoundPlayer_PlayEffect Audio, SND_STEP%
     End If
 
@@ -678,7 +680,7 @@ Sub DoLevel
     Viewport_Clear ImgBuffer
 
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL), FALSE
-    DrawPlayer ImgBuffer
+    DrawPlayer ImgBuffer, CurrentSprite()
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL), TRUE
     DrawThermometer ImgBuffer
     DrawLevelNumber ImgBuffer
@@ -708,11 +710,11 @@ Sub DrawLevelNumber (v As Viewport)
   Dim p2 As Point
   If dg1 = 0 Then
     Point_Set p2, PT_LEVEL_NB.x + 3, PT_LEVEL_NB.y
-    Viewport_PutSprite v, TRUE, LevelDigits(dg2), p2, FALSE
+    Viewport_PutSpriteSequence v, TRUE, LevelDigits(dg2), p2, FALSE
   Else
     Point_Set p2, PT_LEVEL_NB.x + 5, PT_LEVEL_NB.y
-    Viewport_PutSprite v, TRUE, LevelDigits(dg1), PT_LEVEL_NB, FALSE
-    Viewport_PutSprite v, TRUE, LevelDigits(dg2), p2, FALSE
+    Viewport_PutSpriteSequence v, TRUE, LevelDigits(dg1), PT_LEVEL_NB, FALSE
+    Viewport_PutSpriteSequence v, TRUE, LevelDigits(dg2), p2, FALSE
   End If
 End Sub
 
@@ -742,7 +744,7 @@ Sub DoCutScene (nb As Integer)
   Ticker_Init ps, 7, FPS%, FALSE
   For alpha = 240 To 0 Step -20
     _Limit FPS%
-    Viewport_PutSprite ImgBuffer, TRUE, CutScenes(nb), P_ORIGIN, FALSE
+    Viewport_PutSpriteSequence ImgBuffer, TRUE, CutScenes(nb), P_ORIGIN, FALSE
     Viewport_Line ImgBuffer, TRUE, P_ORIGIN, SCREEN_DIMS, _RGBA(0, 0, 0, alpha), TRUE, TRUE
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
@@ -753,7 +755,7 @@ Sub DoCutScene (nb As Integer)
   Loop Until Ticker_IsFinished(ps)
   For alpha = 0 To 240 Step 20
     _Limit FPS%
-    Viewport_PutSprite ImgBuffer, TRUE, CutScenes(nb), P_ORIGIN, FALSE
+    Viewport_PutSpriteSequence ImgBuffer, TRUE, CutScenes(nb), P_ORIGIN, FALSE
     Viewport_Line ImgBuffer, TRUE, P_ORIGIN, SCREEN_DIMS, _RGBA(0, 0, 0, alpha), TRUE, TRUE
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
@@ -827,17 +829,17 @@ Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
       If Not isfront Then
         Select Case m.Topo(col, row)
           Case T_BLOCK_B
-            Viewport_PutSprite v, FALSE, BlockBlue, p, FALSE
+            Viewport_PutSpriteSequence v, FALSE, BlockBlue, p, FALSE
           Case T_BLOCK_W
-            Viewport_PutSprite v, FALSE, BlockWhite, p, FALSE
+            Viewport_PutSpriteSequence v, FALSE, BlockWhite, p, FALSE
           Case T_POLE
-            Viewport_PutSprite v, FALSE, Pole, p, FALSE
+            Viewport_PutSpriteSequence v, FALSE, Pole, p, FALSE
           Case T_COOKIE
-            Viewport_PutSprite v, FALSE, Cookie, p, FALSE
+            Viewport_PutSpriteSequence v, FALSE, Cookie, p, FALSE
           Case T_MITTENS
-            Viewport_PutSprite v, FALSE, SprMittens, p, FALSE
+            Viewport_PutSpriteSequence v, FALSE, SprMittens, p, FALSE
           Case T_TUQUE
-            Viewport_PutSprite v, FALSE, SprTuque, p, FALSE
+            Viewport_PutSpriteSequence v, FALSE, SprTuque, p, FALSE
           Case T_SNOW
             DrawSnow v, m, col, row, p
         End Select
@@ -861,14 +863,14 @@ Sub DrawSnow (v As Viewport, m As LevelMap, col As Integer, row As Integer, p As
   Let hasleft = ((col > 0 And m.Topo(col - 1, row) = T_SNOW) Or col = 0)
   Let hasright = ((col < m.Width - 1 And m.Topo(col + 1, row) = T_SNOW) Or col = m.Width - 1)
   If hastop Then
-    Viewport_PutSprite v, FALSE, SnowM, p, FALSE
+    Viewport_PutSpriteSequence v, FALSE, SnowM, p, FALSE
   Else
     If hasleft And hasright Then
-      Viewport_PutSprite v, FALSE, SnowC, p, FALSE
+      Viewport_PutSpriteSequence v, FALSE, SnowC, p, FALSE
     ElseIf hasleft And Not hasright Then
-      Viewport_PutSprite v, FALSE, SnowR, p, FALSE
+      Viewport_PutSpriteSequence v, FALSE, SnowR, p, FALSE
     ElseIf Not hasleft And hasright Then
-      Viewport_PutSprite v, FALSE, SnowL, p, FALSE
+      Viewport_PutSpriteSequence v, FALSE, SnowL, p, FALSE
     End If
   End If
 
@@ -885,11 +887,11 @@ Sub DrawMinimap (v As Viewport, m As LevelMap)
       Point_Set p, s.col * 5, s.row * 5
       Select Case m.Topo(col, row)
         Case T_BLOCK_B
-          Viewport_PutSprite v, FALSE, MiniBlockBlue, p, FALSE
+          Viewport_PutSpriteSequence v, FALSE, MiniBlockBlue, p, FALSE
         Case T_BLOCK_W
-          Viewport_PutSprite v, FALSE, MiniBlockWhite, p, FALSE
+          Viewport_PutSpriteSequence v, FALSE, MiniBlockWhite, p, FALSE
         Case T_POLE
-          Viewport_PutSprite v, FALSE, MiniPole, p, FALSE
+          Viewport_PutSpriteSequence v, FALSE, MiniPole, p, FALSE
       End Select
     Next
   Next
@@ -898,23 +900,24 @@ Sub DrawMinimap (v As Viewport, m As LevelMap)
   Let dod_s.row = Dodu.LevPos.y \ BLOCK_SIZE%
   Dim dod_p As Point
   Point_Set dod_p, dod_s.col * MINI_BLOCK_SIZE%, (dod_s.row + 1) * MINI_BLOCK_SIZE%
-  Viewport_PutSprite v, FALSE, DoduSmall, dod_p, FALSE
+  Viewport_PutSpriteSequence v, FALSE, DoduSmall, dod_p, FALSE
 End Sub
 
 
 ' --------------------------
 ' Player drawing
 ' --------------------------
-Sub DrawPlayer (v As Viewport)
-  Dim s As Sprite
-  CurrentSprite.Flipped = Dodu.ToLeft
-  Viewport_PutSpriteSequence v, FALSE, CurrentSprite, Dodu.LevPos
+Sub DrawPlayer (v As Viewport, seqs() As SpriteSequence)
+  Dim s As SpriteSequence
+  Viewport_PutSpriteSequence v, FALSE, seqs(0), Dodu.LevPos, Dodu.ToLeft
+  Viewport_PutSpriteSequence v, FALSE, seqs(1), Dodu.LevPos, Dodu.ToLeft
+  Viewport_PutSpriteSequence v, FALSE, seqs(2), Dodu.LevPos, Dodu.ToLeft
 End Sub
 
 Sub DrawThermometer (v As Viewport)
   Dim p As Point
   Point_Set p, 4, 4
-  Viewport_PutSprite v, TRUE, Thermometer, p, FALSE
+  Viewport_PutSpriteSequence v, TRUE, Thermometer, p, FALSE
   Dim red As Long
   Let red = THERMO_RED&
   If Dodu.Temp <= 2 Then
@@ -967,7 +970,9 @@ Sub MovePlayer (v As Viewport, p_to As Point)
   If p_to.x < 0 Then Dodu.ToLeft = TRUE
   If p_to.x > 0 Then Dodu.ToLeft = FALSE
   ' Otherwise, leave in its current state
-  Let CurrentSprite.Flipped = Dodu.ToLeft
+  Let CurrentSprite(0).Flipped = Dodu.ToLeft
+  Let CurrentSprite(1).Flipped = Dodu.ToLeft
+  Let CurrentSprite(2).Flipped = Dodu.ToLeft
   Dim ScreenPos As Point
   ' Demo1.bas, MovePlayer
   Viewport_PointToScreen v, Dodu.LevPos, ScreenPos
@@ -1009,19 +1014,11 @@ Sub HighlightBlock (v As Viewport, m As LevelMap, s As Square, c~&)
   End If
 End Sub
 
-Sub SetFlipSprites (flipped As Integer)
-  Dim x As Integer
-  For x = 0 To 1
-    Let DoduSprites(x).Flipped = flipped
-  Next
-End Sub
-
-Sub GetDoduSprite (s As SpriteSequence, DoduNow As Player, DoduPast As Player)
+Sub GetDoduSprite (s() As SpriteSequence, DoduNow As Player, DoduPast As Player)
   If PlayerChanged(DoduNow, DoduPast) Then
-    Let s = DOD_SPRITES(Abs(DoduNow.IsWalking), _
-      Abs(DoduNow.HasBlock), _
-      Abs(DoduNow.HasMittens), _
-      Abs(DoduNow.HasTuque))
+    Let s(0) = SPR_DOD_TUQUE(Abs(Dodu.HasTuque))
+    Let s(1) = SPR_DOD_HEAD
+    Let s(2) = SPR_DOD_BODY(Abs(Dodu.HasBlock), Abs(Dodu.HasMittens))
     Let DoduPast = DoduNow
   End If
 End Sub
@@ -1039,11 +1036,11 @@ Sub DisplayCard (v As Viewport, absolute As Integer, p As Point, value As Intege
   Dim p1 As Point, p2 As Point
   Let suit = value \ 13
   Let nb = value Mod 13
-  Viewport_PutSprite v, absolute, Card, p, FALSE
+  Viewport_PutSpriteSequence v, absolute, Card, p, FALSE
   Point_Set p1, p.x + 5, p.y + 9
-  Viewport_PutSprite v, absolute, Suits(suit), p1, FALSE
+  Viewport_PutSpriteSequence v, absolute, Suits(suit), p1, FALSE
   Point_Set p2, p.x + 2, p.y + 2
-  Viewport_PutSprite v, absolute, Numbers(nb), p2, FALSE
+  Viewport_PutSpriteSequence v, absolute, Numbers(nb), p2, FALSE
 End Sub
 
 Sub DoPasswordInput (rst As RestorePoint)
@@ -1158,13 +1155,23 @@ Sub DoIntroduction (rst As RestorePoint)
   Dim sel As Integer
   Do
     _Limit FPS%
-    Viewport_Clear ImgBuffer
+    Viewport_PutSpriteSequence ImgBuffer, TRUE, SPR_DOD_TUQUE(1), P_ORIGIN, FALSE
+    Viewport_LineC ImgBuffer, TRUE, 0, 0, 40, 40, COLOR_YELLOW, TRUE, TRUE
+    Viewport_Print ImgBuffer, Time$, P_ORIGIN
+    Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Display MainScreen
+  Loop
+  End
+  Do
+    _Limit FPS%
     Viewport_SetBackground ImgBuffer, SplashScreen, P_ORIGIN
+    Viewport_Clear ImgBuffer
     If sel = 0 Then
       Viewport_LineC ImgBuffer, TRUE, 20, 35, 34, 46, COLOR_YELLOW, TRUE, FALSE
     Else
       Viewport_LineC ImgBuffer, TRUE, 43, 35, 57, 46, COLOR_YELLOW, TRUE, FALSE
     End If
+    Viewport_Print ImgBuffer, Time$, P_ORIGIN
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
     If IsLeft% Or IsRight% Then
@@ -1210,8 +1217,6 @@ End Function
 Function IsDown% ()
   Let IsDown% = In_Down(K_DOWN)
 End Function
-
-
 
 ' --------------------------
 ' Includes (implementations)

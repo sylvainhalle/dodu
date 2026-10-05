@@ -79,54 +79,23 @@ Dim Shared P_ORIGIN As Point: Point_Set P_ORIGIN, 0, 0
 ' }}}
 
 '**
-'** - Sprite ------------------------------------------------- {{{
-'**
-
-'**
-'* A bitmap to be drawn on a viewport.
-'**
-Type Sprite
-
-  '** A Long pointer to the sprite's image data
-  Content As Long
-  
-  '** A point representing the size of the image
-  Size As Point
-
-  '** The offset of the sprite, in pixels. This is the location where the
-  '* (0,0) coordinate of the sprite should be placed.
-  Offset As Point
-  
-  '** The offset of the sprite, in pixels. This is the location where the
-  '* (0,0) coordinate of the sprite should be placed when flipped.
-  OffsetFlip As Point
-End Type
-
-'**
-'* Loads a sprite and sets its transparent color
-'**
-Declare Sub Sprite_Load (s As Sprite, file As String, offset As Point, offsetflip AS Point, clr As Long)
-
-'**
-'* Copies the content of a sprite into another one.
-'**
-Declare Sub Sprite_Copy (dst As Sprite, src As Sprite)
-
-' }}}
-
-'**
 '** - Sprite sequence------------------------------------------- {{{
 '**
 Type SpriteSequence
+	Content As Long
 	Ticker As Ticker
-	Sprites(10) As Sprite
+	Size As Point
 	Flipped As Integer
+	OffsetR As Point
+	OffsetL As Point
 End Type
 
 '**
 '* Initializes a new sprite sequence.
 '**
-Declare Sub SpriteSequence_Init (s As SpriteSequence, l As Integer, spd As Integer, isloop As Integer, clr As Long)
+Declare Sub SpriteSequence_Init (s As SpriteSequence, content As Long, frames As Integer, spd As Integer, isloop As Integer, clr As Long, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
+
+Declare Sub SpriteSequence_InitFile (s As SpriteSequence, filename As String, frames As Integer, spd As Integer, isloop As Integer, clr As Long, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
 
 '**
 '* Advances the sprite sequence by one tick.
@@ -138,16 +107,11 @@ Declare Sub SpriteSequence_Tick (s As SpriteSequence)
 '**
 Declare Sub SpriteSequence_Current (s as SpriteSequence, spr as Sprite)
 
-'**
-'* Loads a sprite at a given index in the sequence.
-'**
-Declare Sub SpriteSequence_Load (s As SpriteSequence, spr As Sprite, index As Integer)
+Declare Sub SpriteSequence_PutSprite (s As SpriteSequence, v as Viewport, absolute As Integer, p As Point)
 
-Declare Sub SpriteSequence_BulkLoad (s as SpriteSequence, pattern AS String, length As Integer, speed As Integer, isloop As Integer, offset As Point, offsetFlip As Point, clr As Long)
+Declare Function SpriteSequence_Width% (s As SpriteSequence)
 
-Declare Sub SpriteSequence_SetFlip (s As SpriteSequence, flipped As Integer)
-
-declare Sub SpriteSequence_PutSprite (s As SpriteSequence, v as Viewport, absolute As Integer, p As Point)
+Declare Function SpriteSequence_Height% (s As SpriteSequence)
 
 Type Trajectory
 	Ticker As Ticker
@@ -176,7 +140,7 @@ Type Viewport
   WorldSize As Point
   Scale As Single
   Buffer As Long
-  Background As Sprite
+  Background As SpriteSequence
   BackgroundPanRatio As Point
   Scanlines As Integer
   PanTick As Ticker
@@ -243,7 +207,7 @@ Declare Sub Viewport_PutSprite (v As Viewport, absolute As Integer, s As Sprite,
 '**
 '* Puts the current sprite of a sprite sequence at a location on the viewport.
 '**
-Declare Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point)
+Declare Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point, flipped As Integer)
 
 '**
 '* Sets the font for a viewport.
