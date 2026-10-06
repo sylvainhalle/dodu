@@ -1,4 +1,4 @@
-$Debug
+'$Debug
 '-----------------------------------------------------------------------------
 '    Dodu, an old-school QuickBasic game
 '    Copyright (C) 1994-2026  Sylvain Hallé
@@ -1047,15 +1047,6 @@ Sub GetDoduSprite (s() As SpriteSequence, DoduNow As Player, DoduPast As Player)
       Let s(1) = SPR_DOD_HEAD(Abs(DoduNow.IsWalking), Abs(DoduNow.InSnow))
     End If
     Let s(2) = SPR_DOD_BODY(Abs(DoduNow.IsWalking), Abs(DoduNow.HasBlock), Abs(DoduNow.HasMittens))
-    'If Not DoduNow.IsWalking Then
-    '  SpriteSequence_Stop s(0)
-    'SpriteSequence_Stop s(1)
-    '  SpriteSequence_Stop s(2)
-    'ElseIf Not DoduPast.IsWalking And DoduNow.IsWalking Then
-    '  SpriteSequence_Start s(0)
-    '  SpriteSequence_Start s(1)
-    '  SpriteSequence_Start s(2)
-    'End If
     Let DoduPast = DoduNow
   End If
 End Sub

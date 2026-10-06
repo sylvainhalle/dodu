@@ -134,7 +134,7 @@ Dim Shared Pole As SpriteSequence
 Dim PoleOffset As Point, PoleOffsetFlip As Point
 Point_Set PoleOffset, 1, -9
 Point_Set PoleOffsetFlip, -1, -9
-SpriteSequence_InitFile Pole, IMG_DIR$ + "/Pole.gif",1, 1, TRUE, TRUE, PoleOffset, PoleOffsetFlip, COLOR_TRANSPARENT
+SpriteSequence_InitFile Pole, IMG_DIR$ + "/refactored/Pole.png",5, 3, TRUE, TRUE, PoleOffset, PoleOffsetFlip, COLOR_TRANSPARENT
 Dim Shared MiniPole As SpriteSequence
 Dim MiniPoleOffset As Point, MiniPoleOffsetFlip As Point
 Point_Set MiniPoleOffset, 1, -2
@@ -151,13 +151,13 @@ SpriteSequence_InitFile Cookie, IMG_DIR$ + "/refactored/Cookie.png",8, 3, TRUE, 
 Dim Shared SprMittens As SpriteSequence
 Dim SprMittensOffset As Point
 Point_Set SprMittensOffset, -2, 2
-SpriteSequence_InitFile SprMittens, IMG_DIR$ + "/Mittens.gif",1, 1, TRUE, TRUE, SprMittensOffset, SprMittensOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMittens, IMG_DIR$ + "/refactored/Mittens.png",4, 4, TRUE, TRUE, SprMittensOffset, SprMittensOffset, COLOR_TRANSPARENT
 
 ' Tuque
 Dim Shared SprTuque As SpriteSequence
 Dim SprTuqueOffset As Point
 Point_Set SprTuqueOffset, 1, -3
-SpriteSequence_InitFile SprTuque, IMG_DIR$ + "/Tuque.gif",1, 1, TRUE, TRUE, SprTuqueOffset, SprTuqueOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprTuque, IMG_DIR$ + "/refactored/Tuque.png",4, 3, TRUE, TRUE, SprTuqueOffset, SprTuqueOffset, COLOR_TRANSPARENT
 
 ' Thermometer
 Dim Shared Thermometer As SpriteSequence
