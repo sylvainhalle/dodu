@@ -835,6 +835,7 @@ Sub TickLevel
   SpriteSequence_Tick BlockWhite
   SpriteSequence_Tick Pole
   SpriteSequence_Tick Cookie
+  SpriteSequence_Tick Coffee
   SpriteSequence_Tick SprMittens
   SpriteSequence_Tick SprTuque
 End Sub
@@ -861,6 +862,8 @@ Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
             Viewport_PutSpriteSequence v, FALSE, Pole, p, FALSE
           Case T_COOKIE
             Viewport_PutSpriteSequence v, FALSE, Cookie, p, FALSE
+          Case T_COFFEE
+            Viewport_PutSpriteSequence v, FALSE, Coffee, p, FALSE
           Case T_MITTENS
             Viewport_PutSpriteSequence v, FALSE, SprMittens, p, FALSE
           Case T_TUQUE

@@ -147,6 +147,12 @@ Dim CookieOffset As Point
 Point_Set CookieOffset, 2, 2
 SpriteSequence_InitFile Cookie, IMG_DIR$ + "/refactored/Cookie.png",8, 3, TRUE, TRUE, CookieOffset, CookieOffset, COLOR_TRANSPARENT
 
+' Coffee
+Dim Shared Coffee As SpriteSequence
+Dim CoffeeOffset As Point
+Point_Set CoffeeOffset, 1, 1
+SpriteSequence_InitFile Coffee, IMG_DIR$ + "/refactored/Coffee.png",4, 3, TRUE, TRUE, CoffeeOffset, CoffeeOffset, COLOR_TRANSPARENT
+
 ' Mittens
 Dim Shared SprMittens As SpriteSequence
 Dim SprMittensOffset As Point
