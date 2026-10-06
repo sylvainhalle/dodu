@@ -121,7 +121,8 @@ SpriteSequence_InitFile MiniBlockWhite, IMG_DIR$ + "/MiniBlockWhite.gif",1, 1, T
 Dim Shared SnowC As SpriteSequence
 Dim Coffset As Point
 Point_Set Coffset, 0, -12
-SpriteSequence_InitFile SnowC, IMG_DIR$ + "/Snow_C.gif",1, 1, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SnowC, IMG_DIR$ + "/refactored/Snow_C.png",6, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
+'SpriteSequence_InitFile SnowC, IMG_DIR$ + "/Snow_C.gif",1, 1, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
 Dim Shared SnowL As SpriteSequence
 SpriteSequence_InitFile SnowL, IMG_DIR$ + "/Snow_L.gif",1, 1, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
 Dim Shared SnowR As SpriteSequence
@@ -265,11 +266,13 @@ SoundPlayer_Init Audio
 
 Const SNG_SONG1 = 0
 Const SNG_SONG2 = 1
-Const SNG_CARDS = 2
-Const SNG_CUTSCENE1 = 3
+Const SNG_SONG3 = 2
+Const SNG_CARDS = 3
+Const SNG_CUTSCENE1 = 4
 
 SoundPlayer_AddSong Audio, SNG_SONG1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod_fixed.mid"), 0.4
 SoundPlayer_AddSong Audio, SNG_SONG2, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/yaya.mid"), 0.4
+SoundPlayer_AddSong Audio, SNG_SONG3, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/pizza.mid"), 0.4
 SoundPlayer_AddSong Audio, SNG_CARDS, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cards.mid"), 0.4
 SoundPlayer_AddSong Audio, SNG_CUTSCENE1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cutscene1.mid"), 0.6
 
@@ -287,6 +290,7 @@ Const SND_WRONG1% = 9
 Const SND_COOKIE% = 10
 Const SND_POWERUP% = 11
 Const SND_POWERDOWN% = 12
+Const SND_STEP_SNOW% = 13
 
 SoundPlayer_AddEffect Audio, SND_STEP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step.mid"), 0.4
 SoundPlayer_AddEffect Audio, SND_THERMO%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/thermo.mid"), 1
@@ -301,6 +305,7 @@ SoundPlayer_AddEffect Audio, SND_WRONG1%, _SndOpen("/home/sylvain/Workspaces/dod
 SoundPlayer_AddEffect Audio, SND_COOKIE%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cookie.mid"), 1
 SoundPlayer_AddEffect Audio, SND_POWERUP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/powerup.mid"), 1
 SoundPlayer_AddEffect Audio, SND_POWERDOWN%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/powerdown.mid"), 1
+SoundPlayer_AddEffect Audio, SND_STEP_SNOW%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step_snow.mid"), 1
 
 '**
 '* Sets the song volume to a low level.

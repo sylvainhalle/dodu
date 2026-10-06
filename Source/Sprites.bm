@@ -59,7 +59,11 @@ End Sub
 '**
 
 Function SpriteSequence_Width% (s As SpriteSequence)
-	Let SpriteSequence_Width% = s.Size.x \ s.Ticker.Length
+	if s.Content <> -1 then
+		Let SpriteSequence_Width% = s.Size.x \ s.Ticker.Length
+	else
+		Let SpriteSequence_Width% = -1
+	end if
 End Function
 
 Function SpriteSequence_Height% (s As SpriteSequence)
@@ -114,7 +118,9 @@ Sub SpriteSequence_Stop (s As SpriteSequence)
 End Sub
 
 Sub SpriteSequence_Start (s As SpriteSequence)
-	Ticker_Reset s.Ticker
+	If Not Ticker_IsRunning(s.Ticker) Then
+		Ticker_Reset s.Ticker
+	End If
 End Sub
 
 Sub SpriteSequence_Current (s as SpriteSequence, p1 As Point, p2 As Point)
@@ -298,6 +304,11 @@ End Sub
 Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point, flipped As Integer)
 	Dim p1 As Point, p2 As Point
 	Dim s_w As Integer, s_h As Integer
+	if s.Ticker.Length <= 0 then
+		cls
+		print "FOO"
+		'end
+	end if
 	Let s_w = SpriteSequence_Width%(s)
 	Let s_h = SpriteSequence_Height%(s)
 	SpriteSequence_Current s, p1, p2
@@ -322,7 +333,6 @@ Sub Viewport_SetCenter (v as Viewport, p as Point)
 End Sub
 
 Sub Viewport_MovePan (v as Viewport, p as Point)
-	Viewport_Print v, Point_ToString(p), P_ORIGIN
 	Let v.Pan.x = Clamp%(v.Pan.x + p.x, 0, _Max(v.Size.x, v.WorldSize.x - v.Size.x))
 	Let v.Pan.y = Clamp%(v.Pan.y + p.y, 0, _Max(v.Size.y, v.WorldSize.y - v.Size.y))
 End Sub
@@ -349,7 +359,6 @@ Sub Viewport_Tick (v as Viewport)
 		Dim panamt As Point
 		Point_Set panamt, _Round((v.PanTarget.x - v.Pan.x) / (v.PanTick.Length - v.PanTick.Index)), _Round((v.PanTarget.y - v.Pan.y) / (v.PanTick.Length - v.PanTick.Index))
 		Viewport_MovePan v, panamt
-		Viewport_Print ImgBuffer, Point_ToString(panamt), P_ORIGIN
 		Ticker_Tick v.PanTick
 		If Ticker_IsFinished%(v.PanTick) Then
 			Point_Set v.PanTarget, -1, -1

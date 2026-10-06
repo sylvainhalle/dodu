@@ -1,3 +1,4 @@
+$Debug
 '$Debug
 '-----------------------------------------------------------------------------
 '    Dodu, an old-school QuickBasic game
@@ -206,6 +207,8 @@ Dim Shared CurrentSprite(3) As SpriteSequence
 Dim Shared parallax As Point
 Point_Set parallax, 2, 2
 
+Dim Shared SPRITE_LEVEL(2, M_W, M_H) As SpriteSequence
+
 LoadPasswords
 MainLoop
 
@@ -223,7 +226,7 @@ Sub MainLoop
       Let Dodu.HasTuque = rst.HasTuque
     End If
 
-    Viewport_FadeOut MainScreen, Ceil%(0.3 * FPS)
+    Viewport_FadeOut MainScreen, Ceil%(0.3 * FPS%)
     Viewport_Wait ImgBuffer, MainScreen, 0.4, FPS%
     Do
       If Levels(CURRENT_LEVEL).CutScene >= 0 And CFG_CUTSCENES Then
@@ -241,7 +244,11 @@ Sub MainLoop
       Viewport_Init_Default ImgBuffer, SCREEN_DIMS, ws
       Viewport_SetFont ImgBuffer, FNT_TINYC
       DoLevel
-      SoundPlayer_PlayEffect Audio, SND_LEVELUP
+      If Levels(CURRENT_LEVEL + 1).CutScene < 0 Then
+        SoundPlayer_PlayEffect Audio, SND_LEVELUP
+      Else
+        Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
+      End If
       Let LAST_LEVEL = CURRENT_LEVEL
       Let CURRENT_LEVEL = CURRENT_LEVEL + 1
       Let LAST_MITTENS = Dodu.HasMittens
@@ -285,6 +292,9 @@ Sub DoLevel
   Let Dodu.LevPos.x = Levels(CURRENT_LEVEL).StartPoint.col * BLOCK_SIZE%
   Let Dodu.LevPos.y = (Levels(CURRENT_LEVEL).StartPoint.row - 2) * BLOCK_SIZE%
 
+  PrepareLevel Levels(CURRENT_LEVEL), FALSE ' Back
+  PrepareLevel Levels(CURRENT_LEVEL), TRUE ' Front
+
   Square_Set sq_lastgrab, -1, -1
   Square_Set sq_lastdrop, -1, -1
   Point_Set trjP, -1, -1
@@ -302,6 +312,8 @@ Sub DoLevel
   Level_GoalSquare Levels(CURRENT_LEVEL%), target_s
   Square_ToPoint target_s, target_p
   Viewport_Clear ImgBuffer
+  _Dest MainScreen.Buffer
+  Cls
   DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), FALSE
   DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), TRUE
   Viewport_SetCenter ImgBuffer, target_p
@@ -422,6 +434,8 @@ Sub DoLevel
     If Square_IsValid(snowP) Then
       Let Dodu.InSnow = TRUE
       Let WalkingTicker.Speed = Ceil%(1 / WALKING_SPEED_SNOW)
+      SpriteSequence_Start SPRITE_LEVEL(0, snowP.col, snowP.row)
+      SpriteSequence_Start SPRITE_LEVEL(1, snowP.col, snowP.row)
     Else
       Let Dodu.InSnow = FALSE
       Let WalkingTicker.Speed = Ceil%(1 / WALKING_SPEED)
@@ -689,14 +703,18 @@ Sub DoLevel
 
     If Dodu.IsWalking And CurrentSprite(2).Ticker.TickCnt = 0 And _
        CurrentSprite(2).Ticker.Index Mod 2 = 0 Then
-      SoundPlayer_PlayEffect Audio, SND_STEP%
+      If Dodu.InSnow Then
+        SoundPlayer_PlayEffect Audio, SND_STEP%
+      Else
+        SoundPlayer_PlayEffect Audio, SND_STEP_SNOW%
+      End If
     End If
 
     ' Draw the complete frame.
     Viewport_Clear ImgBuffer
 
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL), FALSE
-    TickLevel
+    TickLevel Levels(CURRENT_LEVEL)
     DrawPlayer ImgBuffer, CurrentSprite()
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL), TRUE
     DrawThermometer ImgBuffer
@@ -830,21 +848,25 @@ End Sub
 ' --------------------------
 ' Ticks animations
 ' --------------------------
-Sub TickLevel
-  SpriteSequence_Tick BlockBlue
-  SpriteSequence_Tick BlockWhite
-  SpriteSequence_Tick Pole
-  SpriteSequence_Tick Cookie
-  SpriteSequence_Tick Coffee
-  SpriteSequence_Tick SprMittens
-  SpriteSequence_Tick SprTuque
+Sub TickLevel (m As LevelMap)
+  Dim col As Integer, row As Integer, front As Integer
+  For col = 0 To m.Width - 1
+    For row = 0 To m.Height - 1
+      For front = 0 To 1
+        SpriteSequence_Tick SPRITE_LEVEL(front, col, row)
+      Next
+    Next
+  Next
 End Sub
 
-' --------------------------
-' Draws a level
-' --------------------------
-Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
+
+Sub PrepareLevel (m As LevelMap, isfront As Integer)
   Dim col, row As Integer
+  For row = 0 To m.Height
+    For col = 0 To m.Width
+      Let SPRITE_LEVEL(Abs(isfront), col, row).Content = -1
+    Next
+  Next
   For row = 0 To m.Height
     For col = 0 To m.Width
       Dim s As Square
@@ -855,29 +877,28 @@ Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
       If Not isfront Then
         Select Case m.Topo(col, row)
           Case T_BLOCK_B
-            Viewport_PutSpriteSequence v, FALSE, BlockBlue, p, FALSE
+            SpriteSequence_Copy SPRITE_LEVEL(0, col, row), BlockBlue
           Case T_BLOCK_W
-            Viewport_PutSpriteSequence v, FALSE, BlockWhite, p, FALSE
+            SpriteSequence_Copy SPRITE_LEVEL(0, col, row), BlockWhite
           Case T_POLE
-            Viewport_PutSpriteSequence v, FALSE, Pole, p, FALSE
+            SpriteSequence_Copy SPRITE_LEVEL(0, col, row), Pole
           Case T_COOKIE
-            Viewport_PutSpriteSequence v, FALSE, Cookie, p, FALSE
+            SpriteSequence_Copy SPRITE_LEVEL(0, col, row), Cookie
           Case T_COFFEE
-            Viewport_PutSpriteSequence v, FALSE, Coffee, p, FALSE
+            SpriteSequence_Copy SPRITE_LEVEL(0, col, row), Coffee
           Case T_MITTENS
-            Viewport_PutSpriteSequence v, FALSE, SprMittens, p, FALSE
+            SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SprMittens
           Case T_TUQUE
-            Viewport_PutSpriteSequence v, FALSE, SprTuque, p, FALSE
+            SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SprTuque
           Case T_SNOW
-            DrawSnow v, m, col, row, p
+            'If Dodu.HasRackets Then
+            'PrepareSnow m, col, row, FALSE
+            'End If
         End Select
       Else
-        Select Case m.Topo(col, row)
-          Case T_SNOW
-            If Not Dodu.HasRackets Then
-              DrawSnow v, m, col, row, p
-            End If
-        End Select
+        If m.Topo(col, row) = T_SNOW Then ' And Not Dodu.HasRackets Then
+          PrepareSnow m, col, row, 1
+        End If
       End If
     Next
   Next
@@ -885,22 +906,45 @@ Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
   Let dod_p = Dodu.LevPos
 End Sub
 
-Sub DrawSnow (v As Viewport, m As LevelMap, col As Integer, row As Integer, p As Point)
+
+' --------------------------
+' Draws a level
+' --------------------------
+Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
+
+  Dim col, row As Integer
+  For row = 0 To m.Height
+    For col = 0 To m.Width
+      Dim s As Square
+      Let s.col = col
+      Let s.row = row
+      If SPRITE_LEVEL(Abs(isfront), col, row).Content <> -1 Then
+        Dim p As Point
+        Square_ToPoint s, p
+        Viewport_PutSpriteSequence v, FALSE, SPRITE_LEVEL(Abs(isfront), col, row), p, FALSE
+      End If
+    Next
+  Next
+End Sub
+
+Sub PrepareSnow (m As LevelMap, col As Integer, row As Integer, front As Integer)
   Dim hasleft As Integer, hasright As Integer, hastop As Integer
   Let hastop = (row > 0 _AndAlso m.Topo(col, row - 1) = T_SNOW) _OrElse row = 0
   Let hasleft = (col > 0 _AndAlso (m.Topo(col - 1, row) = T_SNOW _OrElse IsBlockAt(col, row, m))) _OrElse col = 0
   Let hasright = (col < m.Width - 1 _AndAlso (m.Topo(col - 1, row) = T_SNOW _OrElse IsBlockAt(col, row, m))) _OrElse col = m.Width - 1
   If hastop Then
-    Viewport_PutSpriteSequence v, FALSE, SnowM, p, FALSE
+    SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SnowM
   Else
     If hasleft And hasright Then
-      Viewport_PutSpriteSequence v, FALSE, SnowC, p, FALSE
+      SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SnowC
     ElseIf hasleft And Not hasright Then
-      Viewport_PutSpriteSequence v, FALSE, SnowR, p, FALSE
+      SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SnowR
     ElseIf Not hasleft And hasright Then
-      Viewport_PutSpriteSequence v, FALSE, SnowL, p, FALSE
+      SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SnowL
     End If
   End If
+  SpriteSequence_Stop SPRITE_LEVEL(Abs(front), col, row)
+  Let SPRITE_LEVEL(Abs(front), col, row).Ticker.Loop = FALSE
 End Sub
 
 Sub DrawMinimap (v As Viewport, m As LevelMap)
