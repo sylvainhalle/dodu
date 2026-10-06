@@ -34,6 +34,7 @@ $ErrorLocation:On
 ' Screen dimensions
 Dim Shared SCREEN_DIMS As Point
 Point_Set SCREEN_DIMS, 80, 64
+'Point_Set SCREEN_DIMS, 160, 128
 
 ' Frame rate
 Const FPS% = 25
@@ -210,7 +211,6 @@ MainLoop
 
 Sub MainLoop
   Do
-    Dim snd_index As Integer
     Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
     Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS
     Dim rst As RestorePoint
@@ -760,7 +760,7 @@ End Sub
 Sub DoCutScene (nb As Integer)
   SoundPlayer_PlaySong Audio, SNG_CUTSCENE1%
 
-  Dim ps As Ticker, alpha As Integer
+  Dim ps As Ticker
   Viewport_PutSpriteSequence ImgBuffer, TRUE, CutScenes(nb), P_ORIGIN, FALSE
   Ticker_Init ps, 7, FPS%, FALSE
   Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
@@ -1001,33 +1001,30 @@ Sub MovePlayer (v As Viewport, p_to As Point)
   Let CurrentSprite(1).Flipped = Dodu.ToLeft
   Let CurrentSprite(2).Flipped = Dodu.ToLeft
   Dim ScreenPos As Point
-  ' Demo1.bas, MovePlayer
   Viewport_PointToScreen v, Dodu.LevPos, ScreenPos
   Let Dodu.LevPos.x = Dodu.LevPos.x + (p_to.x * WALKING_SPEED#)
   Let Dodu.LevPos.y = Dodu.LevPos.y + (p_to.y * WALKING_SPEED#)
   If p_to.x <> 0 Then
     Select Case Dodu.ToLeft
       Case FALSE ' Going right, x > 0
-        If ScreenPos.x >= 20 Then
+        If ScreenPos.x >= SCREEN_DIMS.x - (SCREEN_DIMS.x / 3 + PLAYER_WIDTH%) Then
           'Let v.Pan.x = _Min(v.Pan.x + (p_to.x * WALKING_SPEED#), M_W% * BLOCK_SIZE%)
           Viewport_MovePan v, p_to
         End If
       Case TRUE ' Going left, x < 0
-        If ScreenPos.x <= 10 Then
+        If ScreenPos.x <= SCREEN_DIMS.x / 3 Then
           Viewport_MovePan v, p_to
-          'Let v.Pan.x = _Max(v.Pan.x + (p_to.x * WALKING_SPEED#), 0)
         End If
     End Select
   End If
   If p_to.y > 0 Then '   Going down, y > 0
-    If ScreenPos.y >= 20 Then
+    If ScreenPos.y >= SCREEN_DIMS.y - (SCREEN_DIMS.y / 3 + PLAYER_HEIGHT%) Then
       Viewport_MovePan v, p_to
       'Let v.Pan.y = _Min(v.Pan.y + (p_to.y * WALKING_SPEED#), M_H% * BLOCK_SIZE%)
     End If
   ElseIf p_to.y < 0 Then '  Going up, y < 0
-    If ScreenPos.y <= 25 Then
+    If ScreenPos.y <= SCREEN_DIMS.y / 3 Then
       Viewport_MovePan v, p_to
-      'Let v.Pan.y = _Max(v.Pan.y + (p_to.y * WALKING_SPEED#), 0)
     End If
   End If
 End Sub
