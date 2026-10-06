@@ -58,7 +58,7 @@ SpriteSequence_InitFile SPR_DOD_TUQUE(1, 1), IMG_DIR$ + "/refactored/Tuque.png",
 ' 2nd coordinate: 0 = normal, 1 = tired, 2 = freezing
 Dim Shared SPR_DOD_HEAD(2, 3) As SpriteSequence, HEAD_OFFSET As Point
 Point_Set HEAD_OFFSET, 0, 0
-SpriteSequence_InitFile SPR_DOD_HEAD(0, 0), IMG_DIR$ + "/refactored/Head.png", 4, 2, FALSE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_HEAD(0, 0), IMG_DIR$ + "/refactored/Head_idle.png", 5, 30, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(0, 1), IMG_DIR$ + "/refactored/Head_tired.png", 4, 2, FALSE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(0, 2), IMG_DIR$ + "/refactored/Head_freezing.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(1, 0), IMG_DIR$ + "/refactored/Head.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
