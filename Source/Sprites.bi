@@ -137,6 +137,8 @@ Declare Sub Trajectory_Init (t As Trajectory, l As Integer, speed As Integer, fl
 
 Declare Sub Trajectory_AddPoint (t as Trajectory, p As Point)
 
+Declare Sub Trajectory_Copy (dst As Trajectory, src As Trajectory)
+
 Declare Sub Trajectory_AddCoords (t As Trajectory, x as Integer, y as Integer)
 
 Declare Sub Trajectory_Tick (t As Trajectory, p as Point)

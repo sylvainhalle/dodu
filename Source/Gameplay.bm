@@ -1,0 +1,60 @@
+'-----------------------------------------------------------------------------
+'    Dodu, an old-school QuickBasic game
+'    Copyright (C) 1994-2026  Sylvain Hallé
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU General Public License for more details.
+'
+'    You should have received a copy of the GNU General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'-----------------------------------------------------------------------------
+
+Sub TakeBlock (m As LevelMap, p As Square)
+  Let m.Topo(p.col, p.row) = T_NOTHING
+  Let Dodu.HasBlock = TRUE
+  ClearSpriteSquare p
+End Sub
+
+Sub TakeTuque (m As LevelMap, p As Square)
+  Let m.Topo(p.col, p.row) = T_NOTHING
+  Let Dodu.HasTuque = TRUE
+  ClearSpriteSquare p
+  If Not Dodu.HasBlock Then
+    Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL_TUQUE%
+  End If
+End Sub
+
+Sub TakeCookie (m As LevelMap, p As Square)
+  Let m.Topo(p.col, p.row) = T_NOTHING
+  ClearSpriteSquare p
+  Let Dodu.Temp = Clamp%(Dodu.Temp + 5, 0, 10)
+End Sub
+
+Sub TakeCoffee (m As LevelMap, p As Square)
+  Let m.Topo(p.col, p.row) = T_NOTHING
+  ClearSpriteSquare p
+  Let Dodu.Temp = Clamp%(Dodu.Temp + 7, 0, 10)
+End Sub
+
+Sub TakeMittens (m As LevelMap, p As Square)
+  Let m.Topo(p.col, p.row) = T_NOTHING
+  ClearSpriteSquare p
+  Let Dodu.HasMittens = TRUE
+  If Dodu.HasBlock Then
+    Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST_MITTENS%
+  End If
+End Sub
+
+Function PlayerChanged (p_now As Player, p_past As Player)
+  Let PlayerChanged = Not (p_now.HasBlock = p_past.HasBlock And p_now.HasMittens = p_past.HasMittens And p_now.HasTuque = p_past.HasTuque And p_now.IsWalking = p_past.IsWalking And p_past.InSnow = p_now.InSnow)
+End Function
+
+
+' :mode=visualbasic:folding=explicit:wrap=none:

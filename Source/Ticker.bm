@@ -50,6 +50,14 @@ Sub Ticker_Stop (t As Ticker)
 	let t.Index = -1
 End Sub
 
+Sub Ticker_Copy (dst As Ticker, src As Ticker)
+	Let dst.Length = src.Length
+	Let dst.Index = src.Index
+	Let dst.Loop = src.Loop
+	Let dst.Speed = src.Speed
+	Let dst.TickCnt = src.TickCnt
+End Sub
+
 Function Ticker_IsRunning% (t as Ticker)
 	if t.Index < 0 Then
 		let Ticker_IsRunning% = FALSE

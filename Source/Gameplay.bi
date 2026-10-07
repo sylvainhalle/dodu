@@ -16,30 +16,37 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
-'**
-'** - Ticker --------------------------------------------------- {{{
-'**
+' --------------------------
+' Player
+' --------------------------
 
-Type Ticker
-	Length As Integer
-	Index As Integer
-	Loop As Integer
-	Speed As Integer
-	TickCnt As Integer
+Type Player
+  LevPos As Point
+  IsWalking As Integer
+  HasBlock As Integer
+  IsClimbing As Integer
+  IsFalling As Integer
+  ToLeft As Integer
+  Temp As Integer ' 0 to 10
+  ThermoTick As Ticker
+  ThermoFlash As Integer
+  HasMittens As Integer
+  HasTuque As Integer
+  HasRackets As Integer
+  InSnow As Integer
+  SlipTick As Ticker
+  SlipDir As Integer
 End Type
 
-Declare Sub Ticker_Init (t As Ticker, l As Integer, speed As Integer, isloop As Integer)
+' Game state
+Dim Shared Dodu As Player, DoduPast As Player
 
-Declare Sub Ticker_Tick (t As Ticker)
+Declare Sub TakeBlock (m As LevelMap, p As Square)
+Declare Sub TakeTuque(m As LevelMap, p As Square)
+Declare Sub TakeMittens (m As LevelMap, p As Square)
+Declare Sub TakeCookie (m As LevelMap, p As Square)
+Declare Sub TakeCoffee (m As LevelMap, p As Square)
 
-Declare Sub Ticker_Reset (t As Ticker)
+Declare Function PlayerChanged (p_now As Player, p_past As Player)
 
-Declare Sub Ticker_Stop (t As Ticker)
-
-Declare Sub Ticker_Copy (dst As Ticker, src As Ticker)
-
-Declare Function Ticker_IsRunning% (t As Ticker)
-
-Declare Function Ticker_IsFinished% (t As Ticker)
-
-' :mode=visualbasic:
+' :mode=visualbasic:folding=explicit:wrap=none:

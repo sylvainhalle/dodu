@@ -145,6 +145,16 @@ Sub Trajectory_AddPoint (t as Trajectory, p As Point, index As Integer)
 	let t.Points(index).y = p.y
 End Sub
 
+Sub Trajectory_Copy (dst As Trajectory, src As Trajectory)
+	Dim i As Integer
+	Ticker_Copy dst.Ticker, src.Ticker
+	Let dst.Flipped = src.Flipped
+	For i = 0 To 9
+		Let dst.Points(i).x = src.Points(i).x
+		Let dst.Points(i).y = src.Points(i).y
+	Next
+End Sub
+
 Sub Trajectory_AddCoords (t As Trajectory, x as Integer, y as Integer, index As Integer)
 	dim p As Point
 	Point_Set p, x, y

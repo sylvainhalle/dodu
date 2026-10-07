@@ -32,4 +32,38 @@ Sub Audio_SongResume
   SoundPlayer_ResumeSong Audio
 End Sub
 
+Sub DrawLevelNumber (v As Viewport)
+  Dim dg1 As Integer, dg2 As Integer
+  Let dg1 = (CURRENT_LEVEL + 1) \ 10
+  Let dg2 = (CURRENT_LEVEL + 1) Mod 10
+  Dim p2 As Point
+  If dg1 = 0 Then
+    Point_Set p2, PT_LEVEL_NB.x + 3, PT_LEVEL_NB.y
+    Viewport_PutSpriteSequence v, TRUE, LevelDigits(dg2), p2, FALSE
+  Else
+    Point_Set p2, PT_LEVEL_NB.x + 5, PT_LEVEL_NB.y
+    Viewport_PutSpriteSequence v, TRUE, LevelDigits(dg1), PT_LEVEL_NB, FALSE
+    Viewport_PutSpriteSequence v, TRUE, LevelDigits(dg2), p2, FALSE
+  End If
+End Sub
+
+Sub DrawThermometer (v As Viewport)
+  Dim p As Point
+  Point_Set p, 4, 4
+  Viewport_PutSpriteSequence v, TRUE, Thermometer, p, FALSE
+  Dim red As Long
+  Let red = THERMO_RED&
+  If Dodu.Temp <= 2 Then
+    If Dodu.ThermoFlash < 10 Then
+      Let red = THERMO_BLUE&
+    Else
+      Let red = THERMO_RED&
+    End If
+    Let Dodu.ThermoFlash = (Dodu.ThermoFlash + 1) Mod 20
+  End If
+  Viewport_LineC v, TRUE, 6, 15 - Dodu.Temp, 7, 15, red, TRUE, TRUE
+  Viewport_LineC v, TRUE, 5, 16, 8, 18, red, TRUE, TRUE
+End Sub
+
+
 ' :mode=visualbasic:

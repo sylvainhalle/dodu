@@ -336,4 +336,15 @@ Sub CookieSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 	End If
 End Sub
 
+Sub CoffeeSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+	FeetSquare side, lp, m, p
+	If p.col < 0 Or p.row < 0 Then
+		Exit Sub
+	End If
+	If Not IsCoffeeAt(p.col, p.row, m) Then
+		Let p.col = -1
+		Let p.row = -1
+	End If
+End Sub
+
 ' :mode=visualbasic:folding=explicit:wrap=none:

@@ -113,6 +113,34 @@ Function IsSnowAt (col As Integer, row As Integer, l As LevelMap)
   End If
 End Function
 
+Function GetSnowSlopeAt (col As Integer, row As Integer, m As LevelMap)
+	Let GetSnowSlopeAt = L_SLOPE_NONE
+	'If IsSnowAt(col, row, m) Then Exit Function
+	Dim hasleft As Integer, hasright As Integer, hastop As Integer
+	Let hastop = (row > 0 _AndAlso m.Topo(col, row - 1) = T_SNOW) _OrElse row = 0
+	Let hasleft = (col > 0 _AndAlso (m.Topo(col - 1, row) = T_SNOW _OrElse IsBlockAt(col - 1, row, m))) _OrElse col = 0
+	Let hasright = (col < m.Width - 1 _AndAlso (m.Topo(col + 1, row) = T_SNOW _OrElse IsBlockAt(col + 1, row, m))) _OrElse col = m.Width - 1
+	If hasleft And hasright Then
+	  Let GetSnowSlopeAt = L_SLOPE_C
+	ElseIf hasleft And Not hasright Then
+	  Let GetSnowSlopeAt = L_SLOPE_R
+	ElseIf Not hasleft And hasright Then
+	  Let GetSnowSlopeAt = L_SLOPE_L
+	End If
+End Function
+
+Function Square_ToString$ (s As Square)
+	Let Square_ToString$ = "[" + str$(s.col) + "," + str$(s.row) + "]"
+End Function
+
+Function IsCoffeeAt (col As Integer, row As Integer, l As LevelMap)
+  If l.Topo(col, row) = T_COFFEE Then
+    Let IsCoffeeAt = TRUE
+  Else
+    Let IsCoffeeAt = FALSE
+  End If
+End Function
+
 ' --------------------------
 ' Loads a level
 ' --------------------------

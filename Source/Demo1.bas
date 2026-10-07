@@ -1,4 +1,3 @@
-$Debug
 '$Debug
 '-----------------------------------------------------------------------------
 '    Dodu, an old-school QuickBasic game
@@ -89,6 +88,7 @@ Let SCANLINES = FALSE
 '$Include:'Keyboard.bi'
 '$Include:'Sounds.bi'
 '$Include:'Levels.bi'
+'$Include:'Gameplay.bi'
 '$Include:'Passwords.bi'
 
 ' --------------------------
@@ -113,30 +113,6 @@ Const IMG_MODE_HER$ = "her"
 Dim Shared IMG_MODE As String
 Let IMG_MODE = IMG_MODE_EGA$
 
-' --------------------------
-' Player
-' --------------------------
-
-Type Player
-  LevPos As Point
-  IsWalking As Integer
-  HasBlock As Integer
-  IsClimbing As Integer
-  IsFalling As Integer
-  ToLeft As Integer
-  Temp As Integer ' 0 to 10
-  ThermoTick As Ticker
-  ThermoFlash As Integer
-  HasMittens As Integer
-  HasTuque As Integer
-  HasRackets As Integer
-  InSnow As Integer
-  SlipTick As Ticker
-  SlipDir As Integer
-End Type
-
-' Game state
-Dim Shared Dodu As Player, DoduPast As Player
 Let Dodu.HasBlock = FALSE
 Let Dodu.IsClimbing = 0
 Let Dodu.Temp = 10
@@ -268,7 +244,7 @@ Sub DoLevel
   Dim climbP As Square, takeP As Square, dropP As Square
   Dim unclimbP As Square, blockingP As Square, poleP As Square
   Dim mittensP As Square, tuqueP As Square, cookieP As Square
-  Dim snowP As Square
+  Dim coffeeP As Square, snowP As Square, feetP As Square
 
   Let CTRL_PRESSED = FALSE
   Let PANBACK_STEPS = 8
@@ -429,16 +405,24 @@ Sub DoLevel
     MittensSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), mittensP
     TuqueSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), tuqueP
     CookieSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), cookieP
+    CoffeeSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), coffeeP
     SnowSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), snowP
+    FeetSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), feetP
 
-    If Square_IsValid(snowP) Then
+    If CURRENT_TRAJECTORY% = TRJ_CLIMBING_SNOW Then
       Let Dodu.InSnow = TRUE
-      Let WalkingTicker.Speed = Ceil%(1 / WALKING_SPEED_SNOW)
-      SpriteSequence_Start SPRITE_LEVEL(0, snowP.col, snowP.row)
-      SpriteSequence_Start SPRITE_LEVEL(1, snowP.col, snowP.row)
     Else
-      Let Dodu.InSnow = FALSE
-      Let WalkingTicker.Speed = Ceil%(1 / WALKING_SPEED)
+      If Square_IsValid(snowP) _OrElse (Square_IsValid(feetP) _AndAlso IsSnowAt(feetP.col, feetP.row, Levels(CURRENT_LEVEL))) Then
+        Let Dodu.InSnow = TRUE
+        Let WalkingTicker.Speed = Ceil%(1 / WALKING_SPEED_SNOW)
+        If Dodu.IsWalking Then
+          SpriteSequence_Start SPRITE_LEVEL(0, snowP.col, snowP.row)
+          SpriteSequence_Start SPRITE_LEVEL(1, snowP.col, snowP.row)
+        End If
+      Else
+        Let Dodu.InSnow = FALSE
+        Let WalkingTicker.Speed = Ceil%(1 / WALKING_SPEED)
+      End If
     End If
 
     ' ---------------------------------------
@@ -479,6 +463,11 @@ Sub DoLevel
 
     If Square_IsValid(cookieP) Then
       TakeCookie Levels(CURRENT_LEVEL), cookieP
+      SoundPlayer_PlayEffect Audio, SND_COOKIE%
+    End If
+
+    If Square_IsValid(coffeeP) Then
+      TakeCookie Levels(CURRENT_LEVEL), coffeeP
       SoundPlayer_PlayEffect Audio, SND_COOKIE%
     End If
 
@@ -546,6 +535,12 @@ Sub DoLevel
     ' 8. Ordinary player controls
     ' ---------------------------------------
 
+    Dim slopetype As Integer
+    Let slopetype = L_SLOPE_NONE%
+    If Square_IsValid(feetP) Then
+      Let slopetype = GetSnowSlopeAt(feetP.col, feetP.row, Levels(CURRENT_LEVEL%))
+    End If
+
     If IsLeft% Then
 
       Let Dodu.ToLeft = TRUE
@@ -554,8 +549,16 @@ Sub DoLevel
       If Square_IsValid(climbP) Then
 
         Let Dodu.IsWalking = TRUE
-        Let CURRENT_TRAJECTORY% = TRJ_CLIMBING%
-        Let Trajectories(CURRENT_TRAJECTORY%).Flipped = TRUE
+        If Square_IsValid%(climbP) Then
+          If slopetype = L_SLOPE_R Or slopetype = L_SLOPE_R Or slopetype = L_SLOPE_C Then
+            Let CURRENT_TRAJECTORY% = TRJ_CLIMBING_SNOW%
+            SpriteSequence_Start SPRITE_LEVEL(0, climbP.col, climbP.row)
+            SpriteSequence_Start SPRITE_LEVEL(1, climbP.col, climbP.row)
+          Else
+            Let CURRENT_TRAJECTORY% = TRJ_CLIMBING%
+          End If
+          Let Trajectories(CURRENT_TRAJECTORY%).Flipped = TRUE
+        End If
 
       Else
 
@@ -584,8 +587,16 @@ Sub DoLevel
       If Square_IsValid(climbP) Then
 
         Let Dodu.IsWalking = TRUE
-        Let CURRENT_TRAJECTORY% = TRJ_CLIMBING%
-        Let Trajectories(CURRENT_TRAJECTORY%).Flipped = FALSE
+        If Square_IsValid%(climbP) Then
+          If slopetype = L_SLOPE_R Or slopetype = L_SLOPE_R Or slopetype = L_SLOPE_C Then
+            Let CURRENT_TRAJECTORY% = TRJ_CLIMBING_SNOW%
+            SpriteSequence_Start SPRITE_LEVEL(0, climbP.col, climbP.row)
+            SpriteSequence_Start SPRITE_LEVEL(1, climbP.col, climbP.row)
+          Else
+            Let CURRENT_TRAJECTORY% = TRJ_CLIMBING%
+          End If
+          Let Trajectories(CURRENT_TRAJECTORY%).Flipped = FALSE
+        End If
 
       Else
 
@@ -704,9 +715,9 @@ Sub DoLevel
     If Dodu.IsWalking And CurrentSprite(2).Ticker.TickCnt = 0 And _
        CurrentSprite(2).Ticker.Index Mod 2 = 0 Then
       If Dodu.InSnow Then
-        SoundPlayer_PlayEffect Audio, SND_STEP%
-      Else
         SoundPlayer_PlayEffect Audio, SND_STEP_SNOW%
+      Else
+        SoundPlayer_PlayEffect Audio, SND_STEP%
       End If
     End If
 
@@ -723,7 +734,7 @@ Sub DoLevel
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
     'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), snowP, COLOR_PINK&
-    'Viewport_Print ImgBuffer, Str$(Dodu.IsWalking) + Str$(CurrentSprite(1).Ticker.Index), P_ORIGIN
+    Viewport_Print ImgBuffer, Square_ToString(feetP) + Str$(Dodu.InSnow), P_ORIGIN
 
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
@@ -741,20 +752,6 @@ Sub DoLevel
   End
 End Sub
 
-Sub DrawLevelNumber (v As Viewport)
-  Dim dg1 As Integer, dg2 As Integer
-  Let dg1 = (CURRENT_LEVEL + 1) \ 10
-  Let dg2 = (CURRENT_LEVEL + 1) Mod 10
-  Dim p2 As Point
-  If dg1 = 0 Then
-    Point_Set p2, PT_LEVEL_NB.x + 3, PT_LEVEL_NB.y
-    Viewport_PutSpriteSequence v, TRUE, LevelDigits(dg2), p2, FALSE
-  Else
-    Point_Set p2, PT_LEVEL_NB.x + 5, PT_LEVEL_NB.y
-    Viewport_PutSpriteSequence v, TRUE, LevelDigits(dg1), PT_LEVEL_NB, FALSE
-    Viewport_PutSpriteSequence v, TRUE, LevelDigits(dg2), p2, FALSE
-  End If
-End Sub
 
 Sub DoGameOver
   SoundPlayer_StopSong Audio
@@ -872,38 +869,9 @@ Sub PrepareLevel (m As LevelMap, isfront As Integer)
       Dim s As Square
       Let s.col = col
       Let s.row = row
-      Dim p As Point
-      Square_ToPoint s, p
-      If Not isfront Then
-        Select Case m.Topo(col, row)
-          Case T_BLOCK_B
-            SpriteSequence_Copy SPRITE_LEVEL(0, col, row), BlockBlue
-          Case T_BLOCK_W
-            SpriteSequence_Copy SPRITE_LEVEL(0, col, row), BlockWhite
-          Case T_POLE
-            SpriteSequence_Copy SPRITE_LEVEL(0, col, row), Pole
-          Case T_COOKIE
-            SpriteSequence_Copy SPRITE_LEVEL(0, col, row), Cookie
-          Case T_COFFEE
-            SpriteSequence_Copy SPRITE_LEVEL(0, col, row), Coffee
-          Case T_MITTENS
-            SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SprMittens
-          Case T_TUQUE
-            SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SprTuque
-          Case T_SNOW
-            'If Dodu.HasRackets Then
-            'PrepareSnow m, col, row, FALSE
-            'End If
-        End Select
-      Else
-        If m.Topo(col, row) = T_SNOW Then ' And Not Dodu.HasRackets Then
-          PrepareSnow m, col, row, 1
-        End If
-      End If
+      SetSpriteSquare m, isfront, col, row, m.Topo(col, row)
     Next
   Next
-  Dim dod_p As Point
-  Let dod_p = Dodu.LevPos
 End Sub
 
 
@@ -913,7 +881,7 @@ End Sub
 Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
 
   Dim col, row As Integer
-  For row = 0 To m.Height
+  For row = m.Height To 0 Step -1
     For col = 0 To m.Width
       Dim s As Square
       Let s.col = col
@@ -928,20 +896,19 @@ Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
 End Sub
 
 Sub PrepareSnow (m As LevelMap, col As Integer, row As Integer, front As Integer)
-  Dim hasleft As Integer, hasright As Integer, hastop As Integer
+  Dim hastop As Integer
   Let hastop = (row > 0 _AndAlso m.Topo(col, row - 1) = T_SNOW) _OrElse row = 0
-  Let hasleft = (col > 0 _AndAlso (m.Topo(col - 1, row) = T_SNOW _OrElse IsBlockAt(col, row, m))) _OrElse col = 0
-  Let hasright = (col < m.Width - 1 _AndAlso (m.Topo(col - 1, row) = T_SNOW _OrElse IsBlockAt(col, row, m))) _OrElse col = m.Width - 1
   If hastop Then
     SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SnowM
   Else
-    If hasleft And hasright Then
-      SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SnowC
-    ElseIf hasleft And Not hasright Then
-      SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SnowR
-    ElseIf Not hasleft And hasright Then
-      SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SnowL
-    End If
+    Select Case GetSnowSlopeAt(col, row, m)
+      Case L_SLOPE_C
+        SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SnowC
+      Case L_SLOPE_L
+        SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SnowL
+      Case L_SLOPE_R
+        SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SnowR
+    End Select
   End If
   SpriteSequence_Stop SPRITE_LEVEL(Abs(front), col, row)
   Let SPRITE_LEVEL(Abs(front), col, row).Ticker.Loop = FALSE
@@ -985,54 +952,43 @@ Sub DrawPlayer (v As Viewport, seqs() As SpriteSequence)
   Viewport_PutSpriteSequence v, FALSE, seqs(2), Dodu.LevPos, Dodu.ToLeft
 End Sub
 
-Sub DrawThermometer (v As Viewport)
-  Dim p As Point
-  Point_Set p, 4, 4
-  Viewport_PutSpriteSequence v, TRUE, Thermometer, p, FALSE
-  Dim red As Long
-  Let red = THERMO_RED&
-  If Dodu.Temp <= 2 Then
-    If Dodu.ThermoFlash < 10 Then
-      Let red = THERMO_BLUE&
-    Else
-      Let red = THERMO_RED&
+
+Sub ClearSpriteSquare (s As Square)
+  Let SPRITE_LEVEL(0, s.col, s.row).Content = -1
+End Sub
+
+Sub SetSpriteSquare (m As LevelMap, isfront As Integer, col As Integer, row As Integer, e As String)
+  If Not isfront Then
+    Select Case e
+      Case T_BLOCK_B
+        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), BlockBlue
+      Case T_BLOCK_W
+        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), BlockWhite
+      Case T_POLE
+        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), Pole
+      Case T_COOKIE
+        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), Cookie
+      Case T_COFFEE
+        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), Coffee
+      Case T_MITTENS
+        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SprMittens
+      Case T_TUQUE
+        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SprTuque
+      Case T_SNOW
+        If Dodu.HasRackets Then
+          PrepareSnow m, col, row, FALSE
+        End If
+    End Select
+  Else
+    If e = T_SNOW And Not Dodu.HasRackets Then
+      PrepareSnow m, col, row, TRUE
     End If
-    Let Dodu.ThermoFlash = (Dodu.ThermoFlash + 1) Mod 20
-  End If
-  Viewport_LineC v, TRUE, 6, 15 - Dodu.Temp, 7, 15, red, TRUE, TRUE
-  Viewport_LineC v, TRUE, 5, 16, 8, 18, red, TRUE, TRUE
-End Sub
-
-
-Sub TakeBlock (m As LevelMap, p As Square)
-  Let m.Topo(p.col, p.row) = T_NOTHING
-  Let Dodu.HasBlock = TRUE
-End Sub
-
-Sub TakeTuque (m As LevelMap, p As Square)
-  Let m.Topo(p.col, p.row) = T_NOTHING
-  Let Dodu.HasTuque = TRUE
-  If Not Dodu.HasBlock Then
-    Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL_TUQUE%
-  End If
-End Sub
-
-Sub TakeCookie (m As LevelMap, p As Square)
-  Let m.Topo(p.col, p.row) = T_NOTHING
-  Let Dodu.Temp = Clamp%(Dodu.Temp + 5, 0, 10)
-End Sub
-
-
-Sub TakeMittens (m As LevelMap, p As Square)
-  Let m.Topo(p.col, p.row) = T_NOTHING
-  Let Dodu.HasMittens = TRUE
-  If Dodu.HasBlock Then
-    Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST_MITTENS%
   End If
 End Sub
 
 Sub DropBlock (m As LevelMap, p As Square)
   Let m.Topo(p.col, p.row) = T_BLOCK_W
+  SetSpriteSquare m, FALSE, p.col, p.row, T_BLOCK_W
   Let Dodu.HasBlock = FALSE
 End Sub
 
@@ -1085,7 +1041,7 @@ End Sub
 Sub GetDoduSprite (s() As SpriteSequence, DoduNow As Player, DoduPast As Player)
   If PlayerChanged(DoduNow, DoduPast) Then
     Let s(0) = SPR_DOD_TUQUE(Abs(DoduNow.IsWalking), Abs(DoduNow.HasTuque))
-    If Dodu.Temp <= 3 Then
+    If Dodu.Temp < 3 Then
       Let s(1) = SPR_DOD_HEAD(Abs(DoduNow.IsWalking), 2)
     Else
       Let s(1) = SPR_DOD_HEAD(Abs(DoduNow.IsWalking), Abs(DoduNow.InSnow))
@@ -1095,9 +1051,6 @@ Sub GetDoduSprite (s() As SpriteSequence, DoduNow As Player, DoduPast As Player)
   End If
 End Sub
 
-Function PlayerChanged (p_now As Player, p_past As Player)
-  Let PlayerChanged = Not (p_now.HasBlock = p_past.HasBlock And p_now.HasMittens = p_past.HasMittens And p_now.HasTuque = p_past.HasTuque And p_now.IsWalking = p_past.IsWalking And p_past.InSnow = p_now.InSnow)
-End Function
 
 Sub GetDoduCenter (p As Point)
   Point_Set p, Dodu.LevPos.x + (PLAYER_WIDTH% / 2), Dodu.LevPos.y + (PLAYER_HEIGHT% / 2)
@@ -1256,40 +1209,6 @@ Sub DoIntroduction (rst As RestorePoint)
   Loop
 End Sub
 
-Function IsButton1% ()
-  Let IsButton1% = In_Down(K_ENTER) Or In_Down(J_1)
-End Function
-
-Function IsButton2% ()
-  Let IsButton2% = In_Down(K_BACKSPACE) Or In_Down(J_2)
-End Function
-
-Function IsLeft% ()
-  Let IsLeft% = In_Down(K_LEFT)
-End Function
-
-Function IsRight% ()
-  Let IsRight% = In_Down(K_RIGHT)
-End Function
-
-Function IsUp% ()
-  Let IsUp% = In_Down(K_UP)
-End Function
-
-Function IsDown% ()
-  Let IsDown% = In_Down(K_DOWN)
-End Function
-
-Function IsEsc% ()
-  Let IsEsc% = In_Down(K_ESC)
-End Function
-
-Function IsEnter% ()
-  Let IsEnter% = In_Down(K_ENTER)
-End Function
-
-
-
 ' --------------------------
 ' Includes (implementations)
 ' --------------------------
@@ -1301,7 +1220,9 @@ End Function
 '$Include:'Sounds.bm'
 '$Include:'Keyboard.bm'
 '$Include:'Levels.bm'
+'$Include:'Gameplay.bm'
 '$Include:'LevelMaps.bm'
 '$Include:'Passwords.bm'
+'$Include:'Assets.bm'
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

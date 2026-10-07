@@ -51,6 +51,8 @@ Declare Sub Square_Set (s As Square, col As Integer, row As Integer)
 '**
 Declare Function Square_IsValid% (s as Square)
 
+Declare Function Square_ToString$ (s as Square)
+
 '**
 '* Converts the coordinate of a square in the level map to the x,y
 '* coordinates of the image buffer (representing the top-left corner of the
@@ -71,6 +73,11 @@ Type LevelMap
   PanY As Integer
 End Type
 
+Const L_SLOPE_NONE% = 0
+Const L_SLOPE_C% = 1
+Const L_SLOPE_L% = 2
+Const L_SLOPE_R% = 3
+
 Declare Sub Level_GoalSquare(l As LevelMap, s As Square)
 
 Declare Function IsGoalAt (col As Integer, row As Integer, l As LevelMap)
@@ -78,9 +85,11 @@ Declare Function IsBlockAt (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsWhiteBlockAt (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsObstacleAt% (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsCookieAt% (col As Integer, row As Integer, l As LevelMap)
+Declare Function IsCoffeeAt% (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsMittenAt% (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsTuqueAt% (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsSnowAt% (col As Integer, row As Integer, l As LevelMap)
+Declare Function GetSnowSlopeAt% (col As Integer, row As Integer, l As LevelMap)
 Declare Function LoadLevel% (l As LevelMap)
 Declare Sub LoadLevels ()
 Declare Sub PrintLevel (m As LevelMap)

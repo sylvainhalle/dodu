@@ -80,6 +80,14 @@ Dim Shared JOYSTICK As JoystickState
 Declare Function In_Down% (k As Integer)
 Declare Function Joy_Down% (k As Integer)
 Declare Function Kbd_Down% (k As Integer)
+Declare Function Is_Button1% (k As Integer)
+Declare Function Is_Button2% (k As Integer)
+Declare Function Is_Left% (k As Integer)
+Declare Function Is_Right% (k As Integer)
+Declare Function Is_Up% (k As Integer)
+Declare Function Is_Down% (k As Integer)
+Declare Function Is_Esc% (k As Integer)
+Declare Function Is_Enter% (k As Integer)
 
 Declare Sub Kbd_FindDevices ()
 

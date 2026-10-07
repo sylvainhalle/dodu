@@ -115,5 +115,36 @@ Sub Kbd_WaitRelease (fps As Integer)
   Loop While k >= 0
 End Sub
 
+Function IsButton1% ()
+  Let IsButton1% = In_Down(K_ENTER) Or In_Down(J_1)
+End Function
+
+Function IsButton2% ()
+  Let IsButton2% = In_Down(K_BACKSPACE) Or In_Down(J_2)
+End Function
+
+Function IsLeft% ()
+  Let IsLeft% = In_Down(K_LEFT)
+End Function
+
+Function IsRight% ()
+  Let IsRight% = In_Down(K_RIGHT)
+End Function
+
+Function IsUp% ()
+  Let IsUp% = In_Down(K_UP)
+End Function
+
+Function IsDown% ()
+  Let IsDown% = In_Down(K_DOWN)
+End Function
+
+Function IsEsc% ()
+  Let IsEsc% = In_Down(K_ESC)
+End Function
+
+Function IsEnter% ()
+  Let IsEnter% = In_Down(K_ENTER)
+End Function
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

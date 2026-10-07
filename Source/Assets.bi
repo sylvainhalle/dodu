@@ -19,6 +19,10 @@
 ' DependsOn: 'Sprites.bi'
 ' DependsOn: 'Sound.bi'
 
+Declare Sub DrawLevelNumber (v As Viewport)
+
+Declare Sub DrawThermometer (v As Viewport)
+
 Const COLOR_TRANSPARENT = _RGB32(52, 52, 52)
 
 Dim Shared COLOR_HIGHLIGHT As Long, COLOR_HIGHLIGHT2 As Long
@@ -58,7 +62,7 @@ SpriteSequence_InitFile SPR_DOD_TUQUE(1, 1), IMG_DIR$ + "/refactored/Tuque.png",
 ' 2nd coordinate: 0 = normal, 1 = tired, 2 = freezing
 Dim Shared SPR_DOD_HEAD(2, 3) As SpriteSequence, HEAD_OFFSET As Point
 Point_Set HEAD_OFFSET, 0, 0
-SpriteSequence_InitFile SPR_DOD_HEAD(0, 0), IMG_DIR$ + "/refactored/Head_idle.png", 5, 30, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_HEAD(0, 0), IMG_DIR$ + "/refactored/Head_idle.png", 15, 3, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(0, 1), IMG_DIR$ + "/refactored/Head_tired.png", 4, 2, FALSE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(0, 2), IMG_DIR$ + "/refactored/Head_freezing.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(1, 0), IMG_DIR$ + "/refactored/Head.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
@@ -85,9 +89,11 @@ SpriteSequence_InitFile DoduSmall, IMG_DIR$ + "/DoduSmall.gif", 1,  1, TRUE, TRU
 
 ' Trajectories
 Const TRJ_CLIMBING% = 0
-Const TRJ_FALLING% = 1
+Const TRJ_CLIMBING_SNOW% = 1
+Const TRJ_FALLING% = 2
+Const TRJ_PANTING% = 3
 Const TRJ_PANBACK% = 100
-Dim Shared Trajectories(3) As Trajectory
+Dim Shared Trajectories(4) As Trajectory
 Dim trj As Trajectory
 Trajectory_Init Trajectories(TRJ_CLIMBING%), 6, 1, FALSE, FALSE
 Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 0, -3, 0
@@ -96,6 +102,9 @@ Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 0, -2, 2
 Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 2, -2, 3
 Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 2, -2, 4
 Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 1,  0, 5
+
+Trajectory_Copy Trajectories(TRJ_CLIMBING_SNOW%), Trajectories(TRJ_CLIMBING%)
+Let Trajectories(TRJ_CLIMBING_SNOW%).Ticker.Speed = 4
 
 Trajectory_Init Trajectories(TRJ_FALLING%), 6, 1, FALSE, FALSE
 Trajectory_AddCoords Trajectories(TRJ_FALLING%), 1,  0, 0
@@ -120,13 +129,12 @@ Dim Shared MiniBlockWhite As SpriteSequence
 SpriteSequence_InitFile MiniBlockWhite, IMG_DIR$ + "/MiniBlockWhite.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Dim Shared SnowC As SpriteSequence
 Dim Coffset As Point
-Point_Set Coffset, 0, -12
-SpriteSequence_InitFile SnowC, IMG_DIR$ + "/refactored/Snow_C.png",6, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
-'SpriteSequence_InitFile SnowC, IMG_DIR$ + "/Snow_C.gif",1, 1, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
+Point_Set Coffset, 0, -14
+SpriteSequence_InitFile SnowC, IMG_DIR$ + "/refactored/Snow_C.png",7, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
 Dim Shared SnowL As SpriteSequence
-SpriteSequence_InitFile SnowL, IMG_DIR$ + "/Snow_L.gif",1, 1, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SnowL, IMG_DIR$ + "/refactored/Snow_L.png",6, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
 Dim Shared SnowR As SpriteSequence
-SpriteSequence_InitFile SnowR, IMG_DIR$ + "/Snow_R.gif",1, 1, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SnowR, IMG_DIR$ + "/refactored/Snow_R.png",6, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
 Dim Shared SnowM As SpriteSequence
 SpriteSequence_InitFile SnowM, IMG_DIR$ + "/Snow_M.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
@@ -305,7 +313,7 @@ SoundPlayer_AddEffect Audio, SND_WRONG1%, _SndOpen("/home/sylvain/Workspaces/dod
 SoundPlayer_AddEffect Audio, SND_COOKIE%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cookie.mid"), 1
 SoundPlayer_AddEffect Audio, SND_POWERUP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/powerup.mid"), 1
 SoundPlayer_AddEffect Audio, SND_POWERDOWN%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/powerdown.mid"), 1
-SoundPlayer_AddEffect Audio, SND_STEP_SNOW%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step_snow.mid"), 1
+SoundPlayer_AddEffect Audio, SND_STEP_SNOW%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step_snow.mid"), 0.4
 
 '**
 '* Sets the song volume to a low level.
