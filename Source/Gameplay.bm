@@ -53,7 +53,7 @@ Sub TakeMittens (m As LevelMap, p As Square)
 End Sub
 
 Function PlayerChanged (p_now As Player, p_past As Player)
-  Let PlayerChanged = Not (p_now.HasBlock = p_past.HasBlock And p_now.HasMittens = p_past.HasMittens And p_now.HasTuque = p_past.HasTuque And p_now.IsWalking = p_past.IsWalking And p_past.InSnow = p_now.InSnow)
+  Let PlayerChanged = Not (p_now.IsPanting = p_past.IsPanting And p_now.HasBlock = p_past.HasBlock And p_now.HasMittens = p_past.HasMittens And p_now.HasTuque = p_past.HasTuque And p_now.IsWalking = p_past.IsWalking And p_past.InSnow = p_now.InSnow)
 End Function
 
 

@@ -59,30 +59,41 @@ SpriteSequence_InitFile SPR_DOD_TUQUE(1, 0), IMG_DIR$ + "/refactored/NoTuque.png
 SpriteSequence_InitFile SPR_DOD_TUQUE(1, 1), IMG_DIR$ + "/refactored/Tuque.png", 4, 2, TRUE, TRUE, TUQUE_OFFSET, TUQUE_OFFSET, COLOR_TRANSPARENT
 
 ' 1st coordinate: 0 = not walking, 1 = walking
-' 2nd coordinate: 0 = normal, 1 = tired, 2 = freezing
+' 2nd coordinate: 0 = normal, 1 = tired, 2 = freezing, 3 = panting
 Dim Shared SPR_DOD_HEAD(2, 3) As SpriteSequence, HEAD_OFFSET As Point
 Point_Set HEAD_OFFSET, 0, 0
 SpriteSequence_InitFile SPR_DOD_HEAD(0, 0), IMG_DIR$ + "/refactored/Head_idle.png", 15, 3, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(0, 1), IMG_DIR$ + "/refactored/Head_tired.png", 4, 2, FALSE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(0, 2), IMG_DIR$ + "/refactored/Head_freezing.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_HEAD(0, 3), IMG_DIR$ + "/refactored/Head_panting.png", 2, 10, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(1, 0), IMG_DIR$ + "/refactored/Head.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(1, 1), IMG_DIR$ + "/refactored/Head_tired.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(1, 2), IMG_DIR$ + "/refactored/Head_freezing.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_HEAD(1, 3), IMG_DIR$ + "/refactored/Head_panting.png", 2, 10, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 
 ' 1st coordinate: 0 = not walking, 1 = walking
 ' 2nd coordinate: 0 = no block, 1 = has block
 ' 3rd coordinate: 0 = no mittens, 1 = with mittens
-Dim Shared SPR_DOD_BODY(2, 2, 2) As SpriteSequence, BODY_OFFSET_NOBLOCK As Point, BODY_OFFSET_BLOCK As Point
+' 4th coordinate: 0 = not panting, 1 = panting
+Dim Shared SPR_DOD_BODY(2, 2, 2, 2) As SpriteSequence, BODY_OFFSET_NOBLOCK As Point, BODY_OFFSET_BLOCK As Point
 Point_Set BODY_OFFSET_NOBLOCK, 0, 13
 Point_Set BODY_OFFSET_BLOCK, 0, 12
-SpriteSequence_InitFile SPR_DOD_BODY(0, 0, 0), IMG_DIR$ + "/refactored/Body_noblock_nomittens.png", 4, 2, FALSE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(0, 1, 0), IMG_DIR$ + "/refactored/Body_block_nomittens.png", 4,  2, FALSE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(0, 0, 1), IMG_DIR$ + "/refactored/Body_noblock_mittens.png", 4,  2, FALSE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(0, 1, 1), IMG_DIR$ + "/refactored/Body_block_mittens.png", 4,  2, FALSE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 0, 0), IMG_DIR$ + "/refactored/Body_noblock_nomittens.png", 4, 2, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 1, 0), IMG_DIR$ + "/refactored/Body_block_nomittens.png", 4,  2, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 0, 1), IMG_DIR$ + "/refactored/Body_noblock_mittens.png", 4,  2, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 1, 1), IMG_DIR$ + "/refactored/Body_block_mittens.png", 4,  2, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(0, 0, 0, 0), IMG_DIR$ + "/refactored/Body_noblock_nomittens.png", 4, 2, FALSE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(0, 1, 0, 0), IMG_DIR$ + "/refactored/Body_block_nomittens.png", 4,  2, FALSE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(0, 0, 1, 0), IMG_DIR$ + "/refactored/Body_noblock_mittens.png", 4,  2, FALSE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(0, 1, 1, 0), IMG_DIR$ + "/refactored/Body_block_mittens.png", 4,  2, FALSE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(1, 0, 0, 0), IMG_DIR$ + "/refactored/Body_noblock_nomittens.png", 4, 2, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(1, 1, 0, 0), IMG_DIR$ + "/refactored/Body_block_nomittens.png", 4,  2, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(1, 0, 1, 0), IMG_DIR$ + "/refactored/Body_noblock_mittens.png", 4,  2, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(1, 1, 1, 0), IMG_DIR$ + "/refactored/Body_block_mittens.png", 4,  2, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(0, 0, 0, 1), IMG_DIR$ + "/refactored/Body_noblock_nomittens_panting.png", 2, 10, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(0, 1, 0, 1), IMG_DIR$ + "/refactored/Body_block_nomittens_panting.png", 2,  10, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(0, 0, 1, 1), IMG_DIR$ + "/refactored/Body_noblock_mittens_panting.png", 2,  10, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(0, 1, 1, 1), IMG_DIR$ + "/refactored/Body_block_mittens_panting.png", 2,  10, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(1, 0, 0, 1), IMG_DIR$ + "/refactored/Body_noblock_nomittens_panting.png", 2, 10, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(1, 1, 0, 1), IMG_DIR$ + "/refactored/Body_block_nomittens_panting.png", 2,  10, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(1, 0, 1, 1), IMG_DIR$ + "/refactored/Body_noblock_mittens_panting.png", 2,  10, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_BODY(1, 1, 1, 1), IMG_DIR$ + "/refactored/Body_block_mittens_panting.png", 2,  10, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
 
 Dim Shared DoduSmall As SpriteSequence
 SpriteSequence_InitFile DoduSmall, IMG_DIR$ + "/DoduSmall.gif", 1,  1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
@@ -113,6 +124,9 @@ Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 1, 2
 Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 2, 3
 Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 3, 4
 Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 5, 5
+
+Trajectory_Init Trajectories(TRJ_PANTING%), 1, 40, FALSE, FALSE
+Trajectory_AddCoords Trajectories(TRJ_PANTING%), 0,  0, 0
 
 ' Splash screen
 Dim Shared SplashScreen As SpriteSequence

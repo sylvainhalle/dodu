@@ -276,7 +276,7 @@ Sub FeetSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 
   If col < 0 Or col >= M_W% Then Exit Sub
 
-  Let feet = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%)' - 1
+  Let feet = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%)
 
   ' Check the two rows alongside Dodu
   If feet >= 1 Then

@@ -26,6 +26,7 @@ Type Player
   HasBlock As Integer
   IsClimbing As Integer
   IsFalling As Integer
+  IsPanting As Integer
   ToLeft As Integer
   Temp As Integer ' 0 to 10
   ThermoTick As Ticker

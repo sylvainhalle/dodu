@@ -51,7 +51,9 @@ Declare Sub Square_Set (s As Square, col As Integer, row As Integer)
 '**
 Declare Function Square_IsValid% (s as Square)
 
-Declare Function Square_ToString$ (s as Square)
+Declare Function Square_ToString$
+
+Declare Function IsPlayerInSnow (lp As Point, l As LevelMap)(s as Square)
 
 '**
 '* Converts the coordinate of a square in the level map to the x,y

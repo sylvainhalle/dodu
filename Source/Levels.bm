@@ -113,6 +113,22 @@ Function IsSnowAt (col As Integer, row As Integer, l As LevelMap)
   End If
 End Function
 
+Function IsPlayerInSnow (lp As Point, l As LevelMap)
+	Let IsPlayerInSnow = FALSE
+	Dim feetrow As Integer, col1 As Integer, col2 As Integer
+	Let feetrow = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%)
+	Let col1 = Floor%(lp.x / BLOCK_SIZE%)
+	If IsSnowAt (col1, feetrow, l) Then
+		Let IsPlayerInSnow = TRUE
+		Exit Function
+	End If
+	Let col2 = Floor%((lp.x + PLAYER_WIDTH%) / BLOCK_SIZE%)
+	If IsSnowAt (col2, feetrow, l) Then
+		Let IsPlayerInSnow = TRUE
+		Exit Function
+	End If
+End Function
+
 Function GetSnowSlopeAt (col As Integer, row As Integer, m As LevelMap)
 	Let GetSnowSlopeAt = L_SLOPE_NONE
 	'If IsSnowAt(col, row, m) Then Exit Function

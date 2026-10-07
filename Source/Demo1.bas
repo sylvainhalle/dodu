@@ -412,10 +412,10 @@ Sub DoLevel
     If CURRENT_TRAJECTORY% = TRJ_CLIMBING_SNOW Then
       Let Dodu.InSnow = TRUE
     Else
-      If Square_IsValid(snowP) _OrElse (Square_IsValid(feetP) _AndAlso IsSnowAt(feetP.col, feetP.row, Levels(CURRENT_LEVEL))) Then
+      If IsPlayerInSnow(Dodu.LevPos, Levels(CURRENT_LEVEL)) Then
         Let Dodu.InSnow = TRUE
         Let WalkingTicker.Speed = Ceil%(1 / WALKING_SPEED_SNOW)
-        If Dodu.IsWalking Then
+        If Dodu.IsWalking _AndAlso Square_IsValid(snowP) Then
           SpriteSequence_Start SPRITE_LEVEL(0, snowP.col, snowP.row)
           SpriteSequence_Start SPRITE_LEVEL(1, snowP.col, snowP.row)
         End If
@@ -437,8 +437,8 @@ Sub DoLevel
       If Ticker_IsFinished%(Trajectories(CURRENT_TRAJECTORY%).Ticker) Then
         Trajectory_Reset Trajectories(CURRENT_TRAJECTORY)
         Let CURRENT_TRAJECTORY% = -1
+        Let Dodu.IsPanting = FALSE
       End If
-
       GoTo RenderFrame:
     End If
 
@@ -705,6 +705,12 @@ Sub DoLevel
 
     RenderFrame:
 
+    If DoduPast.InSnow And (Not Dodu.InSnow Or (DoduPast.IsWalking And Not Dodu.IsWalking And CURRENT_TRAJECTORY <> TRJ_PANTING%)) Then
+      Let CURRENT_TRAJECTORY% = TRJ_PANTING%
+      Let Dodu.IsPanting = TRUE
+      Let Dodu.IsWalking = FALSE
+    End If
+
     GetDoduSprite CurrentSprite(), Dodu, DoduPast
 
     ' Advance exactly once per game frame.
@@ -734,7 +740,7 @@ Sub DoLevel
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
     'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), snowP, COLOR_PINK&
-    Viewport_Print ImgBuffer, Square_ToString(feetP) + Str$(Dodu.InSnow), P_ORIGIN
+    Viewport_Print ImgBuffer, Str$(CURRENT_TRAJECTORY%), P_ORIGIN
 
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
@@ -1044,9 +1050,13 @@ Sub GetDoduSprite (s() As SpriteSequence, DoduNow As Player, DoduPast As Player)
     If Dodu.Temp < 3 Then
       Let s(1) = SPR_DOD_HEAD(Abs(DoduNow.IsWalking), 2)
     Else
-      Let s(1) = SPR_DOD_HEAD(Abs(DoduNow.IsWalking), Abs(DoduNow.InSnow))
+      If DoduNow.IsPanting Then
+        Let s(1) = SPR_DOD_HEAD(0, 3)
+      Else
+        Let s(1) = SPR_DOD_HEAD(Abs(DoduNow.IsWalking), Abs(DoduNow.InSnow))
+      End If
     End If
-    Let s(2) = SPR_DOD_BODY(Abs(DoduNow.IsWalking), Abs(DoduNow.HasBlock), Abs(DoduNow.HasMittens))
+    Let s(2) = SPR_DOD_BODY(Abs(DoduNow.IsWalking), Abs(DoduNow.HasBlock), Abs(DoduNow.HasMittens), Abs(DoduNow.IsPanting))
     Let DoduPast = DoduNow
   End If
 End Sub
