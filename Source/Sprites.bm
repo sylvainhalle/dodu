@@ -163,18 +163,20 @@ End Sub
 
 Sub Trajectory_Tick (t As Trajectory, p as Point)
 	Point_Set p, 0, 0
-	If t.Ticker.Index >= 0 And t.Ticker.TickCnt = 0 Then
-		If t.Flipped Then
-			Point_Set p, -t.Points(t.Ticker.Index).x, t.Points(t.Ticker.Index).y
-		Else
-			Point_Set p, t.Points(t.Ticker.Index).x, t.Points(t.Ticker.Index).y
-		End If
+	If t.Flipped Then
+		Point_Set p, -t.Points(t.Ticker.Index).x, t.Points(t.Ticker.Index).y
+	Else
+		Point_Set p, t.Points(t.Ticker.Index).x, t.Points(t.Ticker.Index).y
 	End If
 	Ticker_Tick t.Ticker
 End Sub
 
 Sub Trajectory_Reset (t As Trajectory)
 	Ticker_reset t.Ticker
+End Sub
+
+Sub Trajectory_Start (t As Trajectory)
+	Ticker_Start t.Ticker
 End Sub
 
 '**

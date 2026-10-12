@@ -317,6 +317,8 @@ Sub DoLevel
   Loop Until Ticker_IsFinished%(ImgBuffer.PanTick)
 
   Viewport_SetCenter ImgBuffer, center
+  Dim hasfallen As Integer
+  Dim lastClimbIndex As Integer, lastUnclimbIndex As Integer, lastFallIndex As Integer
 
   Do
     _Limit FPS%
@@ -338,6 +340,10 @@ Sub DoLevel
 
     If Dodu.ThermoTick.TickCnt = 0 Then
       Let Dodu.Temp = Dodu.Temp - 1
+      If CURRENT_TRAJECTORY < 0 Then
+        Let CURRENT_TRAJECTORY = TRJ_LOOKING_THERMO%
+        Let Dodu.IsLooking = TRUE
+      End If
     End If
 
     If Dodu.Temp = 0 Then
@@ -430,16 +436,36 @@ Sub DoLevel
     ' ---------------------------------------
 
     If CURRENT_TRAJECTORY% >= 0 And CURRENT_TRAJECTORY% < 100 Then
+      Tick_Trajectory trjP
 
-      Trajectory_Tick Trajectories(CURRENT_TRAJECTORY%), trjP
       MovePlayer ImgBuffer, trjP
 
       If Ticker_IsFinished%(Trajectories(CURRENT_TRAJECTORY%).Ticker) Then
-        Trajectory_Reset Trajectories(CURRENT_TRAJECTORY)
-        Let CURRENT_TRAJECTORY% = -1
-        Let Dodu.IsPanting = FALSE
+        Select Case CURRENT_TRAJECTORY
+          Case TRJ_UNCLIMBING
+            Let lastUnclimbIndex = Trajectories(CURRENT_TRAJECTORY).Ticker.Index
+          Case TRJ_CLIMBING
+            Let lastClimbIndex = Trajectories(CURRENT_TRAJECTORY).Ticker.Index
+          Case TRJ_FALLING
+            Let lastFallIndex = Trajectories(CURRENT_TRAJECTORY).Ticker.Index
+        End Select
+        If Not (CURRENT_TRAJECTORY% = TRJ_UNCLIMBING% Or CURRENT_TRAJECTORY% = TRJ_FALLING%) Then
+          Let CURRENT_TRAJECTORY% = -1
+          Let Dodu.IsPanting = FALSE
+          Let Dodu.IsLooking = FALSE
+        Else
+          If Not IsOnGround%(Dodu.LevPos, Levels(CURRENT_LEVEL)) Then
+            '   Not reached the ground: fall
+            Initiate_Trajectory TRJ_FALLING%, Dodu.ToLeft
+            Let hasfallen = TRUE
+          Else
+            Let CURRENT_TRAJECTORY% = -1
+            Let Dodu.IsPanting = FALSE
+            Let Dodu.IsLooking = FALSE
+          End If
+        End If
+        GoTo RenderFrame:
       End If
-      GoTo RenderFrame:
     End If
 
     ' ---------------------------------------
@@ -482,6 +508,8 @@ Sub DoLevel
 
       Let CTRL_PRESSED = FALSE
       Let CURRENT_TRAJECTORY% = TRJ_PANBACK%
+      Ticker_Reset panback_ticker
+      Ticker_Start panback_ticker
 
       GetDoduCenter center
 
@@ -551,13 +579,12 @@ Sub DoLevel
         Let Dodu.IsWalking = TRUE
         If Square_IsValid%(climbP) Then
           If slopetype = L_SLOPE_R Or slopetype = L_SLOPE_R Or slopetype = L_SLOPE_C Then
-            Let CURRENT_TRAJECTORY% = TRJ_CLIMBING_SNOW%
+            Initiate_Trajectory TRJ_CLIMBING_SNOW%, TRUE
             SpriteSequence_Start SPRITE_LEVEL(0, climbP.col, climbP.row)
             SpriteSequence_Start SPRITE_LEVEL(1, climbP.col, climbP.row)
           Else
-            Let CURRENT_TRAJECTORY% = TRJ_CLIMBING%
+            Initiate_Trajectory TRJ_CLIMBING%, TRUE
           End If
-          Let Trajectories(CURRENT_TRAJECTORY%).Flipped = TRUE
         End If
 
       Else
@@ -575,8 +602,7 @@ Sub DoLevel
 
       If Square_IsValid(unclimbP) Then
         Let Dodu.IsWalking = FALSE
-        Let CURRENT_TRAJECTORY% = TRJ_FALLING%
-        Let Trajectories(CURRENT_TRAJECTORY%).Flipped = TRUE
+        Initiate_Trajectory TRJ_UNCLIMBING%, TRUE
       End If
 
     ElseIf IsRight% Then
@@ -589,13 +615,10 @@ Sub DoLevel
         Let Dodu.IsWalking = TRUE
         If Square_IsValid%(climbP) Then
           If slopetype = L_SLOPE_R Or slopetype = L_SLOPE_R Or slopetype = L_SLOPE_C Then
-            Let CURRENT_TRAJECTORY% = TRJ_CLIMBING_SNOW%
-            SpriteSequence_Start SPRITE_LEVEL(0, climbP.col, climbP.row)
-            SpriteSequence_Start SPRITE_LEVEL(1, climbP.col, climbP.row)
+            Initiate_Trajectory TRJ_CLIMBING_SNOW%, FALSE
           Else
-            Let CURRENT_TRAJECTORY% = TRJ_CLIMBING%
+            Initiate_Trajectory TRJ_CLIMBING%, FALSE
           End If
-          Let Trajectories(CURRENT_TRAJECTORY%).Flipped = FALSE
         End If
 
       Else
@@ -613,8 +636,7 @@ Sub DoLevel
 
       If Square_IsValid(unclimbP) Then
         Let Dodu.IsWalking = FALSE
-        Let CURRENT_TRAJECTORY% = TRJ_FALLING%
-        Let Trajectories(CURRENT_TRAJECTORY%).Flipped = FALSE
+        Initiate_Trajectory TRJ_UNCLIMBING, FALSE
       End If
 
     ElseIf IsUp% And Square_IsValid(takeP) Then
@@ -679,10 +701,11 @@ Sub DoLevel
       Let Dodu.IsWalking = FALSE
 
       If Dodu.SlipDir <> 0 Then
+        Ticker_Start Dodu.SlipTick
         Ticker_Tick Dodu.SlipTick
       End If
 
-      If Not Ticker_IsFinished%(Dodu.SlipTick) Then
+      If Ticker_IsRunning%(Dodu.SlipTick) Then
 
         If Dodu.SlipTick.TickCnt = 0 Then
           Dim slipP As Point
@@ -706,7 +729,7 @@ Sub DoLevel
     RenderFrame:
 
     If DoduPast.InSnow And (Not Dodu.InSnow Or (DoduPast.IsWalking And Not Dodu.IsWalking And CURRENT_TRAJECTORY <> TRJ_PANTING%)) Then
-      Let CURRENT_TRAJECTORY% = TRJ_PANTING%
+      Initiate_Trajectory TRJ_PANTING%, Dodu.ToLeft
       Let Dodu.IsPanting = TRUE
       Let Dodu.IsWalking = FALSE
     End If
@@ -739,8 +762,9 @@ Sub DoLevel
 
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
-    'HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), snowP, COLOR_PINK&
-    Viewport_Print ImgBuffer, Str$(CURRENT_TRAJECTORY%), P_ORIGIN
+    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK&
+    'Viewport_Print ImgBuffer, Str$((Dodu.LevPos.y + PLAYER_HEIGHT%) Mod 11) + Str$(hasfallen), P_ORIGIN
+    Viewport_Print ImgBuffer, Str$(lastClimbIndex) + Str$(lastUnclimbIndex) + Str$(lastFallIndex), P_ORIGIN
 
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
@@ -953,9 +977,9 @@ End Sub
 ' --------------------------
 Sub DrawPlayer (v As Viewport, seqs() As SpriteSequence)
   Dim s As SpriteSequence
-  Viewport_PutSpriteSequence v, FALSE, seqs(0), Dodu.LevPos, Dodu.ToLeft
-  Viewport_PutSpriteSequence v, FALSE, seqs(1), Dodu.LevPos, Dodu.ToLeft
-  Viewport_PutSpriteSequence v, FALSE, seqs(2), Dodu.LevPos, Dodu.ToLeft
+  Viewport_PutSpriteSequence v, FALSE, seqs(0), Dodu.LevPos, seqs(0).Flipped
+  Viewport_PutSpriteSequence v, FALSE, seqs(1), Dodu.LevPos, seqs(1).Flipped
+  Viewport_PutSpriteSequence v, FALSE, seqs(2), Dodu.LevPos, seqs(2).Flipped
 End Sub
 
 
@@ -980,6 +1004,8 @@ Sub SetSpriteSquare (m As LevelMap, isfront As Integer, col As Integer, row As I
         SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SprMittens
       Case T_TUQUE
         SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SprTuque
+      Case T_WATER
+        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), Water
       Case T_SNOW
         If Dodu.HasRackets Then
           PrepareSnow m, col, row, FALSE
@@ -1047,16 +1073,31 @@ End Sub
 Sub GetDoduSprite (s() As SpriteSequence, DoduNow As Player, DoduPast As Player)
   If PlayerChanged(DoduNow, DoduPast) Then
     Let s(0) = SPR_DOD_TUQUE(Abs(DoduNow.IsWalking), Abs(DoduNow.HasTuque))
+    Let s(0).Flipped = DoduNow.ToLeft
     If Dodu.Temp < 3 Then
-      Let s(1) = SPR_DOD_HEAD(Abs(DoduNow.IsWalking), 2)
+      Let s(1) = SPR_DOD_HEAD(Abs(DoduNow.IsWalking), SPR_FREEZING)
     Else
       If DoduNow.IsPanting Then
-        Let s(1) = SPR_DOD_HEAD(0, 3)
+        Let s(1) = SPR_DOD_HEAD(SPR_NOT_WALKING, SPR_PANTING)
+        Let s(1).Flipped = DoduNow.ToLeft
+      ElseIf DoduNow.IsLooking Then
+        Dim screenpt As Point
+        Viewport_PointToScreen ImgBuffer, Dodu.LevPos, screenpt
+        Let s(1) = SPR_DOD_HEAD(SPR_NOT_WALKING, SPR_LOOKING_THERMO)
+        'If screenpt.y >= 20 Then
+        '  Let s(1) = SPR_DOD_HEAD(SPR_NOT_WALKING, SPR_LOOKING_THERMO)
+        'Else
+        '  Let s(1) = SPR_DOD_HEAD(SPR_NOT_WALKING, SPR_LOOKING_THERMO_UP)
+        'End If
+        Let s(1).Flipped = DoduNow.ToLeft
+        SpriteSequence_Start s(1)
       Else
         Let s(1) = SPR_DOD_HEAD(Abs(DoduNow.IsWalking), Abs(DoduNow.InSnow))
+        Let s(1).Flipped = DoduNow.ToLeft
       End If
     End If
     Let s(2) = SPR_DOD_BODY(Abs(DoduNow.IsWalking), Abs(DoduNow.HasBlock), Abs(DoduNow.HasMittens), Abs(DoduNow.IsPanting))
+    Let s(2).Flipped = DoduNow.ToLeft
     Let DoduPast = DoduNow
   End If
 End Sub
@@ -1217,6 +1258,22 @@ Sub DoIntroduction (rst As RestorePoint)
       End If
     End If
   Loop
+End Sub
+
+Sub Initiate_Trajectory (index As Integer, flipped As Integer)
+  If CURRENT_TRAJECTORY >= 0 Then
+    Exit Sub 'Trajectory already running, ignore
+  End If
+  Let CURRENT_TRAJECTORY = index
+  Trajectory_Reset Trajectories(CURRENT_TRAJECTORY)
+  Trajectory_Start Trajectories(CURRENT_TRAJECTORY)
+  Let Trajectories(CURRENT_TRAJECTORY).Flipped = flipped
+End Sub
+
+Sub Tick_Trajectory (p As Point)
+  If CURRENT_TRAJECTORY% >= 0 And CURRENT_TRAJECTORY% < 100 Then
+    Trajectory_Tick Trajectories(CURRENT_TRAJECTORY), p
+  End If
 End Sub
 
 ' --------------------------

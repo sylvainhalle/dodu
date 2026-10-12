@@ -32,6 +32,7 @@ Const T_TUQUE = "t"
 Const T_SNOW = "S"
 Const T_SNOWSHOES = "h"
 Const T_BEAR = "B"
+Const T_WATER = "~"
 Const T_END = "x"
 Const T_ENDALL = "X"
 

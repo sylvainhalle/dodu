@@ -17,6 +17,7 @@
 '-----------------------------------------------------------------------------
 
 Sub Ticker_Init (t As Ticker, l As Integer, speed As Integer, isloop As Integer)
+	let t.Running = TRUE
 	let t.Length = l
 	let t.Speed = speed
 	let t.Loop = isloop
@@ -25,7 +26,8 @@ Sub Ticker_Init (t As Ticker, l As Integer, speed As Integer, isloop As Integer)
 End Sub
 
 Sub Ticker_Tick (t As Ticker)
-	If t.Index >= 0 and t.Speed > 0 Then
+	If Not t.Running Then Exit Sub
+	If t.Speed > 0 Then
 		Let t.TickCnt = (t.TickCnt + 1) Mod t.Speed
 		If t.TickCnt = 0 Then
 			Let t.Index = t.Index + 1
@@ -33,7 +35,7 @@ Sub Ticker_Tick (t As Ticker)
 				If t.Loop Then
 					let t.Index = 0
 				Else
-					let t.Index = -1
+					let t.Running = FALSE
 				End If
 			End If
 		End If
@@ -43,14 +45,19 @@ End Sub
 Sub Ticker_Reset (t As Ticker)
 	let t.TickCnt = 0
 	let t.Index = 0
+	let t.Running = FALSE
+End Sub
+
+Sub Ticker_Start (t As Ticker)
+	let t.Running = TRUE
 End Sub
 
 Sub Ticker_Stop (t As Ticker)
-	let t.TickCnt = -1
-	let t.Index = -1
+	let t.Running = FALSE
 End Sub
 
 Sub Ticker_Copy (dst As Ticker, src As Ticker)
+	Let dst.Running = src.Running
 	Let dst.Length = src.Length
 	Let dst.Index = src.Index
 	Let dst.Loop = src.Loop
@@ -59,19 +66,11 @@ Sub Ticker_Copy (dst As Ticker, src As Ticker)
 End Sub
 
 Function Ticker_IsRunning% (t as Ticker)
-	if t.Index < 0 Then
-		let Ticker_IsRunning% = FALSE
-	else
-		let Ticker_IsRunning% = TRUE
-	end if
+	Let Ticker_IsRunning% = t.Running
 End Function
 
 Function Ticker_IsFinished% (t as Ticker)
-	if t.Index < 0 Then
-		let Ticker_IsFinished% = TRUE
-	else
-		let Ticker_IsFinished% = FALSE
-	end if
+	Let Ticker_IsFinished% = Not Ticker_IsRunning%(t)
 End Sub
 
 ' :mode=visualbasic:

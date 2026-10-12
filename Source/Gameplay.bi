@@ -27,6 +27,7 @@ Type Player
   IsClimbing As Integer
   IsFalling As Integer
   IsPanting As Integer
+  IsLooking As Integer
   ToLeft As Integer
   Temp As Integer ' 0 to 10
   ThermoTick As Ticker

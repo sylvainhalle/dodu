@@ -251,6 +251,25 @@ Sub PoleSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   End If
 End Sub
 
+Function IsOnGround% (lp As Point, m As LevelMap)
+	Dim row As Integer, col As Integer
+	Let IsOnGround = FALSE
+	If (lp.y + PLAYER_HEIGHT%) Mod 11 <> 0 Then
+		Exit Function
+	End If
+	Let row = Ceil((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%)
+	Let col = Floor((lp.x + 6) / BLOCK_SIZE%)
+	If IsBlockAt(col, row, m) Then
+		Let IsOnGround = TRUE
+		Exit Function
+	End If
+	Let Col = Floor((lp.x + PLAYER_WIDTH% - 6) / BLOCK_SIZE%)
+	If IsBlockAt(col, row, m) Then
+		Let IsOnGround = TRUE
+		Exit Function
+	End If
+End Function
+
 Sub FeetSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
   Dim x As Integer
   Dim col As Integer

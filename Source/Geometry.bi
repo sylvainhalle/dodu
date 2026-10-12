@@ -71,4 +71,6 @@ Declare Sub CookieSquare (side As Integer, lp As Point, m As LevelMap, p As Squa
 '**
 Declare Sub FeetSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 
+Declare Function IsOnGround% (lp As Point, m As LevelMap)
+
 ' :mode=visualbasic:folding=explicit:wrap=none:

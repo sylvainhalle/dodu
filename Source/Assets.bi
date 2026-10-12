@@ -51,6 +51,11 @@ Let DEFAULT_OFFSET = P_ORIGIN
 
 ' 1st coordinate: 0 = not walking, 1 = walking
 ' 2nd coordinate: 0 = no tuque, 1 = with tuque
+
+Const SPR_NOT_WALKING = 0
+Const SPR_WALKING = 1
+Const SPR_NO_TUQUE = 0
+Const SPR_TUQUE = 1
 Dim Shared SPR_DOD_TUQUE(2, 2) As SpriteSequence, TUQUE_OFFSET As Point
 Point_Set TUQUE_OFFSET, 0, -11
 SpriteSequence_InitFile SPR_DOD_TUQUE(0, 0), IMG_DIR$ + "/refactored/NoTuque.png", 4, 2, FALSE, TRUE, TUQUE_OFFSET, TUQUE_OFFSET, COLOR_TRANSPARENT
@@ -60,12 +65,21 @@ SpriteSequence_InitFile SPR_DOD_TUQUE(1, 1), IMG_DIR$ + "/refactored/Tuque.png",
 
 ' 1st coordinate: 0 = not walking, 1 = walking
 ' 2nd coordinate: 0 = normal, 1 = tired, 2 = freezing, 3 = panting
-Dim Shared SPR_DOD_HEAD(2, 3) As SpriteSequence, HEAD_OFFSET As Point
+Const SPR_NOT_TIRED = 0
+Const SPR_TIRED = 1
+Const SPR_FREEZING = 2
+Const SPR_PANTING = 3
+Const SPR_LOOKING_THERMO = 4
+Const SPR_LOOKING_THERMO_UP = 5
+
+Dim Shared SPR_DOD_HEAD(2, 6) As SpriteSequence, HEAD_OFFSET As Point
 Point_Set HEAD_OFFSET, 0, 0
 SpriteSequence_InitFile SPR_DOD_HEAD(0, 0), IMG_DIR$ + "/refactored/Head_idle.png", 15, 3, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(0, 1), IMG_DIR$ + "/refactored/Head_tired.png", 4, 2, FALSE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(0, 2), IMG_DIR$ + "/refactored/Head_freezing.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(0, 3), IMG_DIR$ + "/refactored/Head_panting.png", 2, 10, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_HEAD(0, 4), IMG_DIR$ + "/refactored/Head_looking_mid.png", 2, 1, FALSE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_DOD_HEAD(0, 5), IMG_DIR$ + "/refactored/Head_looking_up.png", 2, 1, FALSE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(1, 0), IMG_DIR$ + "/refactored/Head.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(1, 1), IMG_DIR$ + "/refactored/Head_tired.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_DOD_HEAD(1, 2), IMG_DIR$ + "/refactored/Head_freezing.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
@@ -75,6 +89,12 @@ SpriteSequence_InitFile SPR_DOD_HEAD(1, 3), IMG_DIR$ + "/refactored/Head_panting
 ' 2nd coordinate: 0 = no block, 1 = has block
 ' 3rd coordinate: 0 = no mittens, 1 = with mittens
 ' 4th coordinate: 0 = not panting, 1 = panting
+Const SPR_NO_BLOCK = 0
+Const SPR_BLOCK = 1
+Const SPR_NO_MITTENS = 0
+Const SPR_MITTENS = 1
+Const SPR_B_NOT_PANTING = 0
+Const SPR_B_PANTING = 1
 Dim Shared SPR_DOD_BODY(2, 2, 2, 2) As SpriteSequence, BODY_OFFSET_NOBLOCK As Point, BODY_OFFSET_BLOCK As Point
 Point_Set BODY_OFFSET_NOBLOCK, 0, 13
 Point_Set BODY_OFFSET_BLOCK, 0, 12
@@ -101,10 +121,13 @@ SpriteSequence_InitFile DoduSmall, IMG_DIR$ + "/DoduSmall.gif", 1,  1, TRUE, TRU
 ' Trajectories
 Const TRJ_CLIMBING% = 0
 Const TRJ_CLIMBING_SNOW% = 1
-Const TRJ_FALLING% = 2
+Const TRJ_UNCLIMBING% = 2
 Const TRJ_PANTING% = 3
+Const TRJ_LOOKING_THERMO% = 4
+Const TRJ_FALLING% = 5
 Const TRJ_PANBACK% = 100
-Dim Shared Trajectories(4) As Trajectory
+
+Dim Shared Trajectories(6) As Trajectory
 Dim trj As Trajectory
 Trajectory_Init Trajectories(TRJ_CLIMBING%), 6, 1, FALSE, FALSE
 Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 0, -3, 0
@@ -117,16 +140,27 @@ Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 1,  0, 5
 Trajectory_Copy Trajectories(TRJ_CLIMBING_SNOW%), Trajectories(TRJ_CLIMBING%)
 Let Trajectories(TRJ_CLIMBING_SNOW%).Ticker.Speed = 4
 
+Trajectory_Init Trajectories(TRJ_UNCLIMBING%), 6, 1, FALSE, FALSE
+Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING%), 1,  0, 0
+Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING%), 1,  0, 1
+Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING%), 0, 1, 2
+Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING%), 0, 2, 3
+Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING%), 0, 3, 4
+Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING%), 0, 5, 5
+
 Trajectory_Init Trajectories(TRJ_FALLING%), 6, 1, FALSE, FALSE
-Trajectory_AddCoords Trajectories(TRJ_FALLING%), 1,  0, 0
-Trajectory_AddCoords Trajectories(TRJ_FALLING%), 1,  0, 1
+Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0,  1, 0
+Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0,  1, 1
 Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 1, 2
 Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 2, 3
-Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 3, 4
-Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 5, 5
+Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 2, 4
+Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 4, 5
 
 Trajectory_Init Trajectories(TRJ_PANTING%), 1, 40, FALSE, FALSE
 Trajectory_AddCoords Trajectories(TRJ_PANTING%), 0,  0, 0
+
+Trajectory_Init Trajectories(TRJ_LOOKING_THERMO%), 1, 12, FALSE, FALSE
+Trajectory_AddCoords Trajectories(TRJ_LOOKING_THERMO%), 0,  0, 0
 
 ' Splash screen
 Dim Shared SplashScreen As SpriteSequence
@@ -141,6 +175,8 @@ Dim Shared MiniBlockBlue As SpriteSequence
 SpriteSequence_InitFile MiniBlockBlue, IMG_DIR$ + "/MiniBlockBlue.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Dim Shared MiniBlockWhite As SpriteSequence
 SpriteSequence_InitFile MiniBlockWhite, IMG_DIR$ + "/MiniBlockWhite.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Dim Shared Water As SpriteSequence
+SpriteSequence_InitFile MiniBlockWhite, IMG_DIR$ + "/Water.png",11, 3, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Dim Shared SnowC As SpriteSequence
 Dim Coffset As Point
 Point_Set Coffset, 0, -14
@@ -261,6 +297,9 @@ SpriteSequence_InitFile Backgrounds(2), IMG_DIR$ + "/Background_Cards.gif",1, 1,
 SpriteSequence_InitFile Backgrounds(3), IMG_DIR$ + "/Background3.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile Backgrounds(4), IMG_DIR$ + "/Background4.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile Backgrounds(5), IMG_DIR$ + "/refactored/Background_5.png", 20, 4, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(6), IMG_DIR$ + "/Background_pizza.png", 1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(7), IMG_DIR$ + "/Background_pizza2.png", 1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(8), IMG_DIR$ + "/Digits.png", 22, 14, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 ' ---------------------
 ' Foregrounds

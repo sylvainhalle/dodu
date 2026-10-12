@@ -21,6 +21,7 @@
 '**
 
 Type Ticker
+	Running As Integer
 	Length As Integer
 	Index As Integer
 	Loop As Integer
@@ -33,6 +34,8 @@ Declare Sub Ticker_Init (t As Ticker, l As Integer, speed As Integer, isloop As 
 Declare Sub Ticker_Tick (t As Ticker)
 
 Declare Sub Ticker_Reset (t As Ticker)
+
+Declare Sub Ticker_Start (t As Ticker)
 
 Declare Sub Ticker_Stop (t As Ticker)
 

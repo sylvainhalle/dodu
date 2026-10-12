@@ -143,6 +143,8 @@ Declare Sub Trajectory_AddCoords (t As Trajectory, x as Integer, y as Integer)
 
 Declare Sub Trajectory_Tick (t As Trajectory, p as Point)
 
+Declare Sub Trajectory_Start (t As Trajectory)
+
 Declare Sub Trajectory_Reset (t As Trajectory)
 
 '**
