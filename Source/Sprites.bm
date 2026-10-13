@@ -289,7 +289,7 @@ Sub Viewport_Display (v As Viewport)
 		Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 - (255 * v.FadeInTicker.Index / v.FadeInTicker.Length))), BF
 	End If
 	If Ticker_IsRunning%(v.FadeOutTicker) Then
-		Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 * v.FadeInTicker.Index / v.FadeOutTicker.Length)), BF
+		Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 * v.FadeOutTicker.Index / v.FadeOutTicker.Length)), BF
 	End If
 	If v.Scanlines Then
 		Dim y As Integer

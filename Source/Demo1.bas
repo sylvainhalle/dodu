@@ -195,6 +195,8 @@ Sub MainLoop
     Dim rst As RestorePoint
     Screen MainScreen.Buffer
 
+    DoLifSplash
+
     DoIntroduction rst
     If rst.Level >= 0 Then
       Let CURRENT_LEVEL = rst.Level
@@ -455,6 +457,7 @@ Sub DoLevel
           Let Dodu.IsLooking = FALSE
         Else
           If Not IsOnGround%(Dodu.LevPos, Levels(CURRENT_LEVEL)) Then
+            Let CURRENT_TRAJECTORY% = -1
             '   Not reached the ground: fall
             Initiate_Trajectory TRJ_FALLING%, Dodu.ToLeft
             Let hasfallen = TRUE
@@ -763,8 +766,8 @@ Sub DoLevel
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK&
-    'Viewport_Print ImgBuffer, Str$((Dodu.LevPos.y + PLAYER_HEIGHT%) Mod 11) + Str$(hasfallen), P_ORIGIN
-    Viewport_Print ImgBuffer, Str$(lastClimbIndex) + Str$(lastUnclimbIndex) + Str$(lastFallIndex), P_ORIGIN
+    Viewport_Print ImgBuffer, Str$((Dodu.LevPos.y + PLAYER_HEIGHT%) Mod 11) + Str$(hasfallen), P_ORIGIN
+    'Viewport_Print ImgBuffer, Str$(lastClimbIndex) + Str$(lastUnclimbIndex) + Str$(lastFallIndex), P_ORIGIN
 
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
@@ -782,6 +785,14 @@ Sub DoLevel
   End
 End Sub
 
+Sub DoLifSplash
+  Viewport_PutSpriteSequence ImgBuffer, TRUE, LifSplash, P_ORIGIN, FALSE
+  Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
+  Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
+  Viewport_Wait ImgBuffer, MainScreen, 2, FPS%
+  Viewport_FadeOut MainScreen, Ceil%(0.5 * FPS)
+  Viewport_Wait ImgBuffer, MainScreen, 0.5, FPS%
+End Sub
 
 Sub DoGameOver
   SoundPlayer_StopSong Audio
@@ -789,6 +800,7 @@ Sub DoGameOver
   'Cls
   Dim pw As Password
   GetPassword pw, CURRENT_LEVEL, LAST_MITTENS, LAST_TUQUE
+  Viewport_PutSpriteSequence ImgBuffer, TRUE, Veil, P_ORIGIN, FALSE
   Viewport_Print ImgBuffer, "GAME OVER", P_ORIGIN
   Dim x As Integer, pws As String, cardP As Point
   For x = 0 To 3

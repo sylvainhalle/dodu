@@ -166,6 +166,9 @@ Trajectory_AddCoords Trajectories(TRJ_LOOKING_THERMO%), 0,  0, 0
 Dim Shared SplashScreen As SpriteSequence
 SpriteSequence_InitFile SplashScreen, IMG_DIR$ + "/Splash.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
+Dim Shared LifSplash As SpriteSequence
+SpriteSequence_InitFile LifSplash, IMG_DIR$ + "/LIF.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+
 ' Blocks
 Dim Shared BlockBlue As SpriteSequence
 SpriteSequence_InitFile BlockBlue, IMG_DIR$ + "/BlockBlue.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
@@ -176,7 +179,7 @@ SpriteSequence_InitFile MiniBlockBlue, IMG_DIR$ + "/MiniBlockBlue.gif",1, 1, TRU
 Dim Shared MiniBlockWhite As SpriteSequence
 SpriteSequence_InitFile MiniBlockWhite, IMG_DIR$ + "/MiniBlockWhite.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Dim Shared Water As SpriteSequence
-SpriteSequence_InitFile MiniBlockWhite, IMG_DIR$ + "/Water.png",11, 3, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Water, IMG_DIR$ + "/Water.png",11, 3, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 Dim Shared SnowC As SpriteSequence
 Dim Coffset As Point
 Point_Set Coffset, 0, -14
@@ -300,6 +303,9 @@ SpriteSequence_InitFile Backgrounds(5), IMG_DIR$ + "/refactored/Background_5.png
 SpriteSequence_InitFile Backgrounds(6), IMG_DIR$ + "/Background_pizza.png", 1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile Backgrounds(7), IMG_DIR$ + "/Background_pizza2.png", 1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile Backgrounds(8), IMG_DIR$ + "/Digits.png", 22, 14, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+
+Dim Shared Veil As SpriteSequence
+SpriteSequence_InitFile Veil, IMG_DIR$ + "/Veil.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 ' ---------------------
 ' Foregrounds
