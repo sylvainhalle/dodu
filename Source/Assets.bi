@@ -164,7 +164,7 @@ Trajectory_AddCoords Trajectories(TRJ_LOOKING_THERMO%), 0,  0, 0
 
 ' Splash screen
 Dim Shared SplashScreen As SpriteSequence
-SpriteSequence_InitFile SplashScreen, IMG_DIR$ + "/New_splash.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SplashScreen, IMG_DIR$ + "/New_splash.png",15, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 Dim Shared LifSplash As SpriteSequence
 SpriteSequence_InitFile LifSplash, IMG_DIR$ + "/LIF.png",24, 1, TRUE, FALSE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
@@ -336,12 +336,14 @@ Const SNG_SONG2 = 1
 Const SNG_SONG3 = 2
 Const SNG_CARDS = 3
 Const SNG_CUTSCENE1 = 4
+Const SNG_BIERE = 5
 
 SoundPlayer_AddSong Audio, SNG_SONG1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod_fixed.mid"), 0.4
 SoundPlayer_AddSong Audio, SNG_SONG2, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/yaya.mid"), 0.4
 SoundPlayer_AddSong Audio, SNG_SONG3, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/pizza.mid"), 0.4
 SoundPlayer_AddSong Audio, SNG_CARDS, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cards.mid"), 0.4
 SoundPlayer_AddSong Audio, SNG_CUTSCENE1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cutscene1.mid"), 0.6
+SoundPlayer_AddSong Audio, SNG_BIERE, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/biere_q.mid"), 0.6
 
 
 Const SND_STEP% = 0

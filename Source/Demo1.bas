@@ -1249,25 +1249,79 @@ End Sub
 Sub DoIntroduction (rst As RestorePoint)
   Dim p As Point
   Let rst.Level = -1
-  Dim sel As Integer
+  Dim sel As Integer, n As Integer, h As Integer
+  Dim Flakes(50) As Point, downP As Point
+  Dim HeightsInit(SCREEN_DIMS.x) As Integer, Heights(SCREEN_DIMS.x) As Integer
+  Dim FlakesTickers(50) As Ticker, ShakeTicker As Ticker
+  Ticker_Init ShakeTicker, 15, 1, TRUE
+  Restore SplashShape:
+  For n = 0 To SCREEN_DIMS.x
+    Read h
+    Let Heights(n) = h
+    Let HeightsInit(n) = h
+  Next
+  Point_Set downP, 0, 1
+  For n = 0 To 49
+    Point_Set Flakes(n), Floor%(Rnd * SCREEN_DIMS.x), Floor%(Rnd * SCREEN_DIMS.y)
+    Ticker_Init FlakesTickers(n), 2, Int(Rnd * 2) + 2, TRUE
+  Next
+  Viewport_SetBackground ImgBuffer, SplashScreen, P_ORIGIN
+  SpriteSequence_Start SplashScreen
+  SoundPlayer_PlaySong Audio, SNG_BIERE
+  Dim yoffset As Integer
   Do
     _Limit FPS%
-    Viewport_SetBackground ImgBuffer, SplashScreen, P_ORIGIN
     Viewport_Clear ImgBuffer
-    If sel = 0 Then
-      Viewport_LineC ImgBuffer, TRUE, 20, 35, 34, 46, COLOR_YELLOW, TRUE, FALSE
+    Ticker_Tick ShakeTicker
+    If ShakeTicker.Index < 3 Then
+      Let yoffset = 1
     Else
-      Viewport_LineC ImgBuffer, TRUE, 43, 35, 57, 46, COLOR_YELLOW, TRUE, FALSE
+      Let yoffset = 0
     End If
+    For n = 0 To 49
+      If FlakesTickers(n).TickCnt = 0 Then
+        Point_Add Flakes(n), downP
+        If Heights(Flakes(n).x) >= 0 _AndAlso Flakes(n).y = Heights(Flakes(n).x) - 1 Then
+          If Flakes(n).x > 0 _AndAlso (Heights(Flakes(n).x - 1) = -1 _OrElse Heights(Flakes(n).x - 1) - Heights(Flakes(n).x) >= 3) Then
+            Let Flakes(n).x = Flakes(n).x - 1
+          ElseIf Flakes(n).x < SCREEN_DIMS.x - 1 _AndAlso (Heights(Flakes(n).x + 1) = -1 _OrElse Heights(Flakes(n).x - 1) - Heights(Flakes(n).x) >= 3) Then
+            Let Flakes(n).x = Flakes(n).x + 1
+          Else
+            Let Heights(Flakes(n).x) = Heights(Flakes(n).x) - 1
+            Point_Set Flakes(n), Int(Rnd * SCREEN_DIMS.x%), -Int(Rnd * 5)
+          End If
+        End If
+      ElseIf Heights(Flakes(n).x) < 0 Then
+        Point_Add Flakes(n), downP
+        If Flakes(n).y >= SCREEN_DIMS.y Then
+          Point_Set Flakes(n), Int(Rnd * SCREEN_DIMS.x%), -Int(Rnd * 5)
+        End If
+      End If
+      Viewport_LineC ImgBuffer, TRUE, Flakes(n).x, Flakes(n).y + yoffset, Flakes(n).x, Flakes(n).y + yoffset, COLOR_WHITE, FALSE, FALSE
+      Ticker_Tick FlakesTickers(n)
+    Next
+    For n = 0 To SCREEN_DIMS.x - 1
+      Viewport_LineC ImgBuffer, TRUE, n, HeightsInit(n) + yoffset - 1, n, Heights(n) + yoffset, COLOR_WHITE, TRUE, FALSE
+    Next
+    If sel = 0 Then
+      Viewport_LineC ImgBuffer, TRUE, 23, 45, 39, 56, COLOR_YELLOW, TRUE, FALSE
+    Else
+      Viewport_LineC ImgBuffer, TRUE, 40, 45, 56, 56, COLOR_YELLOW, TRUE, FALSE
+    End If
+    Viewport_Tick ImgBuffer
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
     If IsLeft% Or IsRight% Then
       Let sel = (sel + 1) Mod 2
       SoundPlayer_PlayEffect Audio, SND_TICK%
       Kbd_WaitRelease FPS%
+    ElseIf IsEsc% Then
+      Cls
+      End
     ElseIf IsButton1% Then
       If sel = 1 Then
         Kbd_WaitRelease FPS%
+        SoundPlayer_StopSong Audio
         DoPasswordInput rst
         If rst.Level < 0 Then
           Exit Do
