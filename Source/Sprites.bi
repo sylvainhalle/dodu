@@ -97,9 +97,9 @@ End Type
 '**
 '* Initializes a new sprite sequence.
 '**
-Declare Sub SpriteSequence_Init (s As SpriteSequence, content As Long, frames As Integer, spd As Integer, animate As Integer, isloop As Integer, clr As Long, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
+Declare Sub SpriteSequence_Init (s As SpriteSequence, content As Long, frames As Integer, spd As Integer, animate As Integer, isloop As Integer, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
 
-Declare Sub SpriteSequence_InitFile (s As SpriteSequence, filename As String, frames As Integer, spd As Integer, animate As Integer, isloop As Integer, clr As Long, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
+Declare Sub SpriteSequence_InitFile (s As SpriteSequence, filename As String, frames As Integer, spd As Integer, animate As Integer, isloop As Integer, offsetL As Point, offsetR As Point, clr As Long)
 
 '**
 '* Advances the sprite sequence by one tick.
@@ -122,6 +122,8 @@ Declare Sub SpriteSequence_Copy (target As SpriteSequence, source As SpriteSeque
 Declare Sub SpriteSequence_Current (s as SpriteSequence, spr as Sprite)
 
 Declare Sub SpriteSequence_PutSprite (s As SpriteSequence, v as Viewport, absolute As Integer, p As Point)
+
+Declare Function SpriteSequence_IsFinished% (s As SpriteSequence)
 
 Declare Function SpriteSequence_Width% (s As SpriteSequence)
 

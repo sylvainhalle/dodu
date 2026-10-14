@@ -164,10 +164,10 @@ Trajectory_AddCoords Trajectories(TRJ_LOOKING_THERMO%), 0,  0, 0
 
 ' Splash screen
 Dim Shared SplashScreen As SpriteSequence
-SpriteSequence_InitFile SplashScreen, IMG_DIR$ + "/Splash.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SplashScreen, IMG_DIR$ + "/New_splash.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 Dim Shared LifSplash As SpriteSequence
-SpriteSequence_InitFile LifSplash, IMG_DIR$ + "/LIF.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile LifSplash, IMG_DIR$ + "/LIF.png",24, 1, TRUE, FALSE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 ' Blocks
 Dim Shared BlockBlue As SpriteSequence

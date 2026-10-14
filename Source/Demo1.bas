@@ -1,4 +1,3 @@
-'$Debug
 '-----------------------------------------------------------------------------
 '    Dodu, an old-school QuickBasic game
 '    Copyright (C) 1994-2026  Sylvain Hallé
@@ -789,9 +788,19 @@ Sub DoLifSplash
   Viewport_PutSpriteSequence ImgBuffer, TRUE, LifSplash, P_ORIGIN, FALSE
   Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
   Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
+  SpriteSequence_Start LifSplash
+  Do
+    _Limit FPS%
+    SpriteSequence_Tick LifSplash
+    Viewport_PutSpriteSequence ImgBuffer, TRUE, LifSplash, P_ORIGIN, FALSE
+    Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Display MainScreen
+  Loop Until SpriteSequence_IsFinished(LifSplash)
   Viewport_Wait ImgBuffer, MainScreen, 2, FPS%
   Viewport_FadeOut MainScreen, Ceil%(0.5 * FPS)
   Viewport_Wait ImgBuffer, MainScreen, 0.5, FPS%
+  Viewport_Clear MainScreen
+  Viewport_Display MainScreen
 End Sub
 
 Sub DoGameOver

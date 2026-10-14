@@ -70,6 +70,10 @@ Function SpriteSequence_Height% (s As SpriteSequence)
 	Let SpriteSequence_Height% = s.Size.y
 End Function
 
+Function SpriteSequence_IsFinished% (s As SpriteSequence)
+	Let SpriteSequence_IsFinished% = Ticker_IsFinished%(s.Ticker)
+End Function
+
 Sub SpriteSequence_Copy (target As SpriteSequence, source As SpriteSequence)
 	Let target.Ticker = source.Ticker
 	Let target.Content = source.Content
