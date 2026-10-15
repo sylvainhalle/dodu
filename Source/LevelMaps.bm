@@ -24,8 +24,39 @@
 
 LevelData:
 
-Data 8, -1, 0, 2
+' Backgrounds
+' -----------
+' 0: blue 1
+' 1: blue 2
+' 2: cards
+' 3: cyan 1
+' 4: cyan 2
+' 5: falling snow
+' 6: pizza 1
+' 7: pizza 2
+' 8: digits
 
+' Songs
+' -----
+' 0: Dodu
+' 1: Yaya
+' 2: Pizza
+' 3: Cards
+' 4: Cutscene 1
+' 5: Bière qui roule (Dompierre)
+' 6: Pastoral
+' 7: Homage to Brubeck
+
+' Level data
+' ----------
+' Format:
+' - first line: background index, foreground index (-1 if none),
+'   cutscene index (-1 if none), song index
+' - remaining lines: map
+' - last line: "x" to indicate the end of a level; "X" to indicate that
+'   this is the last level
+
+Data 0, -1, 0, 0
 Data "             "
 Data "             "
 Data "@           @"
@@ -128,11 +159,11 @@ Data "@                  "
 Data "@#            @   @"
 Data "@@#        c# @   @"
 Data "@@##  *    @@ @ ! @"
-Data "@@@@@@@@ @ @@@@@@@@"
+Data "@@@@@@@@~@~@@@@@@@@"
 Data "x"
 
 
-Data 3, -1, 2, 1
+Data 3, -1, -1, 1
 Data "                   "
 Data "                   "
 Data "         *         "
@@ -163,7 +194,7 @@ Data "@        @        @"
 Data "@   #    @    #   @"
 Data "@  ##    @    ##  @"
 Data "@####    @    ####@"
-Data "@@@@@@@@ @ @@@@@@@@"
+Data "@@@@@@@@~@~@@@@@@@@"
 Data "x"
 
 
@@ -195,7 +226,7 @@ Data "@     #                 "
 Data "@ c   @     #     !     "
 Data "@@@@@@@    ##  @  @    @"
 Data "@@@@@@@#*  ##  @  @    @"
-Data "@@@@@@@@@@@@@@@@@@@    @"
+Data "@@@@@@@@@@@@@@@@@@@~~~~@"
 Data "x"
 
 Data 6, 5, -1, 2

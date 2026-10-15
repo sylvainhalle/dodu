@@ -23,7 +23,7 @@ Declare Sub DrawLevelNumber (v As Viewport)
 
 Declare Sub DrawThermometer (v As Viewport)
 
-Const COLOR_TRANSPARENT = _RGB32(52, 52, 52)
+Const COLOR_TRANSPARENT = _RGB32(52, 52, 52) ' Hex: 343434
 
 Dim Shared COLOR_HIGHLIGHT As Long, COLOR_HIGHLIGHT2 As Long
 If IMG_MODE$ = IMG_MODE_EGA Then
@@ -317,6 +317,9 @@ SpriteSequence_InitFile Foregrounds(2), IMG_DIR$ + "/Background_Cards.gif",1, 1,
 SpriteSequence_InitFile Foregrounds(3), IMG_DIR$ + "/Background3.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile Foregrounds(4), IMG_DIR$ + "/Background4.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile Foregrounds(5), IMG_DIR$ + "/refactored/Background_5.png", 20, 3, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Foregrounds(6), IMG_DIR$ + "/Background_pizza.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Foregrounds(7), IMG_DIR$ + "/Background_pizza2.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Foregrounds(8), IMG_DIR$ + "/Digits.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 
 ' Other constants
@@ -337,13 +340,17 @@ Const SNG_SONG3 = 2
 Const SNG_CARDS = 3
 Const SNG_CUTSCENE1 = 4
 Const SNG_BIERE = 5
+Const SNG_PASTORAL = 6
+Const SNG_BRUBECK = 7
 
 SoundPlayer_AddSong Audio, SNG_SONG1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod_fixed.mid"), 0.4
 SoundPlayer_AddSong Audio, SNG_SONG2, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/yaya.mid"), 0.4
 SoundPlayer_AddSong Audio, SNG_SONG3, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/pizza.mid"), 0.4
 SoundPlayer_AddSong Audio, SNG_CARDS, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cards.mid"), 0.4
-SoundPlayer_AddSong Audio, SNG_CUTSCENE1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cutscene1.mid"), 0.6
-SoundPlayer_AddSong Audio, SNG_BIERE, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/biere_q.mid"), 0.6
+SoundPlayer_AddSong Audio, SNG_CUTSCENE1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cutscene1.mid"), 0.5
+SoundPlayer_AddSong Audio, SNG_BIERE, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/biere_q.mid"), 0.4
+SoundPlayer_AddSong Audio, SNG_PASTORAL, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/lullaby.mid"), 0.4
+SoundPlayer_AddSong Audio, SNG_PASTORAL, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/lullaby.mid"), 0.4
 
 
 Const SND_STEP% = 0
