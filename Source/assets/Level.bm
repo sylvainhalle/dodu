@@ -1,0 +1,37 @@
+'-----------------------------------------------------------------------------
+'    Dodu, an old-school QuickBasic game
+'    Copyright (C) 1994-2026  Sylvain Hallé
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU General Public License for more details.
+'
+'    You should have received a copy of the GNU General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'-----------------------------------------------------------------------------
+
+Sub DrawThermometer (v As Viewport)
+  Dim p As Point
+  Point_Set p, 4, 4
+  Viewport_PutSpriteSequence v, TRUE, Thermometer, p, FALSE
+  Dim red As Long
+  Let red = THERMO_RED&
+  If Dodu.Temp <= 2 Then
+    If Dodu.ThermoFlash < 10 Then
+      Let red = THERMO_BLUE&
+    Else
+      Let red = THERMO_RED&
+    End If
+    Let Dodu.ThermoFlash = (Dodu.ThermoFlash + 1) Mod 20
+  End If
+  Viewport_LineC v, TRUE, 6, 15 - Dodu.Temp, 7, 15, red, TRUE, TRUE
+  Viewport_LineC v, TRUE, 5, 16, 8, 18, red, TRUE, TRUE
+End Sub
+
+' :mode=visualbasic:

@@ -495,7 +495,7 @@ Sub DoLevel
     End If
 
     If Square_IsValid(coffeeP) Then
-      TakeCookie Levels(CURRENT_LEVEL), coffeeP
+      TakeCoffee Levels(CURRENT_LEVEL), coffeeP
       SoundPlayer_PlayEffect Audio, SND_COOKIE%
     End If
 
@@ -950,15 +950,15 @@ Sub PrepareSnow (m As LevelMap, col As Integer, row As Integer, front As Integer
   Dim hastop As Integer
   Let hastop = (row > 0 _AndAlso m.Topo(col, row - 1) = T_SNOW) _OrElse row = 0
   If hastop Then
-    SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SnowM
+    SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SPR_LEVEL(LVL_SNOW_M)
   Else
     Select Case GetSnowSlopeAt(col, row, m)
       Case L_SLOPE_C
-        SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SnowC
+        SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SPR_LEVEL(LVL_SNOW_C)
       Case L_SLOPE_L
-        SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SnowL
+        SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SPR_LEVEL(LVL_SNOW_L)
       Case L_SLOPE_R
-        SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SnowR
+        SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SPR_LEVEL(LVL_SNOW_R)
     End Select
   End If
   SpriteSequence_Stop SPRITE_LEVEL(Abs(front), col, row)
@@ -976,11 +976,19 @@ Sub DrawMinimap (v As Viewport, m As LevelMap)
       Point_Set p, s.col * 5, s.row * 5
       Select Case m.Topo(col, row)
         Case T_BLOCK_B
-          Viewport_PutSpriteSequence v, FALSE, MiniBlockBlue, p, FALSE
+          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_BLOCK_B), p, FALSE
         Case T_BLOCK_W
-          Viewport_PutSpriteSequence v, FALSE, MiniBlockWhite, p, FALSE
+          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_BLOCK_W), p, FALSE
         Case T_POLE
-          Viewport_PutSpriteSequence v, FALSE, MiniPole, p, FALSE
+          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_POLE), p, FALSE
+        Case T_COOKIE
+          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_COOKIE), p, FALSE
+        Case T_COFFEE
+          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_COFFEE), p, FALSE
+        Case T_WATER
+          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_WATER), p, FALSE
+        Case T_SNOW
+          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_SNOW), p, FALSE
       End Select
     Next
   Next
@@ -989,7 +997,7 @@ Sub DrawMinimap (v As Viewport, m As LevelMap)
   Let dod_s.row = Dodu.LevPos.y \ BLOCK_SIZE%
   Dim dod_p As Point
   Point_Set dod_p, dod_s.col * MINI_BLOCK_SIZE%, (dod_s.row + 1) * MINI_BLOCK_SIZE%
-  Viewport_PutSpriteSequence v, FALSE, DoduSmall, dod_p, FALSE
+  Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_PLAYER), dod_p, FALSE
 End Sub
 
 
@@ -1012,21 +1020,21 @@ Sub SetSpriteSquare (m As LevelMap, isfront As Integer, col As Integer, row As I
   If Not isfront Then
     Select Case e
       Case T_BLOCK_B
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), BlockBlue
+        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_BLOCK_B)
       Case T_BLOCK_W
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), BlockWhite
+        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_BLOCK_W)
       Case T_POLE
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), Pole
+        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_POLE)
       Case T_COOKIE
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), Cookie
+        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_COOKIE)
       Case T_COFFEE
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), Coffee
+        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_COFFEE)
       Case T_MITTENS
         SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SprMittens
       Case T_TUQUE
         SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SprTuque
       Case T_WATER
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), Water
+        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_WATER)
       Case T_SNOW
         If Dodu.HasRackets Then
           PrepareSnow m, col, row, FALSE
@@ -1133,11 +1141,11 @@ Sub DisplayCard (v As Viewport, absolute As Integer, p As Point, value As Intege
   Dim p1 As Point, p2 As Point
   Let suit = value \ 13
   Let nb = value Mod 13
-  Viewport_PutSpriteSequence v, absolute, Card, p, FALSE
+  Viewport_PutSpriteSequence v, absolute, SPR_CARD, p, FALSE
   Point_Set p1, p.x + 5, p.y + 9
-  Viewport_PutSpriteSequence v, absolute, Suits(suit), p1, FALSE
+  Viewport_PutSpriteSequence v, absolute, SPR_CARDS_SUITS(suit), p1, FALSE
   Point_Set p2, p.x + 2, p.y + 2
-  Viewport_PutSpriteSequence v, absolute, Numbers(nb), p2, FALSE
+  Viewport_PutSpriteSequence v, absolute, SPR_CARDS_DIGITS(nb), p2, FALSE
 End Sub
 
 Sub DoPasswordInput (rst As RestorePoint)

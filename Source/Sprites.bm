@@ -85,6 +85,7 @@ Sub SpriteSequence_Copy (target As SpriteSequence, source As SpriteSequence)
 End Sub
 
 Sub SpriteSequence_InitFile (s As SpriteSequence, filename As String, frames As Integer, spd As Integer, animate As Integer, isloop As Integer, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
+	Print filename
 	Dim e As Long
 	Let e = _LoadImage(filename, SPRITE_MODE%)
 	If e = -1 Then
