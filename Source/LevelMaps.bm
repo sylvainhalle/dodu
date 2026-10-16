@@ -102,8 +102,9 @@ Data "@  !              @@@@         @"
 Data "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 Data "x"
 
+' --- Cut scene: picking blocks
 
-Data 0, -1, 1, 0
+Data 3, -1, 1, 1
 Data "                  "
 Data "                  "
 Data "@                @"
@@ -113,7 +114,7 @@ Data "@@@@@@@@@@@@@@@@@@"
 Data "x"
 
 
-Data 1, -1, -1, 0
+Data 4, -1, -1, 1
 Data "@              "
 Data "@              "
 Data "@              "
@@ -127,7 +128,7 @@ Data "@@@@@@@@@@@@@@@"
 Data "x"
 
 
-Data 0, -1, -1, 0
+Data 3, -1, -1, 1
 Data "@               "
 Data "@               "
 Data "@               "
@@ -140,8 +141,9 @@ Data "@@@            @"
 Data "@@@@@@@@@@@@@@@@"
 Data "x"
 
+' --- Cut scene: cookies
 
-Data 1, -1, -1, 0
+Data 5, -1, 2, 2
 Data "                            "
 Data "                            "
 Data "                            "
@@ -152,7 +154,7 @@ Data "@@@@@@~@@@@@@@@@@@@@@@@@@@@@"
 Data "x"
 
 
-Data 3, -1, 2, 1
+Data 6, -1, -1, 2
 Data "                   "
 Data "@                  "
 Data "@                  "
@@ -163,7 +165,7 @@ Data "@@@@@@@@~@~@@@@@@@@"
 Data "x"
 
 
-Data 3, -1, -1, 1
+Data 5, -1, -1, 2
 Data "                   "
 Data "                   "
 Data "         *         "
@@ -198,8 +200,7 @@ Data "@@@@@@@@~@~@@@@@@@@"
 Data "x"
 
 
-
-Data 4, -1, -1, 1
+Data 6, -1, -1, 2
 Data "                    "
 Data "                   @"
 Data "@                 #@"
@@ -208,8 +209,9 @@ Data "@!   @   @c# *  ##@@"
 Data "@@@@@@~~~@@@@@@@@@@@"
 Data "x"
 
+' --- Cut scene: mittens
 
-Data 3, -1, -1, 1
+Data 7, -1, -1, 1
 Data "                    "
 Data "                   !"
 Data "@c        @        @"
@@ -219,7 +221,7 @@ Data "@@@@@@@@@@@@@@@@@@@@"
 Data "x"
 
 
-Data 4, -1, -1, 1
+Data 4, -1, -1, 6
 Data "@                       "
 Data "@                       "
 Data "@     #                 "
@@ -229,7 +231,7 @@ Data "@@@@@@@#*  ##  @  @    @"
 Data "@@@@@@@@@@@@@@@@@@@~~~~@"
 Data "x"
 
-Data 6, 5, -1, 2
+Data 6, 5, -1, 6
 Data "@                                "
 Data "@                                "
 Data "@                                "
