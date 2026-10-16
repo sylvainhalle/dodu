@@ -53,9 +53,17 @@ Const THERMO_TICK_NORMAL% = 100
 Const THERMO_TICK_NORMAL_TUQUE% = 150
 Const THERMO_TICK_FAST% = 35
 Const THERMO_TICK_FAST_MITTENS% = 70
+Const THERMO_TICK_STEPS% = 10
+Const SLIP_TICK_STEPS% = 6
 
 ' Number of frames between ticks of the slip ticker
 Const SLIP_TICK_NORMAL% = 2
+
+' Number of steps when panning back
+Const PANBACK_STEPS% = 8
+
+' Number of *seconds* of the pan at the start of a level
+Const INIT_SCROLL_DURATION% = 3
 
 ' Location of level number
 Dim Shared PT_LEVEL_NB As Point
@@ -193,7 +201,7 @@ Sub MainLoop
     Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS
     Dim rst As RestorePoint
     Screen MainScreen.Buffer
-
+    Sleep 5
     DoLifSplash
 
     DoIntroduction rst
@@ -235,7 +243,7 @@ Sub MainLoop
 End Sub
 
 Sub DoLevel
-  Dim CTRL_PRESSED As Integer, PANBACK_STEPS As Integer
+  Dim CTRL_PRESSED As Integer
   Dim panback_ticker As Ticker
   Dim dod_lastgrab As Point
   Dim sq_lastgrab As Square, sq_lastdrop As Square
@@ -248,16 +256,15 @@ Sub DoLevel
   Dim coffeeP As Square, snowP As Square, feetP As Square
 
   Let CTRL_PRESSED = FALSE
-  Let PANBACK_STEPS = 8
   Let Dodu.Temp = 10
   Let Dodu.IsWalking = FALSE
   Let DoduPast.IsWalking = TRUE
   Let DoduPast.InSnow = TRUE
   GetDoduSprite CurrentSprite(), Dodu, DoduPast
 
-  Ticker_Init Dodu.ThermoTick, 10, THERMO_TICK_NORMAL%, FALSE
-  Ticker_Init Dodu.SlipTick, 6, SLIP_TICK_NORMAL%, FALSE
-  Ticker_Init panback_ticker, PANBACK_STEPS, 1, FALSE
+  Ticker_Init Dodu.ThermoTick, THERMO_TICK_STEPS%, THERMO_TICK_NORMAL%, FALSE
+  Ticker_Init Dodu.SlipTick, SLIP_TICK_STEPS%, SLIP_TICK_NORMAL%, FALSE
+  Ticker_Init panback_ticker, PANBACK_STEPS%, 1, FALSE
 
   Viewport_SetBackground ImgBuffer, _
     Backgrounds(Levels(CURRENT_LEVEL%).Background), parallax
@@ -298,7 +305,7 @@ Sub DoLevel
   DrawLevelNumber ImgBuffer
   Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
   'Viewport_Wait ImgBuffer, MainScreen, 0.8, FPS%
-  Viewport_ScrollCenter ImgBuffer, center, 3 * FPS%
+  Viewport_ScrollCenter ImgBuffer, center, INIT_SCROLL_DURATION% * FPS%
   Do
     _Limit FPS%
     Viewport_Clear ImgBuffer
@@ -1255,6 +1262,7 @@ Sub DoPasswordInput (rst As RestorePoint)
 End Sub
 
 Sub DoIntroduction (rst As RestorePoint)
+
   Dim p As Point
   Let rst.Level = -1
   Dim sel As Integer, n As Integer, h As Integer

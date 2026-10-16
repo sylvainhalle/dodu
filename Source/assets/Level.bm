@@ -19,7 +19,7 @@
 Sub DrawThermometer (v As Viewport)
   Dim p As Point
   Point_Set p, 4, 4
-  Viewport_PutSpriteSequence v, TRUE, Thermometer, p, FALSE
+  Viewport_PutSpriteSequence v, TRUE, SPR_LEVEL(LVL_THERMO), p, FALSE
   Dim red As Long
   Let red = THERMO_RED&
   If Dodu.Temp <= 2 Then
