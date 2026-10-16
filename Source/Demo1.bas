@@ -86,6 +86,12 @@ Let CFG_CUTSCENES = TRUE
 Dim Shared SCANLINES As Integer
 Let SCANLINES = FALSE
 
+Dim Shared CFG_SPLASH As Integer
+Let CFG_SPLASH = TRUE
+
+Dim Shared CFG_THERMO As Integer
+Let CFG_THERMO = TRUE
+
 ' --------------------------
 ' Other includes (declarations)
 ' --------------------------
@@ -114,6 +120,7 @@ Let LAST_MITTENS = FALSE
 ' --------------------------
 ' Video modes
 Const IMG_MODE_CGA$ = "cga"
+Const IMG_MODE_MCGA$ = "mcga"
 Const IMG_MODE_EGA$ = "ega"
 Const IMG_MODE_HER$ = "her"
 
@@ -133,6 +140,10 @@ For argc = 1 To _CommandCount
       Let PLAY_MUSIC = FALSE
     Case "--nocutscenes"
       Let CFG_CUTSCENES = FALSE
+    Case "--nosplash"
+      Let CFG_SPLASH = FALSE
+    Case "--nothermo"
+      Let CFG_THERMO = FALSE
     Case "--tuque"
       Let Dodu.HasTuque = TRUE
     Case "--mittens"
@@ -159,6 +170,8 @@ For argc = 1 To _CommandCount
           Select Case UCase$(Command$(argc))
             Case "HER"
               Let IMG_MODE$ = IMG_MODE_HER$
+            Case "MCGA"
+              Let IMG_MODE$ = IMG_MODE_MCGA$
             Case "CGA"
               Let IMG_MODE$ = IMG_MODE_CGA$
             Case "EGA"
@@ -201,9 +214,10 @@ Sub MainLoop
     Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS
     Dim rst As RestorePoint
     Screen MainScreen.Buffer
-    Sleep 5
-    DoLifSplash
-
+    Let MainScreen.Scanlines = SCANLINES
+    If CFG_SPLASH Then
+      DoLifSplash
+    End If
     DoIntroduction rst
     If rst.Level >= 0 Then
       Let CURRENT_LEVEL = rst.Level
@@ -224,8 +238,7 @@ Sub MainLoop
       End If
       Dim ws As Point
       Point_Set ws, Levels(CURRENT_LEVEL).Width * BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * BLOCK_SIZE%
-      Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
-      Let MainScreen.Scanlines = SCANLINES
+
       Viewport_Init_Default ImgBuffer, SCREEN_DIMS, ws
       Viewport_SetFont ImgBuffer, FNT_TINYC
       DoLevel
@@ -339,55 +352,57 @@ Sub DoLevel
     Viewport_Tick ImgBuffer
 
     ' Thermometer
-    Ticker_Tick Dodu.ThermoTick
+    If CFG_THERMO Then
+      Ticker_Tick Dodu.ThermoTick
 
     If Dodu.ThermoTick.TickCnt = 0 Or _
        (Dodu.Temp < 3 And Dodu.ThermoTick.TickCnt Mod FPS% = 0) Then
-      SoundPlayer_PlayEffect Audio, SND_THERMO%
-    End If
-
-    If Dodu.ThermoTick.TickCnt = 0 Then
-      Let Dodu.Temp = Dodu.Temp - 1
-      If CURRENT_TRAJECTORY < 0 Then
-        Let CURRENT_TRAJECTORY = TRJ_LOOKING_THERMO%
-        Let Dodu.IsLooking = TRUE
+        SoundPlayer_PlayEffect Audio, SND_THERMO%
       End If
-    End If
 
-    If Dodu.Temp = 0 Then
-      If Dodu.HasMittens And Not Dodu.HasTuque Then
-        SoundPlayer_PlayEffect Audio, SND_POWERDOWN%
-        Let Dodu.HasMittens = FALSE
-        Let Dodu.Temp = 5
-        If Dodu.HasBlock Then
-          Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
-        Else
-          Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
+      If Dodu.ThermoTick.TickCnt = 0 Then
+        Let Dodu.Temp = Dodu.Temp - 1
+        If CURRENT_TRAJECTORY < 0 Then
+          Let CURRENT_TRAJECTORY = TRJ_LOOKING_THERMO%
+          Let Dodu.IsLooking = TRUE
         End If
-        Ticker_Reset Dodu.ThermoTick
-      ElseIf Not Dodu.HasMittens And Dodu.HasTuque Then
-        SoundPlayer_PlayEffect Audio, SND_POWERDOWN%
-        Let Dodu.HasTuque = FALSE
-        Let Dodu.Temp = 5
-        If Dodu.HasBlock Then
-          Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
-        Else
-          Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
-        End If
-        Ticker_Reset Dodu.ThermoTick
-      ElseIf Dodu.HasMittens And Dodu.HasTuque Then
-        SoundPlayer_PlayEffect Audio, SND_POWERDOWN%
-        If Dodu.HasBlock Then
+      End If
+
+      If Dodu.Temp = 0 Then
+        If Dodu.HasMittens And Not Dodu.HasTuque Then
+          SoundPlayer_PlayEffect Audio, SND_POWERDOWN%
           Let Dodu.HasMittens = FALSE
-          Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
-        Else
+          Let Dodu.Temp = 5
+          If Dodu.HasBlock Then
+            Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
+          Else
+            Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
+          End If
+          Ticker_Reset Dodu.ThermoTick
+        ElseIf Not Dodu.HasMittens And Dodu.HasTuque Then
+          SoundPlayer_PlayEffect Audio, SND_POWERDOWN%
           Let Dodu.HasTuque = FALSE
-          Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
+          Let Dodu.Temp = 5
+          If Dodu.HasBlock Then
+            Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
+          Else
+            Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
+          End If
+          Ticker_Reset Dodu.ThermoTick
+        ElseIf Dodu.HasMittens And Dodu.HasTuque Then
+          SoundPlayer_PlayEffect Audio, SND_POWERDOWN%
+          If Dodu.HasBlock Then
+            Let Dodu.HasMittens = FALSE
+            Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
+          Else
+            Let Dodu.HasTuque = FALSE
+            Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
+          End If
+          Let Dodu.Temp = 5
+          Ticker_Reset Dodu.ThermoTick
+        Else
+          GoTo GameOver:
         End If
-        Let Dodu.Temp = 5
-        Ticker_Reset Dodu.ThermoTick
-      Else
-        GoTo GameOver:
       End If
     End If
 
@@ -409,6 +424,13 @@ Sub DoLevel
     ' ---------------------------------------
 
     Let lp = Dodu.LevPos
+
+    ' Must update orientation of Dodu *before* calculating the squares
+    If IsLeft% Then
+      Let Dodu.ToLeft = TRUE
+    ElseIf IsRight% Then
+      Let Dodu.ToLeft = FALSE
+    End If
 
     ClimbableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), climbP
     TakeableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), takeP
@@ -586,14 +608,12 @@ Sub DoLevel
       If Square_IsValid(climbP) Then
 
         Let Dodu.IsWalking = TRUE
-        If Square_IsValid%(climbP) Then
-          If slopetype = L_SLOPE_R Or slopetype = L_SLOPE_R Or slopetype = L_SLOPE_C Then
-            Initiate_Trajectory TRJ_CLIMBING_SNOW%, TRUE
-            SpriteSequence_Start SPRITE_LEVEL(0, climbP.col, climbP.row)
-            SpriteSequence_Start SPRITE_LEVEL(1, climbP.col, climbP.row)
-          Else
-            Initiate_Trajectory TRJ_CLIMBING%, TRUE
-          End If
+        If slopetype = L_SLOPE_R Or slopetype = L_SLOPE_R Or slopetype = L_SLOPE_C Then
+          Initiate_Trajectory TRJ_CLIMBING_SNOW%, TRUE
+          SpriteSequence_Start SPRITE_LEVEL(0, climbP.col, climbP.row)
+          SpriteSequence_Start SPRITE_LEVEL(1, climbP.col, climbP.row)
+        Else
+          Initiate_Trajectory TRJ_CLIMBING%, TRUE
         End If
 
       Else
@@ -622,14 +642,13 @@ Sub DoLevel
       If Square_IsValid(climbP) Then
 
         Let Dodu.IsWalking = TRUE
-        If Square_IsValid%(climbP) Then
-          If slopetype = L_SLOPE_R Or slopetype = L_SLOPE_R Or slopetype = L_SLOPE_C Then
-            Initiate_Trajectory TRJ_CLIMBING_SNOW%, FALSE
-          Else
-            Initiate_Trajectory TRJ_CLIMBING%, FALSE
-          End If
+        If slopetype = L_SLOPE_R Or slopetype = L_SLOPE_R Or slopetype = L_SLOPE_C Then
+          Initiate_Trajectory TRJ_CLIMBING_SNOW%, FALSE
+          SpriteSequence_Start SPRITE_LEVEL(0, climbP.col, climbP.row)
+          SpriteSequence_Start SPRITE_LEVEL(1, climbP.col, climbP.row)
+        Else
+          Initiate_Trajectory TRJ_CLIMBING%, FALSE
         End If
-
       Else
 
         If Not Square_IsValid(blockingP) Then
@@ -771,7 +790,7 @@ Sub DoLevel
 
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
-    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), unclimbP, COLOR_PINK&
+    HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), climbP, COLOR_PINK&
     Viewport_Print ImgBuffer, Str$((Dodu.LevPos.y + PLAYER_HEIGHT%) Mod 11) + Str$(hasfallen), P_ORIGIN
     'Viewport_Print ImgBuffer, Str$(lastClimbIndex) + Str$(lastUnclimbIndex) + Str$(lastFallIndex), P_ORIGIN
 
@@ -846,9 +865,10 @@ Sub DoCutScene (nb As Integer)
     End If
   Loop Until Ticker_IsFinished(ps)
   Viewport_FadeOut MainScreen, Ceil%(0.5 * FPS)
-  Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
+  Viewport_Wait ImgBuffer, MainScreen, 0.5, FPS%
   Viewport_Clear ImgBuffer
   Viewport_Clear MainScreen
+  Viewport_Display MainScreen
 End Sub
 
 Sub DoMiniMap
@@ -1313,16 +1333,16 @@ Sub DoIntroduction (rst As RestorePoint)
           Point_Set Flakes(n), Int(Rnd * SCREEN_DIMS.x%), -Int(Rnd * 5)
         End If
       End If
-      Viewport_LineC ImgBuffer, TRUE, Flakes(n).x, Flakes(n).y + yoffset, Flakes(n).x, Flakes(n).y + yoffset, COLOR_WHITE, FALSE, FALSE
+      Viewport_LineC ImgBuffer, TRUE, Flakes(n).x, Flakes(n).y + yoffset, Flakes(n).x, Flakes(n).y + yoffset, COLOR_SNOW, FALSE, FALSE
       Ticker_Tick FlakesTickers(n)
     Next
     For n = 0 To SCREEN_DIMS.x - 1
-      Viewport_LineC ImgBuffer, TRUE, n, HeightsInit(n) + yoffset - 1, n, Heights(n) + yoffset, COLOR_WHITE, TRUE, FALSE
+      Viewport_LineC ImgBuffer, TRUE, n, HeightsInit(n) + yoffset - 1, n, Heights(n) + yoffset, COLOR_SNOW, TRUE, FALSE
     Next
     If sel = 0 Then
-      Viewport_LineC ImgBuffer, TRUE, 23, 45, 39, 56, COLOR_YELLOW, TRUE, FALSE
+      Viewport_LineC ImgBuffer, TRUE, 23, 45, 39, 56, COLOR_HIGHLIGHT2, TRUE, FALSE
     Else
-      Viewport_LineC ImgBuffer, TRUE, 40, 45, 56, 56, COLOR_YELLOW, TRUE, FALSE
+      Viewport_LineC ImgBuffer, TRUE, 40, 45, 56, 56, COLOR_HIGHLIGHT2, TRUE, FALSE
     End If
     Viewport_Tick ImgBuffer
     Viewport_Copy ImgBuffer, MainScreen
