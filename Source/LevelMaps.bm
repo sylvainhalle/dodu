@@ -56,6 +56,8 @@ LevelData:
 ' - last line: "x" to indicate the end of a level; "X" to indicate that
 '   this is the last level
 
+' --- Cut scene: walking
+
 Data 0, -1, 0, 0
 Data "             "
 Data "             "
@@ -83,11 +85,11 @@ Data 0, -1, -1, 0
 Data "                                "
 Data "                                "
 Data "               *                "
-Data "          @@@@@@@@@@@@@         "
-Data "        @@@                     "
-Data "      @@             @@@@      @"
-Data "     @       @@@@@            @@"
-Data "    @  @          @            @"
+Data "          @@@@@@@@@@@@@        @"
+Data "        @@@                    @"
+Data "@     @@             @@@@      @"
+Data "@    @       @@@@@            @@"
+Data "@   @  @          @            @"
 Data "@@@@@  @          @@@@@@@@@@   @"
 Data "@      @                       @"
 Data "@      @@@@@@                  @"
@@ -117,8 +119,8 @@ Data "x"
 Data 4, -1, -1, 1
 Data "@              "
 Data "@              "
-Data "@              "
-Data "@       @      "
+Data "@             @"
+Data "@       @     @"
 Data "@       @ *  #@"
 Data "@    @  @@@@@@@"
 Data "@    @        @"
@@ -126,7 +128,6 @@ Data "@    @        @"
 Data "@    @      ! @"
 Data "@@@@@@@@@@@@@@@"
 Data "x"
-
 
 Data 3, -1, -1, 1
 Data "@               "
@@ -141,9 +142,35 @@ Data "@@@            @"
 Data "@@@@@@@@@@@@@@@@"
 Data "x"
 
+Data 4, -1, -1, 1
+Data "@   @                    "
+Data "@  @@@@@                 "
+Data "@   @        *           "
+Data "@        @@@@@@@@       @"
+Data "@                       @"
+Data "@                       @"
+Data "@            @          @"
+Data "@       @    @        ##@"
+Data "@      @@    @       ##@@"
+Data "@@@   @@@ !  @      ##@@@"
+Data "@@@@@@@@@@@@@@@@@@@@@@@@@"
+Data "x"
+
+Data 3, -1, -1, 1
+Data "                                          "
+Data "                                          "
+Data "      * #                                 "
+Data "     @@@@@                                "
+Data "@                                         "
+Data "@                         @      @@      @"
+Data "@        @    @    @@    @@@    @@@@     @"
+Data "@ !      @@  @@@  @@@@  @@@@@  @@@@@@  ! @"
+Data "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+Data "x"
+
 ' --- Cut scene: cookies
 
-Data 5, -1, 2, 2
+Data 6, -1, 2, 2
 Data "                            "
 Data "                            "
 Data "                            "
@@ -154,7 +181,7 @@ Data "@@@@@@~@@@@@@@@@@@@@@@@@@@@@"
 Data "x"
 
 
-Data 6, -1, -1, 2
+Data 7, -1, -1, 2
 Data "                   "
 Data "@                  "
 Data "@                  "
@@ -165,7 +192,7 @@ Data "@@@@@@@@~@~@@@@@@@@"
 Data "x"
 
 
-Data 5, -1, -1, 2
+Data 6, -1, -1, 2
 Data "                   "
 Data "                   "
 Data "         *         "
@@ -199,8 +226,7 @@ Data "@####    @    ####@"
 Data "@@@@@@@@~@~@@@@@@@@"
 Data "x"
 
-
-Data 6, -1, -1, 2
+Data 7, -1, -1, 2
 Data "                    "
 Data "                   @"
 Data "@                 #@"
@@ -209,19 +235,7 @@ Data "@!   @   @c# *  ##@@"
 Data "@@@@@@~~~@@@@@@@@@@@"
 Data "x"
 
-' --- Cut scene: mittens
-
-Data 7, -1, -1, 1
-Data "                    "
-Data "                   !"
-Data "@c        @        @"
-Data "@#   @#   @##      @"
-Data "@### @#* #@##m  @@@@"
-Data "@@@@@@@@@@@@@@@@@@@@"
-Data "x"
-
-
-Data 4, -1, -1, 6
+Data 6, -1, -1, 2
 Data "@                       "
 Data "@                       "
 Data "@     #                 "
@@ -231,7 +245,19 @@ Data "@@@@@@@#*  ##  @  @    @"
 Data "@@@@@@@@@@@@@@@@@@@~~~~@"
 Data "x"
 
-Data 6, 5, -1, 6
+' --- Cut scene: mittens
+
+Data 5, -1, 3, 7
+Data "                    @"
+Data "                    @"
+Data "@                  !@"
+Data "@c        @        @@"
+Data "@#   @#   @##      @@"
+Data "@### @#* #@##m  @@@@@"
+Data "@@@@@@@@@@@@@@@@@@@@@"
+Data "x"
+
+Data 5, -1, 3, 7
 Data "@                                "
 Data "@                                "
 Data "@                                "

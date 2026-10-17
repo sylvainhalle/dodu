@@ -125,6 +125,7 @@ End Sub
 Sub SpriteSequence_Start (s As SpriteSequence)
 	If Not Ticker_IsRunning(s.Ticker) Then
 		Ticker_Reset s.Ticker
+		Ticker_Start s.Ticker
 	End If
 End Sub
 
@@ -202,7 +203,7 @@ Sub Viewport_Init (v As Viewport, size As Point, ws As Point, pan As Point, scal
   Let v.BackgroundPanRatio.y = -1
   Let v.ForegroundPanRatio.x = -1
   Let v.ForegroundPanRatio.y = -1
-  Let v.Scanlines = FALSE
+  Let v.Scanlines = SCANLINES_NONE
   Ticker_Stop v.FadeInTicker
   Ticker_Stop v.FadeOutTicker
 End Sub
@@ -234,6 +235,18 @@ Sub Viewport_Clear (v As Viewport)
 		Viewport_PutSpriteSequence v, TRUE, v.Background, p, FALSE
 	  Next
   Next
+End Sub
+
+Sub Viewport_Start (v As Viewport)
+	SpriteSequence_Start v.Background
+	SpriteSequence_Start v.Foreground
+End Sub
+
+Sub Viewport_Reset (v As Viewport)
+	'SpriteSequence_Reset v.Background
+	'SpriteSequence_Reset v.Foreground
+	Ticker_Reset v.FadeInTicker
+	Ticker_Reset v.FadeOutTicker
 End Sub
 
 Sub Viewport_SetBackground (v As Viewport, s As SpriteSequence, ratio As Point)
@@ -296,12 +309,20 @@ Sub Viewport_Display (v As Viewport)
 	If Ticker_IsRunning%(v.FadeOutTicker) Then
 		Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 * v.FadeOutTicker.Index / v.FadeOutTicker.Length)), BF
 	End If
-	If v.Scanlines Then
-		Dim y As Integer
-		For y = 0 To v.Size.y * v.Scale Step v.Scale
-			Line (0, y)-(v.Size.x * v.Scale, y), _RGB32(0, 0, 0, 56)
-		Next
-	End If
+	Dim y As Integer
+	Select Case v.Scanlines
+		Case SCANLINES_VERT
+			For y = 0 To v.Size.y * v.Scale Step v.Scale
+				Line (0, y)-(v.Size.x * v.Scale, y), _RGB32(0, 0, 0, 56)
+			Next
+		Case SCANLINES_GRID
+			For y = 0 To v.Size.y * v.Scale Step v.Scale
+				Line (0, y)-(v.Size.x * v.Scale, y), _RGB32(0, 0, 0, 56)
+			Next
+			For y = 0 To v.Size.x * v.Scale Step v.Scale
+				Line (y, 0) - (y, v.Size.y * v.Scale), _RGB32(0, 0, 0, 56)
+			Next
+	End Select
 	_Display
 End Sub
 

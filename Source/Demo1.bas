@@ -69,6 +69,9 @@ Const INIT_SCROLL_DURATION% = 3
 Dim Shared PT_LEVEL_NB As Point
 Point_Set PT_LEVEL_NB, 2, 20
 
+Dim Shared PT_UNIT As Point
+Point_Set PT_UNIT, 1, 1
+
 ' Number of screen pixels per frame
 ' Currently, can only be an integer
 Const WALKING_SPEED# = 1
@@ -149,7 +152,7 @@ For argc = 1 To _CommandCount
     Case "--mittens"
       Let Dodu.HasMittens = TRUE
     Case "--scanlines"
-      Let SCANLINES = TRUE
+      Let toset = "scanlines"
     Case "--level"
       Let toset = "level"
     Case "--video"
@@ -176,6 +179,15 @@ For argc = 1 To _CommandCount
               Let IMG_MODE$ = IMG_MODE_CGA$
             Case "EGA"
               Let IMG_MODE$ = IMG_MODE_EGA$
+          End Select
+        Case "scanlines"
+          Select Case UCase$(Command$(argc))
+            Case "NONE"
+              Let SCANLINES = SCANLINES_NONE
+            Case "VERT"
+              Let SCANLINES = SCANLINES_VERT
+            Case "GRID"
+              Let SCANLINES = SCANLINES_GRID
           End Select
       End Select
   End Select
@@ -850,16 +862,30 @@ Sub DoGameOver
 End Sub
 
 Sub DoCutScene (nb As Integer)
+  Viewport_Reset ImgBuffer
+  Viewport_Reset MainScreen
+  Viewport_SetBackground ImgBuffer, CutScenes(nb), PT_UNIT
+  'Viewport_PutSpriteSequence ImgBuffer, TRUE, CutScenes(nb), P_ORIGIN, FALSE
+  _PrintMode _KeepBackground , ImgBuffer.Buffer
+  Screen MainScreen.Buffer
+
   SoundPlayer_PlaySong Audio, SNG_CUTSCENE1%
 
   Dim ps As Ticker
-  Viewport_PutSpriteSequence ImgBuffer, TRUE, CutScenes(nb), P_ORIGIN, FALSE
   Ticker_Init ps, 7, FPS%, FALSE
+  Viewport_Start ImgBuffer
+  Viewport_Copy ImgBuffer, MainScreen
+  Viewport_Start MainScreen
   Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
   Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
   Do
     _Limit FPS%
     Ticker_Tick ps
+    Viewport_Clear ImgBuffer
+    Viewport_Tick ImgBuffer
+    'Viewport_Print ImgBuffer, Str$(ImgBuffer.Background.Ticker.TickCnt), P_ORIGIN
+    Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Display MainScreen
     If IsEsc% Or IsEnter% Then
       Exit Do
     End If

@@ -153,6 +153,11 @@ Declare Sub Trajectory_Reset (t As Trajectory)
 '** - Viewport ------------------------------------------------- {{{
 '**
 
+' Scanline settings
+Const SCANLINES_NONE = 0
+Const SCANLINES_VERT = 1
+Const SCANLINES_GRID = 2
+
 ' Viewport type
 Type Viewport
   Size As Point
