@@ -88,6 +88,11 @@ Let CFG_CUTSCENES = TRUE
 
 Dim Shared SCANLINES As Integer
 Let SCANLINES = FALSE
+Dim Shared SCANLINE_COLOR As Long
+Let SCANLINE_COLOR = _RGB32(0, 0, 0, 56)
+Dim Shared SCANLINE_WIDTH As Integer
+Let SCANLINE_WIDTH = 1
+
 
 Dim Shared CFG_SPLASH As Integer
 Let CFG_SPLASH = TRUE
@@ -126,6 +131,7 @@ Const IMG_MODE_CGA$ = "cga"
 Const IMG_MODE_MCGA$ = "mcga"
 Const IMG_MODE_EGA$ = "ega"
 Const IMG_MODE_HER$ = "her"
+Const IMG_MODE_TI83$ = "ti83"
 
 Dim Shared IMG_MODE As String
 Let IMG_MODE = IMG_MODE_EGA$
@@ -179,6 +185,11 @@ For argc = 1 To _CommandCount
               Let IMG_MODE$ = IMG_MODE_CGA$
             Case "EGA"
               Let IMG_MODE$ = IMG_MODE_EGA$
+            Case "TI83"
+              Let IMG_MODE$ = IMG_MODE_TI83$
+              Let SCANLINES = SCANLINES_GRID
+              Let SCANLINE_WIDTH = 3
+              Let SCANLINE_COLOR = COLOR_TI83_SCANLINE
           End Select
         Case "scanlines"
           Select Case UCase$(Command$(argc))
@@ -223,10 +234,13 @@ MainLoop
 Sub MainLoop
   Do
     Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
+    Let MainScreen.ScanlineWidth = SCANLINE_WIDTH
     Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS
     Dim rst As RestorePoint
     Screen MainScreen.Buffer
     Let MainScreen.Scanlines = SCANLINES
+    Let MainScreen.ScanlineWidth = SCANLINE_WIDTH
+    Let MainScreen.ScanlineColor = SCANLINE_COLOR
     If CFG_SPLASH Then
       DoLifSplash
     End If
@@ -865,7 +879,6 @@ Sub DoCutScene (nb As Integer)
   Viewport_Reset ImgBuffer
   Viewport_Reset MainScreen
   Viewport_SetBackground ImgBuffer, CutScenes(nb), PT_UNIT
-  'Viewport_PutSpriteSequence ImgBuffer, TRUE, CutScenes(nb), P_ORIGIN, FALSE
   _PrintMode _KeepBackground , ImgBuffer.Buffer
   Screen MainScreen.Buffer
 
@@ -883,7 +896,6 @@ Sub DoCutScene (nb As Integer)
     Ticker_Tick ps
     Viewport_Clear ImgBuffer
     Viewport_Tick ImgBuffer
-    'Viewport_Print ImgBuffer, Str$(ImgBuffer.Background.Ticker.TickCnt), P_ORIGIN
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
     If IsEsc% Or IsEnter% Then

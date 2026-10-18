@@ -204,6 +204,8 @@ Sub Viewport_Init (v As Viewport, size As Point, ws As Point, pan As Point, scal
   Let v.ForegroundPanRatio.x = -1
   Let v.ForegroundPanRatio.y = -1
   Let v.Scanlines = SCANLINES_NONE
+  Let v.ScanlineWidth = 1
+  Let v.ScanlineColor = COLOR_BLACK
   Ticker_Stop v.FadeInTicker
   Ticker_Stop v.FadeOutTicker
 End Sub
@@ -216,7 +218,7 @@ End Sub
 Sub Viewport_Clear (v As Viewport)
   Dim sq As Point
   Point_Set sq, v.Size.x * v.Scale - 1, v.Size.y * v.Scale - 1
-  Viewport_Line v, TRUE, P_ORIGIN, sq, COLOR_BLACK, TRUE, TRUE
+  Viewport_Line v, TRUE, P_ORIGIN, sq, v.ScanlineColor, TRUE, TRUE
   Dim screen_offset As Point, bg_offset As Point
   If v.BackgroundPanRatio.x > 0 Then
 	  Point_Set screen_offset, v.Pan.x Mod v.Size.x, v.Pan.y Mod v.Size.y
@@ -309,18 +311,19 @@ Sub Viewport_Display (v As Viewport)
 	If Ticker_IsRunning%(v.FadeOutTicker) Then
 		Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 * v.FadeOutTicker.Index / v.FadeOutTicker.Length)), BF
 	End If
-	Dim y As Integer
+	Dim y As Integer, scolor as Long
+	Let scolor = v.ScanlineColor
 	Select Case v.Scanlines
 		Case SCANLINES_VERT
 			For y = 0 To v.Size.y * v.Scale Step v.Scale
-				Line (0, y)-(v.Size.x * v.Scale, y), _RGB32(0, 0, 0, 56)
+				Line (0, y)-(v.Size.x * v.Scale, y + v.ScanlineWidth - 1), scolor, BF
 			Next
 		Case SCANLINES_GRID
 			For y = 0 To v.Size.y * v.Scale Step v.Scale
-				Line (0, y)-(v.Size.x * v.Scale, y), _RGB32(0, 0, 0, 56)
+				Line (0, y)-(v.Size.x * v.Scale, y + v.ScanlineWidth - 1), scolor, BF
 			Next
 			For y = 0 To v.Size.x * v.Scale Step v.Scale
-				Line (y, 0) - (y, v.Size.y * v.Scale), _RGB32(0, 0, 0, 56)
+				Line (y, 0) - (y + v.ScanlineWidth - 1, v.Size.y * v.Scale), scolor, BF
 			Next
 	End Select
 	_Display

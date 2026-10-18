@@ -17,6 +17,7 @@
 '-----------------------------------------------------------------------------
 
 ' Colors
+Const COLOR_BLACK& = _RGB32(0, 0, 0)
 Const COLOR_WHITE& = _RGB32(255, 255, 255)
 Const COLOR_RED& = _RGB32(255, 0, 0)
 Const COLOR_GREEN& = _RGB32(0, 255, 0)
@@ -24,6 +25,12 @@ Const COLOR_YELLOW& = _RGB32(255, 255, 0)
 Const COLOR_BLACK& = _RGB32(0, 0, 0)
 Const COLOR_PINK& = _RGB32(255, 0, 255)
 Const COLOR_CYAN& = _RGB32(0, 255, 255)
+Const COLOR_TI83& = _RGB32(151, 166, 99)
+Const COLOR_TI83_SCANLINE& = _RGB32(151, 166, 99, 128)
+Const COLOR_TRANSPARENT = _RGB32(52, 52, 52) ' Hex: 343434
+Const COLOR_GREEN_HI = _RGB32(0, 255, 0)
+Const COLOR_GREEN_MD = _RGB32(0, 170, 0)
+Const COLOR_GREEN_LO = _RGB32(0, 85, 0)
 
 ' Sprite mode (32 = software, 33 = hardware)
 Const SPRITE_MODE% = 32
@@ -170,6 +177,8 @@ Type Viewport
   Foreground As SpriteSequence
   ForegroundPanRatio As Point
   Scanlines As Integer
+  ScanlineWidth As Integer
+  ScanlineColor As Long
   PanTick As Ticker
   PanTarget As Point
   PanAmount As Point
