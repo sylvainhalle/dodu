@@ -278,7 +278,7 @@ Data "x"
 ' --- Cut scene: snow
 
 Data 9, -1, 3, 7
-Data 0, 0
+Data 50, 0
 Data 2, 2
 Data "                                  "
 Data "                                  "

@@ -110,12 +110,13 @@ Sub SpriteSequence_Init (s As SpriteSequence, content As Long, frames As Integer
 	Let s.OffsetL = offsetL
 	Let s.OffsetR = offsetR
 	Let s.Flipped = FALSE
+	Let s.OnEnd = SPSQ_KEEP
 End Sub
 
 Sub SpriteSequence_Tick (s As SpriteSequence)
 	If s.Animate Then
 		Ticker_Tick s.Ticker
-		If Ticker_IsFinished%(s.Ticker) Then
+		If Ticker_IsFinished%(s.Ticker) And s.OnEnd = SPSQ_RESET Then
 			Let s.Ticker.Index = 0
 		End If
 	End If
@@ -219,29 +220,36 @@ Sub Viewport_PointToScreen (v As Viewport, p_src As Point, p_dest As Point)
 End Sub
 
 Sub Viewport_Clear (v As Viewport)
-  Dim sq As Point
-  Point_Set sq, v.Size.x * v.Scale - 1, v.Size.y * v.Scale - 1
-  Viewport_Line v, TRUE, P_ORIGIN, sq, v.ScanlineColor, TRUE, TRUE
-  Dim screen_offset As Point, bg_offset As Point
-  Dim chg_x As Integer, chg_y As Integer
-  Let chg_x = v.BackgroundOffset.x
-  Let chg_y = v.BackgroundOffset.y
-  If v.BackgroundPanRatio.x > 0 Then
-  	  Let chg_x = (screen_offset.x / v.BackgroundPanRatio.x) + v.BackgroundOffset.x
-  End If
-  If v.BackgroundPanRatio.y > 0 Then
-  	  Let chg_y = (screen_offset.y / v.BackgroundPanRatio.y) + v.BackgroundOffset.y
-  End If
-  Point_Set bg_offset, chg_x, chg_y
-  Dim x As Integer, y As Integer
-  For x = bg_offset.x - v.Size.x To v.Size.x + SpriteSequence_Width%(v.Background) Step SpriteSequence_Width%(v.Background)
-	  For y = bg_offset.y - v.Size.y To v.Size.y Step v.Background.Size.y
-		Dim p As Point
-		Point_Set p, x, y
-		Point_Add p, v.BackgroundOffset
-		Viewport_PutSpriteSequence v, TRUE, v.Background, p, FALSE
-	  Next
-  Next
+    Dim sq As Point
+    Point_Set sq, v.Size.x * v.Scale - 1, v.Size.y * v.Scale - 1
+    Viewport_Line v, TRUE, P_ORIGIN, sq, v.ScanlineColor, TRUE, TRUE
+
+    Dim bg_offset As Point
+    Point_Set bg_offset, v.BackgroundOffset.x, v.BackgroundOffset.y
+
+    ' Add parallax displacement here, using the actual viewport pan.
+    ' For example:
+    ' bg_offset.x = bg_offset.x - v.Pan.x / v.BackgroundPanRatio.x
+
+    Dim w As Integer, h As Integer
+    Let w = SpriteSequence_Width%(v.Background)
+    Let h = v.Background.Size.y
+
+    If w <= 0 Or h <= 0 Then Exit Sub
+
+    ' Normalize offset to one tile.
+    Dim ox As Integer, oy As Integer
+    Let ox = ((bg_offset.x Mod w) + w) Mod w
+    Let oy = ((bg_offset.y Mod h) + h) Mod h
+
+    Dim x As Integer, y As Integer
+    For x = ox - w To v.Size.x - 1 Step w
+        For y = oy - h To v.Size.y - 1 Step h
+            Dim p As Point
+            Point_Set p, x, y
+            Viewport_PutSpriteSequence v, TRUE, v.Background, p, FALSE
+        Next
+    Next
 End Sub
 
 Sub Viewport_Start (v As Viewport)

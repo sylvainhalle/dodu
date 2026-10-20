@@ -91,6 +91,10 @@ Dim Shared P_ORIGIN As Point: Point_Set P_ORIGIN, 0, 0
 '**
 '** - Sprite sequence------------------------------------------- {{{
 '**
+
+Const SPSQ_KEEP = 0
+Const SPSQ_RESET = 1
+
 Type SpriteSequence
 	Content As Long
 	Ticker As Ticker
@@ -99,6 +103,7 @@ Type SpriteSequence
 	OffsetR As Point
 	OffsetL As Point
 	Animate As Integer
+	OnEnd As Integer
 End Type
 
 '**
