@@ -306,7 +306,7 @@ Sub DoLevel
   Ticker_Init panback_ticker, PANBACK_STEPS%, 1, FALSE
 
   Viewport_SetBackground ImgBuffer, _
-    Backgrounds(Levels(CURRENT_LEVEL%).Background), parallax
+    Backgrounds(Levels(CURRENT_LEVEL%).Background), Levels(CURRENT_LEVEL%).BackgroundParallax
 
   Color COLOR_WHITE&, , , ImgBuffer.Buffer
   _PrintMode _KeepBackground , ImgBuffer.Buffer

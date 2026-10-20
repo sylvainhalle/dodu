@@ -161,11 +161,19 @@ End Function
 ' Loads a level
 ' --------------------------
 Function LoadLevel% (l As LevelMap)
-  Dim lline As String, idx As Integer, char As String, row As Integer, bg As Integer, fg As Integer, cutscene As Integer, songindex As Integer
+  Dim lline As String, idx As Integer, char As String, row As Integer
+	Dim bg As Integer, fg As Integer, cutscene As Integer, songindex As Integer
+	Dim bgp_x As Integer, bgp_y As Integer, bgo_x As Integer, bgo_y As Integer
   Read bg
   Read fg
   Read cutscene
   Read songindex
+  Read bgp_x
+  Read bgp_y
+  Read bgo_x
+  Read bgo_y
+  Point_Set l.BackgroundParallax, bgp_x, bgp_y
+  Point_Set l.BackgroundOffset, bgo_x, bgo_y
   Let l.Background = bg
   Let l.Foreground = fg
   Let l.CutScene = cutscene

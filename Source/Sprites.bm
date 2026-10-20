@@ -59,7 +59,7 @@ End Sub
 '**
 
 Function SpriteSequence_Width% (s As SpriteSequence)
-	if s.Content <> -1 then
+	if s.Content <> -1 And s.Ticker.Length > 0 Then
 		Let SpriteSequence_Width% = s.Size.x \ s.Ticker.Length
 	else
 		Let SpriteSequence_Width% = -1
@@ -115,6 +115,9 @@ End Sub
 Sub SpriteSequence_Tick (s As SpriteSequence)
 	If s.Animate Then
 		Ticker_Tick s.Ticker
+		If Ticker_IsFinished%(s.Ticker) Then
+			Let s.Ticker.Index = 0
+		End If
 	End If
 End Sub
 
@@ -132,8 +135,8 @@ End Sub
 Sub SpriteSequence_Current (s as SpriteSequence, p1 As Point, p2 As Point)
 	Dim ind As Integer
 	Let ind = _Max(0, s.Ticker.Index)
-	Point_Set p1, ind * (s.Size.x \ s.Ticker.Length), 0
-	Point_Set p2, (ind + 1) * (s.Size.x \ s.Ticker.Length) - 1, s.Size.y - 1
+	Point_Set p1, ind * (s.Size.x \ _Max(1, s.Ticker.Length)), 0
+	Point_Set p2, (ind + 1) * (s.Size.x \ _Max(1, s.Ticker.Length)) - 1, s.Size.y - 1
 End Sub
 
 
@@ -220,20 +223,22 @@ Sub Viewport_Clear (v As Viewport)
   Point_Set sq, v.Size.x * v.Scale - 1, v.Size.y * v.Scale - 1
   Viewport_Line v, TRUE, P_ORIGIN, sq, v.ScanlineColor, TRUE, TRUE
   Dim screen_offset As Point, bg_offset As Point
+  Dim chg_x As Integer, chg_y As Integer
+  Let chg_x = v.BackgroundOffset.x
+  Let chg_y = v.BackgroundOffset.y
   If v.BackgroundPanRatio.x > 0 Then
-	  Point_Set screen_offset, v.Pan.x Mod v.Size.x, v.Pan.y Mod v.Size.y
-	  Point_Set bg_offset, CInt(screen_offset.x / v.BackgroundPanRatio.x), CInt(screen_offset.y / v.BackgroundPanRatio.y)
-  ElseIf v.BackgroundPanRatio.x = 0 Then
-  	  Point_Set screen_offset, 0, 0
-  	  Point_Set bg_offset, 0, 0
-  Else
-  	Exit Sub
+  	  Let chg_x = (screen_offset.x / v.BackgroundPanRatio.x) + v.BackgroundOffset.x
   End If
+  If v.BackgroundPanRatio.y > 0 Then
+  	  Let chg_y = (screen_offset.y / v.BackgroundPanRatio.y) + v.BackgroundOffset.y
+  End If
+  Point_Set bg_offset, chg_x, chg_y
   Dim x As Integer, y As Integer
   For x = bg_offset.x - v.Size.x To v.Size.x + SpriteSequence_Width%(v.Background) Step SpriteSequence_Width%(v.Background)
 	  For y = bg_offset.y - v.Size.y To v.Size.y Step v.Background.Size.y
 		Dim p As Point
 		Point_Set p, x, y
+		Point_Add p, v.BackgroundOffset
 		Viewport_PutSpriteSequence v, TRUE, v.Background, p, FALSE
 	  Next
   Next

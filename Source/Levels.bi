@@ -72,6 +72,8 @@ Type LevelMap
   StartPoint As Square
   Background As Integer
   Foreground As Integer
+  BackgroundParallax As Point
+  BackgroundOffset As Point
   PanX As Integer
   PanY As Integer
 End Type

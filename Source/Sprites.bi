@@ -174,6 +174,7 @@ Type Viewport
   Buffer As Long
   Background As SpriteSequence
   BackgroundPanRatio As Point
+  BackgroundOffset As Point
   Foreground As SpriteSequence
   ForegroundPanRatio As Point
   Scanlines As Integer
