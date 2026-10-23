@@ -254,6 +254,11 @@ Declare Sub Viewport_Print (v As Viewport, s As String, p As Point)
 Declare Sub Viewport_PutSprite (v As Viewport, absolute As Integer, s As Sprite, p As Point, flipped As Integer)
 
 '**
+'* Puts the contents of a viewport in another viewport.
+'**
+Declare Sub Viewport_PutViewport (dst As Viewport, absolute As Integer, src As Viewport, p As Point, p1 As Point, p2 As Point)
+
+'**
 '* Puts the current sprite of a sprite sequence at a location on the viewport.
 '**
 Declare Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point, flipped As Integer)

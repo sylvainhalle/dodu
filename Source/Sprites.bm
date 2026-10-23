@@ -229,7 +229,8 @@ Sub Viewport_Clear (v As Viewport)
 
     ' Add parallax displacement here, using the actual viewport pan.
     ' For example:
-    ' bg_offset.x = bg_offset.x - v.Pan.x / v.BackgroundPanRatio.x
+    Let bg_offset.x = bg_offset.x - v.Pan.x / v.BackgroundPanRatio.x
+    Let bg_offset.y = bg_offset.y - v.Pan.y / v.BackgroundPanRatio.y
 
     Dim w As Integer, h As Integer
     Let w = SpriteSequence_Width%(v.Background)
@@ -358,27 +359,33 @@ End Sub
 Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point, flipped As Integer)
 	Dim p1 As Point, p2 As Point
 	Dim s_w As Integer, s_h As Integer
-	if s.Ticker.Length <= 0 then
-		cls
-		print "FOO"
-		'end
-	end if
 	Let s_w = SpriteSequence_Width%(s)
 	Let s_h = SpriteSequence_Height%(s)
 	SpriteSequence_Current s, p1, p2
 	If absolute Then
-    If flipped Then
-      _PutImage (p.x + s.OffsetR.x + s_w - 1, p.y + s.OffsetR.y)-(p.x + s.OffsetR.x, p.y + s.OffsetR.y + s_h - 1), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
-    Else
-      _PutImage (p.x + s.OffsetL.x, p.y + s.OffsetL.y)-(p.x + s.OffsetL.x + s_w - 1, p.y + s.OffsetL.y + s_h - 1), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+		If flipped Then
+		  _PutImage (p.x + s.OffsetR.x + s_w - 1, p.y + s.OffsetR.y)-(p.x + s.OffsetR.x, p.y + s.OffsetR.y + s_h - 1), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+		Else
+		  _PutImage (p.x + s.OffsetL.x, p.y + s.OffsetL.y)-(p.x + s.OffsetL.x + s_w - 1, p.y + s.OffsetL.y + s_h - 1), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+		End If
+	Else
+		If flipped Then
+		  _PutImage (p.x + s.OffsetR.x + s_w - 1 - v.Pan.x, p.y + s.OffsetR.y - v.Pan.y)-(p.x + s.OffsetR.x - v.Pan.x, p.y + s.OffsetR.y + s_h - 1 - v.Pan.y), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+		Else
+		  _PutImage (p.x + s.OffsetL.x - v.Pan.x, p.y + s.OffsetL.y - v.Pan.y)-(p.x + s.OffsetL.x + s_w - 1 - v.Pan.x, p.y + s.OffsetL.y + s_h - 1 - v.Pan.y), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+		End If
     End If
-  Else
-    If flipped Then
-      _PutImage (p.x + s.OffsetR.x + s_w - 1 - v.Pan.x, p.y + s.OffsetR.y - v.Pan.y)-(p.x + s.OffsetR.x - v.Pan.x, p.y + s.OffsetR.y + s_h - 1 - v.Pan.y), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
-    Else
-      _PutImage (p.x + s.OffsetL.x - v.Pan.x, p.y + s.OffsetL.y - v.Pan.y)-(p.x + s.OffsetL.x + s_w - 1 - v.Pan.x, p.y + s.OffsetL.y + s_h - 1 - v.Pan.y), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
-    End If
-  End If
+End Sub
+
+Sub Viewport_PutViewport (dst As Viewport, absolute As Integer, src As Viewport, p As Point, p1 As Point, p2 As Point)
+	Dim s_w As Integer, s_h As Integer
+	Let s_w = p2.x - p1.x
+	Let s_h = p2.y - p2.y
+	If absolute Then
+		_PutImage (p.x , p.y )-(p.x  + s_w - 1, p.y  + s_h - 1), src.Buffer, dst.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+	Else
+		_PutImage (p.x  - dst.Pan.x, p.y  - dst.Pan.y)-(p.x  + s_w - 1 - dst.Pan.x, p.y  + s_h - 1 - dst.Pan.y), src.Buffer, dst.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+	End If
 End Sub
 
 Sub Viewport_SetCenter (v as Viewport, p as Point)

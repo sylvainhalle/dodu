@@ -16,6 +16,12 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
+' Threshold to enable block holding/dropping (px)
+Const CLIMB_THRESHOLD% = 1
+Const TAKE_THRESHOLD% = 5
+Const DROP_THRESHOLD% = 5
+Const UNCLIMB_THRESHOLD% = 5
+
 ' --------------------------
 ' Player
 ' --------------------------

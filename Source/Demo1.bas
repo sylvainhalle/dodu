@@ -41,12 +41,6 @@ Const FPS% = 25
 ' Window scaling factor
 Const SCALE% = 6
 
-' Threshold to enable block holding/dropping (px)
-Const CLIMB_THRESHOLD% = 1
-Const TAKE_THRESHOLD% = 5
-Const DROP_THRESHOLD% = 5
-Const UNCLIMB_THRESHOLD% = 5
-
 
 ' Number of frames between ticks of the thermometer
 Const THERMO_TICK_NORMAL% = 100
@@ -1027,6 +1021,7 @@ Sub PrepareSnow (m As LevelMap, col As Integer, row As Integer, front As Integer
     End Select
   End If
   SpriteSequence_Stop SPRITE_LEVEL(Abs(front), col, row)
+  Let SPRITE_LEVEL(Abs(front), col, row).OnEnd = SPSQ_RESET%
   Let SPRITE_LEVEL(Abs(front), col, row).Ticker.Loop = FALSE
 End Sub
 
