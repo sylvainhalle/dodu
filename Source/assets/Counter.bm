@@ -31,4 +31,16 @@ Sub DrawLevelNumber (v As Viewport)
   End If
 End Sub
 
+Sub DrawNumber (v As Viewport, p As Point, n As Integer)
+  Dim dg1 As Integer, dg2 As Integer
+  Let dg1 = n \ 10
+  Let dg2 = n Mod 10
+  Dim p2 As Point
+  Point_Set p2, p.x + 6, p.y
+  'If dg1 <> 0 Then
+    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg1), p, FALSE
+  'end if
+  Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg2), p2, FALSE
+End Sub
+
 ' :mode=visualbasic:

@@ -28,5 +28,6 @@ SpriteSequence_InitFile SPR_LVL_DIGITS(7), IMG_DIR$ + "/counter/Dg_7.gif",1, 1, 
 SpriteSequence_InitFile SPR_LVL_DIGITS(8), IMG_DIR$ + "/counter/Dg_8.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_LVL_DIGITS(9), IMG_DIR$ + "/counter/Dg_9.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
+Declare Sub DrawNumber (v As Viewport, p As Point, n As Integer)
 
 ' :mode=visualbasic:

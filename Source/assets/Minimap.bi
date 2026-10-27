@@ -16,7 +16,7 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
-Dim Shared SPR_MINIMAP(10) As SpriteSequence
+Dim Shared SPR_MINIMAP(17) As SpriteSequence
 
 ' Player
 SpriteSequence_InitFile SPR_MINIMAP(LVL_PLAYER), IMG_DIR$ + "/minimap/Player.gif", 1,  1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
@@ -43,5 +43,14 @@ SpriteSequence_InitFile SPR_MINIMAP(LVL_MITTENS), IMG_DIR$ + "/minimap/Mitten.pn
 
 ' Tuque
 SpriteSequence_InitFile SPR_MINIMAP(LVL_TUQUE), IMG_DIR$ + "/minimap/Tuque.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+
+' Snow
+SpriteSequence_InitFile SPR_MINIMAP(LVL_SNOW_C), IMG_DIR$ + "/minimap/Snow_C.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+
+' Eraser
+SpriteSequence_InitFile SPR_MINIMAP(LVL_ERASER), IMG_DIR$ + "/minimap/Eraser.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+
+' Eraser
+SpriteSequence_InitFile SPR_MINIMAP(LVL_HAND), IMG_DIR$ + "/minimap/Hand.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 ' :mode=visualbasic:

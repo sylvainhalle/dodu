@@ -380,7 +380,7 @@ End Sub
 Sub Viewport_PutViewport (dst As Viewport, absolute As Integer, src As Viewport, p As Point, p1 As Point, p2 As Point)
 	Dim s_w As Integer, s_h As Integer
 	Let s_w = p2.x - p1.x
-	Let s_h = p2.y - p2.y
+	Let s_h = p2.y - p1.y
 	If absolute Then
 		_PutImage (p.x , p.y )-(p.x  + s_w - 1, p.y  + s_h - 1), src.Buffer, dst.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
 	Else
