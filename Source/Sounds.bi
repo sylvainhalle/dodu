@@ -21,6 +21,7 @@ Type SoundPlayer
 	PlayEffects As Integer
 	CurrentSong As Long
 	Songs(10) As Long
+	Loops(10) As Integer
 	Effects(20) As Long
 End Type
 
@@ -47,6 +48,8 @@ Declare Sub SoundPlayer_ResumeSong (sp As SoundPlayer)
 Declare Sub SoundPlayer_PlayEffect (sp As SoundPlayer, index As Integer)
 
 Declare Sub SoundPlayer_SetSongVolume (sp As SoundPlayer)
+
+Declare Sub SoundPlayer_SetSongLoop (sp As SoundPlayer, index As Integer, loop As Boolean)
 
 Declare Function SoundPlayer_IsPlayingSong% (sp As SoundPlayer)
 

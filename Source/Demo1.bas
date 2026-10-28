@@ -26,6 +26,8 @@ $ErrorLocation:On
 '$IncludeOnce
 '$Include:'Utils.bi'
 
+Dim dummy As String
+
 ' --------------------------
 ' Program constants
 ' --------------------------
@@ -811,7 +813,7 @@ Sub DoLevel
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), climbP, COLOR_PINK&
-    Viewport_Print ImgBuffer, Str$((Dodu.LevPos.y + PLAYER_HEIGHT%) Mod 11) + Str$(hasfallen), P_ORIGIN
+    'Viewport_Print ImgBuffer, Str$((Dodu.LevPos.y + PLAYER_HEIGHT%) Mod 11) + Str$(hasfallen), P_ORIGIN
     'Viewport_Print ImgBuffer, Str$(lastClimbIndex) + Str$(lastUnclimbIndex) + Str$(lastFallIndex), P_ORIGIN
 
     Viewport_Copy ImgBuffer, MainScreen

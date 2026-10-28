@@ -92,6 +92,7 @@ Sub SpriteSequence_InitFile (s As SpriteSequence, filename As String, frames As 
 		Let ERRFILE = filename
 		Error 97 ' 97 is the user-defined code
 	End If
+	Let IMGALLOCS = IMGALLOCS + 1
 	SpriteSequence_Init s, e, frames, spd, animate, isloop, offsetL, offsetR, clr
 End Sub
 
@@ -203,6 +204,7 @@ Sub Viewport_Init (v As Viewport, size As Point, ws As Point, pan As Point, scal
   Let v.Pan = pan
   Let v.Scale = scale
   Let v.Buffer = _NewImage(size.x * scale, size.y * scale, SPRITE_MODE%)
+  Let IMGALLOCS = IMGALLOCS + 1
   Let v.BackgroundPanRatio.x = -1
   Let v.BackgroundPanRatio.y = -1
   Let v.ForegroundPanRatio.x = -1

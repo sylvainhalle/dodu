@@ -19,6 +19,11 @@
 Option Base 0
 Option _Explicit
 
+Dim dummy As String
+Print "Program started. Press Enter."
+Input dummy$
+
+
 ' --------------------------
 ' Includes (declarations)
 ' --------------------------
@@ -73,6 +78,8 @@ Const COLOR_CURSOR& = _RGB32(255, 255, 0)
 Const WALKING_SPEED# = 1
 
 Dim Shared PT_LEVEL_NB As Point
+Dim Shared P_UNIT As Point
+Point_Set P_UNIT, 1, 1
 
 ' --------------------------
 ' Other includes (declarations)
@@ -119,10 +126,12 @@ Let PALETTE_SHORTCUTS(7) = "t"
 Let PALETTE_SHORTCUTS(8) = "f"
 Let PALETTE_SHORTCUTS(9) = "c"
 Let PALETTE_SHORTCUTS(10) = "~"
-Let PALETTE_SHORTCUTS(11) = "S"
+Let PALETTE_SHORTCUTS(11) = "s"
 
 Dim Shared LVL_SPRITES(30, 30) As SpriteSequence
 Dim Shared SPRITE_LEVEL(2, 30, 30) As SpriteSequence
+Dim Shared COPY_LEVEL As LevelMap
+Dim Shared COPY_TOPLEFT As Square, COPY_BOTRIGHT As Square
 ResetLevelSprites
 
 ' --------------------------
@@ -130,13 +139,13 @@ ResetLevelSprites
 ' --------------------------
 _AllowFullScreen _Off
 
-Dim Shared CurrentSquare As Square
 Dim Shared MainScreen As Viewport, ImgBuffer As Viewport
 Dim Shared LevelBuffer As Viewport, PaletteBuffer As Viewport
 Viewport_Init ImgBuffer, SCREEN_DIMS, SCREEN_DIMS, P_ORIGIN, 1
 Viewport_Init PaletteBuffer, PALETTE_DIMS, PALETTE_DIMS, P_ORIGIN, 1
 Viewport_Init LevelBuffer, LEVEL_DIMS, WORLD_SIZE, P_ORIGIN, 1
 Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, P_ORIGIN, SCALE%
+Viewport_SetBackground LevelBuffer, Backgrounds(10), P_UNIT
 
 Screen MainScreen.Buffer
 
@@ -144,16 +153,29 @@ Screen MainScreen.Buffer
 Dim keyb As Integer
 Dim Shared selection As Integer
 Let selection = 3
+
+Dim Shared sel_topleft As Square, sel_botright As Square
+Square_Set sel_topleft, 0, 0
+Square_Set sel_botright, 0, 0
+
 Do
   _Limit FPS%
-  DrawPalette
-  DrawLevel
+  Dim khit As Long, shift As Integer, ctrl As Integer
+  Let khit = _KeyHit
+  Let shift = _KeyDown(K_LSHIFT) Or _KeyDown(K_RSHIFT)
+  Let ctrl = _KeyDown(K_CTRL)
+  Viewport_Clear MainScreen
+  Viewport_Clear LevelBuffer
+  TickAll
+  'DrawPalette
+  'DrawLevel
   Viewport_PutViewport ImgBuffer, TRUE, PaletteBuffer, P_ORIGIN, P_ORIGIN, PALETTE_DIMS
   Viewport_PutViewport ImgBuffer, TRUE, LevelBuffer, LEVEL_TOPLEFT, P_ORIGIN, LEVEL_DIMS
   'Viewport_Print ImgBuffer, Levels(CURRENT_LEVEL).Topo(CurrentSquare.col, CurrentSquare.row), P_ORIGIN
   Viewport_Copy ImgBuffer, MainScreen
-  _PrintString (1, 1), Levels(CURRENT_LEVEL).Topo(CurrentSquare.col, CurrentSquare.row), MainScreen.Buffer
-  _PrintString (1, 16), PALETTE_SHORTCUTS(selection), MainScreen.Buffer
+  _PrintString (1, 1), Str$(IMGALLOCS), MainScreen.Buffer
+  '_PrintString (1, 1), Levels(CURRENT_LEVEL).Topo(sel_topleft.col, sel_botright.row), MainScreen.Buffer
+  _PrintString (1, 16), Str$(shift), MainScreen.Buffer
   Viewport_Display MainScreen
 
   If keyb Then
@@ -167,29 +189,29 @@ Do
 
   If IsLeft% Then
     Let keyb = TRUE
-    If CurrentSquare.col > 0 Then
-      Let CurrentSquare.col = CurrentSquare.col - 1
+    If Not ctrl Then
+      MoveSquareFocus -1, 0, shift
     End If
   End If
 
   If IsRight% Then
     Let keyb = TRUE
-    If CurrentSquare.col < 29 Then
-      Let CurrentSquare.col = CurrentSquare.col + 1
+    If Not ctrl Then
+      MoveSquareFocus 1, 0, shift
     End If
   End If
 
   If IsUp% Then
     Let keyb = TRUE
-    If CurrentSquare.row > 0 Then
-      Let CurrentSquare.row = CurrentSquare.row - 1
+    If Not ctrl Then
+      MoveSquareFocus 0, -1, shift
     End If
   End If
 
   If IsDown% Then
     Let keyb = TRUE
-    If CurrentSquare.row < 29 Then
-      Let CurrentSquare.row = CurrentSquare.row + 1
+    If Not ctrl Then
+      MoveSquareFocus 0, 1, shift
     End If
   End If
 
@@ -198,9 +220,16 @@ Do
     ApplyToSquare
   End If
 
+  If Kbd_Down(K_INS) Then
+    If ctrl Then
+      CopyRegion
+    ElseIf shift Then
+      PasteRegion
+    End If
+  End If
+
   ' Are we switching to a new selection?
-  Dim i As Integer, khit As Long
-  Let khit = _KeyHit
+  Dim i As Integer
   For i = 0 To 11
     If khit = Asc(PALETTE_SHORTCUTS(i)) Or khit = Asc(LCase$(PALETTE_SHORTCUTS(i))) Then
       Dim s As Integer
@@ -210,6 +239,30 @@ Do
   Next
 
 Loop
+
+Sub CopyRegion
+  Dim col As Integer, row As Integer
+  For col = 0 To 29
+    For row = 0 To 29
+    Next
+  Next
+End Sub
+
+Sub PasteRegion
+End Sub
+
+
+Sub MoveSquareFocus (hor As Integer, ver As Integer, shift As Integer)
+  If shift Then
+    Let sel_botright.col = Clamp%(sel_botright.col + hor, 0, 29)
+    Let sel_botright.row = Clamp%(sel_botright.row + ver, 0, 29)
+  Else
+    Let sel_topleft.col = Clamp%(sel_topleft.col + hor, 0, 29)
+    Let sel_topleft.row = Clamp%(sel_topleft.row + ver, 0, 29)
+    Let sel_botright.col = sel_topleft.col
+    Let sel_botright.row = sel_topleft.row
+  End If
+End Sub
 
 Function IndexOf% (e As String)
   Dim i As Integer
@@ -232,15 +285,20 @@ Sub ResetLevelSprites
 End Sub
 
 Sub ApplyToSquare
-  Let Levels(CURRENT_LEVEL).Topo(CurrentSquare.col, CurrentSquare.row) = PALETTE_SHORTCUTS(selection)
-  If PALETTE_SHORTCUTS(selection) = T_NOTHING Then
-    ClearSpriteSquare CurrentSquare
-  Else
-    SetSpriteSquare Levels(CURRENT_LEVEL), FALSE, CurrentSquare.col, CurrentSquare.row, PALETTE_SHORTCUTS(selection)
-  End If
+  Dim col As Integer, row As Integer, s As Square
+  For col = sel_topleft.col To sel_botright.col
+    For row = sel_topleft.row To sel_botright.row
+      Square_Set s, col, row
+      Let Levels(CURRENT_LEVEL).Topo(col, row) = PALETTE_SHORTCUTS(selection)
+      If PALETTE_SHORTCUTS(selection) = T_NOTHING Then
+        ClearSpriteSquare s
+      Else
+        SetSpriteSquare Levels(CURRENT_LEVEL), FALSE, col, row, PALETTE_SHORTCUTS(selection)
+        SpriteSequence_Start SPRITE_LEVEL(0, col, row)
+      End If
+    Next
+  Next
 End Sub
-
-
 
 Sub DrawPalette
   Viewport_Clear PaletteBuffer
@@ -258,8 +316,8 @@ Sub DrawPalette
     End If
   Next
   ' Coordinates
-  DrawNumber PaletteBuffer, P_COORDS1, CurrentSquare.col
-  DrawNumber PaletteBuffer, P_COORDS2, CurrentSquare.row
+  DrawNumber PaletteBuffer, P_COORDS1, sel_topleft.col
+  DrawNumber PaletteBuffer, P_COORDS2, sel_topleft.row
 End Sub
 
 Sub DrawLevel
@@ -283,7 +341,18 @@ Sub DrawLevel
       End If
     Next
   Next
-  Viewport_LineC LevelBuffer, FALSE, CurrentSquare.col * BLOCK_SIZE%, CurrentSquare.row * BLOCK_SIZE%, (CurrentSquare.col + 1) * BLOCK_SIZE% - 1, (CurrentSquare.row + 1) * BLOCK_SIZE% - 1, COLOR_CURSOR&, TRUE, FALSE
+  Viewport_LineC LevelBuffer, FALSE, sel_topleft.col * BLOCK_SIZE%, sel_topleft.row * BLOCK_SIZE%, (sel_botright.col + 1) * BLOCK_SIZE% - 1, (sel_botright.row + 1) * BLOCK_SIZE% - 1, COLOR_CURSOR&, TRUE, FALSE
+End Sub
+
+Sub TickAll
+  Viewport_Tick LevelBuffer
+  Dim row As Integer, col As Integer
+  For row = 0 To 29
+    For col = 0 To 29
+      SpriteSequence_Tick SPRITE_LEVEL(0, col, row)
+      SpriteSequence_Tick SPRITE_LEVEL(1, col, row)
+    Next
+  Next
 End Sub
 
 Sub SetSpriteSquare (m As LevelMap, isfront As Integer, col As Integer, row As Integer, e As String)
@@ -302,9 +371,9 @@ Sub SetSpriteSquare (m As LevelMap, isfront As Integer, col As Integer, row As I
       Case T_MITTENS
         SpriteSequence_Copy SPRITE_LEVEL(Abs(isfront), col, row), SPR_LEVEL(LVL_MITTENS)
       Case T_TUQUE
-        SpriteSequence_Copy LVL_SPRITES(col, row), SPR_LEVEL(LVL_TUQUE)
+        SpriteSequence_Copy SPRITE_LEVEL(Abs(isfront), col, row), SPR_LEVEL(LVL_TUQUE)
       Case T_WATER
-        SpriteSequence_Copy LVL_SPRITES(col, row), SPR_LEVEL(LVL_WATER)
+        SpriteSequence_Copy SPRITE_LEVEL(Abs(isfront), col, row), SPR_LEVEL(LVL_WATER)
       Case T_SNOW
         If Dodu.HasRackets Then
           PrepareSnow m, col, row, FALSE

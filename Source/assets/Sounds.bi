@@ -31,14 +31,15 @@ Const SNG_BIERE = 5
 Const SNG_PASTORAL = 6
 Const SNG_BRUBECK = 7
 
-SoundPlayer_AddSong Audio, SNG_SONG1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod_fixed.mid"), 0.4
-SoundPlayer_AddSong Audio, SNG_SONG2, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/yaya.mid"), 0.4
-SoundPlayer_AddSong Audio, SNG_SONG3, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/pizza.mid"), 0.4
-SoundPlayer_AddSong Audio, SNG_CARDS, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cards.mid"), 0.4
-SoundPlayer_AddSong Audio, SNG_CUTSCENE1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cutscene1.mid"), 0.5
-SoundPlayer_AddSong Audio, SNG_BIERE, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/biere_q.mid"), 0.4
-SoundPlayer_AddSong Audio, SNG_PASTORAL, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/lullaby.mid"), 0.4
-SoundPlayer_AddSong Audio, SNG_PASTORAL, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/lullaby.mid"), 0.4
+SoundPlayer_AddSong Audio, SNG_SONG1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod_fixed.mid", "STREAM"), 0.4
+SoundPlayer_AddSong Audio, SNG_SONG2, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/yaya.mid", "STREAM"), 0.4
+SoundPlayer_AddSong Audio, SNG_SONG3, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/pizza.mid", "STREAM"), 0.4
+SoundPlayer_AddSong Audio, SNG_CARDS, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cards.mid", "STREAM"), 0.4
+SoundPlayer_AddSong Audio, SNG_CUTSCENE1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cutscene1.mid", "STREAM"), 0.5
+Let Audio.Loops(SNG_CUTSCENE1) = FALSE
+SoundPlayer_AddSong Audio, SNG_BIERE, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/biere_q.mid", "STREAM"), 0.4
+SoundPlayer_AddSong Audio, SNG_PASTORAL, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/lullaby.mid", "STREAM"), 0.4
+'SoundPlayer_AddSong Audio, SNG_PASTORAL, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/lullaby.mid"), 0.4
 
 Const SND_STEP% = 0
 Const SND_THERMO% = 1
@@ -69,6 +70,10 @@ SoundPlayer_AddEffect Audio, SND_COOKIE%, _SndOpen("/home/sylvain/Workspaces/dod
 SoundPlayer_AddEffect Audio, SND_POWERUP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/powerup.mid"), 1
 SoundPlayer_AddEffect Audio, SND_POWERDOWN%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/powerdown.mid"), 1
 SoundPlayer_AddEffect Audio, SND_STEP_SNOW%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step_snow.mid"), 0.4
+
+dim i as integer
+for i = 0 to 13: Print _SndLen(Audio.Effects(i)): Next
+Input "foo", dummy$
 
 '**
 '* Sets the song volume to a low level.

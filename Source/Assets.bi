@@ -78,12 +78,19 @@ Dim DEFAULT_OFFSET As Point
 Let DEFAULT_OFFSET = P_ORIGIN
 
 '$Include:'assets/Player.bi'
+
 '$Include:'assets/Level.bi'
+
 '$Include:'assets/Cards.bi'
+
 '$Include:'assets/Minimap.bi'
+
 '$Include:'assets/Counter.bi'
+
 '$Include:'assets/Sounds.bi'
+
 '$Include:'assets/Backgrounds.bi'
+
 
 ' Splash screen
 Dim Shared SplashScreen As SpriteSequence

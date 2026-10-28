@@ -50,17 +50,17 @@ SpriteSequence_InitFile SPR_LEVEL(LVL_COFFEE), IMG_DIR$ + "/level/Coffee.png",4,
 Dim Shared SprMittens As SpriteSequence
 Dim SprMittensOffset As Point
 Point_Set SprMittensOffset, -2, 2
-SpriteSequence_InitFile SPR_LEVEL(LVL_MITTENS), IMG_DIR$ + "/level/Mittens.gif",4, 4, TRUE, TRUE, SprMittensOffset, SprMittensOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_LEVEL(LVL_MITTENS), IMG_DIR$ + "/level/Mittens.png",1, 1, TRUE, TRUE, SprMittensOffset, SprMittensOffset, COLOR_TRANSPARENT
 
 ' Tuque
 Dim Shared SprTuque As SpriteSequence
 Dim SprTuqueOffset As Point
 Point_Set SprTuqueOffset, 1, -3
-SpriteSequence_InitFile SPR_LEVEL(LVL_TUQUE), IMG_DIR$ + "/level/Tuque.gif",4, 3, TRUE, TRUE, SprTuqueOffset, SprTuqueOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_LEVEL(LVL_TUQUE), IMG_DIR$ + "/level/Tuque.png",1, 1, TRUE, TRUE, SprTuqueOffset, SprTuqueOffset, COLOR_TRANSPARENT
 
 ' Thermometer
 Dim Shared Thermometer As SpriteSequence
-SpriteSequence_InitFile SPR_LEVEL(LVL_THERMO), IMG_DIR$ + "/level/Thermometer.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_LEVEL(LVL_THERMO), IMG_DIR$ + "/level/Thermometer.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 Dim Shared THERMO_RED&, THERMO_BLUE&, HIGHLIGHT_COLOR&
 If IMG_MODE = IMG_MODE_CGA$ Then
