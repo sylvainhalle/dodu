@@ -104,7 +104,7 @@ SpriteSequence_InitFile LifSplash, IMG_DIR$ + "/splash/LIF.png",24, 1, TRUE, FAL
 ' ---------------------
 Dim Shared CutScenes(10) As SpriteSequence
 SpriteSequence_InitFile CutScenes(0), IMG_DIR$ + "/cutscenes/Cutscene_0.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile CutScenes(1), IMG_DIR$ + "/cutscenes/Cutscene_1.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile CutScenes(1), IMG_DIR$ + "/cutscenes/Cutscene_1.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile CutScenes(2), IMG_DIR$ + "/cutscenes/Cutscene_2.png",4, 3, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 SpriteSequence_InitFile CutScenes(3), IMG_DIR$ + "/cutscenes/Cutscene_3.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 

@@ -248,7 +248,7 @@ Sub MainLoop
     End If
 
     Viewport_FadeOut MainScreen, Ceil%(0.3 * FPS%)
-    Viewport_Wait ImgBuffer, MainScreen, 0.4, FPS%
+    Viewport_Wait ImgBuffer, MainScreen, 2, FPS%
     Do
       If Levels(CURRENT_LEVEL).CutScene >= 0 And CFG_CUTSCENES Then
         SoundPlayer_StopSong Audio
@@ -872,25 +872,29 @@ Sub DoGameOver
 End Sub
 
 Sub DoCutScene (nb As Integer)
+
   Viewport_Reset ImgBuffer
   Viewport_Reset MainScreen
   Viewport_SetBackground ImgBuffer, CutScenes(nb), PT_UNIT
+  Viewport_Clear ImgBuffer
+  Viewport_Copy ImgBuffer, MainScreen
+
   _PrintMode _KeepBackground , ImgBuffer.Buffer
-  Screen MainScreen.Buffer
+  Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
+  'Screen MainScreen.Buffer
 
   SoundPlayer_PlaySong Audio, SNG_CUTSCENE1%
 
   Dim ps As Ticker
   Ticker_Init ps, 7, FPS%, FALSE
   Viewport_Start ImgBuffer
-  Viewport_Copy ImgBuffer, MainScreen
+  'Viewport_Copy ImgBuffer, MainScreen
   Viewport_Start MainScreen
-  Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
   Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
+  Sleep 10
   Do
     _Limit FPS%
     Ticker_Tick ps
-    Viewport_Clear ImgBuffer
     Viewport_Tick ImgBuffer
     Viewport_Copy ImgBuffer, MainScreen
     Viewport_Display MainScreen
@@ -1336,6 +1340,8 @@ Sub DoIntroduction (rst As RestorePoint)
     Point_Set Flakes(n), Floor%(Rnd * SCREEN_DIMS.x), Floor%(Rnd * SCREEN_DIMS.y)
     Ticker_Init FlakesTickers(n), 2, Int(Rnd * 2) + 2, TRUE
   Next
+  Viewport_Reset ImgBuffer
+  Viewport_Reset MainScreen
   Viewport_SetBackground ImgBuffer, SplashScreen, P_ORIGIN
   SpriteSequence_Start SplashScreen
   SoundPlayer_PlaySong Audio, SNG_BIERE
@@ -1343,6 +1349,7 @@ Sub DoIntroduction (rst As RestorePoint)
   Do
     _Limit FPS%
     Viewport_Clear ImgBuffer
+    Viewport_Clear MainScreen
     Ticker_Tick ShakeTicker
     If ShakeTicker.Index < 3 Then
       Let yoffset = 1
@@ -1381,6 +1388,7 @@ Sub DoIntroduction (rst As RestorePoint)
     End If
     Viewport_Tick ImgBuffer
     Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Tick MainScreen
     Viewport_Display MainScreen
     If IsLeft% Or IsRight% Then
       Let sel = (sel + 1) Mod 2

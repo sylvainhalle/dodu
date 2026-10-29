@@ -65,7 +65,7 @@ Declare Sub Point_Scale (p As Point, s as Single)
 '**
 '* Checks if a point is valid.
 '**
-Declare Function Point_IsValid (p As Point)
+Declare Function Point_IsValid% (p As Point)
 
 '**
 '* Returns the coordinates of a point as a string

@@ -19,10 +19,6 @@
 Option Base 0
 Option _Explicit
 
-Dim dummy As String
-Print "Program started. Press Enter."
-Input dummy$
-
 
 ' --------------------------
 ' Includes (declarations)

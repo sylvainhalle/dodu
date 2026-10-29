@@ -71,10 +71,6 @@ SoundPlayer_AddEffect Audio, SND_POWERUP%, _SndOpen("/home/sylvain/Workspaces/do
 SoundPlayer_AddEffect Audio, SND_POWERDOWN%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/powerdown.mid"), 1
 SoundPlayer_AddEffect Audio, SND_STEP_SNOW%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step_snow.mid"), 0.4
 
-dim i as integer
-for i = 0 to 13: Print _SndLen(Audio.Effects(i)): Next
-Input "foo", dummy$
-
 '**
 '* Sets the song volume to a low level.
 '**
