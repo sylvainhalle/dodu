@@ -36,6 +36,9 @@ Const K_INS = 20992
 Const K_DEL = 21248
 Const K_M_UC = 77
 Const K_M_LC = 109
+Const K_S_UC = 53
+Const K_S_LC = 115
+
 Const J_1 = 0
 Const J_2 = 1
 Const J_3 = 2

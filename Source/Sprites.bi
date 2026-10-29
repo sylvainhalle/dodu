@@ -15,7 +15,7 @@
 '    You should have received a copy of the GNU General Public License
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
-Dim Shared IMGALLOCS as Long
+
 ' Colors
 Const COLOR_BLACK& = _RGB32(0, 0, 0)
 Const COLOR_WHITE& = _RGB32(255, 255, 255)
@@ -38,6 +38,9 @@ Const LOAD_ASSETS = FALSE
 
 ' Sprite mode (32 = software, 33 = hardware)
 Const SPRITE_MODE% = 32
+
+' Mode when loading sprites (257 = paletted) 
+Const IMAGE_MODE% = 257
 
 '**
 '** - Point ------------------------------------------------- {{{

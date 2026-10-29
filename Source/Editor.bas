@@ -33,14 +33,15 @@ Option _Explicit
 Const BLOCK_SIZE% = 11
 
 ' Screen dimensions
+Const TOPBAR_HEIGHT = 16
 Dim Shared SCREEN_DIMS As Point
 Point_Set SCREEN_DIMS, 320, 200
 Dim Shared LEVEL_DIMS As Point
-Point_Set LEVEL_DIMS, 288, 190
+Point_Set LEVEL_DIMS, SCREEN_DIMS.x - 32, SCREEN_DIMS.y - TOPBAR_HEIGHT
 Dim Shared LEVEL_TOPLEFT As Point
-Point_Set LEVEL_TOPLEFT, 32, 10
+Point_Set LEVEL_TOPLEFT, 32, TOPBAR_HEIGHT
 Dim Shared PALETTE_TOPLEFT As Point, PALETTE_BOTRIGHT As Point
-Point_Set PALETTE_TOPLEFT, 0, 10
+Point_Set PALETTE_TOPLEFT, 0, TOPBAR_HEIGHT
 Point_Set PALETTE_BOTRIGHT, 32, 200
 Const PALETTE_BTN_SIZE = 6
 Dim Shared P_COORDS1 As Point, P_COORDS2 As Point
@@ -63,7 +64,7 @@ Dim Shared IMG_MODE As String
 Let IMG_MODE$ = IMG_MODE_EGA$
 
 ' Colors
-Const COLOR_BG& = _RGB32(128, 128, 128)
+Const COLOR_BG& = _RGB32(83, 83, 255)
 Const COLOR_BTN& = _RGB32(192, 192, 192)
 Const COLOR_GRID& = _RGB32(64, 64, 64, 128)
 Const COLOR_CURSOR& = _RGB32(255, 255, 0)
@@ -97,6 +98,25 @@ Const CURRENT_LEVEL% = 0
 
 ' Assets
 '$Include:'Assets.bi'
+
+' GUI
+Dim Shared GUI_TOPBAR(3) As SpriteSequence
+SpriteSequence_InitFile GUI_TOPBAR(0), "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/TopBar_L.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
+SpriteSequence_InitFile GUI_TOPBAR(1), "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/TopBar_C.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
+SpriteSequence_InitFile GUI_TOPBAR(2), "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/TopBar_R.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
+Dim Shared GUI_BUTTON(3) As SpriteSequence
+SpriteSequence_InitFile GUI_BUTTON(0), "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/Btn_L.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
+SpriteSequence_InitFile GUI_BUTTON(1), "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/Btn_C.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
+SpriteSequence_InitFile GUI_BUTTON(2), "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/Btn_R.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
+
+Dim Shared GUI_TOPBAR_DODU As SpriteSequence
+SpriteSequence_InitFile GUI_TOPBAR_DODU, "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/Dodu_Icon.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
+
+Dim Shared GUI_TOOLBAR(4) As SpriteSequence
+SpriteSequence_InitFile GUI_TOOLBAR(0), "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/Btn_New.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
+SpriteSequence_InitFile GUI_TOOLBAR(1), "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/Btn_Load.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
+SpriteSequence_InitFile GUI_TOOLBAR(2), "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/Btn_Save.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
+SpriteSequence_InitFile GUI_TOOLBAR(3), "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/Btn_Undo.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
 
 Dim Shared PALETTE_BUTTONS(16) As Integer
 Let PALETTE_BUTTONS(0) = LVL_HAND
@@ -172,13 +192,16 @@ For lvln = 0 To 11
   Let Levels(lvln).Width = M_W
 Next
 
-
+Dim khit As Long, shift As Integer, ctrl As Integer, msinput As Integer, mousex As Integer, mousey As Integer
 Do
   _Limit FPS%
-  Dim khit As Long, shift As Integer, ctrl As Integer
   Let khit = _KeyHit
   Let shift = _KeyDown(K_LSHIFT) Or _KeyDown(K_RSHIFT)
   Let ctrl = _KeyDown(K_CTRL)
+  Do While _MouseInput
+    Let mousex = _MouseX \ SCALE
+    Let mousey = _MouseY \ SCALE
+  Loop
   Viewport_Clear MainScreen
   Viewport_Clear LevelBuffer
   TickAll
@@ -186,14 +209,12 @@ Do
   DrawLevel
   Viewport_PutViewport ImgBuffer, TRUE, PaletteBuffer, PALETTE_TOPLEFT, P_ORIGIN, PALETTE_DIMS
   Viewport_PutViewport ImgBuffer, TRUE, LevelBuffer, LEVEL_TOPLEFT, P_ORIGIN, LEVEL_DIMS
-  'Viewport_Print ImgBuffer, Str$(UNDO_HEAD) + " " + Str$(UNDO_TAIL), P_ORIGIN
   DrawTopBar
   Dim undop As Point
-  Point_Set undop, 32, 11
-  BitmapFont_WriteString ImgBuffer, SF_FONT, undop, Str$(UNDO_HEAD) + " " + Str$(UNDO_TAIL)
+  Point_Set undop, 32, 17
+  'BitmapFont_WriteString ImgBuffer, SF_FONT, undop, Str$(UNDO_HEAD) + " " + Str$(UNDO_TAIL), COLOR_BLACK
+  BitmapFont_WriteString ImgBuffer, SF_FONT, undop, Str$(mousex) + " " + Str$(mousey), COLOR_BLACK
   Viewport_Copy ImgBuffer, MainScreen
-  '_PrintString (1, 1), Levels(CURRENT_LEVEL).Topo(sel_topleft.col, sel_botright.row), MainScreen.Buffer
-  '_PrintString (1, 16), Str$(ctrl), MainScreen.Buffer
   Viewport_Display MainScreen
 
   If keyb Then
@@ -269,6 +290,14 @@ Do
     ApplyUndo
   End If
 
+  If (Kbd_Down(K_S_UC) Or Kbd_Down(K_S_LC)) And ctrl Then
+    DoSave
+  End If
+
+  If _MouseButton(1) Then
+    HandleClick mousex, mousey
+  End If
+
   ' Are we switching to a new selection?
   Dim i As Integer
   For i = 0 To 11
@@ -281,11 +310,58 @@ Do
 
 Loop
 
+Sub HandleClick (x As Single, y As Single)
+  If InRect(x, y, 0, 0, 320, TOPBAR_HEIGHT) Then
+    HandleClickBar x, y
+  ElseIf InRect(x, y, 0, TOPBAR_HEIGHT, 32, 200) Then
+    HandleClickPalette x, y - TOPBAR_HEIGHT
+  ElseIf InRect(x, y, 33, TOPBAR_HEIGHT, 320, 200) Then
+    HandleClickLevel x - 33, y - TOPBAR_HEIGHT
+  End If
+End Sub
+
+Sub HandleClickBar (x As Single, y As Single)
+  ' Do nothing for the moment
+End Sub
+
+Sub HandleClickPalette (x As Single, y As Single)
+  Dim i As Integer, x1 As Integer, y1 As Integer
+  For i = 0 To 16
+    Let x1 = 2 + (i Mod 2) * 10
+    Let y1 = (i \ 2) * 10 + 10
+    If InRect(x, y, x1, y1, x1 + 8, y1 + 8) Then
+      Let selection = i
+    End If
+  Next
+End Sub
+
+Sub HandleClickLevel (x As Single, y As Single)
+  Dim col As Integer, row As Integer
+  Let col = x \ BLOCK_SIZE
+  Let row = y \ BLOCK_SIZE
+  SetSquareFocus col, row
+End Sub
+
+Function InRect% (x As Single, y As Single, x1 As Single, y1 As Single, x2 As Single, y2 As Single)
+  Let InRect% = x >= x1 _AndAlso x <= x2 _AndAlso y >= y1 _AndAlso y <= y2
+End Function
+
 Sub DrawTopBar
-  Viewport_LineC ImgBuffer, TRUE, 0, 0, 320, 9, COLOR_DARKGREEN, TRUE, TRUE
   Dim p As Point
-  Point_Set p, 1, 1
-  BitmapFont_WriteString ImgBuffer, SF_FONT, p, "The Dodu Level Editor               ESC=Quit  F1=Help"
+  Point_Set p, 0, 0
+  Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR(0), p, FALSE
+  Point_Set p, 314, 0
+  Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR(2), p, FALSE
+  Viewport_LineC ImgBuffer, TRUE, 6, 0, 313, TOPBAR_HEIGHT, COLOR_WHITE, TRUE, TRUE
+  Point_Set p, 170, 5
+  BitmapFont_WriteString ImgBuffer, SF_FONT, p, "The Dodu Level Editor", COLOR_BLACK
+  Point_Set p, 300, 1
+  Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR_DODU, p, FALSE
+  Dim i As Integer
+  For i = 0 To 3
+    Point_Set p, 5 + i * 17, 1
+    Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOOLBAR(i), p, FALSE
+  Next
 End Sub
 
 Sub CopyRegion
@@ -299,6 +375,48 @@ Sub CopyRegion
   Square_Set COPY_TOPLEFT, sel_topleft.col, sel_topleft.row
   Square_Set COPY_BOTRIGHT, sel_botright.col, sel_botright.row
   Square_Set sel_botright, sel_topleft.col, sel_topleft.row
+End Sub
+
+Sub DoSave
+  Dim keyb As Integer
+  Dim p As Point
+  Do
+    _Limit FPS%
+
+    Viewport_LineC ImgBuffer, TRUE, 62, 46, 190, 170, COLOR_WHITE, TRUE, TRUE
+    Point_Set p, 65, 49
+    BitmapFont_WriteString ImgBuffer, SF_FONT, p, "Type in the filename to save the map to:", COLOR_BLACK
+    Point_Set p, 65, 90
+    DrawButton ImgBuffer, p, "Save"
+    Point_Set p, 96, 90
+    DrawButton ImgBuffer, p, "Cancel"
+    Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Display MainScreen
+
+    If IsEsc% Then
+      Kbd_WaitRelease FPS%
+      Exit Sub
+    End If
+
+    If IsEnter% Then
+      Kbd_WaitRelease FPS%
+      Exit Sub
+    End If
+
+  Loop
+End Sub
+
+Sub DrawButton (v As Viewport, p As Point, text As String)
+  Dim x As Integer, p2 As Point
+  Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON(0), p, FALSE
+  For x = p.x + 3 To p.x + 3 + Len(text) * SF_FONT.Width
+    Point_Set p2, x, p.y
+    Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON(1), p2, FALSE
+  Next
+  Point_Set p2, p.x + 3 + Len(text) * SF_FONT.Width, p.y
+  Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON(2), p2, FALSE
+  Point_Set p2, p.x + 3, p.y + 3
+  BitmapFont_WriteString v, SF_FONT, p2, text, COLOR_BLACK
 End Sub
 
 Sub MoveRegion (delta_col As Integer, delta_row As Integer)
@@ -379,6 +497,13 @@ Sub MoveSquareFocus (hor As Integer, ver As Integer, shift As Integer)
     Let sel_botright.col = sel_topleft.col
     Let sel_botright.row = sel_topleft.row
   End If
+End Sub
+
+Sub SetSquareFocus (col As Integer, row As Integer)
+  Let sel_topleft.col = col
+  Let sel_topleft.row = row
+  Let sel_botright.col = sel_topleft.col
+  Let sel_botright.row = sel_topleft.row
 End Sub
 
 Sub ReorderPoints

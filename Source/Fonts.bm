@@ -17,7 +17,15 @@
 '-----------------------------------------------------------------------------
 
 Sub BitmapFont_LoadFile (b As BitmapFont, filename As String)
-	Let b.Content = _LoadImage(filename, SPRITE_MODE%)
+	Let b.Content = _LoadImage(filename, 257)
+	_ClearColor 0, b.Content
+	Let b.Width = _Width(b.Content) \ 16
+	Let b.Height = _Height(b.Content) \ 16
+End Sub
+
+Sub BitmapFont_LoadHandle (b As BitmapFont, h As Long)
+	Let b.Content = h
+	_ClearColor 0, b.Content
 	Let b.Width = _Width(b.Content) \ 16
 	Let b.Height = _Height(b.Content) \ 16
 End Sub
@@ -29,12 +37,17 @@ Sub BitmapFont_WriteCharacter (v As Viewport, f As BitmapFont, p As Point, c As 
 	_PutImage (p.x, p.y)-(p.x + f.Width - 1, p.y + f.Height - 1), f.Content, v.Buffer, (col * f.Width, row * f.Height)-((col + 1) * f.Width - 1, (row + 1) * f.Height - 1)
 End Sub
 
-Sub BitmapFont_WriteString (v As Viewport, f As BitmapFont, p As Point, s As String)
+Sub BitmapFont_WriteString (v As Viewport, f As BitmapFont, p As Point, s As String, clr As Long)
+	Dim tempImage As Long, new_f As BitmapFont
+	tempImage = _COPYIMAGE(f.Content)
+	_PALETTECOLOR 1, clr, tempImage
+	BitmapFont_LoadHandle new_f, tempImage
 	Dim n As Integer, p2 As Point
 	For n = 0 To Len(s) - 1
 		Point_Set p2, p.x + f.Width * n, p.y
-		BitmapFont_WriteCharacter v, f, p2, Mid$(s, n + 1, 1)
+		BitmapFont_WriteCharacter v, new_f, p2, Mid$(s, n + 1, 1)
 	Next
+	_FREEIMAGE tempImage
 End Sub
 
 

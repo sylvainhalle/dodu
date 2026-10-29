@@ -24,8 +24,10 @@ End Type
 
 Declare Sub BitmapFont_LoadFile (b As BitmapFont, filename As String)
 
+Declare Sub BitmapFont_LoadHandle (b As BitmapFont, h As Long)
+
 Declare Sub BitmapFont_WriteCharacter (v As Viewport, f As BitmapFont, p As Point, c As String)
 
-Declare Sub BitmapFont_WriteString (v As Viewport, f As BitmapFont, p As Point, s As String)
+Declare Sub BitmapFont_WriteString (v As Viewport, f As BitmapFont, p As Point, s As String, clr As Long)
 
 ' :mode=visualbasic:

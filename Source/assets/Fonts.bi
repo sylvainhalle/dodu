@@ -16,7 +16,8 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
-Dim Shared SF_FONT As BitmapFont
+Dim Shared SF_FONT As BitmapFont, SM_FONT As BitmapFont
 BitmapFont_LoadFile SF_FONT, IMG_DIR$ + "/fonts/Font1.png"
+'BitmapFont_LoadFile SM_FONT, IMG_DIR$ + "/fonts/Font2.png"
 
 ' :mode=visualbasic:

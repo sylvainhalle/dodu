@@ -327,7 +327,6 @@ Sub Viewport_Display (v As Viewport)
 	ElseIf Ticker_IsRunning%(v.FadeOutTicker) Or v.FadeOutTicker.Index > 0 Then
 		Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 * v.FadeOutTicker.Index / v.FadeOutTicker.Length)), BF
 	End If
-	Viewport_Print v, str$(v.FadeOutTicker.Index), P_ORIGIN
 	Dim y As Integer, scolor as Long
 	Let scolor = v.ScanlineColor
 	Select Case v.Scanlines
