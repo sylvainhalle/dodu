@@ -91,6 +91,8 @@ Let DEFAULT_OFFSET = P_ORIGIN
 
 '$Include:'assets/Backgrounds.bi'
 
+'$Include:'assets/Fonts.bi'
+
 
 ' Splash screen
 Dim Shared SplashScreen As SpriteSequence

@@ -221,7 +221,11 @@ Sub PrintLevel (m As LevelMap)
   For i = 1 To m.Height
     For j = 1 To m.Width
       Locate i, j
-      Print m.Topo(i - 1, j - 1)
+  	  if m.Topo(i-1,j-1) = " " then
+  	  	  Print "x"
+  	  else
+  	  	  Print m.Topo(i - 1, j - 1)
+  	  end if
     Next
     Print
   Next

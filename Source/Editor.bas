@@ -36,19 +36,16 @@ Const BLOCK_SIZE% = 11
 Dim Shared SCREEN_DIMS As Point
 Point_Set SCREEN_DIMS, 320, 200
 Dim Shared LEVEL_DIMS As Point
-Point_Set LEVEL_DIMS, 288, 200
+Point_Set LEVEL_DIMS, 288, 190
 Dim Shared LEVEL_TOPLEFT As Point
-Point_Set LEVEL_TOPLEFT, 32, 0
-Dim Shared PALETTE_DIMS As Point
-Point_Set PALETTE_DIMS, 32, 200
+Point_Set LEVEL_TOPLEFT, 32, 10
+Dim Shared PALETTE_TOPLEFT As Point, PALETTE_BOTRIGHT As Point
+Point_Set PALETTE_TOPLEFT, 0, 10
+Point_Set PALETTE_BOTRIGHT, 32, 200
 Const PALETTE_BTN_SIZE = 6
 Dim Shared P_COORDS1 As Point, P_COORDS2 As Point
-Point_Set P_COORDS1, 3, 188
-Point_Set P_COORDS2, 19, 188
-
-' World size
-Dim Shared WORLD_SIZE As Point
-Point_Set WORLD_SIZE, 30 * BLOCK_SIZE%, 30 * BLOCK_SIZE%
+Point_Set P_COORDS1, 3, PALETTE_BOTRIGHT.y - 22
+Point_Set P_COORDS2, 19, PALETTE_BOTRIGHT.y - 22
 
 ' Window scaling factor
 Const SCALE% = 3
@@ -68,7 +65,7 @@ Let IMG_MODE$ = IMG_MODE_EGA$
 ' Colors
 Const COLOR_BG& = _RGB32(128, 128, 128)
 Const COLOR_BTN& = _RGB32(192, 192, 192)
-Const COLOR_GRID& = _RGB32(64, 64, 64)
+Const COLOR_GRID& = _RGB32(64, 64, 64, 128)
 Const COLOR_CURSOR& = _RGB32(255, 255, 0)
 
 Const WALKING_SPEED# = 1
@@ -87,6 +84,11 @@ Point_Set P_UNIT, 1, 1
 '$Include:'Keyboard.bi'
 '$Include:'Gameplay.bi'
 '$Include:'Levels.bi'
+'$Include:'Fonts.bi'
+
+' World size
+Dim Shared WORLD_SIZE As Point
+Point_Set WORLD_SIZE, M_W * BLOCK_SIZE%, M_H * BLOCK_SIZE%
 
 ' --------------------------
 ' Level data
@@ -124,8 +126,8 @@ Let PALETTE_SHORTCUTS(9) = "c"
 Let PALETTE_SHORTCUTS(10) = "~"
 Let PALETTE_SHORTCUTS(11) = "s"
 
-Dim Shared LVL_SPRITES(30, 30) As SpriteSequence
-Dim Shared SPRITE_LEVEL(2, 30, 30) As SpriteSequence
+Dim Shared LVL_SPRITES(M_W, M_H) As SpriteSequence
+Dim Shared SPRITE_LEVEL(2, M_W, M_H) As SpriteSequence
 Dim Shared COPY_LEVEL As LevelMap
 Dim Shared COPY_TOPLEFT As Square, COPY_BOTRIGHT As Square
 ResetLevelSprites
@@ -138,6 +140,12 @@ _AllowFullScreen _Off
 Dim Shared MainScreen As Viewport, ImgBuffer As Viewport
 Dim Shared LevelBuffer As Viewport, PaletteBuffer As Viewport
 Viewport_Init ImgBuffer, SCREEN_DIMS, SCREEN_DIMS, P_ORIGIN, 1
+Dim Shared PALETTE_DIMS As Point
+Point_Set PALETTE_DIMS, PALETTE_BOTRIGHT.x - PALETTE_TOPLEFT.x, PALETTE_BOTRIGHT.y - PALETTE_TOPLEFT.y
+'Print PALETTE_DIMS.x
+'Print PALETTE_DIMS.y
+'Dim dummy As String
+'Input dummy$
 Viewport_Init PaletteBuffer, PALETTE_DIMS, PALETTE_DIMS, P_ORIGIN, 1
 Viewport_Init LevelBuffer, LEVEL_DIMS, WORLD_SIZE, P_ORIGIN, 1
 Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, P_ORIGIN, SCALE%
@@ -154,6 +162,17 @@ Dim Shared sel_topleft As Square, sel_botright As Square
 Square_Set sel_topleft, 0, 0
 Square_Set sel_botright, 0, 0
 
+Dim Shared UNDO_HEAD, UNDO_TAIL As Integer
+Let UNDO_HEAD = 1
+Let UNDO_TAIL = 1
+
+Dim lvln As Integer
+For lvln = 0 To 11
+  Let Levels(lvln).Height = M_H
+  Let Levels(lvln).Width = M_W
+Next
+
+
 Do
   _Limit FPS%
   Dim khit As Long, shift As Integer, ctrl As Integer
@@ -163,15 +182,18 @@ Do
   Viewport_Clear MainScreen
   Viewport_Clear LevelBuffer
   TickAll
-  'DrawPalette
-  'DrawLevel
-  Viewport_PutViewport ImgBuffer, TRUE, PaletteBuffer, P_ORIGIN, P_ORIGIN, PALETTE_DIMS
+  DrawPalette
+  DrawLevel
+  Viewport_PutViewport ImgBuffer, TRUE, PaletteBuffer, PALETTE_TOPLEFT, P_ORIGIN, PALETTE_DIMS
   Viewport_PutViewport ImgBuffer, TRUE, LevelBuffer, LEVEL_TOPLEFT, P_ORIGIN, LEVEL_DIMS
-  'Viewport_Print ImgBuffer, Levels(CURRENT_LEVEL).Topo(CurrentSquare.col, CurrentSquare.row), P_ORIGIN
+  'Viewport_Print ImgBuffer, Str$(UNDO_HEAD) + " " + Str$(UNDO_TAIL), P_ORIGIN
+  DrawTopBar
+  Dim undop As Point
+  Point_Set undop, 32, 11
+  BitmapFont_WriteString ImgBuffer, SF_FONT, undop, Str$(UNDO_HEAD) + " " + Str$(UNDO_TAIL)
   Viewport_Copy ImgBuffer, MainScreen
-  _PrintString (1, 1), Str$(IMGALLOCS), MainScreen.Buffer
   '_PrintString (1, 1), Levels(CURRENT_LEVEL).Topo(sel_topleft.col, sel_botright.row), MainScreen.Buffer
-  _PrintString (1, 16), Str$(shift), MainScreen.Buffer
+  '_PrintString (1, 16), Str$(ctrl), MainScreen.Buffer
   Viewport_Display MainScreen
 
   If keyb Then
@@ -187,6 +209,8 @@ Do
     Let keyb = TRUE
     If Not ctrl Then
       MoveSquareFocus -1, 0, shift
+    Else
+      MoveRegion -1, 0
     End If
   End If
 
@@ -194,6 +218,9 @@ Do
     Let keyb = TRUE
     If Not ctrl Then
       MoveSquareFocus 1, 0, shift
+    Else
+      MoveRegion 1, 0
+
     End If
   End If
 
@@ -201,6 +228,9 @@ Do
     Let keyb = TRUE
     If Not ctrl Then
       MoveSquareFocus 0, -1, shift
+    Else
+      MoveRegion 0, -1
+
     End If
   End If
 
@@ -208,20 +238,35 @@ Do
     Let keyb = TRUE
     If Not ctrl Then
       MoveSquareFocus 0, 1, shift
+    Else
+      MoveRegion 0, 1
+
     End If
   End If
 
   If IsEnter% Then
     Let keyb = TRUE
-    ApplyToSquare
+    CreateUndoSnapshot
+    ApplyToSquare sel_topleft, sel_botright, PALETTE_SHORTCUTS(selection)
   End If
 
   If Kbd_Down(K_INS) Then
+    Let keyb = TRUE
     If ctrl Then
       CopyRegion
     ElseIf shift Then
       PasteRegion
     End If
+  End If
+
+  If Kbd_Down(K_DEL) And shift Then
+    Let keyb = TRUE
+    CutRegion
+  End If
+
+  If Kbd_Down(K_BACKSPACE) Then
+    Let keyb = TRUE
+    ApplyUndo
   End If
 
   ' Are we switching to a new selection?
@@ -236,28 +281,116 @@ Do
 
 Loop
 
+Sub DrawTopBar
+  Viewport_LineC ImgBuffer, TRUE, 0, 0, 320, 9, COLOR_DARKGREEN, TRUE, TRUE
+  Dim p As Point
+  Point_Set p, 1, 1
+  BitmapFont_WriteString ImgBuffer, SF_FONT, p, "The Dodu Level Editor               ESC=Quit  F1=Help"
+End Sub
+
 Sub CopyRegion
   Dim col As Integer, row As Integer
-  For col = 0 To 29
-    For row = 0 To 29
+  For col = 0 To M_W - 1
+    For row = 0 To M_H - 1
+      Let COPY_LEVEL.Topo(col, row) = Levels(CURRENT_LEVEL).Topo(col, row)
+    Next
+  Next
+  ReorderPoints
+  Square_Set COPY_TOPLEFT, sel_topleft.col, sel_topleft.row
+  Square_Set COPY_BOTRIGHT, sel_botright.col, sel_botright.row
+  Square_Set sel_botright, sel_topleft.col, sel_topleft.row
+End Sub
+
+Sub MoveRegion (delta_col As Integer, delta_row As Integer)
+  CreateUndoSnapshot
+  ReorderPoints
+  CutRegion
+  Let sel_topleft.col = Clamp%(0, sel_topleft.col + delta_col, M_W - 1)
+  Let sel_topleft.row = Clamp%(0, sel_topleft.row + delta_row, M_H - 1)
+  Let sel_botright.col = Clamp%(0, sel_botright.col + delta_col, M_W - 1)
+  Let sel_botright.row = Clamp%(0, sel_botright.row + delta_row, M_H - 1)
+  PasteRegion
+End Sub
+
+Sub CreateUndoSnapshot
+  Dim col As Integer, row As Integer
+  For col = 0 To M_W - 1
+    For row = 0 To M_H - 1
+      Let Levels(UNDO_HEAD).Topo(col, row) = Levels(CURRENT_LEVEL).Topo(col, row)
+    Next
+  Next
+  If Abs(UNDO_HEAD - UNDO_TAIL) = 11 Then
+    Let UNDO_HEAD = ((UNDO_HEAD + 1) Mod 10) + 1
+    Let UNDO_TAIL = ((UNDO_TAIL + 1) Mod 10) + 1
+  Else
+    Let UNDO_HEAD = UNDO_HEAD + 1
+  End If
+End Sub
+
+Sub CutRegion
+  CreateUndoSnapshot
+  ReorderPoints
+  Dim col As Integer, row As Integer, s As Square
+  For col = 0 To M_W - 1
+    For row = 0 To M_H - 1
+      Let COPY_LEVEL.Topo(col, row) = Levels(CURRENT_LEVEL).Topo(col, row)
+    Next
+  Next
+  Square_Set COPY_TOPLEFT, sel_topleft.col, sel_topleft.row
+  Square_Set COPY_BOTRIGHT, sel_botright.col, sel_botright.row
+  Let Levels(CURRENT_LEVEL).Topo(col, row) = " "
+  For col = 0 To COPY_BOTRIGHT.col - COPY_TOPLEFT.col
+    For row = 0 To COPY_BOTRIGHT.row - COPY_TOPLEFT.row
+      Let Levels(CURRENT_LEVEL).Topo(sel_topleft.col + col, sel_topleft.row + row) = " "
+      Square_Set s, sel_topleft.col + col, sel_topleft.row + row
+      ClearSpriteSquare s
     Next
   Next
 End Sub
 
+
 Sub PasteRegion
+  CreateUndoSnapshot
+  ReorderPoints
+  Dim col As Integer, row As Integer
+  For col = 0 To COPY_BOTRIGHT.col - COPY_TOPLEFT.col
+    For row = 0 To COPY_BOTRIGHT.row - COPY_TOPLEFT.row
+      Let Levels(CURRENT_LEVEL).Topo(sel_topleft.col + col, sel_topleft.row + row) = COPY_LEVEL.Topo(COPY_TOPLEFT.col + col, COPY_TOPLEFT.row + row)
+      SetSpriteSquare Levels(CURRENT_LEVEL), FALSE, sel_topleft.col + col, sel_topleft.row + row, PALETTE_SHORTCUTS(selection)
+      SpriteSequence_Start SPRITE_LEVEL(0, sel_topleft.col + col, sel_topleft.row + row)
+    Next
+  Next
 End Sub
 
 
 Sub MoveSquareFocus (hor As Integer, ver As Integer, shift As Integer)
   If shift Then
-    Let sel_botright.col = Clamp%(sel_botright.col + hor, 0, 29)
-    Let sel_botright.row = Clamp%(sel_botright.row + ver, 0, 29)
+    Let sel_botright.col = Clamp%(sel_botright.col + hor, 0, M_W - 1)
+    Let sel_botright.row = Clamp%(sel_botright.row + ver, 0, M_H - 1)
+    'If sel_botright.row = sel_topleft.row And ver < 0 Then
+    '  Let sel_botright.row = sel_botright.row - 1
+    'End If
+    'If sel_botright.col = sel_topleft.col And hor < 0 Then
+    '  Let sel_botright.col = sel_botright.col - 1
+    'End If
   Else
-    Let sel_topleft.col = Clamp%(sel_topleft.col + hor, 0, 29)
-    Let sel_topleft.row = Clamp%(sel_topleft.row + ver, 0, 29)
+    Let sel_topleft.col = Clamp%(sel_topleft.col + hor, 0, M_W - 1)
+    Let sel_topleft.row = Clamp%(sel_topleft.row + ver, 0, M_H - 1)
     Let sel_botright.col = sel_topleft.col
     Let sel_botright.row = sel_topleft.row
   End If
+End Sub
+
+Sub ReorderPoints
+  Dim mincol As Integer, maxcol As Integer
+  Dim minrow As Integer, maxrow As Integer
+  Let minrow = _Min(sel_topleft.row, sel_botright.row)
+  Let maxrow = _Max(sel_topleft.row, sel_botright.row)
+  Let mincol = _Min(sel_topleft.col, sel_botright.col)
+  Let maxcol = _Max(sel_topleft.col, sel_botright.col)
+  Square_Set sel_topleft, mincol, minrow
+  Square_Set sel_botright, maxcol, maxrow
+
 End Sub
 
 Function IndexOf% (e As String)
@@ -273,27 +406,58 @@ End Function
 
 Sub ResetLevelSprites
   Dim col As Integer, row As Integer
-  For col = 0 To 29
-    For row = 0 To 29
+  For col = 0 To M_W - 1
+    For row = 0 To M_H - 1
       Let Levels(CURRENT_LEVEL%).Topo(col, row) = " "
     Next
   Next
 End Sub
 
-Sub ApplyToSquare
+Sub ApplyToSquare (topleft As Square, botright As Square, sel As String)
   Dim col As Integer, row As Integer, s As Square
-  For col = sel_topleft.col To sel_botright.col
-    For row = sel_topleft.row To sel_botright.row
+  ReorderPoints
+  For col = topleft.col To botright.col
+    For row = topleft.row To botright.row
       Square_Set s, col, row
       Let Levels(CURRENT_LEVEL).Topo(col, row) = PALETTE_SHORTCUTS(selection)
       If PALETTE_SHORTCUTS(selection) = T_NOTHING Then
         ClearSpriteSquare s
       Else
-        SetSpriteSquare Levels(CURRENT_LEVEL), FALSE, col, row, PALETTE_SHORTCUTS(selection)
+        SetSpriteSquare Levels(CURRENT_LEVEL), FALSE, col, row, sel
         SpriteSequence_Start SPRITE_LEVEL(0, col, row)
       End If
     Next
   Next
+End Sub
+
+Sub ApplyUndo
+  If UNDO_HEAD = UNDO_TAIL Then Exit Sub
+  Let UNDO_HEAD = UNDO_HEAD - 1
+  If UNDO_HEAD = 0 Then
+    Let UNDO_HEAD = 11
+  End If
+  Dim s As Square
+  Dim col As Integer, row As Integer
+  For col = 0 To M_W - 1
+    For row = 0 To M_H - 1
+      Let Levels(CURRENT_LEVEL%).Topo(col, row) = Levels(UNDO_HEAD).Topo(col, row)
+      Square_Set s, col, row
+      If Levels(CURRENT_LEVEL%).Topo(col, row) = " " Then
+        ClearSpriteSquare s
+      Else
+        ApplyToSquare s, s, Levels(CURRENT_LEVEL%).Topo(col, row)
+      End If
+    Next
+  Next
+  '_Dest MainScreen.Buffer
+  'Viewport_Clear MainScreen
+  'Cls
+  'Color _RGB32(255, 255, 255)
+  'Locate 1, 1
+  'Print "HELLO"
+  'PrintLevel Levels(UNDO_HEAD)
+  '_Display
+  'Sleep 10
 End Sub
 
 Sub DrawPalette
@@ -319,14 +483,14 @@ End Sub
 Sub DrawLevel
   Viewport_Clear LevelBuffer
   Dim col As Integer, row As Integer
-  For col = 0 To 29
-    For row = 0 To 29
+  For col = 0 To M_W - 1
+    For row = 0 To M_H - 1
       Viewport_LineC LevelBuffer, FALSE, col * BLOCK_SIZE% - 1, row * BLOCK_SIZE%, col * BLOCK_SIZE% + 1, row * 11, COLOR_GRID&, FALSE, FALSE
       Viewport_LineC LevelBuffer, FALSE, col * BLOCK_SIZE%, row * BLOCK_SIZE% - 1, col * BLOCK_SIZE%, row * BLOCK_SIZE% + 1, COLOR_GRID&, FALSE, FALSE
     Next
   Next
-  For row = 29 To 0 Step -1
-    For col = 0 To 29
+  For row = M_H - 1 To 0 Step -1
+    For col = 0 To M_W - 1
       Dim s As Square
       Let s.col = col
       Let s.row = row
@@ -337,14 +501,14 @@ Sub DrawLevel
       End If
     Next
   Next
-  Viewport_LineC LevelBuffer, FALSE, sel_topleft.col * BLOCK_SIZE%, sel_topleft.row * BLOCK_SIZE%, (sel_botright.col + 1) * BLOCK_SIZE% - 1, (sel_botright.row + 1) * BLOCK_SIZE% - 1, COLOR_CURSOR&, TRUE, FALSE
+  Viewport_LineC LevelBuffer, FALSE, _Min(sel_topleft.col, sel_botright.col) * BLOCK_SIZE%, _Min(sel_topleft.row, sel_botright.row) * BLOCK_SIZE%, (_Max(sel_topleft.col, sel_botright.col) + 1) * BLOCK_SIZE% - 1, (_Max(sel_topleft.row, sel_botright.row) + 1) * BLOCK_SIZE% - 1, COLOR_CURSOR&, TRUE, FALSE
 End Sub
 
 Sub TickAll
   Viewport_Tick LevelBuffer
   Dim row As Integer, col As Integer
-  For row = 0 To 29
-    For col = 0 To 29
+  For row = 0 To M_H - 1
+    For col = 0 To M_W - 1
       SpriteSequence_Tick SPRITE_LEVEL(0, col, row)
       SpriteSequence_Tick SPRITE_LEVEL(1, col, row)
     Next
@@ -422,6 +586,7 @@ End Sub
 '$Include:'Keyboard.bm'
 '$Include:'Levels.bm'
 '$Include:'LevelMaps.bm'
+'$Include:'Fonts.bm'
 '$Include:'Assets.bm'
 
 ' :mode=visualbasic:folding=explicit:wrap=none:
