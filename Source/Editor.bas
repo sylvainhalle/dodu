@@ -34,22 +34,27 @@ Const BLOCK_SIZE% = 11
 
 ' Screen dimensions
 Const TOPBAR_HEIGHT = 16
+Const PALETTE_WIDTH = 26
 Dim Shared SCREEN_DIMS As Point
 Point_Set SCREEN_DIMS, 320, 200
 Dim Shared LEVEL_DIMS As Point
-Point_Set LEVEL_DIMS, SCREEN_DIMS.x - 32, SCREEN_DIMS.y - TOPBAR_HEIGHT
+Point_Set LEVEL_DIMS, SCREEN_DIMS.x - PALETTE_WIDTH, SCREEN_DIMS.y - TOPBAR_HEIGHT
 Dim Shared LEVEL_TOPLEFT As Point
-Point_Set LEVEL_TOPLEFT, 32, TOPBAR_HEIGHT
+Point_Set LEVEL_TOPLEFT, PALETTE_WIDTH, TOPBAR_HEIGHT + 1
 Dim Shared PALETTE_TOPLEFT As Point, PALETTE_BOTRIGHT As Point
-Point_Set PALETTE_TOPLEFT, 0, TOPBAR_HEIGHT
-Point_Set PALETTE_BOTRIGHT, 32, 200
+Point_Set PALETTE_TOPLEFT, 0, TOPBAR_HEIGHT + 1
+Point_Set PALETTE_BOTRIGHT, PALETTE_WIDTH, 200
 Const PALETTE_BTN_SIZE = 6
 Dim Shared P_COORDS1 As Point, P_COORDS2 As Point
 Point_Set P_COORDS1, 3, PALETTE_BOTRIGHT.y - 22
 Point_Set P_COORDS2, 19, PALETTE_BOTRIGHT.y - 22
 
+Const GUI_BUTTON_SIZE = 17
+Dim Shared GUI_ICON_BUTTON_SIZE As Point
+Point_Set GUI_ICON_BUTTON_SIZE, 11, 11
+
 ' Window scaling factor
-Const SCALE% = 3
+Const SCALE% = 4
 
 ' Refresh rate
 Const FPS% = 25
@@ -118,6 +123,9 @@ SpriteSequence_InitFile GUI_TOOLBAR(1), "/home/sylvain/Workspaces/dodu/Source/im
 SpriteSequence_InitFile GUI_TOOLBAR(2), "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/Btn_Save.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
 SpriteSequence_InitFile GUI_TOOLBAR(3), "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/Btn_Undo.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
 
+Dim Shared GUI_BUTTON_ICON As SpriteSequence
+SpriteSequence_InitFile GUI_BUTTON_ICON, "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/Btn_Icon.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
+
 Dim Shared PALETTE_BUTTONS(16) As Integer
 Let PALETTE_BUTTONS(0) = LVL_HAND
 Let PALETTE_BUTTONS(1) = LVL_ERASER
@@ -177,14 +185,15 @@ Screen MainScreen.Buffer
 Dim keyb As Integer
 Dim Shared selection As Integer
 Let selection = 3
+Dim Shared DIRTY As Integer
+Let DIRTY = FALSE
 
 Dim Shared sel_topleft As Square, sel_botright As Square
 Square_Set sel_topleft, 0, 0
 Square_Set sel_botright, 0, 0
 
-Dim Shared UNDO_HEAD, UNDO_TAIL As Integer
-Let UNDO_HEAD = 1
-Let UNDO_TAIL = 1
+Dim Shared UNDO_HEAD As Integer
+Let UNDO_HEAD = 0
 
 Dim lvln As Integer
 For lvln = 0 To 11
@@ -202,8 +211,8 @@ Do
     Let mousex = _MouseX \ SCALE
     Let mousey = _MouseY \ SCALE
   Loop
-  Viewport_Clear MainScreen
-  Viewport_Clear LevelBuffer
+  'Viewport_Clear MainScreen
+  'Viewport_Clear LevelBuffer
   TickAll
   DrawPalette
   DrawLevel
@@ -211,7 +220,7 @@ Do
   Viewport_PutViewport ImgBuffer, TRUE, LevelBuffer, LEVEL_TOPLEFT, P_ORIGIN, LEVEL_DIMS
   DrawTopBar
   Dim undop As Point
-  Point_Set undop, 32, 17
+  Point_Set undop, PALETTE_WIDTH + 2, TOPBAR_HEIGHT + 2
   'BitmapFont_WriteString ImgBuffer, SF_FONT, undop, Str$(UNDO_HEAD) + " " + Str$(UNDO_TAIL), COLOR_BLACK
   BitmapFont_WriteString ImgBuffer, SF_FONT, undop, Str$(mousex) + " " + Str$(mousey), COLOR_BLACK
   Viewport_Copy ImgBuffer, MainScreen
@@ -313,10 +322,10 @@ Loop
 Sub HandleClick (x As Single, y As Single)
   If InRect(x, y, 0, 0, 320, TOPBAR_HEIGHT) Then
     HandleClickBar x, y
-  ElseIf InRect(x, y, 0, TOPBAR_HEIGHT, 32, 200) Then
+  ElseIf InRect(x, y, 0, TOPBAR_HEIGHT, PALETTE_WIDTH, 200) Then
     HandleClickPalette x, y - TOPBAR_HEIGHT
-  ElseIf InRect(x, y, 33, TOPBAR_HEIGHT, 320, 200) Then
-    HandleClickLevel x - 33, y - TOPBAR_HEIGHT
+  ElseIf InRect(x, y, PALETTE_WIDTH + 1, TOPBAR_HEIGHT, 320, 200) Then
+    HandleClickLevel x - (PALETTE_WIDTH + 1), y - TOPBAR_HEIGHT
   End If
 End Sub
 
@@ -324,15 +333,42 @@ Sub HandleClickBar (x As Single, y As Single)
   ' Do nothing for the moment
 End Sub
 
+Sub CopyLevel (ifrom As Integer, ito As Integer)
+  Dim col As Integer, row As Integer
+  For col = 0 To M_W - 1
+    For row = 0 To M_H - 1
+      Let Levels(ito).Topo(col, row) = Levels(ifrom).Topo(col, row)
+    Next
+  Next
+End Sub
+
 Sub HandleClickPalette (x As Single, y As Single)
   Dim i As Integer, x1 As Integer, y1 As Integer
   For i = 0 To 16
-    Let x1 = 2 + (i Mod 2) * 10
-    Let y1 = (i \ 2) * 10 + 10
-    If InRect(x, y, x1, y1, x1 + 8, y1 + 8) Then
+    Let x1 = 2 + (i Mod 2) * GUI_ICON_BUTTON_SIZE.x
+    Let y1 = (i \ 2) * GUI_ICON_BUTTON_SIZE.y + GUI_ICON_BUTTON_SIZE.y
+    If InRect(x, y, x1, y1, x1 + GUI_ICON_BUTTON_SIZE.x, y1 + GUI_ICON_BUTTON_SIZE.y) Then
       Let selection = i
+      Exit Sub
     End If
   Next
+  For i = 0 To 3
+    If InRect(x, y, 5, 100 + i * GUI_BUTTON_SIZE, 5 + GUI_BUTTON_SIZE, 100 + i * GUI_BUTTON_SIZE + GUI_BUTTON_SIZE) Then
+      Select Case i
+        Case 0
+          DoNew
+        Case 1
+          DoLoad
+        Case 2
+          DoSave
+        Case 3
+          ApplyUndo
+      End Select
+    End If
+  Next
+End Sub
+
+Sub DoNew
 End Sub
 
 Sub HandleClickLevel (x As Single, y As Single)
@@ -353,15 +389,10 @@ Sub DrawTopBar
   Point_Set p, 314, 0
   Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR(2), p, FALSE
   Viewport_LineC ImgBuffer, TRUE, 6, 0, 313, TOPBAR_HEIGHT, COLOR_WHITE, TRUE, TRUE
-  Point_Set p, 170, 5
+  Point_Set p, 5, 5
   BitmapFont_WriteString ImgBuffer, SF_FONT, p, "The Dodu Level Editor", COLOR_BLACK
   Point_Set p, 300, 1
   Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR_DODU, p, FALSE
-  Dim i As Integer
-  For i = 0 To 3
-    Point_Set p, 5 + i * 17, 1
-    Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOOLBAR(i), p, FALSE
-  Next
 End Sub
 
 Sub CopyRegion
@@ -378,33 +409,25 @@ Sub CopyRegion
 End Sub
 
 Sub DoSave
-  Dim keyb As Integer
-  Dim p As Point
-  Do
-    _Limit FPS%
-
-    Viewport_LineC ImgBuffer, TRUE, 62, 46, 190, 170, COLOR_WHITE, TRUE, TRUE
-    Point_Set p, 65, 49
-    BitmapFont_WriteString ImgBuffer, SF_FONT, p, "Type in the filename to save the map to:", COLOR_BLACK
-    Point_Set p, 65, 90
-    DrawButton ImgBuffer, p, "Save"
-    Point_Set p, 96, 90
-    DrawButton ImgBuffer, p, "Cancel"
-    Viewport_Copy ImgBuffer, MainScreen
-    Viewport_Display MainScreen
-
-    If IsEsc% Then
-      Kbd_WaitRelease FPS%
-      Exit Sub
-    End If
-
-    If IsEnter% Then
-      Kbd_WaitRelease FPS%
-      Exit Sub
-    End If
-
-  Loop
+  Dim outfile As String
+  Let outfile = _SaveFileDialog$("Save level", "", "*.lvl", "Level files")
 End Sub
+
+Sub DoLoad
+  If DIRTY Then
+    Dim result As Long
+    Let result = _MessageBox("File modified", "File has been modified. Save changes?", "yesnocancel", "question")
+    Select Case result
+      Case 0 'Cancel
+        Exit Sub
+      Case 1 ' Yes
+        DoSave
+    End Select
+  End If
+  Dim infile As String
+  Let infile = _OpenFileDialog$("Open level", "", "*.lvl", "Level files")
+End Sub
+
 
 Sub DrawButton (v As Viewport, p As Point, text As String)
   Dim x As Integer, p2 As Point
@@ -419,6 +442,10 @@ Sub DrawButton (v As Viewport, p As Point, text As String)
   BitmapFont_WriteString v, SF_FONT, p2, text, COLOR_BLACK
 End Sub
 
+Sub DrawIconButton (v As Viewport, p As Point, icn As SpriteSequence)
+  Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON_ICON, p, FALSE
+End Sub
+
 Sub MoveRegion (delta_col As Integer, delta_row As Integer)
   CreateUndoSnapshot
   ReorderPoints
@@ -431,18 +458,21 @@ Sub MoveRegion (delta_col As Integer, delta_row As Integer)
 End Sub
 
 Sub CreateUndoSnapshot
+  If UNDO_HEAD = 11 Then
+    'Move all them one level down
+    Dim l As Integer
+    For l = 2 To 11
+      CopyLevel l, l - 1
+    Next
+  Else
+    Let UNDO_HEAD = UNDO_HEAD + 1
+  End If
   Dim col As Integer, row As Integer
   For col = 0 To M_W - 1
     For row = 0 To M_H - 1
       Let Levels(UNDO_HEAD).Topo(col, row) = Levels(CURRENT_LEVEL).Topo(col, row)
     Next
   Next
-  If Abs(UNDO_HEAD - UNDO_TAIL) = 11 Then
-    Let UNDO_HEAD = ((UNDO_HEAD + 1) Mod 10) + 1
-    Let UNDO_TAIL = ((UNDO_TAIL + 1) Mod 10) + 1
-  Else
-    Let UNDO_HEAD = UNDO_HEAD + 1
-  End If
 End Sub
 
 Sub CutRegion
@@ -474,7 +504,7 @@ Sub PasteRegion
   For col = 0 To COPY_BOTRIGHT.col - COPY_TOPLEFT.col
     For row = 0 To COPY_BOTRIGHT.row - COPY_TOPLEFT.row
       Let Levels(CURRENT_LEVEL).Topo(sel_topleft.col + col, sel_topleft.row + row) = COPY_LEVEL.Topo(COPY_TOPLEFT.col + col, COPY_TOPLEFT.row + row)
-      SetSpriteSquare Levels(CURRENT_LEVEL), FALSE, sel_topleft.col + col, sel_topleft.row + row, PALETTE_SHORTCUTS(selection)
+      SetSpriteSquare Levels(CURRENT_LEVEL), FALSE, sel_topleft.col + col, sel_topleft.row + row, COPY_LEVEL.Topo(COPY_TOPLEFT.col + col, COPY_TOPLEFT.row + row)
       SpriteSequence_Start SPRITE_LEVEL(0, sel_topleft.col + col, sel_topleft.row + row)
     Next
   Next
@@ -539,6 +569,7 @@ Sub ResetLevelSprites
 End Sub
 
 Sub ApplyToSquare (topleft As Square, botright As Square, sel As String)
+  Let DIRTY = TRUE
   Dim col As Integer, row As Integer, s As Square
   ReorderPoints
   For col = topleft.col To botright.col
@@ -556,11 +587,7 @@ Sub ApplyToSquare (topleft As Square, botright As Square, sel As String)
 End Sub
 
 Sub ApplyUndo
-  If UNDO_HEAD = UNDO_TAIL Then Exit Sub
-  Let UNDO_HEAD = UNDO_HEAD - 1
-  If UNDO_HEAD = 0 Then
-    Let UNDO_HEAD = 11
-  End If
+  If UNDO_HEAD = 0 Then Exit Sub ' Nothing to undo on the stack
   Dim s As Square
   Dim col As Integer, row As Integer
   For col = 0 To M_W - 1
@@ -574,15 +601,7 @@ Sub ApplyUndo
       End If
     Next
   Next
-  '_Dest MainScreen.Buffer
-  'Viewport_Clear MainScreen
-  'Cls
-  'Color _RGB32(255, 255, 255)
-  'Locate 1, 1
-  'Print "HELLO"
-  'PrintLevel Levels(UNDO_HEAD)
-  '_Display
-  'Sleep 10
+  Let UNDO_HEAD = _Max(0, UNDO_HEAD - 1)
 End Sub
 
 Sub DrawPalette
@@ -591,15 +610,21 @@ Sub DrawPalette
   Dim p As Point, i As Integer, x As Integer, y As Integer
   'Buttons
   For i = 0 To 16
-    Let x = 2 + (i Mod 2) * 10
-    Let y = (i \ 2) * 10 + 10
-    Viewport_LineC PaletteBuffer, TRUE, x, y, x + 7, y + 7, COLOR_BTN&, TRUE, TRUE
-    Point_Set p, x + 1, y + 1
+    Let x = 2 + (i Mod 2) * GUI_ICON_BUTTON_SIZE.x
+    Let y = (i \ 2) * GUI_ICON_BUTTON_SIZE.y
+    Point_Set p, x, y
+    Viewport_PutSpriteSequence PaletteBuffer, TRUE, GUI_BUTTON_ICON, p, FALSE
+    Point_Set p, x + 2, y + 2
     Viewport_PutSpriteSequence PaletteBuffer, TRUE, SPR_MINIMAP(PALETTE_BUTTONS(i)), p, FALSE
     If i = selection Then
-      Viewport_LineC PaletteBuffer, TRUE, x, y, x + 7, y + 7, COLOR_CURSOR&, TRUE, FALSE
+      Viewport_LineC PaletteBuffer, TRUE, x, y, x + GUI_ICON_BUTTON_SIZE.x, y + GUI_ICON_BUTTON_SIZE.y, COLOR_CURSOR&, TRUE, FALSE
     End If
   Next
+  For i = 0 To 3
+    Point_Set p, 5, 100 + i * 17
+    Viewport_PutSpriteSequence PaletteBuffer, TRUE, GUI_TOOLBAR(i), p, FALSE
+  Next
+
   ' Coordinates
   DrawNumber PaletteBuffer, P_COORDS1, sel_topleft.col
   DrawNumber PaletteBuffer, P_COORDS2, sel_topleft.row
