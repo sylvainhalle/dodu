@@ -209,7 +209,7 @@ Sub Viewport_Init (v As Viewport, size As Point, ws As Point, pan As Point, scal
   Let v.ForegroundPanRatio.y = -1
   Let v.Scanlines = SCANLINES_NONE
   Let v.ScanlineWidth = 1
-  Let v.ScanlineColor = COLOR_BLACK
+  Let v.ScanlineColor = _RGB32(0, 0, 0, 128)
   Ticker_Stop v.FadeInTicker
   Ticker_Stop v.FadeOutTicker
 End Sub

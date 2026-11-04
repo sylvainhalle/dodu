@@ -102,6 +102,7 @@ Let CFG_THERMO = TRUE
 '$Include:'Geometry.bi'
 '$Include:'Ticker.bi'
 '$Include:'Sprites.bi'
+'$Include:'Fonts.bi'
 '$Include:'Keyboard.bi'
 '$Include:'Sounds.bi'
 '$Include:'Levels.bi'
@@ -203,6 +204,11 @@ Next
 ' Loading assets
 '$Include:'Assets.bi'
 
+' Application icon
+$ExeIcon:'/home/sylvain/Workspaces/dodu/Source/images/ega/gui/Game_Icon.ico'
+_Icon _LoadImage("/home/sylvain/Workspaces/dodu/Source/images/ega/gui/Game_Icon.ico")
+_Title "Dodu!"
+
 ' --------------------------
 ' Screen setup: 1 main screen and 1 buffer
 ' --------------------------
@@ -278,6 +284,7 @@ Sub MainLoop
 End Sub
 
 Sub DoLevel
+  Let CURRENT_TRAJECTORY = -1
   Dim CTRL_PRESSED As Integer
   Dim panback_ticker As Ticker
   Dim dod_lastgrab As Point
@@ -291,8 +298,8 @@ Sub DoLevel
   Dim coffeeP As Square, snowP As Square, feetP As Square
 
   Let CTRL_PRESSED = FALSE
-  Let Dodu.Temp = 10
-  Let Dodu.IsWalking = FALSE
+  Player_Reset Dodu
+  Player_Reset DoduPast
   Let DoduPast.IsWalking = TRUE
   Let DoduPast.InSnow = TRUE
   GetDoduSprite CurrentSprite(), Dodu, DoduPast
@@ -891,7 +898,6 @@ Sub DoCutScene (nb As Integer)
   'Viewport_Copy ImgBuffer, MainScreen
   Viewport_Start MainScreen
   Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
-  Sleep 10
   Do
     _Limit FPS%
     Ticker_Tick ps
@@ -1105,11 +1111,24 @@ Sub SetSpriteSquare (m As LevelMap, isfront As Integer, col As Integer, row As I
         If Dodu.HasRackets Then
           PrepareSnow m, col, row, FALSE
         End If
+      Case T_ROPE
+        PrepareRope m, col, row
     End Select
   Else
     If e = T_SNOW And Not Dodu.HasRackets Then
       PrepareSnow m, col, row, TRUE
     End If
+  End If
+End Sub
+
+Sub PrepareRope (m As LevelMap, col As Integer, row As Integer)
+  If (row < M_H - 1 _AndAlso m.Topo(col, row + 1) <> T_ROPE) _OrElse row = M_H - 1 Then
+    SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_ROPE_E)
+  Else
+    SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_ROPE_M)
+  End If
+  If row > 0 _AndAlso m.Topo(col, row - 1) = T_ROPE Then
+    SpriteSequence_Copy SPRITE_LEVEL(0, col, row - 1), SPR_LEVEL(LVL_ROPE_M)
   End If
 End Sub
 
@@ -1438,6 +1457,7 @@ End Sub
 '$Include:'Geometry.bm'
 '$Include:'Ticker.bm'
 '$Include:'Sprites.bm'
+'$Include:'Fonts.bm'
 '$Include:'Sounds.bm'
 '$Include:'Keyboard.bm'
 '$Include:'Levels.bm'

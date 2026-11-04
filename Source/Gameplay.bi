@@ -54,7 +54,10 @@ Declare Sub TakeTuque(m As LevelMap, p As Square)
 Declare Sub TakeMittens (m As LevelMap, p As Square)
 Declare Sub TakeCookie (m As LevelMap, p As Square)
 Declare Sub TakeCoffee (m As LevelMap, p As Square)
+Declare Sub Player_Reset (p As Player)
 
 Declare Function PlayerChanged (p_now As Player, p_past As Player)
+
+
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

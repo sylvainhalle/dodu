@@ -23,6 +23,7 @@ Const TRUE = Not FALSE
 Declare Function Ceil% (x As Single)
 Declare Function Floor% (x As Single)
 Declare Function NbFormat$ (x As Integer)
+Declare Function Within% (x As Integer, min As Integer, max As Integer)
 
 Declare Sub DummyWait (secs As Single, units As Integer)
 

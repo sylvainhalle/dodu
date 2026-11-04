@@ -36,6 +36,9 @@ Const LVL_SNOW_M = 13
 Const LVL_THERMO = 14
 Const LVL_ERASER = 15
 Const LVL_HAND = 16
+Const LVL_ROPE_M = 17
+Const LVL_ROPE_E = 18
+Const LVL_MARK = 19
 
 Declare Sub DrawLevelNumber (v As Viewport)
 

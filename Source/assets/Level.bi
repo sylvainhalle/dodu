@@ -16,7 +16,7 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
-Dim Shared SPR_LEVEL(15) As SpriteSequence
+Dim Shared SPR_LEVEL(20) As SpriteSequence
 
 ' Blocks
 SpriteSequence_InitFile SPR_LEVEL(LVL_BLOCK_B), IMG_DIR$ + "/level/BlockBlue.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
@@ -28,6 +28,8 @@ SpriteSequence_InitFile SPR_LEVEL(LVL_SNOW_C), IMG_DIR$ + "/level/Snow_C.png",7,
 SpriteSequence_InitFile SPR_LEVEL(LVL_SNOW_L), IMG_DIR$ + "/level/Snow_L.png",6, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_LEVEL(LVL_SNOW_R), IMG_DIR$ + "/level/Snow_R.png",6, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SPR_LEVEL(LVL_SNOW_M), IMG_DIR$ + "/level/Snow_M.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_LEVEL(LVL_ROPE_M), IMG_DIR$ + "/level/Rope_M.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SPR_LEVEL(LVL_ROPE_E), IMG_DIR$ + "/level/Rope_E.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
 
 ' Goal post
 Dim PoleOffset As Point, PoleOffsetFlip As Point
@@ -59,8 +61,11 @@ Point_Set SprTuqueOffset, 1, -3
 SpriteSequence_InitFile SPR_LEVEL(LVL_TUQUE), IMG_DIR$ + "/level/Tuque.png",1, 1, TRUE, TRUE, SprTuqueOffset, SprTuqueOffset, COLOR_TRANSPARENT
 
 ' Thermometer
-Dim Shared Thermometer As SpriteSequence
 SpriteSequence_InitFile SPR_LEVEL(LVL_THERMO), IMG_DIR$ + "/level/Thermometer.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+
+' Mark
+SpriteSequence_InitFile SPR_LEVEL(LVL_MARK), IMG_DIR$ + "/level/Mark.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+
 
 Dim Shared THERMO_RED&, THERMO_BLUE&, HIGHLIGHT_COLOR&
 If IMG_MODE = IMG_MODE_CGA$ Then

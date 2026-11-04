@@ -48,6 +48,10 @@ FUNCTION Clamp% (value%, minimum%, maximum%)
     END IF
 END FUNCTION
 
+Function Within% (x As Integer, min As Integer, max As Integer)
+	Let Within% = x >= min And x <= max
+End Function
+
 Function Array_Contains% (a() As Integer, v As Integer)
 	Dim i As Integer
 	Let Array_Contains% = FALSE
