@@ -167,6 +167,13 @@ Dim Shared COPY_LEVEL As LevelMap
 Dim Shared COPY_TOPLEFT As Square, COPY_BOTRIGHT As Square
 ResetLevelSprites
 
+'Other assets
+'Dim Shared ICN_MUSIC As SpriteSequence
+'Dim Shared ICN_BG As SpriteSequence
+'SpriteSequence_InitFile ICN_MUSIC, "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/Music.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
+'SpriteSequence_InitFile ICN_BG, "/home/sylvain/Workspaces/dodu/Source/images/ega/gui/Image.png", 1, 1, FALSE, FALSE, P_ORIGIN, P_ORIGIN, COLOR_TRANSPARENT
+
+
 ' --------------------------
 ' Screen setup
 ' --------------------------
@@ -180,10 +187,6 @@ Dim Shared LevelBuffer As Viewport, PaletteBuffer As Viewport
 Viewport_Init ImgBuffer, SCREEN_DIMS, SCREEN_DIMS, P_ORIGIN, 1
 Dim Shared PALETTE_DIMS As Point
 Point_Set PALETTE_DIMS, PALETTE_BOTRIGHT.x - PALETTE_TOPLEFT.x, PALETTE_BOTRIGHT.y - PALETTE_TOPLEFT.y
-'Print PALETTE_DIMS.x
-'Print PALETTE_DIMS.y
-'Dim dummy As String
-'Input dummy$
 Viewport_Init PaletteBuffer, PALETTE_DIMS, PALETTE_DIMS, P_ORIGIN, 1
 Viewport_Init LevelBuffer, LEVEL_DIMS, WORLD_SIZE, P_ORIGIN, 1
 Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, P_ORIGIN, SCALE%
@@ -858,6 +861,8 @@ Sub DrawPalette
     Point_Set p, 5, 100 + i * 17
     Viewport_PutSpriteSequence PaletteBuffer, TRUE, GUI_TOOLBAR(i), p, FALSE
   Next
+  'PointSet
+  'Viewport_PutSpriteSequence PaletteBuffer, TRUE, ICN_MUSIC, , p, FALSE
 
   ' Coordinates
   DrawNumber PaletteBuffer, P_COORDS1, sel_topleft.col
