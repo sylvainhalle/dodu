@@ -177,13 +177,26 @@ Const SCANLINES_NONE = 0
 Const SCANLINES_VERT = 1
 Const SCANLINES_GRID = 2
 
+' Layer type
+Type ViewportLayer
+	Buffer As Long
+	Divergence As Integer
+End Type
+
+Const MAX_LAYERS = 5
+
+' Eye settings
+Const EYE_LEFT = -1
+Const EYE_NONE = 0
+Const EYE_RIGHT = 1
+
 ' Viewport type
 Type Viewport
   Size As Point
   Pan As Point
   WorldSize As Point
   Scale As Single
-  Buffer As Long
+  Layers(MAX_LAYERS) As ViewportLayer
   Background As SpriteSequence
   BackgroundPanRatio As Point
   BackgroundOffset As Point
@@ -233,7 +246,7 @@ Declare Sub Viewport_SetForeground (v As Viewport, s As SpriteSequence, ratio As
 '**
 '* Equivalent of the LINE command for a viewport.
 '**
-Declare Sub Viewport_Line (v As Viewport, p1 As Point, p2 As Point, clr As Long, box As Integer, filled As Integer)
+Declare Sub Viewport_Line (v As Viewport, p1 As Point, p2 As Point, clr As Long, box As Integer, filled As Integer, layer As Integer)
 
 '**
 '* Equivalent of the LINE command for a viewport.
@@ -248,7 +261,7 @@ Declare Sub Viewport_Screen (v as Viewport)
 '**
 '* Copies the buffer of a viewport into another one
 '**
-Declare Sub Viewport_Copy (src As Viewport, dst As Viewport)
+Declare Sub Viewport_Copy (src As Viewport, dst As Viewport, eye As Integer)
 
 '**
 '* Prints text in the viewport.
@@ -258,17 +271,17 @@ Declare Sub Viewport_Print (v As Viewport, s As String, p As Point)
 '**
 '* Puts a sprite at a location on the viewport.
 '**
-Declare Sub Viewport_PutSprite (v As Viewport, absolute As Integer, s As Sprite, p As Point, flipped As Integer)
+Declare Sub Viewport_PutSprite (v As Viewport, absolute As Integer, s As Sprite, p As Point, flipped As Integer, layer As Integer)
 
 '**
 '* Puts the contents of a viewport in another viewport.
 '**
-Declare Sub Viewport_PutViewport (dst As Viewport, absolute As Integer, src As Viewport, p As Point, p1 As Point, p2 As Point)
+Declare Sub Viewport_PutViewport (dst As Viewport, absolute As Integer, src As Viewport, p As Point, p1 As Point, p2 As Point, eye As Integer)
 
 '**
 '* Puts the current sprite of a sprite sequence at a location on the viewport.
 '**
-Declare Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point, flipped As Integer)
+Declare Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point, flipped As Integer, layer As Integer)
 
 '**
 '* Sets the font for a viewport.
@@ -308,11 +321,6 @@ Declare Sub Viewport_Display (v As Viewport)
 '**
 Declare Sub Viewport_Tick (v As Viewport)
 
-'**
-'* Changes the viewport's transparency.
-'**
-Declare Sub Viewport_SetAlpha (v As Viewport, alpha As Integer)
-
 Declare Sub Viewport_FadeIn (v As Viewport, frames As Integer)
 
 Declare Sub Viewport_FadeOut (v As Viewport, frames As Integer)
@@ -320,7 +328,7 @@ Declare Sub Viewport_FadeOut (v As Viewport, frames As Integer)
 '**
 '* Asks the viewport to wait a number of frames.
 '**
-Declare Sub Viewport_Wait (src As Viewport, dst As Viewport, dur As Single, fps As Integer)
+Declare Sub Viewport_Wait (src As Viewport, dst As Viewport, dur As Single, fps As Integer, eye As Integer)
 
 ' }}}
 

@@ -30,14 +30,14 @@ Sub BitmapFont_LoadHandle (b As BitmapFont, h As Long)
 	Let b.Height = _Height(b.Content) \ 16
 End Sub
 
-Sub BitmapFont_WriteCharacter (v As Viewport, f As BitmapFont, p As Point, c As String)
+Sub BitmapFont_WriteCharacter (v As Viewport, f As BitmapFont, p As Point, c As String, layer As Integer)
 	Dim row As Integer, col As Integer
 	Let row = Asc(c) \ 16
 	Let col = Asc(c) Mod 16
-	_PutImage (p.x, p.y)-(p.x + f.Width - 1, p.y + f.Height - 1), f.Content, v.Buffer, (col * f.Width, row * f.Height)-((col + 1) * f.Width - 1, (row + 1) * f.Height - 1)
+	_PutImage (p.x, p.y)-(p.x + f.Width - 1, p.y + f.Height - 1), f.Content, v.Layers(layer).Buffer, (col * f.Width, row * f.Height)-((col + 1) * f.Width - 1, (row + 1) * f.Height - 1)
 End Sub
 
-Sub BitmapFont_WriteString (v As Viewport, f As BitmapFont, p As Point, s As String, clr As Long)
+Sub BitmapFont_WriteString (v As Viewport, f As BitmapFont, p As Point, s As String, clr As Long, layer As Integer)
 	Dim tempImage As Long, new_f As BitmapFont
 	tempImage = _COPYIMAGE(f.Content)
 	_PALETTECOLOR 1, clr, tempImage
@@ -45,7 +45,7 @@ Sub BitmapFont_WriteString (v As Viewport, f As BitmapFont, p As Point, s As Str
 	Dim n As Integer, p2 As Point
 	For n = 0 To Len(s) - 1
 		Point_Set p2, p.x + f.Width * n, p.y
-		BitmapFont_WriteCharacter v, new_f, p2, Mid$(s, n + 1, 1)
+		BitmapFont_WriteCharacter v, new_f, p2, Mid$(s, n + 1, 1), layer
 	Next
 	_FREEIMAGE tempImage
 End Sub

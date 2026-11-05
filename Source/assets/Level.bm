@@ -19,7 +19,7 @@
 Sub DrawThermometer (v As Viewport)
   Dim p As Point
   Point_Set p, 4, 4
-  Viewport_PutSpriteSequence v, TRUE, SPR_LEVEL(LVL_THERMO), p, FALSE
+  Viewport_PutSpriteSequence v, TRUE, SPR_LEVEL(LVL_THERMO), p, FALSE, LAYER_THERMO%
   Dim red As Long
   Let red = THERMO_RED&
   If Dodu.Temp <= 2 Then
@@ -30,8 +30,8 @@ Sub DrawThermometer (v As Viewport)
     End If
     Let Dodu.ThermoFlash = (Dodu.ThermoFlash + 1) Mod 20
   End If
-  Viewport_LineC v, TRUE, 6, 15 - Dodu.Temp, 7, 15, red, TRUE, TRUE
-  Viewport_LineC v, TRUE, 5, 16, 8, 18, red, TRUE, TRUE
+  Viewport_LineC v, TRUE, 6, 15 - Dodu.Temp, 7, 15, red, TRUE, TRUE, LAYER_THERMO%
+  Viewport_LineC v, TRUE, 5, 16, 8, 18, red, TRUE, TRUE, LAYER_THERMO%
 End Sub
 
 ' :mode=visualbasic:

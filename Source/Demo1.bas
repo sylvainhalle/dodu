@@ -357,7 +357,7 @@ Sub DoLevel
     DrawThermometer ImgBuffer
     DrawLevelNumber ImgBuffer
     Viewport_Tick ImgBuffer
-    Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
     Viewport_Tick MainScreen
     Viewport_Display MainScreen
     If IsEsc% Or IsEnter% Then
@@ -823,7 +823,7 @@ Sub DoLevel
     'Viewport_Print ImgBuffer, Str$((Dodu.LevPos.y + PLAYER_HEIGHT%) Mod 11) + Str$(hasfallen), P_ORIGIN
     'Viewport_Print ImgBuffer, Str$(lastClimbIndex) + Str$(lastUnclimbIndex) + Str$(lastFallIndex), P_ORIGIN
 
-    Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
     Viewport_Display MainScreen
     Viewport_Tick ImgBuffer
     Viewport_Tick MainScreen
@@ -848,7 +848,7 @@ Sub DoLifSplash
     _Limit FPS%
     SpriteSequence_Tick LifSplash
     Viewport_PutSpriteSequence ImgBuffer, TRUE, LifSplash, P_ORIGIN, FALSE
-    Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
     Viewport_Display MainScreen
   Loop Until SpriteSequence_IsFinished(LifSplash)
   Viewport_Wait ImgBuffer, MainScreen, 2, FPS%
@@ -871,7 +871,7 @@ Sub DoGameOver
     Point_Set cardP, 6 + x * 17, 20
     DisplayCard ImgBuffer, TRUE, cardP, pw.Elements(x)
   Next
-  Viewport_Copy ImgBuffer, MainScreen
+  Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
   Viewport_Display MainScreen
   Do
     _Limit FPS%
@@ -884,7 +884,7 @@ Sub DoCutScene (nb As Integer)
   Viewport_Reset MainScreen
   Viewport_SetBackground ImgBuffer, CutScenes(nb), PT_UNIT
   Viewport_Clear ImgBuffer
-  Viewport_Copy ImgBuffer, MainScreen
+  Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
 
   _PrintMode _KeepBackground , ImgBuffer.Buffer
   Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
@@ -895,14 +895,14 @@ Sub DoCutScene (nb As Integer)
   Dim ps As Ticker
   Ticker_Init ps, 7, FPS%, FALSE
   Viewport_Start ImgBuffer
-  'Viewport_Copy ImgBuffer, MainScreen
+  'Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
   Viewport_Start MainScreen
   Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
   Do
     _Limit FPS%
     Ticker_Tick ps
     Viewport_Tick ImgBuffer
-    Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
     Viewport_Display MainScreen
     If IsEsc% Or IsEnter% Then
       Exit Do
@@ -923,7 +923,7 @@ Sub DoMiniMap
   Viewport_SetBackground MapBuffer, Backgrounds(Levels(CURRENT_LEVEL).Background), P_ORIGIN
   Viewport_Clear MapBuffer
   DrawMinimap MapBuffer, Levels(CURRENT_LEVEL%)
-  Viewport_Copy MapBuffer, MainScreen
+  Viewport_Copy MapBuffer, MainScreen, EYE_NONE
   Viewport_Display MainScreen
 
   ' Wait until key is released
@@ -945,7 +945,7 @@ Sub DoMiniMap
     End If
     Viewport_Clear MapBuffer
     DrawMinimap MapBuffer, Levels(CURRENT_LEVEL%)
-    Viewport_Copy MapBuffer, MainScreen
+    Viewport_Copy MapBuffer, MainScreen, EYE_NONE
   Loop
   Kbd_WaitRelease FPS%
 End Sub
@@ -954,7 +954,7 @@ Sub DoPause
   Dim p As Point
   Point_Set p, 30, 24
   Viewport_Print ImgBuffer, " PAUSE ", p
-  Viewport_Copy ImgBuffer, MainScreen
+  Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
   Viewport_Display MainScreen
 
   ' Wait for the SPACE that invoked us to be released
@@ -1284,7 +1284,7 @@ Sub DoPasswordInput (rst As RestorePoint)
     Point_Set q, p.x + 16, p.y + 22
     Viewport_Line PwBuffer, FALSE, p, q, COLOR_HIGHLIGHT, TRUE, FALSE
 
-    Viewport_Copy PwBuffer, MainScreen
+    Viewport_Copy PwBuffer, MainScreen, EYE_NONE
     Viewport_Display MainScreen
 
     ReadJoystick

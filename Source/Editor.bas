@@ -193,7 +193,7 @@ Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, P_ORIGIN, SCALE%
 Let MainScreen.Scanlines = 1
 Viewport_SetBackground LevelBuffer, Backgrounds(CURRENT_BG), P_UNIT
 
-Screen MainScreen.Buffer
+Screen MainScreen.Layers(2).Buffer
 
 _Title "The Dodu Level Editor"
 _Icon SPR_LEVEL(LVL_BLOCK_B).Content
@@ -248,15 +248,15 @@ Sub MainLoop
     TickAll
     DrawPalette
     DrawLevel
-    Viewport_PutViewport ImgBuffer, TRUE, PaletteBuffer, PALETTE_TOPLEFT, P_ORIGIN, PALETTE_DIMS
-    Viewport_PutViewport ImgBuffer, TRUE, LevelBuffer, LEVEL_TOPLEFT, P_ORIGIN, LEVEL_DIMS
+    Viewport_PutViewport ImgBuffer, TRUE, PaletteBuffer, PALETTE_TOPLEFT, P_ORIGIN, PALETTE_DIMS, EYE_NONE
+    Viewport_PutViewport ImgBuffer, TRUE, LevelBuffer, LEVEL_TOPLEFT, P_ORIGIN, LEVEL_DIMS, EYE_NONE
     DrawTopBar
     Dim undop As Point
     Point_Set undop, PALETTE_WIDTH + 2, TOPBAR_HEIGHT + 2
-    BitmapFont_WriteString ImgBuffer, SF_FONT, undop, Str$(UNDO_HEAD) + " " + Levels(CURRENT_LEVEL).Topo(sel_topleft.col, sel_topleft.row), COLOR_BLACK
+    BitmapFont_WriteString ImgBuffer, SF_FONT, undop, Str$(UNDO_HEAD) + " " + Levels(CURRENT_LEVEL).Topo(sel_topleft.col, sel_topleft.row), COLOR_BLACK, 2
     'BitmapFont_WriteString ImgBuffer, SF_FONT, undop, Str$(mousex) + " " + Str$(mousey), COLOR_BLACK
-    Viewport_Copy ImgBuffer, MainScreen
-    Viewport_Display MainScreen
+    Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
+    Viewport_Display MainScreen, EYE_NONE
 
     If keyb Then
       Kbd_WaitRelease FPS%
@@ -497,14 +497,14 @@ End Function
 Sub DrawTopBar
   Dim p As Point
   Point_Set p, 0, 0
-  Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR(0), p, FALSE
+  Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR(0), p, FALSE, 2
   Point_Set p, SCREEN_DIMS.x - 6, 0
-  Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR(2), p, FALSE
-  Viewport_LineC ImgBuffer, TRUE, 6, 0, SCREEN_DIMS.x - 7, TOPBAR_HEIGHT, COLOR_WHITE, TRUE, TRUE
+  Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR(2), p, FALSE, 2
+  Viewport_LineC ImgBuffer, TRUE, 6, 0, SCREEN_DIMS.x - 7, TOPBAR_HEIGHT, COLOR_WHITE, TRUE, TRUE, 2
   Point_Set p, 5, 5
-  BitmapFont_WriteString ImgBuffer, SF_FONT, p, "The Dodu Level Editor " + Chr$(250) + " " + filename, COLOR_BLACK
+  BitmapFont_WriteString ImgBuffer, SF_FONT, p, "The Dodu Level Editor " + Chr$(250) + " " + filename, COLOR_BLACK, 2
   Point_Set p, SCREEN_DIMS.x - 20, 1
-  Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR_DODU, p, FALSE
+  Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR_DODU, p, FALSE, 2
 End Sub
 
 Sub CopyRegion
@@ -666,19 +666,19 @@ End Sub
 
 Sub DrawButton (v As Viewport, p As Point, text As String)
   Dim x As Integer, p2 As Point
-  Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON(0), p, FALSE
+  Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON(0), p, FALSE, 2
   For x = p.x + 3 To p.x + 3 + Len(text) * SF_FONT.Width
     Point_Set p2, x, p.y
-    Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON(1), p2, FALSE
+    Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON(1), p2, FALSE, 2
   Next
   Point_Set p2, p.x + 3 + Len(text) * SF_FONT.Width, p.y
-  Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON(2), p2, FALSE
+  Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON(2), p2, FALSE, 2
   Point_Set p2, p.x + 3, p.y + 3
-  BitmapFont_WriteString v, SF_FONT, p2, text, COLOR_BLACK
+  BitmapFont_WriteString v, SF_FONT, p2, text, COLOR_BLACK, 2
 End Sub
 
 Sub DrawIconButton (v As Viewport, p As Point, icn As SpriteSequence)
-  Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON_ICON, p, FALSE
+  Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON_ICON, p, FALSE, 2
 End Sub
 
 Sub MoveRegion (delta_col As Integer, delta_row As Integer)
@@ -838,28 +838,28 @@ End Sub
 
 Sub DrawPalette
   Viewport_Clear PaletteBuffer
-  Viewport_Line PaletteBuffer, TRUE, P_ORIGIN, PALETTE_DIMS, COLOR_BG&, TRUE, TRUE
+  Viewport_Line PaletteBuffer, TRUE, P_ORIGIN, PALETTE_DIMS, COLOR_BG&, TRUE, TRUE, 2
   Dim p As Point, i As Integer, x As Integer, y As Integer
   'Buttons
   For i = 0 To 16
     Let x = 2 + (i Mod 2) * GUI_ICON_BUTTON_SIZE.x
     Let y = (i \ 2) * GUI_ICON_BUTTON_SIZE.y
     Point_Set p, x, y
-    Viewport_PutSpriteSequence PaletteBuffer, TRUE, GUI_BUTTON_ICON, p, FALSE
+    Viewport_PutSpriteSequence PaletteBuffer, TRUE, GUI_BUTTON_ICON, p, FALSE, 2
     Point_Set p, x + 2, y + 2
-    Viewport_PutSpriteSequence PaletteBuffer, TRUE, SPR_MINIMAP(PALETTE_BUTTONS(i)), p, FALSE
+    Viewport_PutSpriteSequence PaletteBuffer, TRUE, SPR_MINIMAP(PALETTE_BUTTONS(i)), p, FALSE, 2
   Next
   For i = 0 To 16
     If i = selection Then
       Let x = 2 + (i Mod 2) * GUI_ICON_BUTTON_SIZE.x
       Let y = (i \ 2) * GUI_ICON_BUTTON_SIZE.y
-      Viewport_LineC PaletteBuffer, TRUE, x, y, x + GUI_ICON_BUTTON_SIZE.x, y + GUI_ICON_BUTTON_SIZE.y, COLOR_CURSOR&, TRUE, FALSE
+      Viewport_LineC PaletteBuffer, TRUE, x, y, x + GUI_ICON_BUTTON_SIZE.x, y + GUI_ICON_BUTTON_SIZE.y, COLOR_CURSOR&, TRUE, FALSE, 2
       Exit For
     End If
   Next
   For i = 0 To 3
     Point_Set p, 5, 100 + i * 17
-    Viewport_PutSpriteSequence PaletteBuffer, TRUE, GUI_TOOLBAR(i), p, FALSE
+    Viewport_PutSpriteSequence PaletteBuffer, TRUE, GUI_TOOLBAR(i), p, FALSE, 2
   Next
   'PointSet
   'Viewport_PutSpriteSequence PaletteBuffer, TRUE, ICN_MUSIC, , p, FALSE
@@ -874,8 +874,8 @@ Sub DrawLevel
   Dim col As Integer, row As Integer
   For col = 0 To M_W - 1
     For row = 0 To M_H - 1
-      Viewport_LineC LevelBuffer, FALSE, col * BLOCK_SIZE% - 1, row * BLOCK_SIZE%, col * BLOCK_SIZE% + 1, row * BLOCK_SIZE%, COLOR_GRID&, FALSE, FALSE
-      Viewport_LineC LevelBuffer, FALSE, col * BLOCK_SIZE%, row * BLOCK_SIZE% - 1, col * BLOCK_SIZE%, row * BLOCK_SIZE% + 1, COLOR_GRID&, FALSE, FALSE
+      Viewport_LineC LevelBuffer, FALSE, col * BLOCK_SIZE% - 1, row * BLOCK_SIZE%, col * BLOCK_SIZE% + 1, row * BLOCK_SIZE%, COLOR_GRID&, FALSE, FALSE, 2
+      Viewport_LineC LevelBuffer, FALSE, col * BLOCK_SIZE%, row * BLOCK_SIZE% - 1, col * BLOCK_SIZE%, row * BLOCK_SIZE% + 1, COLOR_GRID&, FALSE, FALSE, 2
     Next
   Next
   For row = M_H - 1 To 0 Step -1
@@ -886,11 +886,11 @@ Sub DrawLevel
       If SPRITE_LEVEL(FALSE, col, row).Content <> -1 Then
         Dim p As Point
         Square_ToPoint s, p
-        Viewport_PutSpriteSequence LevelBuffer, FALSE, SPRITE_LEVEL(FALSE, col, row), p, FALSE
+        Viewport_PutSpriteSequence LevelBuffer, FALSE, SPRITE_LEVEL(FALSE, col, row), p, FALSE, 2
       End If
     Next
   Next
-  Viewport_LineC LevelBuffer, FALSE, _Min(sel_topleft.col, sel_botright.col) * BLOCK_SIZE%, _Min(sel_topleft.row, sel_botright.row) * BLOCK_SIZE%, (_Max(sel_topleft.col, sel_botright.col) + 1) * BLOCK_SIZE% - 1, (_Max(sel_topleft.row, sel_botright.row) + 1) * BLOCK_SIZE% - 1, COLOR_CURSOR&, TRUE, FALSE
+  Viewport_LineC LevelBuffer, FALSE, _Min(sel_topleft.col, sel_botright.col) * BLOCK_SIZE%, _Min(sel_topleft.row, sel_botright.row) * BLOCK_SIZE%, (_Max(sel_topleft.col, sel_botright.col) + 1) * BLOCK_SIZE% - 1, (_Max(sel_topleft.row, sel_botright.row) + 1) * BLOCK_SIZE% - 1, COLOR_CURSOR&, TRUE, FALSE, 2
 End Sub
 
 Sub TickAll

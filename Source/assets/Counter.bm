@@ -23,11 +23,11 @@ Sub DrawLevelNumber (v As Viewport)
   Dim p2 As Point
   If dg1 = 0 Then
     Point_Set p2, PT_LEVEL_NB.x + 3, PT_LEVEL_NB.y
-    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg2), p2, FALSE
+    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg2), p2, FALSE, LAYER_THERMO%
   Else
     Point_Set p2, PT_LEVEL_NB.x + 5, PT_LEVEL_NB.y
-    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg1), PT_LEVEL_NB, FALSE
-    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg2), p2, FALSE
+    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg1), PT_LEVEL_NB, FALSE, LAYER_THERMO%
+    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg2), p2, FALSE, LAYER_THERMO%
   End If
 End Sub
 
@@ -38,9 +38,9 @@ Sub DrawNumber (v As Viewport, p As Point, n As Integer)
   Dim p2 As Point
   Point_Set p2, p.x + 6, p.y
   'If dg1 <> 0 Then
-    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg1), p, FALSE
+    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg1), p, FALSE, LAYER_THERMO%
   'end if
-  Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg2), p2, FALSE
+  Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg2), p2, FALSE, LAYER_THERMO%
 End Sub
 
 ' :mode=visualbasic:

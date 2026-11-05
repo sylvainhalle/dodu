@@ -202,7 +202,11 @@ Sub Viewport_Init (v As Viewport, size As Point, ws As Point, pan As Point, scal
   Let v.WorldSize = ws
   Let v.Pan = pan
   Let v.Scale = scale
-  Let v.Buffer = _NewImage(size.x * scale, size.y * scale, SPRITE_MODE%)
+  Dim l As Integer
+  For l = 0 To MAX_LAYERS - 1
+  	  Let v.Layers(l).Buffer = _NewImage(size.x * scale, size.y * scale, SPRITE_MODE%)
+  	  _ClearColor COLOR_TRANSPARENT, v.Layers(l).Buffer
+  Next
   Let v.BackgroundPanRatio.x = -1
   Let v.BackgroundPanRatio.y = -1
   Let v.ForegroundPanRatio.x = -1
@@ -220,10 +224,11 @@ Sub Viewport_PointToScreen (v As Viewport, p_src As Point, p_dest As Point)
 End Sub
 
 Sub Viewport_Clear (v As Viewport)
-    Dim sq As Point
+    Dim sq As Point, l As Integer
     Point_Set sq, v.Size.x * v.Scale - 1, v.Size.y * v.Scale - 1
-    Viewport_Line v, TRUE, P_ORIGIN, sq, v.ScanlineColor, TRUE, TRUE
-
+    For l = 0 To MAX_LAYERS - 1
+    	Viewport_Line v, TRUE, P_ORIGIN, sq, v.ScanlineColor, TRUE, TRUE, l
+    Next
     Dim bg_offset As Point
     Point_Set bg_offset, v.BackgroundOffset.x, v.BackgroundOffset.y
 
@@ -248,7 +253,7 @@ Sub Viewport_Clear (v As Viewport)
         For y = oy - h To v.Size.y - 1 Step h
             Dim p As Point
             Point_Set p, x, y
-            Viewport_PutSpriteSequence v, TRUE, v.Background, p, FALSE
+            Viewport_PutSpriteSequence v, TRUE, v.Background, p, FALSE, 0
         Next
     Next
     
@@ -280,8 +285,8 @@ Sub Viewport_SetForeground (v As Viewport, s As SpriteSequence, ratio As Point)
 	Let v.ForegroundPanRatio.y = ratio.y
 End Sub
 
-Sub Viewport_LineC (v As Viewport, absolute As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, clr As Long, box As Integer, filled As Integer)
-  _Dest v.Buffer
+Sub Viewport_LineC (v As Viewport, absolute As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, clr As Long, box As Integer, filled As Integer, layer As Integer)
+  _Dest v.Layers(layer).Buffer
   Dim p1 As Point, p2 As Point
   Point_Set p1, x1, y1
   Point_Set p2, x2, y2
@@ -300,28 +305,35 @@ Sub Viewport_LineC (v As Viewport, absolute As Integer, x1 As Integer, y1 As Int
   End If
 End Sub
 
-Sub Viewport_Line (v As Viewport, absolute As Integer, p1 As Point, p2 As Point, clr As Long, box As Integer, filled As Integer)
-  Viewport_LineC v, absolute, p1.x, p1.y, p2.x, p2.y, clr, box, filled
+Sub Viewport_Line (v As Viewport, absolute As Integer, p1 As Point, p2 As Point, clr As Long, box As Integer, filled As Integer, layer As Integer)
+  Viewport_LineC v, absolute, p1.x, p1.y, p2.x, p2.y, clr, box, filled, layer
 End Sub
 
 Sub Viewport_Screen (v as Viewport)
-	Screen v.Buffer
+	Screen v.Layers(0).Buffer
 End Sub
 
-Sub Viewport_Copy (src As Viewport, dst As Viewport)
-  _PutImage , src.Buffer, dst.Buffer
+Sub Viewport_Copy (src As Viewport, dst As Viewport, eye As Integer)
+  Dim l As Integer, divergence As Integer
+  For l = 0 To MAX_LAYERS - 1
+  	  Let divergence = (l - (MAX_LAYERS \ 2)) * eye
+  	  _PutImage (divergence, 0) - ((src.Size.x * dst.Scale) + divergence, src.Size.y * dst.Scale), src.Layers(l).Buffer, dst.Layers(2).Buffer
+  Next
 End Sub
 
-Sub Viewport_Print (v As Viewport, s As String, p As Point)
-  _PrintString (p.x, p.y), s, v.Buffer
+Sub Viewport_Print (v As Viewport, s As String, p As Point, layer As Integer)
+  _PrintString (p.x, p.y), s, v.Layers(layer).Buffer
 End Sub
 
 Sub Viewport_SetFont (v as Viewport, font As _Unsigned Long)
-	_Font font, v.Buffer
+	Dim l As Integer
+	For l = 0 To MAX_LAYERS - 1
+		_Font font, v.Layers(l).Buffer
+	Next
 End Sub
 
-Sub Viewport_Display (v As Viewport)
-	_Dest v.Buffer
+Sub Viewport_Display (v As Viewport, eye As Integer)
+	_Dest v.Layers(MAX_LAYERS \ 2).Buffer
 	If Ticker_IsRunning%(v.FadeInTicker) Then
 		Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 - (255 * v.FadeInTicker.Index / v.FadeInTicker.Length))), BF
 	ElseIf Ticker_IsRunning%(v.FadeOutTicker) Or v.FadeOutTicker.Index > 0 Then
@@ -345,20 +357,20 @@ Sub Viewport_Display (v As Viewport)
 	_Display
 End Sub
 
-Sub Viewport_Wait (src As Viewport, dst As Viewport, dur As Single, fps As Integer)
+Sub Viewport_Wait (src As Viewport, dst As Viewport, dur As Single, fps As Integer, eye As Integer)
 	Dim ticks As Integer
 	Let ticks = Ceil%(dur * fps)
 	While ticks > 0
 		_Limit fps
 		Let ticks = ticks - 1
 		Viewport_Tick src
-		Viewport_Copy src, dst
+		Viewport_Copy src, dst, eye
 		Viewport_Tick dst
-		Viewport_Display dst
+		Viewport_Display dst, eye
 	Wend
 End Sub
 
-Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point, flipped As Integer)
+Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point, flipped As Integer, layer As Integer)
 	Dim p1 As Point, p2 As Point
 	Dim s_w As Integer, s_h As Integer
 	Let s_w = SpriteSequence_Width%(s)
@@ -366,28 +378,33 @@ Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteS
 	SpriteSequence_Current s, p1, p2
 	If absolute Then
 		If flipped Then
-		  _PutImage (p.x + s.OffsetR.x + s_w - 1, p.y + s.OffsetR.y)-(p.x + s.OffsetR.x, p.y + s.OffsetR.y + s_h - 1), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+		  _PutImage (p.x + s.OffsetR.x + s_w - 1, p.y + s.OffsetR.y)-(p.x + s.OffsetR.x, p.y + s.OffsetR.y + s_h - 1), s.Content, v.Layers(layer).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
 		Else
-		  _PutImage (p.x + s.OffsetL.x, p.y + s.OffsetL.y)-(p.x + s.OffsetL.x + s_w - 1, p.y + s.OffsetL.y + s_h - 1), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+		  _PutImage (p.x + s.OffsetL.x, p.y + s.OffsetL.y)-(p.x + s.OffsetL.x + s_w - 1, p.y + s.OffsetL.y + s_h - 1), s.Content, v.Layers(layer).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
 		End If
 	Else
 		If flipped Then
-		  _PutImage (p.x + s.OffsetR.x + s_w - 1 - v.Pan.x, p.y + s.OffsetR.y - v.Pan.y)-(p.x + s.OffsetR.x - v.Pan.x, p.y + s.OffsetR.y + s_h - 1 - v.Pan.y), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+		  _PutImage (p.x + s.OffsetR.x + s_w - 1 - v.Pan.x, p.y + s.OffsetR.y - v.Pan.y)-(p.x + s.OffsetR.x - v.Pan.x, p.y + s.OffsetR.y + s_h - 1 - v.Pan.y), s.Content, v.Layers(layer).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
 		Else
-		  _PutImage (p.x + s.OffsetL.x - v.Pan.x, p.y + s.OffsetL.y - v.Pan.y)-(p.x + s.OffsetL.x + s_w - 1 - v.Pan.x, p.y + s.OffsetL.y + s_h - 1 - v.Pan.y), s.Content, v.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+		  _PutImage (p.x + s.OffsetL.x - v.Pan.x, p.y + s.OffsetL.y - v.Pan.y)-(p.x + s.OffsetL.x + s_w - 1 - v.Pan.x, p.y + s.OffsetL.y + s_h - 1 - v.Pan.y), s.Content, v.Layers(layer).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
 		End If
     End If
 End Sub
 
-Sub Viewport_PutViewport (dst As Viewport, absolute As Integer, src As Viewport, p As Point, p1 As Point, p2 As Point)
+Sub Viewport_PutViewport (dst As Viewport, absolute As Integer, src As Viewport, p As Point, p1 As Point, p2 As Point, eye As Integer)
 	Dim s_w As Integer, s_h As Integer
 	Let s_w = p2.x - p1.x
 	Let s_h = p2.y - p1.y
-	If absolute Then
-		_PutImage (p.x , p.y )-(p.x  + s_w - 1, p.y  + s_h - 1), src.Buffer, dst.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
-	Else
-		_PutImage (p.x  - dst.Pan.x, p.y  - dst.Pan.y)-(p.x  + s_w - 1 - dst.Pan.x, p.y  + s_h - 1 - dst.Pan.y), src.Buffer, dst.Buffer, (p1.x, p1.y)-(p2.x, p2.y)
-	End If
+	Dim l As Integer, divergence As Integer
+	  'For l = 0 To MAX_LAYERS - 1
+	  For l = 2 to 2
+		  Let divergence = (l - (MAX_LAYERS \ 2)) * eye
+		  	If absolute Then
+				_PutImage (p.x + divergence, p.y )-(p.x + divergence  + s_w - 1, p.y  + s_h - 1), src.Layers(l).Buffer, dst.Layers(l).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+			Else
+				_PutImage (p.x  - dst.Pan.x + divergence, p.y  - dst.Pan.y)-(p.x  + s_w - 1 - dst.Pan.x + divergence, p.y  + s_h - 1 - dst.Pan.y), src.Layers(l).Buffer, dst.Layers(l).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+			End If
+	  Next
 End Sub
 
 Sub Viewport_SetCenter (v as Viewport, p as Point)
@@ -432,11 +449,6 @@ Sub Viewport_Tick (v as Viewport)
 	SpriteSequence_Tick v.Foreground
 	Ticker_Tick v.FadeInTicker
 	Ticker_Tick v.FadeOutTicker
-End Sub
-
-Sub Viewport_SetAlpha (v As Viewport, alpha As Integer)
-	_Dest v.Buffer
-	_SetAlpha alpha
 End Sub
 
 Sub Viewport_FadeIn (v As Viewport, numticks As Integer)

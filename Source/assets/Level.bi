@@ -16,6 +16,8 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
+Const LAYER_THERMO% = 2
+
 Dim Shared SPR_LEVEL(20) As SpriteSequence
 
 ' Blocks
