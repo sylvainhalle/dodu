@@ -193,7 +193,7 @@ Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, P_ORIGIN, SCALE%, 1
 Let MainScreen.Scanlines = 1
 Viewport_SetBackground LevelBuffer, Backgrounds(CURRENT_BG), P_UNIT
 
-Screen MainScreen.Layers(2).Buffer
+Screen MainScreen.Layers(0).Buffer
 
 _Title "The Dodu Level Editor"
 _Icon SPR_LEVEL(LVL_BLOCK_B).Content
@@ -219,8 +219,7 @@ Let DIRTY = FALSE
 Dim Shared filename As String
 Dim Shared songindex As Integer
 Let songindex = -1
-Dim dummy As String
-Input dummy$
+Dim Shared dummy As String
 
 MainLoop
 Cls
@@ -255,8 +254,8 @@ Sub MainLoop
     DrawTopBar
     Dim undop As Point
     Point_Set undop, PALETTE_WIDTH + 2, TOPBAR_HEIGHT + 2
-    BitmapFont_WriteString ImgBuffer, SF_FONT, undop, Str$(UNDO_HEAD) + " " + Levels(CURRENT_LEVEL).Topo(sel_topleft.col, sel_topleft.row), COLOR_BLACK, 2
-    'BitmapFont_WriteString ImgBuffer, SF_FONT, undop, Str$(mousex) + " " + Str$(mousey), COLOR_BLACK
+    BitmapFont_WriteString ImgBuffer, SF_FONT, undop, Str$(UNDO_HEAD) + " " + Levels(CURRENT_LEVEL).Topo(sel_topleft.col, sel_topleft.row), COLOR_BLACK, 0
+    'BitmapFont_WriteString ImgBuffer, SF_FONT, undop, Str$(mousex) + " " + Str$(mousey), COLOR_BLACK, 0
     Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
     Viewport_Display MainScreen, EYE_NONE
 
@@ -504,7 +503,7 @@ Sub DrawTopBar
   Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR(2), p, FALSE, 0
   Viewport_LineC ImgBuffer, TRUE, 6, 0, SCREEN_DIMS.x - 7, TOPBAR_HEIGHT, COLOR_WHITE, TRUE, TRUE, 0
   Point_Set p, 5, 5
-  BitmapFont_WriteString ImgBuffer, SF_FONT, p, "The Dodu Level Editor " + Chr$(250) + " " + filename, COLOR_BLACK, 2
+  BitmapFont_WriteString ImgBuffer, SF_FONT, p, "The Dodu Level Editor " + Chr$(250) + " " + filename, COLOR_BLACK, 0
   Point_Set p, SCREEN_DIMS.x - 20, 1
   Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR_DODU, p, FALSE, 0
 End Sub
@@ -794,10 +793,12 @@ Function IndexOf% (e As String)
 End Function
 
 Sub ResetLevelSprites
-  Dim col As Integer, row As Integer
+  Dim col As Integer, row As Integer, s As Square
   For col = 0 To M_W - 1
     For row = 0 To M_H - 1
       Let Levels(CURRENT_LEVEL%).Topo(col, row) = " "
+      Square_Set s, col, row
+      ClearSpriteSquare s
     Next
   Next
 End Sub
@@ -859,16 +860,17 @@ Sub DrawPalette
       Exit For
     End If
   Next
+
   For i = 0 To 3
     Point_Set p, 5, 100 + i * 17
     Viewport_PutSpriteSequence PaletteBuffer, TRUE, GUI_TOOLBAR(i), p, FALSE, 0
   Next
   'PointSet
   'Viewport_PutSpriteSequence PaletteBuffer, TRUE, ICN_MUSIC, , p, FALSE
-
   ' Coordinates
-  DrawNumber PaletteBuffer, P_COORDS1, sel_topleft.col
-  DrawNumber PaletteBuffer, P_COORDS2, sel_topleft.row
+
+  DrawNumber PaletteBuffer, P_COORDS1, sel_topleft.col, 0
+  DrawNumber PaletteBuffer, P_COORDS2, sel_topleft.row, 0
 End Sub
 
 Sub DrawLevel
@@ -893,6 +895,7 @@ Sub DrawLevel
     Next
   Next
   Viewport_LineC LevelBuffer, FALSE, _Min(sel_topleft.col, sel_botright.col) * BLOCK_SIZE%, _Min(sel_topleft.row, sel_botright.row) * BLOCK_SIZE%, (_Max(sel_topleft.col, sel_botright.col) + 1) * BLOCK_SIZE% - 1, (_Max(sel_topleft.row, sel_botright.row) + 1) * BLOCK_SIZE% - 1, COLOR_CURSOR&, TRUE, FALSE, 0
+
 End Sub
 
 Sub TickAll

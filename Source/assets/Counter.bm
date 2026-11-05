@@ -16,31 +16,31 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
-Sub DrawLevelNumber (v As Viewport)
+Sub DrawLevelNumber (v As Viewport, layer As Integer)
   Dim dg1 As Integer, dg2 As Integer
   Let dg1 = (CURRENT_LEVEL + 1) \ 10
   Let dg2 = (CURRENT_LEVEL + 1) Mod 10
   Dim p2 As Point
   If dg1 = 0 Then
     Point_Set p2, PT_LEVEL_NB.x + 3, PT_LEVEL_NB.y
-    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg2), p2, FALSE, LAYER_THERMO%
+    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg2), p2, FALSE, layer
   Else
     Point_Set p2, PT_LEVEL_NB.x + 5, PT_LEVEL_NB.y
-    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg1), PT_LEVEL_NB, FALSE, LAYER_THERMO%
-    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg2), p2, FALSE, LAYER_THERMO%
+    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg1), PT_LEVEL_NB, FALSE, layer
+    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg2), p2, FALSE, layer
   End If
 End Sub
 
-Sub DrawNumber (v As Viewport, p As Point, n As Integer)
+Sub DrawNumber (v As Viewport, p As Point, n As Integer, layer As Integer)
   Dim dg1 As Integer, dg2 As Integer
   Let dg1 = n \ 10
   Let dg2 = n Mod 10
   Dim p2 As Point
   Point_Set p2, p.x + 6, p.y
   'If dg1 <> 0 Then
-    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg1), p, FALSE, LAYER_THERMO%
+    Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg1), p, FALSE, layer
   'end if
-  Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg2), p2, FALSE, LAYER_THERMO%
+  Viewport_PutSpriteSequence v, TRUE, SPR_LVL_DIGITS(dg2), p2, FALSE, layer
 End Sub
 
 ' :mode=visualbasic:
