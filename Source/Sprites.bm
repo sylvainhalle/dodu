@@ -228,7 +228,9 @@ Sub Viewport_Clear (v As Viewport)
     Dim sq As Point, l As Integer
     Point_Set sq, v.Size.x * v.Scale - 1, v.Size.y * v.Scale - 1
     For l = 0 To v.Depth - 1
-    	Viewport_Line v, TRUE, P_ORIGIN, sq, COLOR_RED, TRUE, TRUE, l
+    	'Viewport_Line v, TRUE, P_ORIGIN, sq, COLOR_TRANSPARENT, TRUE, TRUE, l
+		_Dest v.Layers(l).Buffer
+		Cls , COLOR_TRANSPARENT
     Next
     Dim bg_offset As Point
     Point_Set bg_offset, v.BackgroundOffset.x, v.BackgroundOffset.y
@@ -316,6 +318,8 @@ End Sub
 
 Sub Viewport_Copy (src As Viewport, dst As Viewport, eye As Integer)
   Dim l As Integer, divergence As Integer, index As Integer
+_ClearColor COLOR_TRANSPARENT, src.Layers(1).Buffer
+_ClearColor COLOR_TRANSPARENT, src.Layers(2).Buffer
   For l = 0 To src.Depth - 1
   	  Let divergence = (l - (MAX_LAYERS \ 2)) * eye
   	  If dst.Depth < src.Depth Then Let index = 0 Else Let index = l

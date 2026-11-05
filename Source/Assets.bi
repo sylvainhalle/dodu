@@ -40,9 +40,9 @@ Const LVL_ROPE_M = 17
 Const LVL_ROPE_E = 18
 Const LVL_MARK = 19
 
-Declare Sub DrawLevelNumber (v As Viewport)
+Declare Sub DrawLevelNumber (v As Viewport, layer As Integer)
 
-Declare Sub DrawThermometer (v As Viewport)
+Declare Sub DrawThermometer (v As Viewport, layer As Integer)
 
 Dim Shared COLOR_HIGHLIGHT As Long, COLOR_HIGHLIGHT2 As Long, COLOR_SNOW As Long
 If IMG_MODE$ = IMG_MODE_EGA Then

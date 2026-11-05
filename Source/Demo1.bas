@@ -139,6 +139,11 @@ Let Dodu.Temp = 10
 Let Dodu.HasMittens = FALSE
 Let Dodu.HasTuque = FALSE
 
+Dim Shared CFG_STEREOSCOPIC As Integer
+Let CFG_STEREOSCOPIC = FALSE
+
+Const IMG_DEPTH = 3
+
 Dim argc As Integer, toset As String
 For argc = 1 To _CommandCount
   Select Case Command$(argc)
@@ -164,6 +169,8 @@ For argc = 1 To _CommandCount
       Let toset = "width"
     Case "--height"
       Let toset = "height"
+    Case "--stereo"
+      Let CFG_STEREOSCOPIC = TRUE
     Case Else
       Select Case toset
         Case "level"
@@ -235,11 +242,11 @@ MainLoop
 
 Sub MainLoop
   Do
-    Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE
+    Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE, 1
     Let MainScreen.ScanlineWidth = SCANLINE_WIDTH
-    Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS
+    Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS, IMG_DEPTH
     Dim rst As RestorePoint
-    Screen MainScreen.Buffer
+    Screen MainScreen.Layers(0).Buffer
     Let MainScreen.Scanlines = SCANLINES
     Let MainScreen.ScanlineWidth = SCANLINE_WIDTH
     Let MainScreen.ScanlineColor = SCANLINE_COLOR
@@ -254,7 +261,7 @@ Sub MainLoop
     End If
 
     Viewport_FadeOut MainScreen, Ceil%(0.3 * FPS%)
-    Viewport_Wait ImgBuffer, MainScreen, 2, FPS%
+    Viewport_Wait ImgBuffer, MainScreen, 2, FPS%, 0
     Do
       If Levels(CURRENT_LEVEL).CutScene >= 0 And CFG_CUTSCENES Then
         SoundPlayer_StopSong Audio
@@ -267,13 +274,13 @@ Sub MainLoop
       Dim ws As Point
       Point_Set ws, Levels(CURRENT_LEVEL).Width * BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * BLOCK_SIZE%
 
-      Viewport_Init_Default ImgBuffer, SCREEN_DIMS, ws
+      Viewport_Init_Default ImgBuffer, SCREEN_DIMS, ws, IMG_DEPTH
       Viewport_SetFont ImgBuffer, FNT_TINYC
       DoLevel
       If Levels(CURRENT_LEVEL + 1).CutScene < 0 Then
         SoundPlayer_PlayEffect Audio, SND_LEVELUP
       Else
-        Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
+        Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%, 0
       End If
       Let LAST_LEVEL = CURRENT_LEVEL
       Let CURRENT_LEVEL = CURRENT_LEVEL + 1
@@ -311,9 +318,9 @@ Sub DoLevel
   Viewport_SetBackground ImgBuffer, _
     Backgrounds(Levels(CURRENT_LEVEL%).Background), Levels(CURRENT_LEVEL%).BackgroundParallax
 
-  Color COLOR_WHITE&, , , ImgBuffer.Buffer
-  _PrintMode _KeepBackground , ImgBuffer.Buffer
-  Screen MainScreen.Buffer
+  'Color COLOR_WHITE&, , , ImgBuffer.Buffer
+  '_PrintMode _KeepBackground , ImgBuffer.Buffer
+  Screen MainScreen.Layers(0).Buffer
 
   Let Dodu.LevPos.x = Levels(CURRENT_LEVEL).StartPoint.col * BLOCK_SIZE%
   Let Dodu.LevPos.y = (Levels(CURRENT_LEVEL).StartPoint.row - 2) * BLOCK_SIZE%
@@ -338,13 +345,13 @@ Sub DoLevel
   Level_GoalSquare Levels(CURRENT_LEVEL%), target_s
   Square_ToPoint target_s, target_p
   Viewport_Clear ImgBuffer
-  _Dest MainScreen.Buffer
+  _Dest MainScreen.Layers(0).Buffer
   Cls
   DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), FALSE
   DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), TRUE
   Viewport_SetCenter ImgBuffer, target_p
-  DrawThermometer ImgBuffer
-  DrawLevelNumber ImgBuffer
+  DrawThermometer ImgBuffer, IMG_DEPTH - 1
+  DrawLevelNumber ImgBuffer, IMG_DEPTH - 1
   Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
   'Viewport_Wait ImgBuffer, MainScreen, 0.8, FPS%
   Viewport_ScrollCenter ImgBuffer, center, INIT_SCROLL_DURATION% * FPS%
@@ -354,12 +361,12 @@ Sub DoLevel
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), FALSE
     DrawPlayer ImgBuffer, CurrentSprite()
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), TRUE
-    DrawThermometer ImgBuffer
-    DrawLevelNumber ImgBuffer
+    DrawThermometer ImgBuffer, IMG_DEPTH - 1
+    DrawLevelNumber ImgBuffer, IMG_DEPTH - 1
     Viewport_Tick ImgBuffer
     Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
     Viewport_Tick MainScreen
-    Viewport_Display MainScreen
+    Viewport_Display MainScreen, EYE_NONE
     If IsEsc% Or IsEnter% Then
       Ticker_Stop ImgBuffer.PanTick
       Exit Do
@@ -814,8 +821,8 @@ Sub DoLevel
     TickLevel Levels(CURRENT_LEVEL)
     DrawPlayer ImgBuffer, CurrentSprite()
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL), TRUE
-    DrawThermometer ImgBuffer
-    DrawLevelNumber ImgBuffer
+    DrawThermometer ImgBuffer, IMG_DEPTH - 1
+    DrawLevelNumber ImgBuffer, IMG_DEPTH - 1
 
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
@@ -824,7 +831,7 @@ Sub DoLevel
     'Viewport_Print ImgBuffer, Str$(lastClimbIndex) + Str$(lastUnclimbIndex) + Str$(lastFallIndex), P_ORIGIN
 
     Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
-    Viewport_Display MainScreen
+    Viewport_Display MainScreen, EYE_NONE
     Viewport_Tick ImgBuffer
     Viewport_Tick MainScreen
 
@@ -840,22 +847,22 @@ Sub DoLevel
 End Sub
 
 Sub DoLifSplash
-  Viewport_PutSpriteSequence ImgBuffer, TRUE, LifSplash, P_ORIGIN, FALSE
+  Viewport_PutSpriteSequence ImgBuffer, TRUE, LifSplash, P_ORIGIN, FALSE, 0
   Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
-  Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
+  Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%, 0
   SpriteSequence_Start LifSplash
   Do
     _Limit FPS%
     SpriteSequence_Tick LifSplash
-    Viewport_PutSpriteSequence ImgBuffer, TRUE, LifSplash, P_ORIGIN, FALSE
+    Viewport_PutSpriteSequence ImgBuffer, TRUE, LifSplash, P_ORIGIN, FALSE, 0
     Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
-    Viewport_Display MainScreen
+    Viewport_Display MainScreen, EYE_NONE
   Loop Until SpriteSequence_IsFinished(LifSplash)
-  Viewport_Wait ImgBuffer, MainScreen, 2, FPS%
+  Viewport_Wait ImgBuffer, MainScreen, 2, FPS%, 0
   Viewport_FadeOut MainScreen, Ceil%(0.5 * FPS)
-  Viewport_Wait ImgBuffer, MainScreen, 0.5, FPS%
+  Viewport_Wait ImgBuffer, MainScreen, 0.5, FPS%, 0
   Viewport_Clear MainScreen
-  Viewport_Display MainScreen
+  Viewport_Display MainScreen, EYE_NONE
 End Sub
 
 Sub DoGameOver
@@ -864,15 +871,15 @@ Sub DoGameOver
   'Cls
   Dim pw As Password
   GetPassword pw, CURRENT_LEVEL, LAST_MITTENS, LAST_TUQUE
-  Viewport_PutSpriteSequence ImgBuffer, TRUE, Veil, P_ORIGIN, FALSE
-  Viewport_Print ImgBuffer, "GAME OVER", P_ORIGIN
+  Viewport_PutSpriteSequence ImgBuffer, TRUE, Veil, P_ORIGIN, FALSE, 0
+  Viewport_Print ImgBuffer, "GAME OVER", P_ORIGIN, 0
   Dim x As Integer, pws As String, cardP As Point
   For x = 0 To 3
     Point_Set cardP, 6 + x * 17, 20
     DisplayCard ImgBuffer, TRUE, cardP, pw.Elements(x)
   Next
   Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
-  Viewport_Display MainScreen
+  Viewport_Display MainScreen, EYE_NONE
   Do
     _Limit FPS%
   Loop While Not _KeyDown(K_ESC)
@@ -886,7 +893,7 @@ Sub DoCutScene (nb As Integer)
   Viewport_Clear ImgBuffer
   Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
 
-  _PrintMode _KeepBackground , ImgBuffer.Buffer
+  '_PrintMode _KeepBackground , ImgBuffer.Buffer
   Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
   'Screen MainScreen.Buffer
 
@@ -897,40 +904,40 @@ Sub DoCutScene (nb As Integer)
   Viewport_Start ImgBuffer
   'Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
   Viewport_Start MainScreen
-  Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
+  Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%, EYE_NONE
   Do
     _Limit FPS%
     Ticker_Tick ps
     Viewport_Tick ImgBuffer
     Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
-    Viewport_Display MainScreen
+    Viewport_Display MainScreen, EYE_NONE
     If IsEsc% Or IsEnter% Then
       Exit Do
     End If
   Loop Until Ticker_IsFinished(ps)
   Viewport_FadeOut MainScreen, Ceil%(0.5 * FPS)
-  Viewport_Wait ImgBuffer, MainScreen, 0.5, FPS%
+  Viewport_Wait ImgBuffer, MainScreen, 0.5, FPS%, EYE_NONE
   Viewport_Clear ImgBuffer
   Viewport_Clear MainScreen
-  Viewport_Display MainScreen
+  Viewport_Display MainScreen, EYE_NONE
 End Sub
 
 Sub DoMiniMap
   Dim MapBuffer As Viewport
   Dim ws As Point
   Point_Set ws, Levels(CURRENT_LEVEL).Width * MINI_BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * MINI_BLOCK_SIZE%
-  Viewport_Init_Default MapBuffer, SCREEN_DIMS, ws
+  Viewport_Init_Default MapBuffer, SCREEN_DIMS, ws, IMG_DEPTH
   Viewport_SetBackground MapBuffer, Backgrounds(Levels(CURRENT_LEVEL).Background), P_ORIGIN
   Viewport_Clear MapBuffer
   DrawMinimap MapBuffer, Levels(CURRENT_LEVEL%)
   Viewport_Copy MapBuffer, MainScreen, EYE_NONE
-  Viewport_Display MainScreen
+  Viewport_Display MainScreen, EYE_NONE
 
   ' Wait until key is released
   Kbd_WaitRelease FPS%
   Do
     _Limit FPS%
-    Viewport_Display MainScreen
+    Viewport_Display MainScreen, EYE_NONE
     If _KeyDown(K_LEFT) Then
       Let MapBuffer.Pan.x = MapBuffer.Pan.x - 2
     ElseIf _KeyDown(K_RIGHT) Then
@@ -953,9 +960,9 @@ End Sub
 Sub DoPause
   Dim p As Point
   Point_Set p, 30, 24
-  Viewport_Print ImgBuffer, " PAUSE ", p
+  Viewport_Print ImgBuffer, " PAUSE ", p, 0
   Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
-  Viewport_Display MainScreen
+  Viewport_Display MainScreen, EYE_NONE
 
   ' Wait for the SPACE that invoked us to be released
   Dim k As Long
@@ -1011,7 +1018,7 @@ Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
       If SPRITE_LEVEL(Abs(isfront), col, row).Content <> -1 Then
         Dim p As Point
         Square_ToPoint s, p
-        Viewport_PutSpriteSequence v, FALSE, SPRITE_LEVEL(Abs(isfront), col, row), p, FALSE
+        Viewport_PutSpriteSequence v, FALSE, SPRITE_LEVEL(Abs(isfront), col, row), p, FALSE, 0
       End If
     Next
   Next
@@ -1048,19 +1055,19 @@ Sub DrawMinimap (v As Viewport, m As LevelMap)
       Point_Set p, s.col * 5, s.row * 5
       Select Case m.Topo(col, row)
         Case T_BLOCK_B
-          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_BLOCK_B), p, FALSE
+          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_BLOCK_B), p, FALSE, 0
         Case T_BLOCK_W
-          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_BLOCK_W), p, FALSE
+          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_BLOCK_W), p, FALSE, 0
         Case T_POLE
-          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_POLE), p, FALSE
+          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_POLE), p, FALSE, 0
         Case T_COOKIE
-          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_COOKIE), p, FALSE
+          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_COOKIE), p, FALSE, 0
         Case T_COFFEE
-          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_COFFEE), p, FALSE
+          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_COFFEE), p, FALSE, 0
         Case T_WATER
-          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_WATER), p, FALSE
+          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_WATER), p, FALSE, 0
         Case T_SNOW
-          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_SNOW), p, FALSE
+          Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_SNOW), p, FALSE, 0
       End Select
     Next
   Next
@@ -1069,7 +1076,7 @@ Sub DrawMinimap (v As Viewport, m As LevelMap)
   Let dod_s.row = Dodu.LevPos.y \ BLOCK_SIZE%
   Dim dod_p As Point
   Point_Set dod_p, dod_s.col * MINI_BLOCK_SIZE%, (dod_s.row + 1) * MINI_BLOCK_SIZE%
-  Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_PLAYER), dod_p, FALSE
+  Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_PLAYER), dod_p, FALSE, 0
 End Sub
 
 
@@ -1078,9 +1085,9 @@ End Sub
 ' --------------------------
 Sub DrawPlayer (v As Viewport, seqs() As SpriteSequence)
   Dim s As SpriteSequence
-  Viewport_PutSpriteSequence v, FALSE, seqs(0), Dodu.LevPos, seqs(0).Flipped
-  Viewport_PutSpriteSequence v, FALSE, seqs(1), Dodu.LevPos, seqs(1).Flipped
-  Viewport_PutSpriteSequence v, FALSE, seqs(2), Dodu.LevPos, seqs(2).Flipped
+  Viewport_PutSpriteSequence v, FALSE, seqs(0), Dodu.LevPos, seqs(0).Flipped, 1
+  Viewport_PutSpriteSequence v, FALSE, seqs(1), Dodu.LevPos, seqs(1).Flipped, 1
+  Viewport_PutSpriteSequence v, FALSE, seqs(2), Dodu.LevPos, seqs(2).Flipped, 1
 End Sub
 
 
@@ -1180,7 +1187,7 @@ Sub HighlightBlock (v As Viewport, m As LevelMap, s As Square, c~&)
     Dim p1 As Point, p2 As Point
     Square_ToPoint s, p1
     Point_Set p2, p1.x + BLOCK_SIZE% - 1, p1.y + BLOCK_SIZE% - 1
-    Viewport_Line v, FALSE, p1, p2, c~&, TRUE, FALSE
+    Viewport_Line v, FALSE, p1, p2, c~&, TRUE, FALSE, 1
   End If
 End Sub
 
@@ -1226,11 +1233,11 @@ Sub DisplayCard (v As Viewport, absolute As Integer, p As Point, value As Intege
   Dim p1 As Point, p2 As Point
   Let suit = value \ 13
   Let nb = value Mod 13
-  Viewport_PutSpriteSequence v, absolute, SPR_CARD, p, FALSE
+  Viewport_PutSpriteSequence v, absolute, SPR_CARD, p, FALSE, 1
   Point_Set p1, p.x + 5, p.y + 9
-  Viewport_PutSpriteSequence v, absolute, SPR_CARDS_SUITS(suit), p1, FALSE
+  Viewport_PutSpriteSequence v, absolute, SPR_CARDS_SUITS(suit), p1, FALSE, 1
   Point_Set p2, p.x + 2, p.y + 2
-  Viewport_PutSpriteSequence v, absolute, SPR_CARDS_DIGITS(nb), p2, FALSE
+  Viewport_PutSpriteSequence v, absolute, SPR_CARDS_DIGITS(nb), p2, FALSE, 1
 End Sub
 
 Sub DoPasswordInput (rst As RestorePoint)
@@ -1238,7 +1245,7 @@ Sub DoPasswordInput (rst As RestorePoint)
   SoundPlayer_PlaySong Audio, SNG_CARDS%
   Dim PwBuffer As Viewport, ws As Point
   Point_Set ws, SCREEN_DIMS.x, 1000
-  Viewport_Init_Default PwBuffer, SCREEN_DIMS, ws
+  Viewport_Init_Default PwBuffer, SCREEN_DIMS, ws, IMG_DEPTH
   Viewport_Clear PwBuffer
   Dim prlx As Point
   Point_Set prlx, 2, 2
@@ -1274,7 +1281,7 @@ Sub DoPasswordInput (rst As RestorePoint)
       Let scc = selection(n) \ 13
       Point_Set p, scc * 18 + 5, scr * 22
       Point_Set q, p.x + 16, p.y + 22
-      Viewport_Line PwBuffer, FALSE, p, q, COLOR_HIGHLIGHT2, TRUE, FALSE
+      Viewport_Line PwBuffer, FALSE, p, q, COLOR_HIGHLIGHT2, TRUE, FALSE, 1
     Next
 
     'Viewport_Print PwBuffer, Str$(selection(0)) + Str$(selection(1)) + Str$(selection(2)) + Str$(selection(3)), P_ORIGIN
@@ -1282,10 +1289,10 @@ Sub DoPasswordInput (rst As RestorePoint)
     ' Show selected card
     Point_Set p, coord_col * 18 + 5, coord_row * 22
     Point_Set q, p.x + 16, p.y + 22
-    Viewport_Line PwBuffer, FALSE, p, q, COLOR_HIGHLIGHT, TRUE, FALSE
+    Viewport_Line PwBuffer, FALSE, p, q, COLOR_HIGHLIGHT, TRUE, FALSE, 1
 
     Viewport_Copy PwBuffer, MainScreen, EYE_NONE
-    Viewport_Display MainScreen
+    Viewport_Display MainScreen, EYE_NONE
 
     ReadJoystick
     Dim moves As Integer: Let moves = FALSE
@@ -1394,21 +1401,21 @@ Sub DoIntroduction (rst As RestorePoint)
           Point_Set Flakes(n), Int(Rnd * SCREEN_DIMS.x%), -Int(Rnd * 5)
         End If
       End If
-      Viewport_LineC ImgBuffer, TRUE, Flakes(n).x, Flakes(n).y + yoffset, Flakes(n).x, Flakes(n).y + yoffset, COLOR_SNOW, FALSE, FALSE
+      Viewport_LineC ImgBuffer, TRUE, Flakes(n).x, Flakes(n).y + yoffset, Flakes(n).x, Flakes(n).y + yoffset, COLOR_SNOW, FALSE, FALSE, 0
       Ticker_Tick FlakesTickers(n)
     Next
     For n = 0 To SCREEN_DIMS.x - 1
-      Viewport_LineC ImgBuffer, TRUE, n, HeightsInit(n) + yoffset - 1, n, Heights(n) + yoffset, COLOR_SNOW, TRUE, FALSE
+      Viewport_LineC ImgBuffer, TRUE, n, HeightsInit(n) + yoffset - 1, n, Heights(n) + yoffset, COLOR_SNOW, TRUE, FALSE, 0
     Next
     If sel = 0 Then
-      Viewport_LineC ImgBuffer, TRUE, 23, 45, 39, 56, COLOR_HIGHLIGHT2, TRUE, FALSE
+      Viewport_LineC ImgBuffer, TRUE, 23, 45, 39, 56, COLOR_HIGHLIGHT2, TRUE, FALSE, 1
     Else
-      Viewport_LineC ImgBuffer, TRUE, 40, 45, 56, 56, COLOR_HIGHLIGHT2, TRUE, FALSE
+      Viewport_LineC ImgBuffer, TRUE, 40, 45, 56, 56, COLOR_HIGHLIGHT2, TRUE, FALSE, 1
     End If
     Viewport_Tick ImgBuffer
-    Viewport_Copy ImgBuffer, MainScreen
+    Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
     Viewport_Tick MainScreen
-    Viewport_Display MainScreen
+    Viewport_Display MainScreen, EYE_NONE
     If IsLeft% Or IsRight% Then
       Let sel = (sel + 1) Mod 2
       SoundPlayer_PlayEffect Audio, SND_TICK%
