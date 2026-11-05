@@ -193,17 +193,18 @@ End Sub
 '** - Viewport ------------------------------------------------- {{{
 '**
 
-Sub Viewport_Init_Default (v As Viewport, size As Point, ws As Point)
-  Viewport_Init v, size, ws, P_ORIGIN, 1
+Sub Viewport_Init_Default (v As Viewport, size As Point, ws As Point, depth As Integer)
+  Viewport_Init v, size, ws, P_ORIGIN, 1, depth
 End Sub
 
-Sub Viewport_Init (v As Viewport, size As Point, ws As Point, pan As Point, scale As Single)
+Sub Viewport_Init (v As Viewport, size As Point, ws As Point, pan As Point, scale As Single, depth As Integer)
   Let v.Size = size
   Let v.WorldSize = ws
   Let v.Pan = pan
   Let v.Scale = scale
+  Let v.Depth = depth
   Dim l As Integer
-  For l = 0 To MAX_LAYERS - 1
+  For l = 0 To v.depth - 1
   	  Let v.Layers(l).Buffer = _NewImage(size.x * scale, size.y * scale, SPRITE_MODE%)
   	  _ClearColor COLOR_TRANSPARENT, v.Layers(l).Buffer
   Next
@@ -226,8 +227,8 @@ End Sub
 Sub Viewport_Clear (v As Viewport)
     Dim sq As Point, l As Integer
     Point_Set sq, v.Size.x * v.Scale - 1, v.Size.y * v.Scale - 1
-    For l = 0 To MAX_LAYERS - 1
-    	Viewport_Line v, TRUE, P_ORIGIN, sq, v.ScanlineColor, TRUE, TRUE, l
+    For l = 0 To v.Depth - 1
+    	Viewport_Line v, TRUE, P_ORIGIN, sq, COLOR_RED, TRUE, TRUE, l
     Next
     Dim bg_offset As Point
     Point_Set bg_offset, v.BackgroundOffset.x, v.BackgroundOffset.y
@@ -253,7 +254,7 @@ Sub Viewport_Clear (v As Viewport)
         For y = oy - h To v.Size.y - 1 Step h
             Dim p As Point
             Point_Set p, x, y
-            Viewport_PutSpriteSequence v, TRUE, v.Background, p, FALSE, 0
+            Viewport_PutSpriteSequence v, TRUE, v.Background, p, FALSE, 2
         Next
     Next
     
@@ -314,10 +315,11 @@ Sub Viewport_Screen (v as Viewport)
 End Sub
 
 Sub Viewport_Copy (src As Viewport, dst As Viewport, eye As Integer)
-  Dim l As Integer, divergence As Integer
+  Dim l As Integer, divergence As Integer, index As Integer
   For l = 0 To MAX_LAYERS - 1
   	  Let divergence = (l - (MAX_LAYERS \ 2)) * eye
-  	  _PutImage (divergence, 0) - ((src.Size.x * dst.Scale) + divergence, src.Size.y * dst.Scale), src.Layers(l).Buffer, dst.Layers(2).Buffer
+  	  If dst.Depth < src.Depth Then Let index = 0 Else Let index = l
+  	  _PutImage (divergence, 0) - ((src.Size.x * dst.Scale) + divergence, src.Size.y * dst.Scale), src.Layers(l).Buffer, dst.Layers(index).Buffer
   Next
 End Sub
 
@@ -327,13 +329,13 @@ End Sub
 
 Sub Viewport_SetFont (v as Viewport, font As _Unsigned Long)
 	Dim l As Integer
-	For l = 0 To MAX_LAYERS - 1
+	For l = 0 To v.Depth - 1
 		_Font font, v.Layers(l).Buffer
 	Next
 End Sub
 
 Sub Viewport_Display (v As Viewport, eye As Integer)
-	_Dest v.Layers(MAX_LAYERS \ 2).Buffer
+	_Dest v.Layers(0).Buffer
 	If Ticker_IsRunning%(v.FadeInTicker) Then
 		Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 - (255 * v.FadeInTicker.Index / v.FadeInTicker.Length))), BF
 	ElseIf Ticker_IsRunning%(v.FadeOutTicker) Or v.FadeOutTicker.Index > 0 Then

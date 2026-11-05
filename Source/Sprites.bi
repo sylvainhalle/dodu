@@ -197,6 +197,7 @@ Type Viewport
   WorldSize As Point
   Scale As Single
   Layers(MAX_LAYERS) As ViewportLayer
+  Depth As Integer
   Background As SpriteSequence
   BackgroundPanRatio As Point
   BackgroundOffset As Point
@@ -215,12 +216,12 @@ End Type
 '**
 '* Initializes a new viewport with default scale and pan.
 '**
-Declare Sub Viewport_Init_Default (v As Viewport, size As Point, ws As Point)
+Declare Sub Viewport_Init_Default (v As Viewport, size As Point, ws As Point, depth As Integer)
 
 '**
 '* Initializes a new viewport.
 '**
-Declare Sub Viewport_Init (v As Viewport, size As Point, ws As Point, pan As Point, scale As Single)
+Declare Sub Viewport_Init (v As Viewport, size As Point, ws As Point, pan As Point, scale As Single, depth As Integer)
 
 '**
 '* Calculates the physical coordinates of a point in the buffer

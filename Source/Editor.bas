@@ -184,12 +184,12 @@ Let CURRENT_BG = 10
 
 Dim Shared MainScreen As Viewport, ImgBuffer As Viewport
 Dim Shared LevelBuffer As Viewport, PaletteBuffer As Viewport
-Viewport_Init ImgBuffer, SCREEN_DIMS, SCREEN_DIMS, P_ORIGIN, 1
+Viewport_Init ImgBuffer, SCREEN_DIMS, SCREEN_DIMS, P_ORIGIN, 1, 1
 Dim Shared PALETTE_DIMS As Point
 Point_Set PALETTE_DIMS, PALETTE_BOTRIGHT.x - PALETTE_TOPLEFT.x, PALETTE_BOTRIGHT.y - PALETTE_TOPLEFT.y
-Viewport_Init PaletteBuffer, PALETTE_DIMS, PALETTE_DIMS, P_ORIGIN, 1
-Viewport_Init LevelBuffer, LEVEL_DIMS, WORLD_SIZE, P_ORIGIN, 1
-Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, P_ORIGIN, SCALE%
+Viewport_Init PaletteBuffer, PALETTE_DIMS, PALETTE_DIMS, P_ORIGIN, 1, 1
+Viewport_Init LevelBuffer, LEVEL_DIMS, WORLD_SIZE, P_ORIGIN, 1, 1
+Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, P_ORIGIN, SCALE%, 1
 Let MainScreen.Scanlines = 1
 Viewport_SetBackground LevelBuffer, Backgrounds(CURRENT_BG), P_UNIT
 
@@ -219,6 +219,8 @@ Let DIRTY = FALSE
 Dim Shared filename As String
 Dim Shared songindex As Integer
 Let songindex = -1
+Dim dummy As String
+Input dummy$
 
 MainLoop
 Cls
@@ -497,14 +499,14 @@ End Function
 Sub DrawTopBar
   Dim p As Point
   Point_Set p, 0, 0
-  Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR(0), p, FALSE, 2
+  Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR(0), p, FALSE, 0
   Point_Set p, SCREEN_DIMS.x - 6, 0
-  Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR(2), p, FALSE, 2
-  Viewport_LineC ImgBuffer, TRUE, 6, 0, SCREEN_DIMS.x - 7, TOPBAR_HEIGHT, COLOR_WHITE, TRUE, TRUE, 2
+  Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR(2), p, FALSE, 0
+  Viewport_LineC ImgBuffer, TRUE, 6, 0, SCREEN_DIMS.x - 7, TOPBAR_HEIGHT, COLOR_WHITE, TRUE, TRUE, 0
   Point_Set p, 5, 5
   BitmapFont_WriteString ImgBuffer, SF_FONT, p, "The Dodu Level Editor " + Chr$(250) + " " + filename, COLOR_BLACK, 2
   Point_Set p, SCREEN_DIMS.x - 20, 1
-  Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR_DODU, p, FALSE, 2
+  Viewport_PutSpriteSequence ImgBuffer, TRUE, GUI_TOPBAR_DODU, p, FALSE, 0
 End Sub
 
 Sub CopyRegion
@@ -666,19 +668,19 @@ End Sub
 
 Sub DrawButton (v As Viewport, p As Point, text As String)
   Dim x As Integer, p2 As Point
-  Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON(0), p, FALSE, 2
+  Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON(0), p, FALSE, 0
   For x = p.x + 3 To p.x + 3 + Len(text) * SF_FONT.Width
     Point_Set p2, x, p.y
-    Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON(1), p2, FALSE, 2
+    Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON(1), p2, FALSE, 0
   Next
   Point_Set p2, p.x + 3 + Len(text) * SF_FONT.Width, p.y
-  Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON(2), p2, FALSE, 2
+  Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON(2), p2, FALSE, 0
   Point_Set p2, p.x + 3, p.y + 3
-  BitmapFont_WriteString v, SF_FONT, p2, text, COLOR_BLACK, 2
+  BitmapFont_WriteString v, SF_FONT, p2, text, COLOR_BLACK, 0
 End Sub
 
 Sub DrawIconButton (v As Viewport, p As Point, icn As SpriteSequence)
-  Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON_ICON, p, FALSE, 2
+  Viewport_PutSpriteSequence v, TRUE, GUI_BUTTON_ICON, p, FALSE, 0
 End Sub
 
 Sub MoveRegion (delta_col As Integer, delta_row As Integer)
@@ -838,28 +840,28 @@ End Sub
 
 Sub DrawPalette
   Viewport_Clear PaletteBuffer
-  Viewport_Line PaletteBuffer, TRUE, P_ORIGIN, PALETTE_DIMS, COLOR_BG&, TRUE, TRUE, 2
+  Viewport_Line PaletteBuffer, TRUE, P_ORIGIN, PALETTE_DIMS, COLOR_BG&, TRUE, TRUE, 0
   Dim p As Point, i As Integer, x As Integer, y As Integer
   'Buttons
   For i = 0 To 16
     Let x = 2 + (i Mod 2) * GUI_ICON_BUTTON_SIZE.x
     Let y = (i \ 2) * GUI_ICON_BUTTON_SIZE.y
     Point_Set p, x, y
-    Viewport_PutSpriteSequence PaletteBuffer, TRUE, GUI_BUTTON_ICON, p, FALSE, 2
+    Viewport_PutSpriteSequence PaletteBuffer, TRUE, GUI_BUTTON_ICON, p, FALSE, 0
     Point_Set p, x + 2, y + 2
-    Viewport_PutSpriteSequence PaletteBuffer, TRUE, SPR_MINIMAP(PALETTE_BUTTONS(i)), p, FALSE, 2
+    Viewport_PutSpriteSequence PaletteBuffer, TRUE, SPR_MINIMAP(PALETTE_BUTTONS(i)), p, FALSE, 0
   Next
   For i = 0 To 16
     If i = selection Then
       Let x = 2 + (i Mod 2) * GUI_ICON_BUTTON_SIZE.x
       Let y = (i \ 2) * GUI_ICON_BUTTON_SIZE.y
-      Viewport_LineC PaletteBuffer, TRUE, x, y, x + GUI_ICON_BUTTON_SIZE.x, y + GUI_ICON_BUTTON_SIZE.y, COLOR_CURSOR&, TRUE, FALSE, 2
+      Viewport_LineC PaletteBuffer, TRUE, x, y, x + GUI_ICON_BUTTON_SIZE.x, y + GUI_ICON_BUTTON_SIZE.y, COLOR_CURSOR&, TRUE, FALSE, 0
       Exit For
     End If
   Next
   For i = 0 To 3
     Point_Set p, 5, 100 + i * 17
-    Viewport_PutSpriteSequence PaletteBuffer, TRUE, GUI_TOOLBAR(i), p, FALSE, 2
+    Viewport_PutSpriteSequence PaletteBuffer, TRUE, GUI_TOOLBAR(i), p, FALSE, 0
   Next
   'PointSet
   'Viewport_PutSpriteSequence PaletteBuffer, TRUE, ICN_MUSIC, , p, FALSE
@@ -874,8 +876,8 @@ Sub DrawLevel
   Dim col As Integer, row As Integer
   For col = 0 To M_W - 1
     For row = 0 To M_H - 1
-      Viewport_LineC LevelBuffer, FALSE, col * BLOCK_SIZE% - 1, row * BLOCK_SIZE%, col * BLOCK_SIZE% + 1, row * BLOCK_SIZE%, COLOR_GRID&, FALSE, FALSE, 2
-      Viewport_LineC LevelBuffer, FALSE, col * BLOCK_SIZE%, row * BLOCK_SIZE% - 1, col * BLOCK_SIZE%, row * BLOCK_SIZE% + 1, COLOR_GRID&, FALSE, FALSE, 2
+      Viewport_LineC LevelBuffer, FALSE, col * BLOCK_SIZE% - 1, row * BLOCK_SIZE%, col * BLOCK_SIZE% + 1, row * BLOCK_SIZE%, COLOR_GRID&, FALSE, FALSE, 0
+      Viewport_LineC LevelBuffer, FALSE, col * BLOCK_SIZE%, row * BLOCK_SIZE% - 1, col * BLOCK_SIZE%, row * BLOCK_SIZE% + 1, COLOR_GRID&, FALSE, FALSE, 0
     Next
   Next
   For row = M_H - 1 To 0 Step -1
@@ -886,11 +888,11 @@ Sub DrawLevel
       If SPRITE_LEVEL(FALSE, col, row).Content <> -1 Then
         Dim p As Point
         Square_ToPoint s, p
-        Viewport_PutSpriteSequence LevelBuffer, FALSE, SPRITE_LEVEL(FALSE, col, row), p, FALSE, 2
+        Viewport_PutSpriteSequence LevelBuffer, FALSE, SPRITE_LEVEL(FALSE, col, row), p, FALSE, 0
       End If
     Next
   Next
-  Viewport_LineC LevelBuffer, FALSE, _Min(sel_topleft.col, sel_botright.col) * BLOCK_SIZE%, _Min(sel_topleft.row, sel_botright.row) * BLOCK_SIZE%, (_Max(sel_topleft.col, sel_botright.col) + 1) * BLOCK_SIZE% - 1, (_Max(sel_topleft.row, sel_botright.row) + 1) * BLOCK_SIZE% - 1, COLOR_CURSOR&, TRUE, FALSE, 2
+  Viewport_LineC LevelBuffer, FALSE, _Min(sel_topleft.col, sel_botright.col) * BLOCK_SIZE%, _Min(sel_topleft.row, sel_botright.row) * BLOCK_SIZE%, (_Max(sel_topleft.col, sel_botright.col) + 1) * BLOCK_SIZE% - 1, (_Max(sel_topleft.row, sel_botright.row) + 1) * BLOCK_SIZE% - 1, COLOR_CURSOR&, TRUE, FALSE, 0
 End Sub
 
 Sub TickAll
