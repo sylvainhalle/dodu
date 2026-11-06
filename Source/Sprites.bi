@@ -45,6 +45,7 @@ Const IMAGE_MODE% = 257
 ' Stereoscopic flag
 Dim Shared CFG_STEREOSCOPIC As Integer
 Let CFG_STEREOSCOPIC = FALSE
+Const LAYER_DIVERGENCE% = 3
 
 '**
 '** - Point ------------------------------------------------- {{{
@@ -333,7 +334,7 @@ Declare Sub Viewport_FadeOut (v As Viewport, frames As Integer)
 '**
 '* Asks the viewport to wait a number of frames.
 '**
-Declare Sub Viewport_Wait (src As Viewport, dst As Viewport, dur As Single, fps As Integer, eye As Integer)
+Declare Sub Viewport_Wait (src As Viewport, dst As Viewport, dur As Single, fps As Integer)
 
 ' }}}
 

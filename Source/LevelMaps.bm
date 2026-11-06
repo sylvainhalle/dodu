@@ -60,17 +60,6 @@ LevelData:
 ' - last line: "x" to indicate the end of a level; "X" to indicate that
 '   this is the last level
 
-Data 0, -1, 0, 0
-Data 2, 2
-Data 0, 0
-Data "@@@          "
-Data "  $          "
-Data "@ $         @"
-Data "@ $ @ * @   @"
-Data "@!$ @@@@@@  @"
-Data "@@@@@@@@@@@@@"
-Data "x"
-
 ' --- Cut scene: walking
 
 Data 0, -1, 0, 0

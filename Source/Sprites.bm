@@ -59,10 +59,10 @@ End Sub
 '**
 
 Function SpriteSequence_Width% (s As SpriteSequence)
-	if s.Content <> -1 And s.Ticker.Length > 0 Then
+	if s.Content < 0 And s.Ticker.Length > 0 Then
 		Let SpriteSequence_Width% = s.Size.x \ s.Ticker.Length
 	else
-		Let SpriteSequence_Width% = -1
+		Let SpriteSequence_Width% = s.Size.x
 	end if
 End Function
 
@@ -228,23 +228,28 @@ Sub Viewport_Clear (v As Viewport)
     Dim sq As Point, l As Integer
     Point_Set sq, v.Size.x * v.Scale - 1, v.Size.y * v.Scale - 1
     For l = 0 To v.Depth - 1
-    	'Viewport_Line v, TRUE, P_ORIGIN, sq, COLOR_TRANSPARENT, TRUE, TRUE, l
 		_Dest v.Layers(l).Buffer
 		Cls , COLOR_TRANSPARENT
+		_ClearColor COLOR_TRANSPARENT, v.Layers(l).Buffer
     Next
     Dim bg_offset As Point
     Point_Set bg_offset, v.BackgroundOffset.x, v.BackgroundOffset.y
 
     ' Add parallax displacement here, using the actual viewport pan.
     ' For example:
-    Let bg_offset.x = bg_offset.x - v.Pan.x / v.BackgroundPanRatio.x
-    Let bg_offset.y = bg_offset.y - v.Pan.y / v.BackgroundPanRatio.y
+    If v.BackgroundPanRatio.x > 0 Then
+    	Let bg_offset.x = bg_offset.x - v.Pan.x / v.BackgroundPanRatio.x
+    End If
+    If v.BackgroundPanRatio.x > 0 Then
+    	Let bg_offset.y = bg_offset.y - v.Pan.y / v.BackgroundPanRatio.y
+    End If
 
     Dim w As Integer, h As Integer
     Let w = SpriteSequence_Width%(v.Background)
     Let h = v.Background.Size.y
 
     If w <= 0 Or h <= 0 Then Exit Sub
+    'If h <= 0 Then End
 
     ' Normalize offset to one tile.
     Dim ox As Integer, oy As Integer
@@ -320,13 +325,12 @@ Sub Viewport_Copy (src As Viewport, dst As Viewport, eye As Integer)
   Dim l As Integer, divergence As Integer, index As Integer, eye_offset As Integer
   ' Do not needlessly render 2nd eye if stereoscopy is not enabled
   If Not CFG_STEREOSCOPIC Then
-  	  If eye = EYE_RIGHT Then Exit Sub
-  Else
-  	  Let eye = EYE_NONE
+    If eye = EYE_RIGHT Then Exit Sub
+    Let eye = EYE_NONE
   End If
   If eye = EYE_RIGHT Then Let eye_offset = dst.Size.x \ 2
   For l = 0 To src.Depth - 1
-  	  Let divergence = (l - (MAX_LAYERS \ 2)) * (2 * eye)
+  	  Let divergence = (l - (src.Depth \ 2)) * (LAYER_DIVERGENCE * eye)
   	  If dst.Depth < src.Depth Then Let index = 0 Else Let index = l
   	  _PutImage (divergence + (eye_offset * dst.Scale), 0) - ((src.Size.x * dst.Scale) + divergence + (eye_offset * dst.Scale), src.Size.y * dst.Scale), src.Layers(l).Buffer, dst.Layers(index).Buffer
   Next
@@ -369,16 +373,21 @@ Sub Viewport_Display (v As Viewport, eye As Integer)
 	_Display
 End Sub
 
-Sub Viewport_Wait (src As Viewport, dst As Viewport, dur As Single, fps As Integer, eye As Integer)
+Sub Viewport_Wait (src As Viewport, dst As Viewport, dur As Single, fps As Integer)
 	Dim ticks As Integer
 	Let ticks = Ceil%(dur * fps)
 	While ticks > 0
 		_Limit fps
 		Let ticks = ticks - 1
 		Viewport_Tick src
-		Viewport_Copy src, dst, eye
+		If CFG_STEREOSCOPIC Then
+			Viewport_Copy src, dst, EYE_LEFT
+			Viewport_Copy src, dst, EYE_RIGHT
+		Else
+			Viewport_Copy src, dst, EYE_NONE
+		End If
 		Viewport_Tick dst
-		Viewport_Display dst, eye
+		Viewport_Display dst, EYE_NONE
 	Wend
 End Sub
 
@@ -409,7 +418,7 @@ Sub Viewport_PutViewport (dst As Viewport, absolute As Integer, src As Viewport,
 	Let s_h = p2.y - p1.y
 	Dim l As Integer, divergence As Integer
 	  For l = 0 To src.Depth - 1
-		  Let divergence = (l - (MAX_LAYERS \ 2)) * (2 * eye)
+		  Let divergence = (l - (src.Depth \ 2)) * (LAYER_DIVERGENCE * eye)
 	  	If dst.Depth < src.Depth Then Let index = 0 Else Let index = l
 		  	If absolute Then
 				_PutImage (p.x + divergence, p.y )-(p.x + divergence  + s_w - 1, p.y  + s_h - 1), src.Layers(l).Buffer, dst.Layers(index).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
