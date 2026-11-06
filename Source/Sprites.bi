@@ -42,6 +42,10 @@ Const SPRITE_MODE% = 32
 ' Mode when loading sprites (257 = paletted) 
 Const IMAGE_MODE% = 257
 
+' Stereoscopic flag
+Dim Shared CFG_STEREOSCOPIC As Integer
+Let CFG_STEREOSCOPIC = FALSE
+
 '**
 '** - Point ------------------------------------------------- {{{
 '**

@@ -317,13 +317,18 @@ Sub Viewport_Screen (v as Viewport)
 End Sub
 
 Sub Viewport_Copy (src As Viewport, dst As Viewport, eye As Integer)
-  Dim l As Integer, divergence As Integer, index As Integer
-_ClearColor COLOR_TRANSPARENT, src.Layers(1).Buffer
-_ClearColor COLOR_TRANSPARENT, src.Layers(2).Buffer
+  Dim l As Integer, divergence As Integer, index As Integer, eye_offset As Integer
+  ' Do not needlessly render 2nd eye if stereoscopy is not enabled
+  If Not CFG_STEREOSCOPIC Then
+  	  If eye = EYE_RIGHT Then Exit Sub
+  Else
+  	  Let eye = EYE_NONE
+  End If
+  If eye = EYE_RIGHT Then Let eye_offset = dst.Size.x \ 2
   For l = 0 To src.Depth - 1
-  	  Let divergence = (l - (MAX_LAYERS \ 2)) * eye
+  	  Let divergence = (l - (MAX_LAYERS \ 2)) * (2 * eye)
   	  If dst.Depth < src.Depth Then Let index = 0 Else Let index = l
-  	  _PutImage (divergence, 0) - ((src.Size.x * dst.Scale) + divergence, src.Size.y * dst.Scale), src.Layers(l).Buffer, dst.Layers(index).Buffer
+  	  _PutImage (divergence + (eye_offset * dst.Scale), 0) - ((src.Size.x * dst.Scale) + divergence + (eye_offset * dst.Scale), src.Size.y * dst.Scale), src.Layers(l).Buffer, dst.Layers(index).Buffer
   Next
 End Sub
 
@@ -340,6 +345,7 @@ End Sub
 
 Sub Viewport_Display (v As Viewport, eye As Integer)
 	_Dest v.Layers(0).Buffer
+	Dim eye_offset As Integer
 	If Ticker_IsRunning%(v.FadeInTicker) Then
 		Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 - (255 * v.FadeInTicker.Index / v.FadeInTicker.Length))), BF
 	ElseIf Ticker_IsRunning%(v.FadeOutTicker) Or v.FadeOutTicker.Index > 0 Then
@@ -403,7 +409,7 @@ Sub Viewport_PutViewport (dst As Viewport, absolute As Integer, src As Viewport,
 	Let s_h = p2.y - p1.y
 	Dim l As Integer, divergence As Integer
 	  For l = 0 To src.Depth - 1
-		  Let divergence = (l - (MAX_LAYERS \ 2)) * eye
+		  Let divergence = (l - (MAX_LAYERS \ 2)) * (2 * eye)
 	  	If dst.Depth < src.Depth Then Let index = 0 Else Let index = l
 		  	If absolute Then
 				_PutImage (p.x + divergence, p.y )-(p.x + divergence  + s_w - 1, p.y  + s_h - 1), src.Layers(l).Buffer, dst.Layers(index).Buffer, (p1.x, p1.y)-(p2.x, p2.y)

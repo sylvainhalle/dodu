@@ -35,7 +35,8 @@ Dim dummy As String
 ' Screen dimensions
 Dim Shared SCREEN_DIMS As Point
 Point_Set SCREEN_DIMS, 80, 64
-'Point_Set SCREEN_DIMS, 160, 128
+Dim Shared SCREEN_ACTUAL_DIMS As Point
+Point_Set SCREEN_ACTUAL_DIMS, SCREEN_DIMS.x, SCREEN_DIMS.y
 
 ' Frame rate
 Const FPS% = 25
@@ -121,6 +122,18 @@ Let LAST_TUQUE = FALSE
 Let LAST_MITTENS = FALSE
 
 ' --------------------------
+' Depth settings
+' --------------------------
+Const IMG_DEPTH% = 3
+Const DEPTH_BACKGROUND% = 0
+Const DEPTH_POLE% = 1
+Const DEPTH_ROPE% = 1
+Const DEPTH_WATER% = 1
+Const DEPTH_PLAYER% = 2
+Const DEPTH_LEVEL% = 2
+Const DEPTH_CONTROLS% = 2
+
+' --------------------------
 ' Command line arguments
 ' --------------------------
 ' Video modes
@@ -138,11 +151,6 @@ Let Dodu.IsClimbing = 0
 Let Dodu.Temp = 10
 Let Dodu.HasMittens = FALSE
 Let Dodu.HasTuque = FALSE
-
-Dim Shared CFG_STEREOSCOPIC As Integer
-Let CFG_STEREOSCOPIC = FALSE
-
-Const IMG_DEPTH = 3
 
 Dim argc As Integer, toset As String
 For argc = 1 To _CommandCount
@@ -171,6 +179,7 @@ For argc = 1 To _CommandCount
       Let toset = "height"
     Case "--stereo"
       Let CFG_STEREOSCOPIC = TRUE
+      Point_Set SCREEN_ACTUAL_DIMS, SCREEN_DIMS.x * 2, SCREEN_DIMS.y
     Case Else
       Select Case toset
         Case "level"
@@ -235,14 +244,14 @@ Dim Shared CurrentSprite(3) As SpriteSequence
 Dim Shared parallax As Point
 Point_Set parallax, 2, 2
 
-Dim Shared SPRITE_LEVEL(2, M_W, M_H) As SpriteSequence
+Dim Shared SPRITE_LEVEL(IMG_DEPTH%, M_W, M_H) As SpriteSequence
 
 LoadPasswords
 MainLoop
 
 Sub MainLoop
   Do
-    Viewport_Init MainScreen, SCREEN_DIMS, P_ORIGIN, SCREEN_DIMS, SCALE, 1
+    Viewport_Init MainScreen, SCREEN_ACTUAL_DIMS, P_ORIGIN, SCREEN_ACTUAL_DIMS, SCALE, 1
     Let MainScreen.ScanlineWidth = SCANLINE_WIDTH
     Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS, IMG_DEPTH
     Dim rst As RestorePoint
@@ -348,10 +357,9 @@ Sub DoLevel
   _Dest MainScreen.Layers(0).Buffer
   Cls
   DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), FALSE
-  DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), TRUE
   Viewport_SetCenter ImgBuffer, target_p
-  DrawThermometer ImgBuffer, IMG_DEPTH - 1
-  DrawLevelNumber ImgBuffer, IMG_DEPTH - 1
+  DrawThermometer ImgBuffer, DEPTH_CONTROLS%
+  DrawLevelNumber ImgBuffer, DEPTH_CONTROLS%
   Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
   'Viewport_Wait ImgBuffer, MainScreen, 0.8, FPS%
   Viewport_ScrollCenter ImgBuffer, center, INIT_SCROLL_DURATION% * FPS%
@@ -361,10 +369,11 @@ Sub DoLevel
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), FALSE
     DrawPlayer ImgBuffer, CurrentSprite()
     DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), TRUE
-    DrawThermometer ImgBuffer, IMG_DEPTH - 1
-    DrawLevelNumber ImgBuffer, IMG_DEPTH - 1
+    DrawThermometer ImgBuffer, DEPTH_CONTROLS%
+    DrawLevelNumber ImgBuffer, DEPTH_CONTROLS%
     Viewport_Tick ImgBuffer
-    Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
+    Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
+    Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
     Viewport_Tick MainScreen
     Viewport_Display MainScreen, EYE_NONE
     If IsEsc% Or IsEnter% Then
@@ -827,10 +836,8 @@ Sub DoLevel
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
     HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), climbP, COLOR_PINK&
-    'Viewport_Print ImgBuffer, Str$((Dodu.LevPos.y + PLAYER_HEIGHT%) Mod 11) + Str$(hasfallen), P_ORIGIN
-    'Viewport_Print ImgBuffer, Str$(lastClimbIndex) + Str$(lastUnclimbIndex) + Str$(lastFallIndex), P_ORIGIN
-
-    Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
+    Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
+    Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
     Viewport_Display MainScreen, EYE_NONE
     Viewport_Tick ImgBuffer
     Viewport_Tick MainScreen
@@ -855,7 +862,8 @@ Sub DoLifSplash
     _Limit FPS%
     SpriteSequence_Tick LifSplash
     Viewport_PutSpriteSequence ImgBuffer, TRUE, LifSplash, P_ORIGIN, FALSE, 0
-    Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
+    Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
+    Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
     Viewport_Display MainScreen, EYE_NONE
   Loop Until SpriteSequence_IsFinished(LifSplash)
   Viewport_Wait ImgBuffer, MainScreen, 2, FPS%, 0
@@ -891,7 +899,8 @@ Sub DoCutScene (nb As Integer)
   Viewport_Reset MainScreen
   Viewport_SetBackground ImgBuffer, CutScenes(nb), PT_UNIT
   Viewport_Clear ImgBuffer
-  Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
+  Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
+  Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
 
   '_PrintMode _KeepBackground , ImgBuffer.Buffer
   Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
@@ -909,7 +918,8 @@ Sub DoCutScene (nb As Integer)
     _Limit FPS%
     Ticker_Tick ps
     Viewport_Tick ImgBuffer
-    Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
+    Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
+    Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
     Viewport_Display MainScreen, EYE_NONE
     If IsEsc% Or IsEnter% Then
       Exit Do
@@ -930,7 +940,8 @@ Sub DoMiniMap
   Viewport_SetBackground MapBuffer, Backgrounds(Levels(CURRENT_LEVEL).Background), P_ORIGIN
   Viewport_Clear MapBuffer
   DrawMinimap MapBuffer, Levels(CURRENT_LEVEL%)
-  Viewport_Copy MapBuffer, MainScreen, EYE_NONE
+  Viewport_Copy MapBuffer, MainScreen, EYE_LEFT
+  Viewport_Copy MapBuffer, MainScreen, EYE_RIGHT
   Viewport_Display MainScreen, EYE_NONE
 
   ' Wait until key is released
@@ -1009,17 +1020,19 @@ End Sub
 ' --------------------------
 Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
 
-  Dim col, row As Integer
-  For row = m.Height To 0 Step -1
-    For col = 0 To m.Width
-      Dim s As Square
-      Let s.col = col
-      Let s.row = row
-      If SPRITE_LEVEL(Abs(isfront), col, row).Content <> -1 Then
-        Dim p As Point
-        Square_ToPoint s, p
-        Viewport_PutSpriteSequence v, FALSE, SPRITE_LEVEL(Abs(isfront), col, row), p, FALSE, 0
-      End If
+  Dim col, row As Integer, layer As Integer
+  For layer = 0 To IMG_DEPTH% - 1
+    For row = m.Height To 0 Step -1
+      For col = 0 To m.Width
+        Dim s As Square
+        Let s.col = col
+        Let s.row = row
+        If SPRITE_LEVEL(layer, col, row).Content <> -1 Then
+          Dim p As Point
+          Square_ToPoint s, p
+          Viewport_PutSpriteSequence v, FALSE, SPRITE_LEVEL(layer, col, row), p, FALSE, layer
+        End If
+      Next
     Next
   Next
 End Sub
@@ -1032,11 +1045,11 @@ Sub PrepareSnow (m As LevelMap, col As Integer, row As Integer, front As Integer
   Else
     Select Case GetSnowSlopeAt(col, row, m)
       Case L_SLOPE_C
-        SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SPR_LEVEL(LVL_SNOW_C)
+        SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL% + Abs(front), col, row), SPR_LEVEL(LVL_SNOW_C)
       Case L_SLOPE_L
-        SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SPR_LEVEL(LVL_SNOW_L)
+        SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL% + Abs(front), col, row), SPR_LEVEL(LVL_SNOW_L)
       Case L_SLOPE_R
-        SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SPR_LEVEL(LVL_SNOW_R)
+        SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL% + Abs(front), col, row), SPR_LEVEL(LVL_SNOW_R)
     End Select
   End If
   SpriteSequence_Stop SPRITE_LEVEL(Abs(front), col, row)
@@ -1085,9 +1098,9 @@ End Sub
 ' --------------------------
 Sub DrawPlayer (v As Viewport, seqs() As SpriteSequence)
   Dim s As SpriteSequence
-  Viewport_PutSpriteSequence v, FALSE, seqs(0), Dodu.LevPos, seqs(0).Flipped, 1
-  Viewport_PutSpriteSequence v, FALSE, seqs(1), Dodu.LevPos, seqs(1).Flipped, 1
-  Viewport_PutSpriteSequence v, FALSE, seqs(2), Dodu.LevPos, seqs(2).Flipped, 1
+  Viewport_PutSpriteSequence v, FALSE, seqs(0), Dodu.LevPos, seqs(0).Flipped, DEPTH_PLAYER%
+  Viewport_PutSpriteSequence v, FALSE, seqs(1), Dodu.LevPos, seqs(1).Flipped, DEPTH_PLAYER%
+  Viewport_PutSpriteSequence v, FALSE, seqs(2), Dodu.LevPos, seqs(2).Flipped, DEPTH_PLAYER%
 End Sub
 
 
@@ -1099,21 +1112,21 @@ Sub SetSpriteSquare (m As LevelMap, isfront As Integer, col As Integer, row As I
   If Not isfront Then
     Select Case e
       Case T_BLOCK_B
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_BLOCK_B)
+        SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL%, col, row), SPR_LEVEL(LVL_BLOCK_B)
       Case T_BLOCK_W
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_BLOCK_W)
+        SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL%, col, row), SPR_LEVEL(LVL_BLOCK_W)
       Case T_POLE
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_POLE)
+        SpriteSequence_Copy SPRITE_LEVEL(DEPTH_POLE%, col, row), SPR_LEVEL(LVL_POLE)
       Case T_COOKIE
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_COOKIE)
+        SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL%, col, row), SPR_LEVEL(LVL_COOKIE)
       Case T_COFFEE
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_COFFEE)
+        SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL%, col, row), SPR_LEVEL(LVL_COFFEE)
       Case T_MITTENS
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SprMittens
+        SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL%, col, row), SprMittens
       Case T_TUQUE
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SprTuque
+        SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL%, col, row), SprTuque
       Case T_WATER
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_WATER)
+        SpriteSequence_Copy SPRITE_LEVEL(DEPTH_WATER%, col, row), SPR_LEVEL(LVL_WATER)
       Case T_SNOW
         If Dodu.HasRackets Then
           PrepareSnow m, col, row, FALSE
@@ -1413,7 +1426,8 @@ Sub DoIntroduction (rst As RestorePoint)
       Viewport_LineC ImgBuffer, TRUE, 40, 45, 56, 56, COLOR_HIGHLIGHT2, TRUE, FALSE, 1
     End If
     Viewport_Tick ImgBuffer
-    Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
+    Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
+    Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
     Viewport_Tick MainScreen
     Viewport_Display MainScreen, EYE_NONE
     If IsLeft% Or IsRight% Then
