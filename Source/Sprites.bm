@@ -232,15 +232,31 @@ Sub Viewport_Clear (v As Viewport)
 		Cls , COLOR_TRANSPARENT
 		_ClearColor COLOR_TRANSPARENT, v.Layers(l).Buffer
     Next
-    Dim bg_offset As Point
-    Point_Set bg_offset, v.BackgroundOffset.x, v.BackgroundOffset.y
+    Viewport_DrawBackground v, 0
+End Sub
+
+Sub Viewport_Start (v As Viewport)
+	SpriteSequence_Start v.Background
+	SpriteSequence_Start v.Foreground
+End Sub
+
+Sub Viewport_Reset (v As Viewport)
+	'SpriteSequence_Reset v.Background
+	'SpriteSequence_Reset v.Foreground
+	Ticker_Reset v.FadeInTicker
+	Ticker_Reset v.FadeOutTicker
+End Sub
+
+Sub Viewport_DrawBackground (v As Viewport, divergence As Integer)
+	Dim bg_offset As Point
+    Point_Set bg_offset, v.BackgroundOffset.x + divergence, v.BackgroundOffset.y
 
     ' Add parallax displacement here, using the actual viewport pan.
     ' For example:
     If v.BackgroundPanRatio.x > 0 Then
     	Let bg_offset.x = bg_offset.x - v.Pan.x / v.BackgroundPanRatio.x
     End If
-    If v.BackgroundPanRatio.x > 0 Then
+    If v.BackgroundPanRatio.y > 0 Then
     	Let bg_offset.y = bg_offset.y - v.Pan.y / v.BackgroundPanRatio.y
     End If
 
@@ -249,7 +265,6 @@ Sub Viewport_Clear (v As Viewport)
     Let h = v.Background.Size.y
 
     If w <= 0 Or h <= 0 Then Exit Sub
-    'If h <= 0 Then End
 
     ' Normalize offset to one tile.
     Dim ox As Integer, oy As Integer
@@ -264,21 +279,6 @@ Sub Viewport_Clear (v As Viewport)
             Viewport_PutSpriteSequence v, TRUE, v.Background, p, FALSE, 0
         Next
     Next
-    
-    Ticker_Reset v.FadeInTicker
-    Ticker_Reset v.FadeOutTicker
-End Sub
-
-Sub Viewport_Start (v As Viewport)
-	SpriteSequence_Start v.Background
-	SpriteSequence_Start v.Foreground
-End Sub
-
-Sub Viewport_Reset (v As Viewport)
-	'SpriteSequence_Reset v.Background
-	'SpriteSequence_Reset v.Foreground
-	Ticker_Reset v.FadeInTicker
-	Ticker_Reset v.FadeOutTicker
 End Sub
 
 Sub Viewport_SetBackground (v As Viewport, s As SpriteSequence, ratio As Point)
@@ -328,9 +328,9 @@ Sub Viewport_Copy (src As Viewport, dst As Viewport, eye As Integer)
     If eye = EYE_RIGHT Then Exit Sub
     Let eye = EYE_NONE
   End If
-  If eye = EYE_RIGHT Then Let eye_offset = dst.Size.x \ 2
+  If eye = EYE_RIGHT Then Let eye_offset = dst.Size.x \ 2 + EYE_SEP \ 2
   For l = 0 To src.Depth - 1
-  	  Let divergence = (l - (src.Depth \ 2)) * (LAYER_DIVERGENCE * eye)
+  	  Let divergence = - ((l - src.Depth / 2) * (LAYER_DIVERGENCE * eye) * dst.Scale)
   	  If dst.Depth < src.Depth Then Let index = 0 Else Let index = l
   	  _PutImage (divergence + (eye_offset * dst.Scale), 0) - ((src.Size.x * dst.Scale) + divergence + (eye_offset * dst.Scale), src.Size.y * dst.Scale), src.Layers(l).Buffer, dst.Layers(index).Buffer
   Next
@@ -349,7 +349,6 @@ End Sub
 
 Sub Viewport_Display (v As Viewport, eye As Integer)
 	_Dest v.Layers(0).Buffer
-	Dim eye_offset As Integer
 	If Ticker_IsRunning%(v.FadeInTicker) Then
 		Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 - (255 * v.FadeInTicker.Index / v.FadeInTicker.Length))), BF
 	ElseIf Ticker_IsRunning%(v.FadeOutTicker) Or v.FadeOutTicker.Index > 0 Then
@@ -371,6 +370,11 @@ Sub Viewport_Display (v As Viewport, eye As Integer)
 			Next
 	End Select
 	_Display
+	If CFG_STEREOSCOPIC AND CFG_STEREO_OUTFILE <> "" Then
+		Dim result As Long
+		_SaveImage CFG_STEREO_TEMPFILE, MainScreen.Layers(0).Buffer
+		Let result = rename(_Offset(CFG_STEREO_TEMPFILE_C), _Offset(CFG_STEREO_OUTFILE_C))
+	End If
 End Sub
 
 Sub Viewport_Wait (src As Viewport, dst As Viewport, dur As Single, fps As Integer)
@@ -418,7 +422,7 @@ Sub Viewport_PutViewport (dst As Viewport, absolute As Integer, src As Viewport,
 	Let s_h = p2.y - p1.y
 	Dim l As Integer, divergence As Integer
 	  For l = 0 To src.Depth - 1
-		  Let divergence = (l - (src.Depth \ 2)) * (LAYER_DIVERGENCE * eye)
+		Let divergence = - ((l - src.Depth / 2) * (LAYER_DIVERGENCE * eye) * dst.Scale)
 	  	If dst.Depth < src.Depth Then Let index = 0 Else Let index = l
 		  	If absolute Then
 				_PutImage (p.x + divergence, p.y )-(p.x + divergence  + s_w - 1, p.y  + s_h - 1), src.Layers(l).Buffer, dst.Layers(index).Buffer, (p1.x, p1.y)-(p2.x, p2.y)

@@ -9,7 +9,11 @@ while (ob_get_level()) {
 set_time_limit(0);
 
 while (!connection_aborted()) {
-    $jpeg = file_get_contents('test.jpg');
+    $jpeg = file_get_contents('/dev/shm/dodu.jpg');
+    if ($jpeg === false || substr($jpeg, -2) !== "\xFF\xD9") {
+    error_log("Incomplete JPEG detected");
+    continue;
+    }
 
     echo "--frame\r\n";
     echo "Content-Type: image/jpeg\r\n";

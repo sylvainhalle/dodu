@@ -42,10 +42,15 @@ Const SPRITE_MODE% = 32
 ' Mode when loading sprites (257 = paletted) 
 Const IMAGE_MODE% = 257
 
-' Stereoscopic flag
+' Stereoscopic flags
 Dim Shared CFG_STEREOSCOPIC As Integer
 Let CFG_STEREOSCOPIC = FALSE
-Const LAYER_DIVERGENCE% = 3
+Const LAYER_DIVERGENCE = 0.5
+Const EYE_SEP = 10
+Dim Shared CFG_STEREO_TEMPFILE As String, CFG_STEREO_OUTFILE As String
+Dim Shared CFG_STEREO_TEMPFILE_C As String * 32, CFG_STEREO_OUTFILE_C As String * 32
+Let CFG_STEREO_TEMPFILE = ""
+Let CFG_STEREO_OUTFILE = ""
 
 '**
 '** - Point ------------------------------------------------- {{{

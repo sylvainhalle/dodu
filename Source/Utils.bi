@@ -36,4 +36,16 @@ Declare Function Clamp% (value%, minimum%, maximum%)
 
 Declare Function Array_Contains% (a() As Integer, v As Integer)
 
+Declare CustomType Library
+    Function rename& (ByVal oldpath As _Offset, ByVal newpath As _Offset)
+End Declare
+
+Declare CustomType Library
+    Function __errno_location%& ()
+End Declare
+
+Declare Library
+    Sub perror (message As String)
+End Declare
+
 ' :mode=visualbasic:folding=explicit:wrap=none:

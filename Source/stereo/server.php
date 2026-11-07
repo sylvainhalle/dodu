@@ -19,7 +19,7 @@
   }
 
   img {
-    width: 80vw;
+    width: 70vw;
     height: auto;
     object-fit: contain;
     image-rendering: pixelated;
@@ -27,6 +27,6 @@
 </style>
 </head>
 <body>
-  <img src="test.jpg">
+  <img src="stream.php">
 </body>
 </html>
