@@ -36,6 +36,10 @@ Declare Function Clamp% (value%, minimum%, maximum%)
 
 Declare Function Array_Contains% (a() As Integer, v As Integer)
 
+Declare Function String.Find& (Content As String, Search As String, CountTo As Long)
+
+Declare Function String.Replace$ (content$, from$, to$)
+
 Declare CustomType Library
     Function rename& (ByVal oldpath As _Offset, ByVal newpath As _Offset)
 End Declare

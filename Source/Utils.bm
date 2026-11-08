@@ -72,4 +72,44 @@ Sub DummyWait (secs As Single, units As Integer)
 	Wend
 End Sub
 
+' From https://qb64phoenix.com/forum/showthread.php?tid=3629&pid=34029
+Function String.Find& (Content As String, Search As String, CountTo As Long)
+    'If CountTo is 0, this routine will count the number of instances of the search term inside the content string
+    'If CountTo is >0, this routine will find the position of that instance, if it exists, inside the search string.
+    'For example, CountTo = 2, it'll find the location of the 2nd instance of the search term, skipping the first.
+    If CountTo < 0 _OrElse Search$ = "" Then Exit Function 'Can't find a negative position.
+    Dim As Long p, l, count
+    p = InStr(Content$, Search$)
+    l = Len(Search$)
+    Do While p& > 0
+        count = count + 1
+        If CountTo = count Then String.Find = p: Exit Function
+        p = InStr(p + l, Content$, Search$)
+    Loop
+    If CountTo = 0 Then String.Find = count
+End Function
+
+Function String.Replace$ (content$, from$, to$)
+    'Inspired by the forum post here: https://qb64phoenix.com/forum/showthread...9#pid33559
+    'Original credit goes to mdijkens as I just tweaked it a little to make it a bit more library friendly
+    $Checking:Off
+    If from$ = "" _OrElse content$ = "" Then Exit Function 'can't replace nothing
+    Dim As Long mp, pp, found, flen, tlen, p
+    Dim m As _MEM, content2 As String
+    found = String.Find(content$, from$, 0)
+    flen = Len(from$): tlen = Len(to$)
+
+    m = _MemNew(Len(content$) + (tlen& - flen&) * found): mp = 0: pp = 1
+    p = InStr(content$, from$)
+    Do While p > 0
+        _MemPut m, m.OFFSET + mp, Mid$(content$, pp, p - pp): mp = mp + p - pp
+        _MemPut m, m.OFFSET + mp, to$: mp = mp + tlen: pp = p + flen
+        p = InStr(p + flen, content$, from$)
+    Loop
+    _MemPut m, m.OFFSET + mp, Mid$(content$, pp): mp = mp + Len(Mid$(content$, pp))
+    content2 = Space$(mp): _MemGet m, m.OFFSET, content2: _MemFree m
+    String.Replace$ = content2
+    $Checking:On
+End Function
+
 ' :mode=visualbasic:folding=explicit:wrap=none:

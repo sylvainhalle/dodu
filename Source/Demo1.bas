@@ -41,8 +41,8 @@ Point_Set SCREEN_ACTUAL_DIMS, SCREEN_DIMS.x, SCREEN_DIMS.y
 ' Frame rate
 Const FPS% = 25
 
-' Window scaling  factor
-Const SCALE% = 5
+' Window scaling factor
+Const SCALE% = 2
 
 
 ' Number of frames between ticks of the thermometer
@@ -267,17 +267,18 @@ Sub MainLoop
     Let MainScreen.Scanlines = SCANLINES
     Let MainScreen.ScanlineWidth = SCANLINE_WIDTH
     Let MainScreen.ScanlineColor = SCANLINE_COLOR
-    Viewport_SetBackground ImgBuffer, Backgrounds(0), P_ORIGIN
-    Do
-      _Limit FPS%
-      'Viewport_LineC ImgBuffer, FALSE, 0, 0, 80, 64, COLOR_GREEN, TRUE, TRUE, 0
-      Viewport_LineC ImgBuffer, FALSE, 30, 10, 60, 20, COLOR_YELLOW, TRUE, FALSE, 0
-      Viewport_LineC ImgBuffer, FALSE, 30, 30, 60, 40, COLOR_RED, TRUE, FALSE, 1
-      Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
-      Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
-      Viewport_Display MainScreen, EYE_NONE
-    Loop While InKey$ = ""
-    End
+    'Viewport_SetBackground ImgBuffer, Backgrounds(0), P_ORIGIN
+    'Do
+    '  _Limit FPS%
+    '  Viewport_Clear ImgBuffer
+    '  Viewport_LineC ImgBuffer, FALSE, 0, 0, 80, 64, COLOR_GREEN, TRUE, TRUE, 0
+    '  Viewport_LineC ImgBuffer, FALSE, 30, 10, 60, 20, COLOR_YELLOW, TRUE, FALSE, 0
+    '  Viewport_LineC ImgBuffer, FALSE, 30, 30, 60, 40, COLOR_RED, TRUE, FALSE, 1
+    '  Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
+    '  Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
+    '  Viewport_Display MainScreen, EYE_NONE
+    'Loop While InKey$ = ""
+    'End
     If CFG_SPLASH Then
       DoLifSplash
     End If
@@ -898,14 +899,15 @@ Sub DoGameOver
   'Cls
   Dim pw As Password
   GetPassword pw, CURRENT_LEVEL, LAST_MITTENS, LAST_TUQUE
-  Viewport_PutSpriteSequence ImgBuffer, TRUE, Veil, P_ORIGIN, FALSE, 0
-  Viewport_Print ImgBuffer, "GAME OVER", P_ORIGIN, 0
+  Viewport_PutSpriteSequence ImgBuffer, TRUE, Veil, P_ORIGIN, FALSE, 1
+  Viewport_Print ImgBuffer, "GAME OVER", P_ORIGIN, 2
   Dim x As Integer, pws As String, cardP As Point
   For x = 0 To 3
     Point_Set cardP, 6 + x * 17, 20
     DisplayCard ImgBuffer, TRUE, cardP, pw.Elements(x)
   Next
-  Viewport_Copy ImgBuffer, MainScreen, EYE_NONE
+  Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
+  Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
   Viewport_Display MainScreen, EYE_NONE
   Do
     _Limit FPS%
