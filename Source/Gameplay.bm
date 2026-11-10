@@ -17,55 +17,55 @@
 '-----------------------------------------------------------------------------
 
 Sub TakeBlock (m As LevelMap, p As Square)
-  Let m.Topo(p.col, p.row) = T_NOTHING
-  Let Dodu.HasBlock = TRUE
-  ClearSpriteSquare p
+    Let m.Topo(p.col, p.row) = TILE_NOTHING
+    Let Dodu.HasBlock = TRUE
+    ClearSpriteSquare p
 End Sub
 
 Sub TakeTuque (m As LevelMap, p As Square)
-  Let m.Topo(p.col, p.row) = T_NOTHING
-  Let Dodu.HasTuque = TRUE
-  ClearSpriteSquare p
-  If Not Dodu.HasBlock Then
-    Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL_TUQUE%
-  End If
+    Let m.Topo(p.col, p.row) = TILE_NOTHING
+    Let Dodu.HasTuque = TRUE
+    ClearSpriteSquare p
+    If Not Dodu.HasBlock Then
+        Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL_TUQUE
+    End If
 End Sub
 
 Sub TakeCookie (m As LevelMap, p As Square)
-  Let m.Topo(p.col, p.row) = T_NOTHING
-  ClearSpriteSquare p
-  Let Dodu.Temp = Clamp%(Dodu.Temp + 5, 0, 10)
+    Let m.Topo(p.col, p.row) = TILE_NOTHING
+    ClearSpriteSquare p
+    Let Dodu.Temp = Clamp%(Dodu.Temp + 5, 0, 10)
 End Sub
 
 Sub TakeCoffee (m As LevelMap, p As Square)
-  Let m.Topo(p.col, p.row) = T_NOTHING
-  ClearSpriteSquare p
-  Let Dodu.Temp = Clamp%(Dodu.Temp + 7, 0, 10)
+    Let m.Topo(p.col, p.row) = TILE_NOTHING
+    ClearSpriteSquare p
+    Let Dodu.Temp = Clamp%(Dodu.Temp + 7, 0, 10)
 End Sub
 
 Sub TakeMittens (m As LevelMap, p As Square)
-  Let m.Topo(p.col, p.row) = T_NOTHING
-  ClearSpriteSquare p
-  Let Dodu.HasMittens = TRUE
-  If Dodu.HasBlock Then
-    Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST_MITTENS%
-  End If
+    Let m.Topo(p.col, p.row) = TILE_NOTHING
+    ClearSpriteSquare p
+    Let Dodu.HasMittens = TRUE
+    If Dodu.HasBlock Then
+        Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST_MITTENS
+    End If
 End Sub
 
 Function PlayerChanged (p_now As Player, p_past As Player)
-  Let PlayerChanged = Not (p_now.IsLooking = p_past.IsLooking And p_now.IsPanting = p_past.IsPanting And p_now.HasBlock = p_past.HasBlock And p_now.HasMittens = p_past.HasMittens And p_now.HasTuque = p_past.HasTuque And p_now.IsWalking = p_past.IsWalking And p_past.InSnow = p_now.InSnow)
+    Let PlayerChanged = Not (p_now.IsLooking = p_past.IsLooking And p_now.IsPanting = p_past.IsPanting And p_now.HasBlock = p_past.HasBlock And p_now.HasMittens = p_past.HasMittens And p_now.HasTuque = p_past.HasTuque And p_now.IsWalking = p_past.IsWalking And p_past.InSnow = p_now.InSnow)
 End Function
 
 Sub Player_Reset (p As Player)
-	Let p.Temp = 10
-	Let p.HasBlock = FALSE
-	Let p.IsWalking = FALSE
-	Let p.IsClimbing = FALSE
-	Let p.IsFalling = FALSE
-	Let p.IsPanting = FALSE
-	Let p.IsLooking = FALSE
-	Let p.InSnow = FALSE
-	Ticker_Reset p.ThermoTick
-	Ticker_Reset p.SlipTick
+    Let p.Temp = 10
+    Let p.HasBlock = FALSE
+    Let p.IsWalking = FALSE
+    Let p.IsClimbing = FALSE
+    Let p.IsFalling = FALSE
+    Let p.IsPanting = FALSE
+    Let p.IsLooking = FALSE
+    Let p.InSnow = FALSE
+    Ticker_Reset p.ThermoTick
+    Ticker_Reset p.SlipTick
 End Sub
 ' :mode=visualbasic:folding=explicit:wrap=none:

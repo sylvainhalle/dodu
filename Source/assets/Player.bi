@@ -41,51 +41,51 @@ Const SPR_B_PANTING = 1
 
 ' 1st coordinate: 0 = not walking, 1 = walking
 ' 2nd coordinate: 0 = no tuque, 1 = with tuque
-Dim Shared SPR_DOD_TUQUE(2, 2) As SpriteSequence, TUQUE_OFFSET As Point
-Point_Set TUQUE_OFFSET, 0, -11
-SpriteSequence_InitFile SPR_DOD_TUQUE(0, 0), IMG_DIR$ + "/player/NoTuque.png", 4, 2, FALSE, TRUE, TUQUE_OFFSET, TUQUE_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_TUQUE(0, 1), IMG_DIR$ + "/player/Tuque.png", 4, 2, FALSE, TRUE, TUQUE_OFFSET, TUQUE_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_TUQUE(1, 0), IMG_DIR$ + "/player/NoTuque.png", 4, 2, TRUE, TRUE, TUQUE_OFFSET, TUQUE_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_TUQUE(1, 1), IMG_DIR$ + "/player/Tuque.png", 4, 2, TRUE, TRUE, TUQUE_OFFSET, TUQUE_OFFSET, COLOR_TRANSPARENT
+Dim Shared SprDodTuque(2, 2) As SpriteSequence, TuqueOffset As Point
+Point_Set TuqueOffset, 0, -11
+SpriteSequence_InitFile SprDodTuque(0, 0), ImgDir$ + "/player/NoTuque.png", 4, 2, FALSE, TRUE, TuqueOffset, TuqueOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodTuque(0, 1), ImgDir$ + "/player/Tuque.png", 4, 2, FALSE, TRUE, TuqueOffset, TuqueOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodTuque(1, 0), ImgDir$ + "/player/NoTuque.png", 4, 2, TRUE, TRUE, TuqueOffset, TuqueOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodTuque(1, 1), ImgDir$ + "/player/Tuque.png", 4, 2, TRUE, TRUE, TuqueOffset, TuqueOffset, COLOR_TRANSPARENT
 
 ' 1st coordinate: 0 = not walking, 1 = walking
 ' 2nd coordinate: 0 = normal, 1 = tired, 2 = freezing, 3 = panting
-Dim Shared SPR_DOD_HEAD(2, 6) As SpriteSequence, HEAD_OFFSET As Point
-Point_Set HEAD_OFFSET, 0, 0
-SpriteSequence_InitFile SPR_DOD_HEAD(0, 0), IMG_DIR$ + "/player/Head_idle.png", 15, 3, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_HEAD(0, 1), IMG_DIR$ + "/player/Head_tired.png", 4, 2, FALSE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_HEAD(0, 2), IMG_DIR$ + "/player/Head_freezing.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_HEAD(0, 3), IMG_DIR$ + "/player/Head_panting.png", 2, 10, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_HEAD(0, 4), IMG_DIR$ + "/player/Head_looking_mid.png", 2, 1, FALSE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_HEAD(0, 5), IMG_DIR$ + "/player/Head_looking_up.png", 2, 1, FALSE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_HEAD(1, 0), IMG_DIR$ + "/player/Head.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_HEAD(1, 1), IMG_DIR$ + "/player/Head_tired.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_HEAD(1, 2), IMG_DIR$ + "/player/Head_freezing.png", 4, 2, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_HEAD(1, 3), IMG_DIR$ + "/player/Head_panting.png", 2, 10, TRUE, TRUE, HEAD_OFFSET, HEAD_OFFSET, COLOR_TRANSPARENT
+Dim Shared SprDodHead(2, 6) As SpriteSequence, HeadOffset As Point
+Point_Set HeadOffset, 0, 0
+SpriteSequence_InitFile SprDodHead(0, 0), ImgDir$ + "/player/Head_idle.png", 15, 3, TRUE, TRUE, HeadOffset, HeadOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodHead(0, 1), ImgDir$ + "/player/Head_tired.png", 4, 2, FALSE, TRUE, HeadOffset, HeadOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodHead(0, 2), ImgDir$ + "/player/Head_freezing.png", 4, 2, TRUE, TRUE, HeadOffset, HeadOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodHead(0, 3), ImgDir$ + "/player/Head_panting.png", 2, 10, TRUE, TRUE, HeadOffset, HeadOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodHead(0, 4), ImgDir$ + "/player/Head_looking_mid.png", 2, 1, FALSE, TRUE, HeadOffset, HeadOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodHead(0, 5), ImgDir$ + "/player/Head_looking_up.png", 2, 1, FALSE, TRUE, HeadOffset, HeadOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodHead(1, 0), ImgDir$ + "/player/Head.png", 4, 2, TRUE, TRUE, HeadOffset, HeadOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodHead(1, 1), ImgDir$ + "/player/Head_tired.png", 4, 2, TRUE, TRUE, HeadOffset, HeadOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodHead(1, 2), ImgDir$ + "/player/Head_freezing.png", 4, 2, TRUE, TRUE, HeadOffset, HeadOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodHead(1, 3), ImgDir$ + "/player/Head_panting.png", 2, 10, TRUE, TRUE, HeadOffset, HeadOffset, COLOR_TRANSPARENT
 
 ' 1st coordinate: 0 = not walking, 1 = walking
 ' 2nd coordinate: 0 = no block, 1 = has block
 ' 3rd coordinate: 0 = no mittens, 1 = with mittens
 ' 4th coordinate: 0 = not panting, 1 = panting
-Dim Shared SPR_DOD_BODY(2, 2, 2, 2) As SpriteSequence, BODY_OFFSET_NOBLOCK As Point, BODY_OFFSET_BLOCK As Point
-Point_Set BODY_OFFSET_NOBLOCK, 0, 13
-Point_Set BODY_OFFSET_BLOCK, 0, 12
-SpriteSequence_InitFile SPR_DOD_BODY(0, 0, 0, 0), IMG_DIR$ + "/player/Body_noblock_nomittens.png", 4, 2, FALSE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(0, 1, 0, 0), IMG_DIR$ + "/player/Body_block_nomittens.png", 4,  2, FALSE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(0, 0, 1, 0), IMG_DIR$ + "/player/Body_noblock_mittens.png", 4,  2, FALSE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(0, 1, 1, 0), IMG_DIR$ + "/player/Body_block_mittens.png", 4,  2, FALSE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 0, 0, 0), IMG_DIR$ + "/player/Body_noblock_nomittens.png", 4, 2, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 1, 0, 0), IMG_DIR$ + "/player/Body_block_nomittens.png", 4,  2, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 0, 1, 0), IMG_DIR$ + "/player/Body_noblock_mittens.png", 4,  2, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 1, 1, 0), IMG_DIR$ + "/player/Body_block_mittens.png", 4,  2, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(0, 0, 0, 1), IMG_DIR$ + "/player/Body_noblock_nomittens_panting.png", 2, 10, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(0, 1, 0, 1), IMG_DIR$ + "/player/Body_block_nomittens_panting.png", 2,  10, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(0, 0, 1, 1), IMG_DIR$ + "/player/Body_noblock_mittens_panting.png", 2,  10, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(0, 1, 1, 1), IMG_DIR$ + "/player/Body_block_mittens_panting.png", 2,  10, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 0, 0, 1), IMG_DIR$ + "/player/Body_noblock_nomittens_panting.png", 2, 10, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 1, 0, 1), IMG_DIR$ + "/player/Body_block_nomittens_panting.png", 2,  10, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 0, 1, 1), IMG_DIR$ + "/player/Body_noblock_mittens_panting.png", 2,  10, TRUE, TRUE, BODY_OFFSET_NOBLOCK, BODY_OFFSET_NOBLOCK, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_DOD_BODY(1, 1, 1, 1), IMG_DIR$ + "/player/Body_block_mittens_panting.png", 2,  10, TRUE, TRUE, BODY_OFFSET_BLOCK, BODY_OFFSET_BLOCK, COLOR_TRANSPARENT
+Dim Shared SprDodBody(2, 2, 2, 2) As SpriteSequence, BodyOffsetNoBlock As Point, BodyOffsetBlock As Point
+Point_Set BodyOffsetNoBlock, 0, 13
+Point_Set BodyOffsetBlock, 0, 12
+SpriteSequence_InitFile SprDodBody(0, 0, 0, 0), ImgDir$ + "/player/Body_noblock_nomittens.png", 4, 2, FALSE, TRUE, BodyOffsetNoBlock, BodyOffsetNoBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(0, 1, 0, 0), ImgDir$ + "/player/Body_block_nomittens.png", 4,  2, FALSE, TRUE, BodyOffsetBlock, BodyOffsetBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(0, 0, 1, 0), ImgDir$ + "/player/Body_noblock_mittens.png", 4,  2, FALSE, TRUE, BodyOffsetNoBlock, BodyOffsetNoBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(0, 1, 1, 0), ImgDir$ + "/player/Body_block_mittens.png", 4,  2, FALSE, TRUE, BodyOffsetBlock, BodyOffsetBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(1, 0, 0, 0), ImgDir$ + "/player/Body_noblock_nomittens.png", 4, 2, TRUE, TRUE, BodyOffsetNoBlock, BodyOffsetNoBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(1, 1, 0, 0), ImgDir$ + "/player/Body_block_nomittens.png", 4,  2, TRUE, TRUE, BodyOffsetBlock, BodyOffsetBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(1, 0, 1, 0), ImgDir$ + "/player/Body_noblock_mittens.png", 4,  2, TRUE, TRUE, BodyOffsetNoBlock, BodyOffsetNoBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(1, 1, 1, 0), ImgDir$ + "/player/Body_block_mittens.png", 4,  2, TRUE, TRUE, BodyOffsetBlock, BodyOffsetBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(0, 0, 0, 1), ImgDir$ + "/player/Body_noblock_nomittens_panting.png", 2, 10, TRUE, TRUE, BodyOffsetNoBlock, BodyOffsetNoBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(0, 1, 0, 1), ImgDir$ + "/player/Body_block_nomittens_panting.png", 2,  10, TRUE, TRUE, BodyOffsetBlock, BodyOffsetBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(0, 0, 1, 1), ImgDir$ + "/player/Body_noblock_mittens_panting.png", 2,  10, TRUE, TRUE, BodyOffsetNoBlock, BodyOffsetNoBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(0, 1, 1, 1), ImgDir$ + "/player/Body_block_mittens_panting.png", 2,  10, TRUE, TRUE, BodyOffsetBlock, BodyOffsetBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(1, 0, 0, 1), ImgDir$ + "/player/Body_noblock_nomittens_panting.png", 2, 10, TRUE, TRUE, BodyOffsetNoBlock, BodyOffsetNoBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(1, 1, 0, 1), ImgDir$ + "/player/Body_block_nomittens_panting.png", 2,  10, TRUE, TRUE, BodyOffsetBlock, BodyOffsetBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(1, 0, 1, 1), ImgDir$ + "/player/Body_noblock_mittens_panting.png", 2,  10, TRUE, TRUE, BodyOffsetNoBlock, BodyOffsetNoBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(1, 1, 1, 1), ImgDir$ + "/player/Body_block_mittens_panting.png", 2,  10, TRUE, TRUE, BodyOffsetBlock, BodyOffsetBlock, COLOR_TRANSPARENT
 
 ' Trajectories
 Const TRJ_CLIMBING% = 0
@@ -98,39 +98,38 @@ Const TRJ_PANBACK% = 100
 
 Dim Shared Trajectories(6) As Trajectory
 Dim trj As Trajectory
-Trajectory_Init Trajectories(TRJ_CLIMBING%), 6, 1, FALSE, FALSE
-Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 0, -3, 0
-Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 1, -2, 1
-Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 0, -2, 2
-Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 2, -2, 3
-Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 2, -2, 4
-Trajectory_AddCoords Trajectories(TRJ_CLIMBING%), 1,  0, 5
+Trajectory_Init Trajectories(TRJ_CLIMBING), 6, 1, FALSE, FALSE
+Trajectory_AddCoords Trajectories(TRJ_CLIMBING), 0, -3, 0
+Trajectory_AddCoords Trajectories(TRJ_CLIMBING), 1, -2, 1
+Trajectory_AddCoords Trajectories(TRJ_CLIMBING), 0, -2, 2
+Trajectory_AddCoords Trajectories(TRJ_CLIMBING), 2, -2, 3
+Trajectory_AddCoords Trajectories(TRJ_CLIMBING), 2, -2, 4
+Trajectory_AddCoords Trajectories(TRJ_CLIMBING), 1,  0, 5
 
-Trajectory_Copy Trajectories(TRJ_CLIMBING_SNOW%), Trajectories(TRJ_CLIMBING%)
-Let Trajectories(TRJ_CLIMBING_SNOW%).Ticker.Speed = 4
+Trajectory_Copy Trajectories(TRJ_CLIMBING_SNOW), Trajectories(TRJ_CLIMBING)
+Let Trajectories(TRJ_CLIMBING_SNOW).Ticker.Speed = 4
 
-Trajectory_Init Trajectories(TRJ_UNCLIMBING%), 6, 1, FALSE, FALSE
-Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING%), 1,  0, 0
-Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING%), 1,  0, 1
-Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING%), 0, 1, 2
-Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING%), 0, 2, 3
-Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING%), 0, 3, 4
-Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING%), 0, 5, 5
+Trajectory_Init Trajectories(TRJ_UNCLIMBING), 6, 1, FALSE, FALSE
+Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING), 1,  0, 0
+Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING), 1,  0, 1
+Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING), 0, 1, 2
+Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING), 0, 2, 3
+Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING), 0, 3, 4
+Trajectory_AddCoords Trajectories(TRJ_UNCLIMBING), 0, 5, 5
 
-Trajectory_Init Trajectories(TRJ_FALLING%), 6, 1, FALSE, FALSE
-Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0,  1, 0
-Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0,  1, 1
-Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 1, 2
-Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 2, 3
-Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 2, 4
-Trajectory_AddCoords Trajectories(TRJ_FALLING%), 0, 4, 5
+Trajectory_Init Trajectories(TRJ_FALLING), 6, 1, FALSE, FALSE
+Trajectory_AddCoords Trajectories(TRJ_FALLING), 0,  1, 0
+Trajectory_AddCoords Trajectories(TRJ_FALLING), 0,  1, 1
+Trajectory_AddCoords Trajectories(TRJ_FALLING), 0, 1, 2
+Trajectory_AddCoords Trajectories(TRJ_FALLING), 0, 2, 3
+Trajectory_AddCoords Trajectories(TRJ_FALLING), 0, 2, 4
+Trajectory_AddCoords Trajectories(TRJ_FALLING), 0, 4, 5
 
-Trajectory_Init Trajectories(TRJ_PANTING%), 1, 40, FALSE, FALSE
-Trajectory_AddCoords Trajectories(TRJ_PANTING%), 0,  0, 0
+Trajectory_Init Trajectories(TRJ_PANTING), 1, 40, FALSE, FALSE
+Trajectory_AddCoords Trajectories(TRJ_PANTING), 0,  0, 0
 
-Trajectory_Init Trajectories(TRJ_LOOKING_THERMO%), 1, 12, FALSE, FALSE
-Trajectory_AddCoords Trajectories(TRJ_LOOKING_THERMO%), 0,  0, 0
-
+Trajectory_Init Trajectories(TRJ_LOOKING_THERMO), 1, 12, FALSE, FALSE
+Trajectory_AddCoords Trajectories(TRJ_LOOKING_THERMO), 0,  0, 0
 
 
 ' :mode=visualbasic:

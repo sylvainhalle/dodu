@@ -32,14 +32,14 @@ Declare Sub ClimbableSquare (side As Integer, lp As Point, m As LevelMap, p As S
 Declare Sub TakeableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 
 '**
-'* Determines if a block can be dropped in a square. 
+'* Determines if a block can be dropped in a square.
 '**
-declare Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+Declare Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 
 '**
 '* Determines if a square can be "unclimbed".
 '**
-declare Sub UnclimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+Declare Sub UnclimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 
 '**
 '* Determines if a square can block the player from walking.
@@ -67,10 +67,25 @@ Declare Sub TuqueSquare (side As Integer, lp As Point, m As LevelMap, p As Squar
 Declare Sub CookieSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 
 '**
+'* Determines if a square contains a coffee. Sets p to (-1, -1) if not.
+'**
+Declare Sub CoffeeSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+
+'**
 '* Calculates the square of interaction with the character.
 '**
 Declare Sub FeetSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 
+'**
+'* Determines if the square under the player's feet contains snow. Sets p
+'* to (-1, -1) if not.
+'**
+Declare Sub SnowSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+
+'**
+'* Returns TRUE if the player at level position lp is standing on a block
+'* (checks both feet against the row directly below the player).
+'**
 Declare Function IsOnGround% (lp As Point, m As LevelMap)
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

@@ -17,40 +17,75 @@
 '-----------------------------------------------------------------------------
 
 Type SoundPlayer
-	PlaySong As Integer
-	PlayEffects As Integer
-	CurrentSong As Long
-	Songs(10) As Long
-	Loops(10) As Integer
-	Effects(20) As Long
+    PlaySong As Integer
+    PlayEffects As Integer
+    CurrentSong As Long
+    Songs(10) As Long
+    Loops(10) As Integer
+    Effects(20) As Long
 End Type
 
+'**
+'* Initializes a sound player: songs and effects enabled, every song set
+'* to loop.
+'**
 Declare Sub SoundPlayer_Init (sp As SoundPlayer)
 
+'**
+'* Registers the song handle ptr at slot index, with volume vol (0 to 1).
+'**
 Declare Sub SoundPlayer_AddSong (sp As SoundPlayer, index As Integer, ptr As _Unsigned Long, vol As Single)
 
+'**
+'* Registers the sound effect handle ptr at slot index, with volume vol
+'* (0 to 1).
+'**
 Declare Sub SoundPlayer_AddEffect (sp As SoundPlayer, index As Integer, ptr As _Unsigned Long, vol As Single)
 
+'**
+'* Enables or disables music. Disabling stops the song currently playing.
+'**
 Declare Sub SoundPlayer_SetPlaySong (sp As SoundPlayer, pl As Integer)
 
+'**
+'* Enables or disables sound effects.
+'**
 Declare Sub SoundPlayer_SetPlayEffects (sp As SoundPlayer, pl As Integer)
 
-Declare Sub SoundPlayer_SetSong (sp As SoundPlayer, ref As _Unsigned Long)
-
+'**
+'* Starts the song at slot index (looping or not, according to its setting),
+'* if music is enabled.
+'**
 Declare Sub SoundPlayer_PlaySong (sp As SoundPlayer, index As Integer)
 
+'**
+'* Stops the song currently playing.
+'**
 Declare Sub SoundPlayer_StopSong (sp As SoundPlayer)
 
+'**
+'* Pauses the song currently playing.
+'**
 Declare Sub SoundPlayer_PauseSong (sp As SoundPlayer)
 
+'**
+'* Resumes the song that was paused.
+'**
 Declare Sub SoundPlayer_ResumeSong (sp As SoundPlayer)
 
+'**
+'* Plays the sound effect at slot index, if effects are enabled.
+'**
 Declare Sub SoundPlayer_PlayEffect (sp As SoundPlayer, index As Integer)
 
-Declare Sub SoundPlayer_SetSongVolume (sp As SoundPlayer)
+'**
+'* Sets the volume (0 to 1) of the song currently playing.
+'**
+Declare Sub SoundPlayer_SetSongVolume (sp As SoundPlayer, v As Single)
 
-Declare Sub SoundPlayer_SetSongLoop (sp As SoundPlayer, index As Integer, loop As Boolean)
-
+'**
+'* Returns TRUE if a song is loaded and not paused.
+'**
 Declare Function SoundPlayer_IsPlayingSong% (sp As SoundPlayer)
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

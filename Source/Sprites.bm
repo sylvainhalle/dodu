@@ -20,8 +20,8 @@
 ' Sprite functions
 ' --------------------------
 
-On Error Goto ErrHandler
-Dim Shared ERRFILE As String
+On Error GoTo ErrHandler
+Dim Shared ErrFile As String
 
 ' DependsOn: Ticker
 
@@ -30,26 +30,26 @@ Dim Shared ERRFILE As String
 '**
 
 Sub Point_Set (p As Point, x As Integer, y As Integer)
-  Let p.x = x
-  Let p.y = y
+    Let p.x = x
+    Let p.y = y
 End Sub
 
 Function Point_ToString$ (p As Point)
-  Let Point_ToString$ = "(" + _Trim$(Str$(p.x)) + "," + _Trim$(Str$(p.y)) + ")"
+    Let Point_ToString$ = "(" + _Trim$(Str$(p.x)) + "," + _Trim$(Str$(p.y)) + ")"
 End Function
 
-Sub Point_Scale (p As Point, s as Single)
-	Point_Set p, p.x * s, p.y * s
+Sub Point_Scale (p As Point, s As Single)
+    Point_Set p, p.x * s, p.y * s
 End Sub
 
 Sub Point_Add (p1 As Point, vector As Point)
-	Let p1.x = p1.x + vector.x
-	Let p1.y = p1.y + vector.y
+    Let p1.x = p1.x + vector.x
+    Let p1.y = p1.y + vector.y
 End Sub
 
 Sub Point_Subtract (p1 As Point, vector As Point)
-	Let p1.x = p1.x - vector.x
-	Let p1.y = p1.y - vector.y
+    Let p1.x = p1.x - vector.x
+    Let p1.y = p1.y - vector.y
 End Sub
 
 ' }}}
@@ -59,85 +59,85 @@ End Sub
 '**
 
 Function SpriteSequence_Width% (s As SpriteSequence)
-	if s.Content < 0 And s.Ticker.Length > 0 Then
-		Let SpriteSequence_Width% = s.Size.x \ s.Ticker.Length
-	else
-		Let SpriteSequence_Width% = s.Size.x
-	end if
+    If s.Content < 0 And s.Ticker.Length > 0 Then
+        Let SpriteSequence_Width% = s.Size.x \ s.Ticker.Length
+    Else
+        Let SpriteSequence_Width% = s.Size.x
+    End If
 End Function
 
 Function SpriteSequence_Height% (s As SpriteSequence)
-	Let SpriteSequence_Height% = s.Size.y
+    Let SpriteSequence_Height% = s.Size.y
 End Function
 
 Function SpriteSequence_IsFinished% (s As SpriteSequence)
-	Let SpriteSequence_IsFinished% = Ticker_IsFinished%(s.Ticker)
+    Let SpriteSequence_IsFinished% = Ticker_IsFinished%(s.Ticker)
 End Function
 
 Sub SpriteSequence_Copy (target As SpriteSequence, source As SpriteSequence)
-	Let target.Ticker = source.Ticker
-	Let target.Content = source.Content
-	Let target.Flipped = source.Flipped
-	Let target.OffsetL = source.OffsetL
-	Let target.OffsetR = source.OffsetR
-	Let target.Size = source.Size
-	Let target.Animate = source.Animate
+    Let target.Ticker = source.Ticker
+    Let target.Content = source.Content
+    Let target.Flipped = source.Flipped
+    Let target.OffsetL = source.OffsetL
+    Let target.OffsetR = source.OffsetR
+    Let target.Size = source.Size
+    Let target.Animate = source.Animate
 End Sub
 
 Sub SpriteSequence_InitFile (s As SpriteSequence, filename As String, frames As Integer, spd As Integer, animate As Integer, isloop As Integer, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
-	Print filename
-	Dim e As Long
-	Let e = _LoadImage(filename, SPRITE_MODE%)
-	If e = -1 Then
-		Let ERRFILE = filename
-		Error 97 ' 97 is the user-defined code
-	End If
-	SpriteSequence_Init s, e, frames, spd, animate, isloop, offsetL, offsetR, clr
+    Print filename
+    Dim e As Long
+    Let e = _LoadImage(filename, SPRITE_MODE)
+    If e = -1 Then
+        Let ErrFile = filename
+        Error 97 ' 97 is the user-defined code
+    End If
+    SpriteSequence_Init s, e, frames, spd, animate, isloop, offsetL, offsetR, clr
 End Sub
 
 
 Sub SpriteSequence_Init (s As SpriteSequence, content As Long, frames As Integer, spd As Integer, animate As Integer, isloop As Integer, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
-	If content = -1 Then
-		Let ERRFILE = "FOO"
-		Error 97
-	End If
-	_ClearColor clr, content
-	Ticker_Init s.Ticker, frames, spd, isloop
-	Let s.Animate = animate
-	Let s.Content = content
-	Let s.Size.x = _Width(content)
-	Let s.Size.y = _Height(content)
-	Let s.OffsetL = offsetL
-	Let s.OffsetR = offsetR
-	Let s.Flipped = FALSE
-	Let s.OnEnd = SPSQ_KEEP
+    If content = -1 Then
+        Let ErrFile = "FOO"
+        Error 97
+    End If
+    _ClearColor clr, content
+    Ticker_Init s.Ticker, frames, spd, isloop
+    Let s.Animate = animate
+    Let s.Content = content
+    Let s.Size.x = _Width(content)
+    Let s.Size.y = _Height(content)
+    Let s.OffsetL = offsetL
+    Let s.OffsetR = offsetR
+    Let s.Flipped = FALSE
+    Let s.OnEnd = SPSQ_KEEP
 End Sub
 
 Sub SpriteSequence_Tick (s As SpriteSequence)
-	If s.Animate Then
-		Ticker_Tick s.Ticker
-		If Ticker_IsFinished%(s.Ticker) And s.OnEnd = SPSQ_RESET Then
-			Let s.Ticker.Index = 0
-		End If
-	End If
+    If s.Animate Then
+        Ticker_Tick s.Ticker
+        If Ticker_IsFinished%(s.Ticker) And s.OnEnd = SPSQ_RESET Then
+            Let s.Ticker.Index = 0
+        End If
+    End If
 End Sub
 
 Sub SpriteSequence_Stop (s As SpriteSequence)
-	Ticker_Stop s.Ticker
+    Ticker_Stop s.Ticker
 End Sub
 
 Sub SpriteSequence_Start (s As SpriteSequence)
-	If Not Ticker_IsRunning(s.Ticker) Then
-		Ticker_Reset s.Ticker
-		Ticker_Start s.Ticker
-	End If
+    If Not Ticker_IsRunning(s.Ticker) Then
+        Ticker_Reset s.Ticker
+        Ticker_Start s.Ticker
+    End If
 End Sub
 
-Sub SpriteSequence_Current (s as SpriteSequence, p1 As Point, p2 As Point)
-	Dim ind As Integer
-	Let ind = _Max(0, s.Ticker.Index)
-	Point_Set p1, ind * (s.Size.x \ _Max(1, s.Ticker.Length)), 0
-	Point_Set p2, (ind + 1) * (s.Size.x \ _Max(1, s.Ticker.Length)) - 1, s.Size.y - 1
+Sub SpriteSequence_Current (s As SpriteSequence, p1 As Point, p2 As Point)
+    Dim ind As Integer
+    Let ind = _Max(0, s.Ticker.Index)
+    Point_Set p1, ind * (s.Size.x \ _Max(1, s.Ticker.Length)), 0
+    Point_Set p2, (ind + 1) * (s.Size.x \ _Max(1, s.Ticker.Length)) - 1, s.Size.y - 1
 End Sub
 
 
@@ -146,47 +146,47 @@ End Sub
 '**
 
 Sub Trajectory_Init (t As Trajectory, l As Integer, speed As Integer, flipped As Integer, isloop As Integer)
-	Ticker_Init t.Ticker, l, speed, isloop
-	let t.Flipped = flipped
+    Ticker_Init t.Ticker, l, speed, isloop
+    Let t.Flipped = flipped
 End Sub
 
-Sub Trajectory_AddPoint (t as Trajectory, p As Point, index As Integer)
-	let t.Points(index).x = p.x
-	let t.Points(index).y = p.y
+Sub Trajectory_AddPoint (t As Trajectory, p As Point, index As Integer)
+    Let t.Points(index).x = p.x
+    Let t.Points(index).y = p.y
 End Sub
 
 Sub Trajectory_Copy (dst As Trajectory, src As Trajectory)
-	Dim i As Integer
-	Ticker_Copy dst.Ticker, src.Ticker
-	Let dst.Flipped = src.Flipped
-	For i = 0 To 9
-		Let dst.Points(i).x = src.Points(i).x
-		Let dst.Points(i).y = src.Points(i).y
-	Next
+    Dim i As Integer
+    Ticker_Copy dst.Ticker, src.Ticker
+    Let dst.Flipped = src.Flipped
+    For i = 0 To 9
+        Let dst.Points(i).x = src.Points(i).x
+        Let dst.Points(i).y = src.Points(i).y
+    Next
 End Sub
 
-Sub Trajectory_AddCoords (t As Trajectory, x as Integer, y as Integer, index As Integer)
-	dim p As Point
-	Point_Set p, x, y
-	Trajectory_AddPoint t, p, index
+Sub Trajectory_AddCoords (t As Trajectory, x As Integer, y As Integer, index As Integer)
+    Dim p As Point
+    Point_Set p, x, y
+    Trajectory_AddPoint t, p, index
 End Sub
 
-Sub Trajectory_Tick (t As Trajectory, p as Point)
-	Point_Set p, 0, 0
-	If t.Flipped Then
-		Point_Set p, -t.Points(t.Ticker.Index).x, t.Points(t.Ticker.Index).y
-	Else
-		Point_Set p, t.Points(t.Ticker.Index).x, t.Points(t.Ticker.Index).y
-	End If
-	Ticker_Tick t.Ticker
+Sub Trajectory_Tick (t As Trajectory, p As Point)
+    Point_Set p, 0, 0
+    If t.Flipped Then
+        Point_Set p, -t.Points(t.Ticker.Index).x, t.Points(t.Ticker.Index).y
+    Else
+        Point_Set p, t.Points(t.Ticker.Index).x, t.Points(t.Ticker.Index).y
+    End If
+    Ticker_Tick t.Ticker
 End Sub
 
 Sub Trajectory_Reset (t As Trajectory)
-	Ticker_reset t.Ticker
+    Ticker_reset t.Ticker
 End Sub
 
 Sub Trajectory_Start (t As Trajectory)
-	Ticker_Start t.Ticker
+    Ticker_Start t.Ticker
 End Sub
 
 '**
@@ -194,70 +194,70 @@ End Sub
 '**
 
 Sub Viewport_Init_Default (v As Viewport, size As Point, ws As Point, depth As Integer)
-  Viewport_Init v, size, ws, P_ORIGIN, 1, depth
+    Viewport_Init v, size, ws, PtOrigin, 1, depth
 End Sub
 
 Sub Viewport_Init (v As Viewport, size As Point, ws As Point, pan As Point, scale As Single, depth As Integer)
-  Let v.Size = size
-  Let v.WorldSize = ws
-  Let v.Pan = pan
-  Let v.Scale = scale
-  Let v.Depth = depth
-  Dim l As Integer
-  For l = 0 To v.depth - 1
-  	  Let v.Layers(l).Buffer = _NewImage(size.x * scale, size.y * scale, SPRITE_MODE%)
-  	  _ClearColor COLOR_TRANSPARENT, v.Layers(l).Buffer
-  Next
-  Let v.BackgroundPanRatio.x = -1
-  Let v.BackgroundPanRatio.y = -1
-  Let v.ForegroundPanRatio.x = -1
-  Let v.ForegroundPanRatio.y = -1
-  Let v.Scanlines = SCANLINES_NONE
-  Let v.ScanlineWidth = 1
-  Let v.ScanlineColor = _RGB32(0, 0, 0, 128)
-  Ticker_Stop v.FadeInTicker
-  Ticker_Stop v.FadeOutTicker
+    Let v.Size = size
+    Let v.WorldSize = ws
+    Let v.Pan = pan
+    Let v.Scale = scale
+    Let v.Depth = depth
+    Dim l As Integer
+    For l = 0 To v.depth - 1
+        Let v.Layers(l).Buffer = _NewImage(size.x * scale, size.y * scale, SPRITE_MODE)
+        _ClearColor COLOR_TRANSPARENT, v.Layers(l).Buffer
+    Next
+    Let v.BackgroundPanRatio.x = -1
+    Let v.BackgroundPanRatio.y = -1
+    Let v.ForegroundPanRatio.x = -1
+    Let v.ForegroundPanRatio.y = -1
+    Let v.Scanlines = SCANLINES_NONE
+    Let v.ScanlineWidth = 1
+    Let v.ScanlineColor = _RGB32(0, 0, 0, 128)
+    Ticker_Stop v.FadeInTicker
+    Ticker_Stop v.FadeOutTicker
 End Sub
 
 Sub Viewport_PointToScreen (v As Viewport, p_src As Point, p_dest As Point)
-  Let p_dest.x = p_src.x - v.Pan.x
-  Let p_dest.y = p_src.y - v.Pan.y
+    Let p_dest.x = p_src.x - v.Pan.x
+    Let p_dest.y = p_src.y - v.Pan.y
 End Sub
 
 Sub Viewport_Clear (v As Viewport)
     Dim sq As Point, l As Integer
     Point_Set sq, v.Size.x * v.Scale - 1, v.Size.y * v.Scale - 1
     For l = 0 To v.Depth - 1
-		_Dest v.Layers(l).Buffer
-		Cls , COLOR_TRANSPARENT
-		_ClearColor COLOR_TRANSPARENT, v.Layers(l).Buffer
+        _Dest v.Layers(l).Buffer
+        Cls , COLOR_TRANSPARENT
+        _ClearColor COLOR_TRANSPARENT, v.Layers(l).Buffer
     Next
     Viewport_DrawBackground v, 0
 End Sub
 
 Sub Viewport_Start (v As Viewport)
-	SpriteSequence_Start v.Background
-	SpriteSequence_Start v.Foreground
+    SpriteSequence_Start v.Background
+    SpriteSequence_Start v.Foreground
 End Sub
 
 Sub Viewport_Reset (v As Viewport)
-	'SpriteSequence_Reset v.Background
-	'SpriteSequence_Reset v.Foreground
-	Ticker_Reset v.FadeInTicker
-	Ticker_Reset v.FadeOutTicker
+    'SpriteSequence_Reset v.Background
+    'SpriteSequence_Reset v.Foreground
+    Ticker_Reset v.FadeInTicker
+    Ticker_Reset v.FadeOutTicker
 End Sub
 
 Sub Viewport_DrawBackground (v As Viewport, divergence As Integer)
-	Dim bg_offset As Point
+    Dim bg_offset As Point
     Point_Set bg_offset, v.BackgroundOffset.x + divergence, v.BackgroundOffset.y
 
     ' Add parallax displacement here, using the actual viewport pan.
     ' For example:
     If v.BackgroundPanRatio.x > 0 Then
-    	Let bg_offset.x = bg_offset.x - v.Pan.x / v.BackgroundPanRatio.x
+        Let bg_offset.x = bg_offset.x - v.Pan.x / v.BackgroundPanRatio.x
     End If
     If v.BackgroundPanRatio.y > 0 Then
-    	Let bg_offset.y = bg_offset.y - v.Pan.y / v.BackgroundPanRatio.y
+        Let bg_offset.y = bg_offset.y - v.Pan.y / v.BackgroundPanRatio.y
     End If
 
     Dim w As Integer, h As Integer
@@ -282,217 +282,217 @@ Sub Viewport_DrawBackground (v As Viewport, divergence As Integer)
 End Sub
 
 Sub Viewport_SetBackground (v As Viewport, s As SpriteSequence, ratio As Point)
-	Let v.Background = s
-	Let v.BackgroundPanRatio.x = ratio.x
-	Let v.BackgroundPanRatio.y = ratio.y
+    Let v.Background = s
+    Let v.BackgroundPanRatio.x = ratio.x
+    Let v.BackgroundPanRatio.y = ratio.y
 End Sub
 
 Sub Viewport_SetForeground (v As Viewport, s As SpriteSequence, ratio As Point)
-	Let v.Foreground = s
-	Let v.ForegroundPanRatio.x = ratio.x
-	Let v.ForegroundPanRatio.y = ratio.y
+    Let v.Foreground = s
+    Let v.ForegroundPanRatio.x = ratio.x
+    Let v.ForegroundPanRatio.y = ratio.y
 End Sub
 
 Sub Viewport_LineC (v As Viewport, absolute As Integer, x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer, clr As Long, box As Integer, filled As Integer, layer As Integer)
-  _Dest v.Layers(layer).Buffer
-  Dim p1 As Point, p2 As Point
-  Point_Set p1, x1, y1
-  Point_Set p2, x2, y2
-  If Not absolute Then
-  	  Point_Subtract p1, v.Pan
-  	  Point_Subtract p2, v.Pan
-  End If
-  Point_Scale p1, v.Scale
-  Point_Scale p2, v.Scale
-  If box And filled Then
-	Line (p1.x, p1.y) - (p2.x, p2.y), clr, BF
-  ElseIf box Then
-	Line (p1.x, p1.y) - (p2.x, p2.y), clr, B
-  Else
-	Line (p1.x, p1.y) - (p2.x, p2.y), clr
-  End If
+    _Dest v.Layers(layer).Buffer
+    Dim p1 As Point, p2 As Point
+    Point_Set p1, x1, y1
+    Point_Set p2, x2, y2
+    If Not absolute Then
+        Point_Subtract p1, v.Pan
+        Point_Subtract p2, v.Pan
+    End If
+    Point_Scale p1, v.Scale
+    Point_Scale p2, v.Scale
+    If box And filled Then
+        Line (p1.x, p1.y) - (p2.x, p2.y), clr, BF
+    ElseIf box Then
+        Line (p1.x, p1.y) - (p2.x, p2.y), clr, B
+    Else
+        Line (p1.x, p1.y) - (p2.x, p2.y), clr
+    End If
 End Sub
 
 Sub Viewport_Line (v As Viewport, absolute As Integer, p1 As Point, p2 As Point, clr As Long, box As Integer, filled As Integer, layer As Integer)
-  Viewport_LineC v, absolute, p1.x, p1.y, p2.x, p2.y, clr, box, filled, layer
+    Viewport_LineC v, absolute, p1.x, p1.y, p2.x, p2.y, clr, box, filled, layer
 End Sub
 
-Sub Viewport_Screen (v as Viewport)
-	Screen v.Layers(0).Buffer
+Sub Viewport_Screen (v As Viewport)
+    Screen v.Layers(0).Buffer
 End Sub
 
 Sub Viewport_Copy (src As Viewport, dst As Viewport, eye As Integer)
-  Dim l As Integer, divergence As Integer, index As Integer, eye_offset As Integer
-  ' Do not needlessly render 2nd eye if stereoscopy is not enabled
-  If Not CFG_STEREOSCOPIC Then
-    If eye = EYE_RIGHT Then Exit Sub
-    Let eye = EYE_NONE
-  End If
-  If eye = EYE_RIGHT Then Let eye_offset = dst.Size.x \ 2 + EYE_SEP \ 2
-  For l = 0 To src.Depth - 1
-  	  Let divergence = - ((l - src.Depth / 2) * (LAYER_DIVERGENCE * eye) * dst.Scale)
-  	  If dst.Depth < src.Depth Then Let index = 0 Else Let index = l
-  	  _PutImage (divergence + (eye_offset * dst.Scale), 0) - ((src.Size.x * dst.Scale) + divergence + (eye_offset * dst.Scale), src.Size.y * dst.Scale), src.Layers(l).Buffer, dst.Layers(index).Buffer
-  Next
+    Dim l As Integer, divergence As Integer, index As Integer, eye_offset As Integer
+    ' Do not needlessly render 2nd eye if stereoscopy is not enabled
+    If Not CfgStereoscopic Then
+        If eye = EYE_RIGHT Then Exit Sub
+        Let eye = EYE_NONE
+    End If
+    If eye = EYE_RIGHT Then Let eye_offset = dst.Size.x \ 2 + EYE_SEP \ 2
+    For l = 0 To src.Depth - 1
+        Let divergence = - ((l - src.Depth / 2) * (LAYER_DIVERGENCE * eye) * dst.Scale)
+        If dst.Depth < src.Depth Then Let index = 0 Else Let index = l
+        _PutImage (divergence + (eye_offset * dst.Scale), 0) - ((src.Size.x * dst.Scale) + divergence + (eye_offset * dst.Scale), src.Size.y * dst.Scale), src.Layers(l).Buffer, dst.Layers(index).Buffer
+    Next
 End Sub
 
 Sub Viewport_Print (v As Viewport, s As String, p As Point, layer As Integer)
-  _PrintString (p.x, p.y), s, v.Layers(layer).Buffer
+    _PrintString (p.x, p.y), s, v.Layers(layer).Buffer
 End Sub
 
-Sub Viewport_SetFont (v as Viewport, font As _Unsigned Long)
-	Dim l As Integer
-	For l = 0 To v.Depth - 1
-		_Font font, v.Layers(l).Buffer
-	Next
+Sub Viewport_SetFont (v As Viewport, font As _Unsigned Long)
+    Dim l As Integer
+    For l = 0 To v.Depth - 1
+        _Font font, v.Layers(l).Buffer
+    Next
 End Sub
 
 Sub Viewport_Display (v As Viewport, eye As Integer)
-	_Dest v.Layers(0).Buffer
-	If Ticker_IsRunning%(v.FadeInTicker) Then
-		Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 - (255 * v.FadeInTicker.Index / v.FadeInTicker.Length))), BF
-	ElseIf Ticker_IsRunning%(v.FadeOutTicker) Or v.FadeOutTicker.Index > 0 Then
-		Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 * v.FadeOutTicker.Index / v.FadeOutTicker.Length)), BF
-	End If
-	Dim y As Integer, scolor as Long
-	Let scolor = v.ScanlineColor
-	Select Case v.Scanlines
-		Case SCANLINES_VERT
-			For y = 0 To v.Size.y * v.Scale Step v.Scale
-				Line (0, y)-(v.Size.x * v.Scale, y + v.ScanlineWidth - 1), scolor, BF
-			Next
-		Case SCANLINES_GRID
-			For y = 0 To v.Size.y * v.Scale Step v.Scale
-				Line (0, y)-(v.Size.x * v.Scale, y + v.ScanlineWidth - 1), scolor, BF
-			Next
-			For y = 0 To v.Size.x * v.Scale Step v.Scale
-				Line (y, 0) - (y + v.ScanlineWidth - 1, v.Size.y * v.Scale), scolor, BF
-			Next
-	End Select
-	_Display
-	If CFG_STEREOSCOPIC AND CFG_STEREO_OUTFILE <> "" Then
-		Dim result As Long
-		_SaveImage CFG_STEREO_TEMPFILE, MainScreen.Layers(0).Buffer
-		Let result = rename(_Offset(CFG_STEREO_TEMPFILE_C), _Offset(CFG_STEREO_OUTFILE_C))
-	End If
+    _Dest v.Layers(0).Buffer
+    If Ticker_IsRunning%(v.FadeInTicker) Then
+        Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 - (255 * v.FadeInTicker.Index / v.FadeInTicker.Length))), BF
+    ElseIf Ticker_IsRunning%(v.FadeOutTicker) Or v.FadeOutTicker.Index > 0 Then
+        Line (0, 0)-(v.Size.x * v.Scale, v.Size.y * v.Scale), _RGB32(0, 0, 0, CInt(255 * v.FadeOutTicker.Index / v.FadeOutTicker.Length)), BF
+    End If
+    Dim y As Integer, scolor As Long
+    Let scolor = v.ScanlineColor
+    Select Case v.Scanlines
+        Case SCANLINES_VERT
+            For y = 0 To v.Size.y * v.Scale Step v.Scale
+                Line (0, y)-(v.Size.x * v.Scale, y + v.ScanlineWidth - 1), scolor, BF
+            Next
+        Case SCANLINES_GRID
+            For y = 0 To v.Size.y * v.Scale Step v.Scale
+                Line (0, y)-(v.Size.x * v.Scale, y + v.ScanlineWidth - 1), scolor, BF
+            Next
+            For y = 0 To v.Size.x * v.Scale Step v.Scale
+                Line (y, 0) - (y + v.ScanlineWidth - 1, v.Size.y * v.Scale), scolor, BF
+            Next
+    End Select
+    _Display
+    If CfgStereoscopic And CfgStereoOutfile <> "" Then
+        Dim result As Long
+        _SaveImage CfgStereoTempfile, MainScreen.Layers(0).Buffer
+        Let result = rename(_Offset(CfgStereoTempfileC), _Offset(CfgStereoOutfileC))
+    End If
 End Sub
 
 Sub Viewport_Wait (src As Viewport, dst As Viewport, dur As Single, fps As Integer)
-	Dim ticks As Integer
-	Let ticks = Ceil%(dur * fps)
-	While ticks > 0
-		_Limit fps
-		Let ticks = ticks - 1
-		Viewport_Tick src
-		If CFG_STEREOSCOPIC Then
-			Viewport_Copy src, dst, EYE_LEFT
-			Viewport_Copy src, dst, EYE_RIGHT
-		Else
-			Viewport_Copy src, dst, EYE_NONE
-		End If
-		Viewport_Tick dst
-		Viewport_Display dst, EYE_NONE
-	Wend
+    Dim ticks As Integer
+    Let ticks = Ceil%(dur * fps)
+    While ticks > 0
+        _Limit fps
+        Let ticks = ticks - 1
+        Viewport_Tick src
+        If CfgStereoscopic Then
+            Viewport_Copy src, dst, EYE_LEFT
+            Viewport_Copy src, dst, EYE_RIGHT
+        Else
+            Viewport_Copy src, dst, EYE_NONE
+        End If
+        Viewport_Tick dst
+        Viewport_Display dst, EYE_NONE
+    Wend
 End Sub
 
 Sub Viewport_PutSpriteSequence (v As Viewport, absolute As Integer, s As SpriteSequence, p As Point, flipped As Integer, layer As Integer)
-	Dim p1 As Point, p2 As Point
-	Dim s_w As Integer, s_h As Integer
-	Let s_w = SpriteSequence_Width%(s)
-	Let s_h = SpriteSequence_Height%(s)
-	SpriteSequence_Current s, p1, p2
-	If absolute Then
-		If flipped Then
-		  _PutImage (p.x + s.OffsetR.x + s_w - 1, p.y + s.OffsetR.y)-(p.x + s.OffsetR.x, p.y + s.OffsetR.y + s_h - 1), s.Content, v.Layers(layer).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
-		Else
-		  _PutImage (p.x + s.OffsetL.x, p.y + s.OffsetL.y)-(p.x + s.OffsetL.x + s_w - 1, p.y + s.OffsetL.y + s_h - 1), s.Content, v.Layers(layer).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
-		End If
-	Else
-		If flipped Then
-		  _PutImage (p.x + s.OffsetR.x + s_w - 1 - v.Pan.x, p.y + s.OffsetR.y - v.Pan.y)-(p.x + s.OffsetR.x - v.Pan.x, p.y + s.OffsetR.y + s_h - 1 - v.Pan.y), s.Content, v.Layers(layer).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
-		Else
-		  _PutImage (p.x + s.OffsetL.x - v.Pan.x, p.y + s.OffsetL.y - v.Pan.y)-(p.x + s.OffsetL.x + s_w - 1 - v.Pan.x, p.y + s.OffsetL.y + s_h - 1 - v.Pan.y), s.Content, v.Layers(layer).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
-		End If
+    Dim p1 As Point, p2 As Point
+    Dim s_w As Integer, s_h As Integer
+    Let s_w = SpriteSequence_Width%(s)
+    Let s_h = SpriteSequence_Height%(s)
+    SpriteSequence_Current s, p1, p2
+    If absolute Then
+        If flipped Then
+            _PutImage (p.x + s.OffsetR.x + s_w - 1, p.y + s.OffsetR.y)-(p.x + s.OffsetR.x, p.y + s.OffsetR.y + s_h - 1), s.Content, v.Layers(layer).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+        Else
+            _PutImage (p.x + s.OffsetL.x, p.y + s.OffsetL.y)-(p.x + s.OffsetL.x + s_w - 1, p.y + s.OffsetL.y + s_h - 1), s.Content, v.Layers(layer).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+        End If
+    Else
+        If flipped Then
+            _PutImage (p.x + s.OffsetR.x + s_w - 1 - v.Pan.x, p.y + s.OffsetR.y - v.Pan.y)-(p.x + s.OffsetR.x - v.Pan.x, p.y + s.OffsetR.y + s_h - 1 - v.Pan.y), s.Content, v.Layers(layer).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+        Else
+            _PutImage (p.x + s.OffsetL.x - v.Pan.x, p.y + s.OffsetL.y - v.Pan.y)-(p.x + s.OffsetL.x + s_w - 1 - v.Pan.x, p.y + s.OffsetL.y + s_h - 1 - v.Pan.y), s.Content, v.Layers(layer).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+        End If
     End If
 End Sub
 
 Sub Viewport_PutViewport (dst As Viewport, absolute As Integer, src As Viewport, p As Point, p1 As Point, p2 As Point, eye As Integer)
-	Dim s_w As Integer, s_h As Integer, index As Integer
-	Let s_w = p2.x - p1.x
-	Let s_h = p2.y - p1.y
-	Dim l As Integer, divergence As Integer
-	  For l = 0 To src.Depth - 1
-		Let divergence = - ((l - src.Depth / 2) * (LAYER_DIVERGENCE * eye) * dst.Scale)
-	  	If dst.Depth < src.Depth Then Let index = 0 Else Let index = l
-		  	If absolute Then
-				_PutImage (p.x + divergence, p.y )-(p.x + divergence  + s_w - 1, p.y  + s_h - 1), src.Layers(l).Buffer, dst.Layers(index).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
-			Else
-				_PutImage (p.x  - dst.Pan.x + divergence, p.y  - dst.Pan.y)-(p.x  + s_w - 1 - dst.Pan.x + divergence, p.y  + s_h - 1 - dst.Pan.y), src.Layers(l).Buffer, dst.Layers(index).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
-			End If
-	  Next
+    Dim s_w As Integer, s_h As Integer, index As Integer
+    Let s_w = p2.x - p1.x
+    Let s_h = p2.y - p1.y
+    Dim l As Integer, divergence As Integer
+    For l = 0 To src.Depth - 1
+        Let divergence = - ((l - src.Depth / 2) * (LAYER_DIVERGENCE * eye) * dst.Scale)
+        If dst.Depth < src.Depth Then Let index = 0 Else Let index = l
+        If absolute Then
+            _PutImage (p.x + divergence, p.y )-(p.x + divergence  + s_w - 1, p.y  + s_h - 1), src.Layers(l).Buffer, dst.Layers(index).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+        Else
+            _PutImage (p.x  - dst.Pan.x + divergence, p.y  - dst.Pan.y)-(p.x  + s_w - 1 - dst.Pan.x + divergence, p.y  + s_h - 1 - dst.Pan.y), src.Layers(l).Buffer, dst.Layers(index).Buffer, (p1.x, p1.y)-(p2.x, p2.y)
+        End If
+    Next
 End Sub
 
-Sub Viewport_SetCenter (v as Viewport, p as Point)
-	let v.Pan.x = Clamp%(p.x - v.Size.x \ 2, 0, v.WorldSize.x - v.Size.x)
-	let v.Pan.y = Clamp%(p.y - v.Size.y \ 2, 0, v.WorldSize.y - v.Size.y)
+Sub Viewport_SetCenter (v As Viewport, p As Point)
+    Let v.Pan.x = Clamp%(p.x - v.Size.x \ 2, 0, v.WorldSize.x - v.Size.x)
+    Let v.Pan.y = Clamp%(p.y - v.Size.y \ 2, 0, v.WorldSize.y - v.Size.y)
 End Sub
 
-Sub Viewport_MovePan (v as Viewport, p as Point)
-	Let v.Pan.x = Clamp%(v.Pan.x + p.x, 0, _Max(v.Size.x, v.WorldSize.x - v.Size.x))
-	Let v.Pan.y = Clamp%(v.Pan.y + p.y, 0, _Max(v.Size.y, v.WorldSize.y - v.Size.y))
+Sub Viewport_MovePan (v As Viewport, p As Point)
+    Let v.Pan.x = Clamp%(v.Pan.x + p.x, 0, _Max(v.Size.x, v.WorldSize.x - v.Size.x))
+    Let v.Pan.y = Clamp%(v.Pan.y + p.y, 0, _Max(v.Size.y, v.WorldSize.y - v.Size.y))
 End Sub
 
-Sub Viewport_ScrollPan (v as Viewport, target as Point, nbframes As Integer)
-	Ticker_Init v.PanTick, nbframes, 1, FALSE
-	Point_Set v.PanTarget, target.x, target.y
-	Point_Set v.PanAmount, (target.x - v.Pan.x) \ nbframes, (target.y - v.Pan.y) \ nbframes
+Sub Viewport_ScrollPan (v As Viewport, target As Point, nbframes As Integer)
+    Ticker_Init v.PanTick, nbframes, 1, FALSE
+    Point_Set v.PanTarget, target.x, target.y
+    Point_Set v.PanAmount, (target.x - v.Pan.x) \ nbframes, (target.y - v.Pan.y) \ nbframes
 End Sub
 
 Sub Viewport_ScrollCenter (v As Viewport, p As Point, nbframes As Integer)
-	Dim target As Point
-	let target.x = Clamp%(p.x - v.Size.x \ 2, 0, v.WorldSize.x - v.Size.x)
-	let target.y = Clamp%(p.y - v.Size.y \ 2, 0, v.WorldSize.y - v.Size.y)
-	Viewport_ScrollPan v, target, nbframes
+    Dim target As Point
+    Let target.x = Clamp%(p.x - v.Size.x \ 2, 0, v.WorldSize.x - v.Size.x)
+    Let target.y = Clamp%(p.y - v.Size.y \ 2, 0, v.WorldSize.y - v.Size.y)
+    Viewport_ScrollPan v, target, nbframes
 End Sub
 
-Sub Viewport_StopPan (v as Viewport)
-	Ticker_Stop v.PanTick
+Sub Viewport_StopPan (v As Viewport)
+    Ticker_Stop v.PanTick
 End Sub
 
-Sub Viewport_Tick (v as Viewport)
-	If Ticker_IsRunning%(v.PanTick) Then
-		Dim panamt As Point
-		Point_Set panamt, _Round((v.PanTarget.x - v.Pan.x) / (v.PanTick.Length - v.PanTick.Index)), _Round((v.PanTarget.y - v.Pan.y) / (v.PanTick.Length - v.PanTick.Index))
-		Viewport_MovePan v, panamt
-		Ticker_Tick v.PanTick
-		If Ticker_IsFinished%(v.PanTick) Then
-			Point_Set v.PanTarget, -1, -1
-			Point_Set v.PanAmount, 0, 0
-		End If
-	End If
-	SpriteSequence_Tick v.Background
-	SpriteSequence_Tick v.Foreground
-	Ticker_Tick v.FadeInTicker
-	Ticker_Tick v.FadeOutTicker
+Sub Viewport_Tick (v As Viewport)
+    If Ticker_IsRunning%(v.PanTick) Then
+        Dim panamt As Point
+        Point_Set panamt, _Round((v.PanTarget.x - v.Pan.x) / (v.PanTick.Length - v.PanTick.Index)), _Round((v.PanTarget.y - v.Pan.y) / (v.PanTick.Length - v.PanTick.Index))
+        Viewport_MovePan v, panamt
+        Ticker_Tick v.PanTick
+        If Ticker_IsFinished%(v.PanTick) Then
+            Point_Set v.PanTarget, -1, -1
+            Point_Set v.PanAmount, 0, 0
+        End If
+    End If
+    SpriteSequence_Tick v.Background
+    SpriteSequence_Tick v.Foreground
+    Ticker_Tick v.FadeInTicker
+    Ticker_Tick v.FadeOutTicker
 End Sub
 
 Sub Viewport_FadeIn (v As Viewport, numticks As Integer)
-	Ticker_Stop v.FadeOutTicker
-	Ticker_Reset v.FadeOutTicker
-	Ticker_Init v.FadeInTicker, numticks, 1, FALSE
-	Ticker_Start v.FadeInTicker
+    Ticker_Stop v.FadeOutTicker
+    Ticker_Reset v.FadeOutTicker
+    Ticker_Init v.FadeInTicker, numticks, 1, FALSE
+    Ticker_Start v.FadeInTicker
 End Sub
 
 Sub Viewport_FadeOut (v As Viewport, numticks As Integer)
-	Ticker_Stop v.FadeInTicker
-	Ticker_Reset v.FadeInTicker
-	Ticker_Init v.FadeOutTicker, numticks, 1, FALSE
-	Ticker_Start v.FadeOutTicker
+    Ticker_Stop v.FadeInTicker
+    Ticker_Reset v.FadeInTicker
+    Ticker_Init v.FadeOutTicker, numticks, 1, FALSE
+    Ticker_Start v.FadeOutTicker
 End Sub
 ' }}}
 
 ErrHandler:
-print ERRFILE
+Print ErrFile
 End
 
 

@@ -60,20 +60,20 @@ Const SND_POWERUP% = 11
 Const SND_POWERDOWN% = 12
 Const SND_STEP_SNOW% = 13
 
-SoundPlayer_AddEffect Audio, SND_STEP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step.mid"), 0.4
-SoundPlayer_AddEffect Audio, SND_THERMO%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/thermo.mid"), 1
-SoundPlayer_AddEffect Audio, SND_GRAB%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/grab.mid"), 1
-SoundPlayer_AddEffect Audio, SND_DROP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/drop.mid"), 1
-SoundPlayer_AddEffect Audio, SND_LEVELUP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/levelup.mid"), 0.7
-SoundPlayer_AddEffect Audio, SND_UNDO%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/undo.mid"), 0.7
-SoundPlayer_AddEffect Audio, SND_GAMEOVER%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/gameover.mid"), 0.5
-SoundPlayer_AddEffect Audio, SND_TICK%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/tick.mid"), 0.7
-SoundPlayer_AddEffect Audio, SND_TACK%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/tack.mid"), 0.7
-SoundPlayer_AddEffect Audio, SND_WRONG1%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/wrong.mid"), 1
-SoundPlayer_AddEffect Audio, SND_COOKIE%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cookie.mid"), 1
-SoundPlayer_AddEffect Audio, SND_POWERUP%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/powerup.mid"), 1
-SoundPlayer_AddEffect Audio, SND_POWERDOWN%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/powerdown.mid"), 1
-SoundPlayer_AddEffect Audio, SND_STEP_SNOW%, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step_snow.mid"), 0.4
+SoundPlayer_AddEffect Audio, SND_STEP, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step.mid"), 0.4
+SoundPlayer_AddEffect Audio, SND_THERMO, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/thermo.mid"), 1
+SoundPlayer_AddEffect Audio, SND_GRAB, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/grab.mid"), 1
+SoundPlayer_AddEffect Audio, SND_DROP, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/drop.mid"), 1
+SoundPlayer_AddEffect Audio, SND_LEVELUP, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/levelup.mid"), 0.7
+SoundPlayer_AddEffect Audio, SND_UNDO, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/undo.mid"), 0.7
+SoundPlayer_AddEffect Audio, SND_GAMEOVER, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/gameover.mid"), 0.5
+SoundPlayer_AddEffect Audio, SND_TICK, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/tick.mid"), 0.7
+SoundPlayer_AddEffect Audio, SND_TACK, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/tack.mid"), 0.7
+SoundPlayer_AddEffect Audio, SND_WRONG1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/wrong.mid"), 1
+SoundPlayer_AddEffect Audio, SND_COOKIE, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cookie.mid"), 1
+SoundPlayer_AddEffect Audio, SND_POWERUP, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/powerup.mid"), 1
+SoundPlayer_AddEffect Audio, SND_POWERDOWN, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/powerdown.mid"), 1
+SoundPlayer_AddEffect Audio, SND_STEP_SNOW, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step_snow.mid"), 0.4
 
 '**
 '* Sets the song volume to a low level.

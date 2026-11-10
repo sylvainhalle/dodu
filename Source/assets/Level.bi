@@ -18,70 +18,70 @@
 
 Const LAYER_THERMO% = 2
 
-Dim Shared SPR_LEVEL(20) As SpriteSequence
+Dim Shared SprLevel(20) As SpriteSequence
 
 ' Blocks
-SpriteSequence_InitFile SPR_LEVEL(LVL_BLOCK_B), IMG_DIR$ + "/level/BlockBlue.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LEVEL(LVL_BLOCK_W), IMG_DIR$ + "/level/BlockWhite.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LEVEL(LVL_WATER), IMG_DIR$ + "/level/Water.png",11, 3, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_BLOCK_B), ImgDir$ + "/level/BlockBlue.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_BLOCK_W), ImgDir$ + "/level/BlockWhite.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_WATER), ImgDir$ + "/level/Water.png",11, 3, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 Dim Coffset As Point
 Point_Set Coffset, 0, -14
-SpriteSequence_InitFile SPR_LEVEL(LVL_SNOW_C), IMG_DIR$ + "/level/Snow_C.png",7, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LEVEL(LVL_SNOW_L), IMG_DIR$ + "/level/Snow_L.png",6, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LEVEL(LVL_SNOW_R), IMG_DIR$ + "/level/Snow_R.png",6, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LEVEL(LVL_SNOW_M), IMG_DIR$ + "/level/Snow_M.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LEVEL(LVL_ROPE_M), IMG_DIR$ + "/level/Rope_M.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LEVEL(LVL_ROPE_E), IMG_DIR$ + "/level/Rope_E.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_SNOW_C), ImgDir$ + "/level/Snow_C.png",7, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_SNOW_L), ImgDir$ + "/level/Snow_L.png",6, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_SNOW_R), ImgDir$ + "/level/Snow_R.png",6, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_SNOW_M), ImgDir$ + "/level/Snow_M.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_ROPE_M), ImgDir$ + "/level/Rope_M.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_ROPE_E), ImgDir$ + "/level/Rope_E.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' Goal post
 Dim PoleOffset As Point, PoleOffsetFlip As Point
 Point_Set PoleOffset, 1, -9
 Point_Set PoleOffsetFlip, -1, -9
-SpriteSequence_InitFile SPR_LEVEL(LVL_POLE), IMG_DIR$ + "/level/Pole.png",5, 3, TRUE, TRUE, PoleOffset, PoleOffsetFlip, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_POLE), ImgDir$ + "/level/Pole.png",5, 3, TRUE, TRUE, PoleOffset, PoleOffsetFlip, COLOR_TRANSPARENT
 
 ' Cookie
 Dim CookieOffset As Point
 Point_Set CookieOffset, 2, 2
-SpriteSequence_InitFile SPR_LEVEL(LVL_COOKIE), IMG_DIR$ + "/level/Cookie.png",8, 3, TRUE, TRUE, CookieOffset, CookieOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_COOKIE), ImgDir$ + "/level/Cookie.png",8, 3, TRUE, TRUE, CookieOffset, CookieOffset, COLOR_TRANSPARENT
 
 ' Coffee
 Dim Shared Coffee As SpriteSequence
 Dim CoffeeOffset As Point
 Point_Set CoffeeOffset, 1, 1
-SpriteSequence_InitFile SPR_LEVEL(LVL_COFFEE), IMG_DIR$ + "/level/Coffee.png",4, 3, TRUE, TRUE, CoffeeOffset, CoffeeOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_COFFEE), ImgDir$ + "/level/Coffee.png",4, 3, TRUE, TRUE, CoffeeOffset, CoffeeOffset, COLOR_TRANSPARENT
 
 ' Mittens
 Dim Shared SprMittens As SpriteSequence
 Dim SprMittensOffset As Point
 Point_Set SprMittensOffset, -2, 2
-SpriteSequence_InitFile SPR_LEVEL(LVL_MITTENS), IMG_DIR$ + "/level/Mittens.png",1, 1, TRUE, TRUE, SprMittensOffset, SprMittensOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_MITTENS), ImgDir$ + "/level/Mittens.png",1, 1, TRUE, TRUE, SprMittensOffset, SprMittensOffset, COLOR_TRANSPARENT
 
 ' Tuque
 Dim Shared SprTuque As SpriteSequence
 Dim SprTuqueOffset As Point
 Point_Set SprTuqueOffset, 1, -3
-SpriteSequence_InitFile SPR_LEVEL(LVL_TUQUE), IMG_DIR$ + "/level/Tuque.png",1, 1, TRUE, TRUE, SprTuqueOffset, SprTuqueOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_TUQUE), ImgDir$ + "/level/Tuque.png",1, 1, TRUE, TRUE, SprTuqueOffset, SprTuqueOffset, COLOR_TRANSPARENT
 
 ' Thermometer
-SpriteSequence_InitFile SPR_LEVEL(LVL_THERMO), IMG_DIR$ + "/level/Thermometer.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_THERMO), ImgDir$ + "/level/Thermometer.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' Mark
-SpriteSequence_InitFile SPR_LEVEL(LVL_MARK), IMG_DIR$ + "/level/Mark.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_MARK), ImgDir$ + "/level/Mark.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 
-Dim Shared THERMO_RED&, THERMO_BLUE&, HIGHLIGHT_COLOR&
-If IMG_MODE = IMG_MODE_CGA$ Then
-	Let THERMO_RED& = COLOR_PINK&
-	Let THERMO_BLUE& = COLOR_BLACK&
-	Let HIGHLIGHT_COLOR& = COLOR_BLACK&
-ElseIf IMG_MODE = IMG_MODE_EGA$ Then
-	Let THERMO_RED& = _RGB32(170, 0, 0)
-	Let THERMO_BLUE& = _RGB32(85, 0, 170)
-	Let HIGHLIGHT_COLOR& = COLOR_YELLOW&
+Dim Shared ThermoRed&, ThermoBlue&, HighlightColor&
+If ImgMode = IMG_MODE_CGA Then
+    Let ThermoRed& = COLOR_PINK
+    Let ThermoBlue& = COLOR_BLACK
+    Let HighlightColor& = COLOR_BLACK
+ElseIf ImgMode = IMG_MODE_EGA Then
+    Let ThermoRed& = _RGB32(170, 0, 0)
+    Let ThermoBlue& = _RGB32(85, 0, 170)
+    Let HighlightColor& = COLOR_YELLOW
 Else
-	Let THERMO_RED& = COLOR_BLACK%
-	Let THERMO_BLUE& = COLOR_BLACK%
-	Let HIGHLIGHT_COLOR& = COLOR_BLACK&
+    Let ThermoRed& = COLOR_BLACK
+    Let ThermoBlue& = COLOR_BLACK
+    Let HighlightColor& = COLOR_BLACK
 End If
 
 ' :mode=visualbasic:

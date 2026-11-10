@@ -16,20 +16,28 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
-Dim Shared SPR_LVL_DIGITS(10) As SpriteSequence
-SpriteSequence_InitFile SPR_LVL_DIGITS(0), IMG_DIR$ + "/counter/Dg_0.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LVL_DIGITS(1), IMG_DIR$ + "/counter/Dg_1.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LVL_DIGITS(2), IMG_DIR$ + "/counter/Dg_2.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LVL_DIGITS(3), IMG_DIR$ + "/counter/Dg_3.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LVL_DIGITS(4), IMG_DIR$ + "/counter/Dg_4.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LVL_DIGITS(5), IMG_DIR$ + "/counter/Dg_5.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LVL_DIGITS(6), IMG_DIR$ + "/counter/Dg_6.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LVL_DIGITS(7), IMG_DIR$ + "/counter/Dg_7.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LVL_DIGITS(8), IMG_DIR$ + "/counter/Dg_8.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_LVL_DIGITS(9), IMG_DIR$ + "/counter/Dg_9.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Dim Shared SprLvlDigits(10) As SpriteSequence
+SpriteSequence_InitFile SprLvlDigits(0), ImgDir$ + "/counter/Dg_0.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLvlDigits(1), ImgDir$ + "/counter/Dg_1.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLvlDigits(2), ImgDir$ + "/counter/Dg_2.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLvlDigits(3), ImgDir$ + "/counter/Dg_3.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLvlDigits(4), ImgDir$ + "/counter/Dg_4.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLvlDigits(5), ImgDir$ + "/counter/Dg_5.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLvlDigits(6), ImgDir$ + "/counter/Dg_6.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLvlDigits(7), ImgDir$ + "/counter/Dg_7.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLvlDigits(8), ImgDir$ + "/counter/Dg_8.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLvlDigits(9), ImgDir$ + "/counter/Dg_9.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
+'**
+'* Draws the current level number (one or two digits) at PtLevelNb
+'* on the given layer of the viewport.
+'**
 Declare Sub DrawLevelNumber (v As Viewport, layer As Integer)
 
+'**
+'* Draws a two-digit number n (00-99) at point p on the given layer,
+'* using the level-counter digit sprites.
+'**
 Declare Sub DrawNumber (v As Viewport, p As Point, n As Integer, layer As Integer)
 
 ' :mode=visualbasic:

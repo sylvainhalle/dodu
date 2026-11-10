@@ -20,20 +20,20 @@
 ' Backgrounds
 ' ---------------------
 Dim Shared Backgrounds(11) As SpriteSequence
-SpriteSequence_InitFile Backgrounds(0), IMG_DIR$ + "/backgrounds/Blue_1.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Backgrounds(1), IMG_DIR$ + "/backgrounds/Blue_2.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Backgrounds(2), IMG_DIR$ + "/backgrounds/Cards.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Backgrounds(3), IMG_DIR$ + "/backgrounds/Cyan_1.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Backgrounds(4), IMG_DIR$ + "/backgrounds/Cyan_2.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Backgrounds(5), IMG_DIR$ + "/backgrounds/Snow_1.png", 20, 4, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Backgrounds(6), IMG_DIR$ + "/backgrounds/Pizza_1.png", 1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Backgrounds(7), IMG_DIR$ + "/backgrounds/Pizza_2.png", 1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Backgrounds(8), IMG_DIR$ + "/backgrounds/Digits.png", 22, 14, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Backgrounds(9), IMG_DIR$ + "/backgrounds/Snow_2b.png", 1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile Backgrounds(10), IMG_DIR$ + "/backgrounds/Editor.png", 1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(0), ImgDir$ + "/backgrounds/Blue_1.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(1), ImgDir$ + "/backgrounds/Blue_2.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(2), ImgDir$ + "/backgrounds/Cards.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(3), ImgDir$ + "/backgrounds/Cyan_1.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(4), ImgDir$ + "/backgrounds/Cyan_2.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(5), ImgDir$ + "/backgrounds/Snow_1.png", 20, 4, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(6), ImgDir$ + "/backgrounds/Pizza_1.png", 1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(7), ImgDir$ + "/backgrounds/Pizza_2.png", 1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(8), ImgDir$ + "/backgrounds/Digits.png", 22, 14, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(9), ImgDir$ + "/backgrounds/Snow_2b.png", 1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(10), ImgDir$ + "/backgrounds/Editor.png", 1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 Dim Shared Veil As SpriteSequence
-SpriteSequence_InitFile Veil, IMG_DIR$ + "/backgrounds/Veil.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile Veil, ImgDir$ + "/backgrounds/Veil.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' ---------------------
 ' Foregrounds

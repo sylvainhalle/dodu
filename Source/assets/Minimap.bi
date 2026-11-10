@@ -16,46 +16,46 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
-Dim Shared SPR_MINIMAP(19) As SpriteSequence
+Dim Shared SprMinimap(19) As SpriteSequence
 
 ' Player
-SpriteSequence_InitFile SPR_MINIMAP(LVL_PLAYER), IMG_DIR$ + "/minimap/Player.png", 1,  1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_PLAYER), ImgDir$ + "/minimap/Player.png", 1,  1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' Blocks
-SpriteSequence_InitFile SPR_MINIMAP(LVL_BLOCK_B), IMG_DIR$ + "/minimap/BlockBlue.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_MINIMAP(LVL_BLOCK_W), IMG_DIR$ + "/minimap/BlockWhite.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_MINIMAP(LVL_WATER), IMG_DIR$ + "/minimap/Water.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_MINIMAP(LVL_ROPE_M), IMG_DIR$ + "/minimap/Rope_M.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_MINIMAP(LVL_ROPE_E), IMG_DIR$ + "/minimap/Rope_E.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_BLOCK_B), ImgDir$ + "/minimap/BlockBlue.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_BLOCK_W), ImgDir$ + "/minimap/BlockWhite.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_WATER), ImgDir$ + "/minimap/Water.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_ROPE_M), ImgDir$ + "/minimap/Rope_M.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_ROPE_E), ImgDir$ + "/minimap/Rope_E.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' Pole
 Dim MiniPoleOffset As Point, MiniPoleOffsetFlip As Point
 Point_Set MiniPoleOffset, 1, -2
 Point_Set MiniPoleOffsetFlip, 1, 2
-SpriteSequence_InitFile SPR_MINIMAP(LVL_POLE), IMG_DIR$ + "/minimap/Pole.gif",1, 1, TRUE, TRUE, MiniPoleOffset, MiniPoleOffsetFlip, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_POLE), ImgDir$ + "/minimap/Pole.gif",1, 1, TRUE, TRUE, MiniPoleOffset, MiniPoleOffsetFlip, COLOR_TRANSPARENT
 
 ' Cookie
-SpriteSequence_InitFile SPR_MINIMAP(LVL_COOKIE), IMG_DIR$ + "/minimap/Cookie.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_COOKIE), ImgDir$ + "/minimap/Cookie.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' Coffee
-SpriteSequence_InitFile SPR_MINIMAP(LVL_COFFEE), IMG_DIR$ + "/minimap/Coffee.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_COFFEE), ImgDir$ + "/minimap/Coffee.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' Mittens
-SpriteSequence_InitFile SPR_MINIMAP(LVL_MITTENS), IMG_DIR$ + "/minimap/Mitten.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_MITTENS), ImgDir$ + "/minimap/Mitten.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' Tuque
-SpriteSequence_InitFile SPR_MINIMAP(LVL_TUQUE), IMG_DIR$ + "/minimap/Tuque.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_TUQUE), ImgDir$ + "/minimap/Tuque.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' Snow
-SpriteSequence_InitFile SPR_MINIMAP(LVL_SNOW_C), IMG_DIR$ + "/minimap/Snow_C.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_SNOW_C), ImgDir$ + "/minimap/Snow_C.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' Eraser
-SpriteSequence_InitFile SPR_MINIMAP(LVL_ERASER), IMG_DIR$ + "/minimap/Eraser.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_ERASER), ImgDir$ + "/minimap/Eraser.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' Hand
-SpriteSequence_InitFile SPR_MINIMAP(LVL_HAND), IMG_DIR$ + "/minimap/Hand.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_HAND), ImgDir$ + "/minimap/Hand.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' Mark
-SpriteSequence_InitFile SPR_MINIMAP(LVL_MARK), IMG_DIR$ + "/minimap/Mark.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_MARK), ImgDir$ + "/minimap/Mark.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' :mode=visualbasic:

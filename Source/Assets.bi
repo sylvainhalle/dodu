@@ -40,45 +40,47 @@ Const LVL_ROPE_M = 17
 Const LVL_ROPE_E = 18
 Const LVL_MARK = 19
 
-Declare Sub DrawLevelNumber (v As Viewport, layer As Integer)
-
+'**
+'* Draws the thermometer showing the player's temperature on the given
+'* layer. The mercury flashes blue and red when the temperature is 2 or less.
+'**
 Declare Sub DrawThermometer (v As Viewport, layer As Integer)
 
-Dim Shared COLOR_HIGHLIGHT As Long, COLOR_HIGHLIGHT2 As Long, COLOR_SNOW As Long
-If IMG_MODE$ = IMG_MODE_EGA Then
-	Let COLOR_HIGHLIGHT = COLOR_RED
-	Let COLOR_HIGHLIGHT2 = COLOR_YELLOW
-	Let COLOR_SNOW = COLOR_WHITE
-ElseIf IMG_MODE$ = IMG_MODE_CGA Then
-	Let COLOR_HIGHLIGHT = COLOR_PINK
-	Let COLOR_HIGHLIGHT2 = COLOR_CYAN
-	Let COLOR_SNOW = COLOR_WHITE
-ElseIf IMG_MODE$ = IMG_MODE_HER Then
-	Let COLOR_HIGHLIGHT = COLOR_BLACK
-	Let COLOR_HIGHLIGHT2 = COLOR_BLACK
-	Let COLOR_SNOW = COLOR_WHITE
-ElseIf IMG_MODE$ = IMG_MODE_TI83 Then
-	Let COLOR_HIGHLIGHT = COLOR_BLACK
-	Let COLOR_HIGHLIGHT2 = COLOR_BLACK
-	Let COLOR_SNOW = COLOR_TI83
-ElseIf IMG_MODE$ = IMG_MODE_MCGA Then
-	Let COLOR_HIGHLIGHT = COLOR_GREEN_HI
-	Let COLOR_HIGHLIGHT2 = COLOR_GREEN_MD
-	Let COLOR_SNOW = COLOR_GREEN_HI
+Dim Shared ColorHighlight As Long, ColorHighlight2 As Long, ColorSnow As Long
+If ImgMode$ = IMG_MODE_EGA Then
+    Let ColorHighlight = COLOR_RED
+    Let ColorHighlight2 = COLOR_YELLOW
+    Let ColorSnow = COLOR_WHITE
+ElseIf ImgMode$ = IMG_MODE_CGA Then
+    Let ColorHighlight = COLOR_PINK
+    Let ColorHighlight2 = COLOR_CYAN
+    Let ColorSnow = COLOR_WHITE
+ElseIf ImgMode$ = IMG_MODE_HER Then
+    Let ColorHighlight = COLOR_BLACK
+    Let ColorHighlight2 = COLOR_BLACK
+    Let ColorSnow = COLOR_WHITE
+ElseIf ImgMode$ = IMG_MODE_TI83 Then
+    Let ColorHighlight = COLOR_BLACK
+    Let ColorHighlight2 = COLOR_BLACK
+    Let ColorSnow = COLOR_TI83
+ElseIf ImgMode$ = IMG_MODE_MCGA Then
+    Let ColorHighlight = COLOR_GREEN_HI
+    Let ColorHighlight2 = COLOR_GREEN_MD
+    Let ColorSnow = COLOR_GREEN_HI
 End If
 
-Dim Shared IMG_DIR As String, FNT_DIR As String, SND_DIR As String
-Let IMG_DIR$ = "/home/sylvain/Workspaces/dodu/Source/images/" + IMG_MODE$
-Let FNT_DIR$ = "/home/sylvain/Workspaces/dodu/Source/fonts"
-Let SND_DIR$ = "/home/sylvain/Workspaces/dodu/Source/music"
+Dim Shared ImgDir As String, FntDir As String, SndDir As String
+Let ImgDir$ = "/home/sylvain/Workspaces/dodu/Source/images/" + ImgMode$
+Let FntDir$ = "/home/sylvain/Workspaces/dodu/Source/fonts"
+Let SndDir$ = "/home/sylvain/Workspaces/dodu/Source/music"
 
 
-Dim Shared FNT_TINYC As _Unsigned Long, FNT_GRAPE As _Unsigned Long
-Let FNT_TINYC = _LoadFont(FNT_DIR$ + "/TinyAndChunkyRegular.ttf", 5, "MONOSPACE DONTBLEND")
-Let FNT_GRAPE = _LoadFont(FNT_DIR$ + "/GrapeSoda.ttf", 10, "MONOSPACE DONTBLEND")
+Dim Shared FntTinyC As _Unsigned Long, FntGrape As _Unsigned Long
+Let FntTinyC = _LoadFont(FntDir$ + "/TinyAndChunkyRegular.ttf", 5, "MONOSPACE DONTBLEND")
+Let FntGrape = _LoadFont(FntDir$ + "/GrapeSoda.ttf", 10, "MONOSPACE DONTBLEND")
 
-Dim DEFAULT_OFFSET As Point
-Let DEFAULT_OFFSET = P_ORIGIN
+Dim DefaultOffset As Point
+Let DefaultOffset = PtOrigin
 
 '$Include:'assets/Player.bi'
 
@@ -99,22 +101,22 @@ Let DEFAULT_OFFSET = P_ORIGIN
 
 ' Splash screen
 Dim Shared SplashScreen As SpriteSequence
-If SCREEN_DIMS.x = SCREEN_GAMEBUINO_X% Then
-	SpriteSequence_InitFile SplashScreen, IMG_DIR$ + "/splash/Title.png",15, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+If ScreenDims.x = SCREEN_GAMEBUINO_X Then
+    SpriteSequence_InitFile SplashScreen, ImgDir$ + "/splash/Title.png",15, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 Else
-	SpriteSequence_InitFile SplashScreen, IMG_DIR$ + "/splash/Title_160.png",15, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+    SpriteSequence_InitFile SplashScreen, ImgDir$ + "/splash/Title_160.png",15, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 End If
 
 Dim Shared LifSplash As SpriteSequence
-SpriteSequence_InitFile LifSplash, IMG_DIR$ + "/splash/LIF.png",24, 1, TRUE, FALSE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile LifSplash, ImgDir$ + "/splash/LIF.png",24, 1, TRUE, FALSE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' ---------------------
 ' Cut scenes
 ' ---------------------
 Dim Shared CutScenes(10) As SpriteSequence
-SpriteSequence_InitFile CutScenes(0), IMG_DIR$ + "/cutscenes/Cutscene_0.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile CutScenes(1), IMG_DIR$ + "/cutscenes/Cutscene_1.png",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile CutScenes(2), IMG_DIR$ + "/cutscenes/Cutscene_2.png",4, 3, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile CutScenes(3), IMG_DIR$ + "/cutscenes/Cutscene_3.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile CutScenes(0), ImgDir$ + "/cutscenes/Cutscene_0.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile CutScenes(1), ImgDir$ + "/cutscenes/Cutscene_1.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile CutScenes(2), ImgDir$ + "/cutscenes/Cutscene_2.png",4, 3, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile CutScenes(3), ImgDir$ + "/cutscenes/Cutscene_3.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' :mode=visualbasic:

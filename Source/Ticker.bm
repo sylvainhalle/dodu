@@ -17,60 +17,60 @@
 '-----------------------------------------------------------------------------
 
 Sub Ticker_Init (t As Ticker, l As Integer, speed As Integer, isloop As Integer)
-	let t.Running = TRUE
-	let t.Length = l
-	let t.Speed = speed
-	let t.Loop = isloop
-	let t.TickCnt = 0
-	let t.Index = 0
+    Let t.Running = TRUE
+    Let t.Length = l
+    Let t.Speed = speed
+    Let t.Loop = isloop
+    Let t.TickCnt = 0
+    Let t.Index = 0
 End Sub
 
 Sub Ticker_Tick (t As Ticker)
-	If Not t.Running Then Exit Sub
-	If t.Speed > 0 Then
-		Let t.TickCnt = (t.TickCnt + 1) Mod t.Speed
-		If t.TickCnt = 0 Then
-			Let t.Index = t.Index + 1
-			If t.Index = t.Length Then
-				If t.Loop Then
-					let t.Index = 0
-				Else
-					let t.Running = FALSE
-				End If
-			End If
-		End If
-	End If
+    If Not t.Running Then Exit Sub
+    If t.Speed > 0 Then
+        Let t.TickCnt = (t.TickCnt + 1) Mod t.Speed
+        If t.TickCnt = 0 Then
+            Let t.Index = t.Index + 1
+            If t.Index = t.Length Then
+                If t.Loop Then
+                    Let t.Index = 0
+                Else
+                    Let t.Running = FALSE
+                End If
+            End If
+        End If
+    End If
 End Sub
 
 Sub Ticker_Reset (t As Ticker)
-	let t.TickCnt = 0
-	let t.Index = 0
-	let t.Running = FALSE
+    Let t.TickCnt = 0
+    Let t.Index = 0
+    Let t.Running = FALSE
 End Sub
 
 Sub Ticker_Start (t As Ticker)
-	let t.Running = TRUE
+    Let t.Running = TRUE
 End Sub
 
 Sub Ticker_Stop (t As Ticker)
-	let t.Running = FALSE
+    Let t.Running = FALSE
 End Sub
 
 Sub Ticker_Copy (dst As Ticker, src As Ticker)
-	Let dst.Running = src.Running
-	Let dst.Length = src.Length
-	Let dst.Index = src.Index
-	Let dst.Loop = src.Loop
-	Let dst.Speed = src.Speed
-	Let dst.TickCnt = src.TickCnt
+    Let dst.Running = src.Running
+    Let dst.Length = src.Length
+    Let dst.Index = src.Index
+    Let dst.Loop = src.Loop
+    Let dst.Speed = src.Speed
+    Let dst.TickCnt = src.TickCnt
 End Sub
 
-Function Ticker_IsRunning% (t as Ticker)
-	Let Ticker_IsRunning% = t.Running
+Function Ticker_IsRunning% (t As Ticker)
+    Let Ticker_IsRunning% = t.Running
 End Function
 
-Function Ticker_IsFinished% (t as Ticker)
-	Let Ticker_IsFinished% = Not Ticker_IsRunning%(t)
-End Sub
+Function Ticker_IsFinished% (t As Ticker)
+    Let Ticker_IsFinished% = Not Ticker_IsRunning%(t)
+End Function
 
 ' :mode=visualbasic:

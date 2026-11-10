@@ -21,28 +21,54 @@
 '**
 
 Type Ticker
-	Running As Integer
-	Length As Integer
-	Index As Integer
-	Loop As Integer
-	Speed As Integer
-	TickCnt As Integer
+    Running As Integer
+    Length As Integer
+    Index As Integer
+    Loop As Integer
+    Speed As Integer
+    TickCnt As Integer
 End Type
 
+'**
+'* Initializes and starts a ticker counting l steps, advancing one step
+'* every speed ticks. If isloop is TRUE, it restarts at 0 after the last step.
+'**
 Declare Sub Ticker_Init (t As Ticker, l As Integer, speed As Integer, isloop As Integer)
 
+'**
+'* Advances a running ticker by one tick.
+'**
 Declare Sub Ticker_Tick (t As Ticker)
 
+'**
+'* Rewinds a ticker to step 0 and stops it.
+'**
 Declare Sub Ticker_Reset (t As Ticker)
 
+'**
+'* Starts (or resumes) a ticker.
+'**
 Declare Sub Ticker_Start (t As Ticker)
 
+'**
+'* Stops a ticker on its current step.
+'**
 Declare Sub Ticker_Stop (t As Ticker)
 
+'**
+'* Copies ticker src into dst.
+'**
 Declare Sub Ticker_Copy (dst As Ticker, src As Ticker)
 
+'**
+'* Returns TRUE if the ticker is running.
+'**
 Declare Function Ticker_IsRunning% (t As Ticker)
 
+'**
+'* Returns TRUE if the ticker is stopped (e.g. a non-looping ticker that
+'* reached its last step).
+'**
 Declare Function Ticker_IsFinished% (t As Ticker)
 
 ' :mode=visualbasic:

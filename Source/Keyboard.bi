@@ -21,48 +21,48 @@ Dim Shared DeviceCount As Integer
 Let DeviceCount = _Devices
 
 ' Keys
-Const K_BACKSPACE = 8
-Const K_ENTER = 13
-Const K_ESC = 27
-Const K_SPACE = 32
-Const K_CTRL = 100306
-Const K_ALT = 100308
-Const K_LEFT = 19200
-Const K_RIGHT = 19712
-Const K_UP = 18432
-Const K_DOWN = 20480
-Const K_EQ = 61
-Const K_LT = 60
-Const K_GT = 62
-Const K_LSHIFT = 100304
-Const K_RSHIFT = 100303
-Const K_END = 20224
-Const K_INS = 20992
-Const K_DEL = 21248
+Const KEY_BACKSPACE = 8
+Const KEY_ENTER = 13
+Const KEY_ESC = 27
+Const KEY_SPACE = 32
+Const KEY_CTRL = 100306
+Const KEY_ALT = 100308
+Const KEY_LEFT = 19200
+Const KEY_RIGHT = 19712
+Const KEY_UP = 18432
+Const KEY_DOWN = 20480
+Const KEY_EQ = 61
+Const KEY_LT = 60
+Const KEY_GT = 62
+Const KEY_LSHIFT = 100304
+Const KEY_RSHIFT = 100303
+Const KEY_END = 20224
+Const KEY_INS = 20992
+Const KEY_DEL = 21248
 
-Const K_B_UC = 66
-Const K_B_LC = 98
-Const K_M_UC = 77
-Const K_M_LC = 109
-Const K_S_UC = 53
-Const K_S_LC = 115
+Const KEY_B_UC = 66
+Const KEY_B_LC = 98
+Const KEY_M_UC = 77
+Const KEY_M_LC = 109
+Const KEY_S_UC = 53
+Const KEY_S_LC = 115
 
-Const J_1 = 0
-Const J_2 = 1
-Const J_3 = 2
-Const J_4 = 3
+Const JOY_1 = 0
+Const JOY_2 = 1
+Const JOY_3 = 2
+Const JOY_4 = 3
 
 Type InputEvent
-	Backspace As Integer
-	Esc As Integer
-	SpaceBar As Integer
-	Ctrl As Integer
-	KLeft As Integer
-	KRight As Integer
-	KTop As Integer
-	KBottom As Integer
-	KMUC As Integer
-	KMLC As Integer
+    Backspace As Integer
+    Esc As Integer
+    SpaceBar As Integer
+    Ctrl As Integer
+    KLeft As Integer
+    KRight As Integer
+    KTop As Integer
+    KBottom As Integer
+    KMUC As Integer
+    KMLC As Integer
 End Type
 
 ' This part adapted from
@@ -73,39 +73,95 @@ Const MOUSE_CONTROLLER = 2 '             controller is a mouse
 Const JPAD_CONTROLLER = 3 '              controller is a joystick/game pad
 
 Type TYPE_CONTROLLER '                   CONTROLLER PROPERTIES
-  id As Integer '                      device id number of controller (1 to _DEVICES)
-  Kind As Integer '                    the type of controller         (1, 2, or 3)
-  Buttons As Integer '                 controller buttons
-  Axis As Integer '                    controller Axis
-  Wheels As Integer '                  controller wheels
-  Description As String * 20 '         description of controller
+    id As Integer '                      device id number of controller (1 to _DEVICES)
+    Kind As Integer '                    the type of controller         (1, 2, or 3)
+    Buttons As Integer '                 controller buttons
+    Axis As Integer '                    controller Axis
+    Wheels As Integer '                  controller wheels
+    Description As String * 20 '         description of controller
 End Type
 
 ReDim Shared Controllers(0) As TYPE_CONTROLLER ' controller information array
 
 Type JoystickState
-	Active As _Byte
-	H As Single
-	V As Single
-	Buttons(4) As Long
+    Active As _Byte
+    H As Single
+    V As Single
+    Buttons(4) As Long
 End Type
 
-Dim Shared JOYSTICK As JoystickState
+Dim Shared Joystick As JoystickState
 
-Declare Function In_Down% (k As Integer)
-Declare Function Joy_Down% (k As Integer)
-Declare Function Kbd_Down% (k As Integer)
-Declare Function Is_Button1% (k As Integer)
-Declare Function Is_Button2% (k As Integer)
-Declare Function Is_Left% (k As Integer)
-Declare Function Is_Right% (k As Integer)
-Declare Function Is_Up% (k As Integer)
-Declare Function Is_Down% (k As Integer)
-Declare Function Is_Esc% (k As Integer)
-Declare Function Is_Enter% (k As Integer)
+'**
+'* Returns TRUE if key/button k is pressed on the keyboard or the joystick.
+'* k is a KEY_* code or one of the JOY_1 to JOY_4 button codes.
+'**
+Declare Function In_Down (k As Integer)
 
+'**
+'* Returns TRUE if the joystick state matches k. Arrow KEY_* codes are
+'* mapped to the joystick axes; JOY_1 to JOY_4 to its buttons.
+'**
+Declare Function Joy_Down (k As Integer)
+
+'**
+'* Returns TRUE if key k is currently held down on the keyboard.
+'**
+Declare Function Kbd_Down (k As Integer)
+
+'**
+'* Returns TRUE if the primary action button (Enter or joystick button 1)
+'* is pressed.
+'**
+Declare Function IsButton1% ()
+
+'**
+'* Returns TRUE if the secondary action button (Backspace or joystick
+'* button 2) is pressed.
+'**
+Declare Function IsButton2% ()
+
+'**
+'* Returns TRUE if "left" is pressed (keyboard or joystick).
+'**
+Declare Function IsLeft% ()
+
+'**
+'* Returns TRUE if "right" is pressed (keyboard or joystick).
+'**
+Declare Function IsRight% ()
+
+'**
+'* Returns TRUE if "up" is pressed (keyboard or joystick).
+'**
+Declare Function IsUp% ()
+
+'**
+'* Returns TRUE if "down" is pressed (keyboard or joystick).
+'**
+Declare Function IsDown% ()
+
+'**
+'* Returns TRUE if Escape is pressed.
+'**
+Declare Function IsEsc% ()
+
+'**
+'* Returns TRUE if Enter is pressed.
+'**
+Declare Function IsEnter% ()
+
+'**
+'* Enumerates the input devices reported by QB64 and fills the Controllers
+'* array with their id, kind (keyboard, mouse, joystick) and description.
+'**
 Declare Sub Kbd_FindDevices ()
 
+'**
+'* Polls pending joystick input and updates the global Joystick state
+'* (axes and buttons).
+'**
+Declare Sub ReadJoystick ()
 
 
 '**

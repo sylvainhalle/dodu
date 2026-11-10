@@ -1,4 +1,3 @@
-$Debug
 '-----------------------------------------------------------------------------
 '    Dodu, an old-school QuickBasic game
 '    Copyright (C) 1994-2026  Sylvain Hallé
@@ -60,11 +59,11 @@ Const PANBACK_STEPS% = 8
 Const INIT_SCROLL_DURATION% = 3
 
 ' Location of level number
-Dim Shared PT_LEVEL_NB As Point
-Point_Set PT_LEVEL_NB, 2, 20
+Dim Shared PtLevelNb As Point
+Point_Set PtLevelNb, 2, 20
 
-Dim Shared PT_UNIT As Point
-Point_Set PT_UNIT, 1, 1
+Dim Shared PtUnit As Point
+Point_Set PtUnit, 1, 1
 
 ' Number of screen pixels per frame
 ' Currently, can only be an integer
@@ -74,17 +73,17 @@ Const WALKING_SPEED_SNOW# = 0.3
 Dim Shared WalkingTicker As Ticker
 Ticker_Init WalkingTicker, Ceil%(1 / WALKING_SPEED), 1, TRUE
 
-Dim PLAY_MUSIC As Integer
-Let PLAY_MUSIC = TRUE
+Dim PlayMusic As Integer
+Let PlayMusic = TRUE
 
-Dim Shared CFG_CUTSCENES As Integer
-Let CFG_CUTSCENES = TRUE
+Dim Shared CfgCutscenes As Integer
+Let CfgCutscenes = TRUE
 
-Dim Shared CFG_SPLASH As Integer
-Let CFG_SPLASH = TRUE
+Dim Shared CfgSplash As Integer
+Let CfgSplash = TRUE
 
-Dim Shared CFG_THERMO As Integer
-Let CFG_THERMO = TRUE
+Dim Shared CfgThermo As Integer
+Let CfgThermo = TRUE
 
 ' --------------------------
 ' Other includes (declarations)
@@ -103,12 +102,12 @@ Let CFG_THERMO = TRUE
 ' Levels
 ' --------------------------
 LoadLevels
-Dim Shared CURRENT_LEVEL As Integer, LAST_LEVEL As Integer
-Dim Shared LAST_TUQUE As Integer, LAST_MITTENS As Integer
-Let CURRENT_LEVEL = 0
-Let LAST_LEVEL = -1
-Let LAST_TUQUE = FALSE
-Let LAST_MITTENS = FALSE
+Dim Shared CurrentLevel As Integer, LastLevel As Integer
+Dim Shared LastTuque As Integer, LastMittens As Integer
+Let CurrentLevel = 0
+Let LastLevel = -1
+Let LastTuque = FALSE
+Let LastMittens = FALSE
 
 ' --------------------------
 ' Depth settings
@@ -137,13 +136,13 @@ Dim argc As Integer, toset As String
 For argc = 1 To _CommandCount
     Select Case Command$(argc)
         Case "--nomusic"
-            Let PLAY_MUSIC = FALSE
+            Let PlayMusic = FALSE
         Case "--nocutscenes"
-            Let CFG_CUTSCENES = FALSE
+            Let CfgCutscenes = FALSE
         Case "--nosplash"
-            Let CFG_SPLASH = FALSE
+            Let CfgSplash = FALSE
         Case "--nothermo"
-            Let CFG_THERMO = FALSE
+            Let CfgThermo = FALSE
         Case "--tuque"
             Let Dodu.HasTuque = TRUE
         Case "--mittens"
@@ -163,61 +162,61 @@ For argc = 1 To _CommandCount
         Case "--screen"
             Let toset = "screen"
         Case "--stereo"
-            Let CFG_STEREOSCOPIC = TRUE
+            Let CfgStereoscopic = TRUE
         Case Else
             Select Case toset
                 Case "level"
-                    Let CURRENT_LEVEL = Val(Command$(argc)) - 1
+                    Let CurrentLevel = Val(Command$(argc)) - 1
                 Case "width"
-                    Point_Set SCREEN_DIMS, Val(Command$(argc)) - 1, SCREEN_DIMS.y
+                    Point_Set ScreenDims, Val(Command$(argc)) - 1, ScreenDims.y
                 Case "height"
-                    Point_Set SCREEN_DIMS, SCREEN_DIMS.x, Val(Command$(argc)) - 1
+                    Point_Set ScreenDims, ScreenDims.x, Val(Command$(argc)) - 1
                 Case "outfile"
-                    Let CFG_STEREO_TEMPFILE = Command$(argc) + ".tmp.jpg"
-                    Let CFG_STEREO_OUTFILE = Command$(argc) + ".jpg"
-                    Let CFG_STEREO_TEMPFILE_C = CFG_STEREO_TEMPFILE + Chr$(0)
-                    Let CFG_STEREO_OUTFILE_C = CFG_STEREO_OUTFILE + Chr$(0)
+                    Let CfgStereoTempfile = Command$(argc) + ".tmp.jpg"
+                    Let CfgStereoOutfile = Command$(argc) + ".jpg"
+                    Let CfgStereoTempfileC = CfgStereoTempfile + Chr$(0)
+                    Let CfgStereoOutfileC = CfgStereoOutfile + Chr$(0)
                 Case "video"
                     Select Case UCase$(Command$(argc))
                         Case "HER"
-                            Let IMG_MODE$ = IMG_MODE_HER$
+                            Let ImgMode$ = IMG_MODE_HER
                         Case "MCGA"
-                            Let IMG_MODE$ = IMG_MODE_MCGA$
+                            Let ImgMode$ = IMG_MODE_MCGA
                         Case "CGA"
-                            Let IMG_MODE$ = IMG_MODE_CGA$
+                            Let ImgMode$ = IMG_MODE_CGA
                         Case "EGA"
-                            Let IMG_MODE$ = IMG_MODE_EGA$
+                            Let ImgMode$ = IMG_MODE_EGA
                         Case "TI83"
-                            Let IMG_MODE$ = IMG_MODE_TI83$
-                            Let SCANLINES = SCANLINES_GRID
-                            Let SCANLINE_WIDTH = 3
-                            Let SCANLINE_COLOR = COLOR_TI83_SCANLINE
+                            Let ImgMode$ = IMG_MODE_TI83
+                            Let Scanlines = SCANLINES_GRID
+                            Let ScanlineWidth = 3
+                            Let ScanlineColor = COLOR_TI83_SCANLINE
                     End Select
                 Case "screen"
                     Select Case UCase$(Command$(argc))
                         Case "GAMEBUINO"
-                            Point_Set SCREEN_DIMS, SCREEN_GAMEBUINO_X%, SCREEN_GAMEBUINO_Y%
+                            Point_Set ScreenDims, SCREEN_GAMEBUINO_X, SCREEN_GAMEBUINO_Y
                         Case "PC"
-                            Point_Set SCREEN_DIMS, SCREEN_PC_X%, SCREEN_PC_Y%
+                            Point_Set ScreenDims, SCREEN_PC_X, SCREEN_PC_Y
                     End Select
                 Case "scanlines"
                     Select Case UCase$(Command$(argc))
                         Case "NONE"
-                            Let SCANLINES = SCANLINES_NONE
+                            Let Scanlines = SCANLINES_NONE
                         Case "VERT"
-                            Let SCANLINES = SCANLINES_VERT
+                            Let Scanlines = SCANLINES_VERT
                         Case "GRID"
-                            Let SCANLINES = SCANLINES_GRID
+                            Let Scanlines = SCANLINES_GRID
                     End Select
             End Select
     End Select
 Next
 
 ' Do we enlarge to handle two images?
-If CFG_STEREOSCOPIC Then
-    Point_Set SCREEN_ACTUAL_DIMS, SCREEN_DIMS.x * 2 + EYE_SEP, SCREEN_DIMS.y
+If CfgStereoscopic Then
+    Point_Set ScreenActualDims, ScreenDims.x * 2 + EYE_SEP, ScreenDims.y
 Else
-    Point_Set SCREEN_ACTUAL_DIMS, SCREEN_DIMS.x, SCREEN_DIMS.y
+    Point_Set ScreenActualDims, ScreenDims.x, ScreenDims.y
 End If
 
 ' Loading assets
@@ -237,17 +236,17 @@ Dim Shared MainScreen As Viewport, ImgBuffer As Viewport
 ' --------------------------
 ' Main loop
 ' --------------------------
-Let Audio.PlaySong = PLAY_MUSIC%
+Let Audio.PlaySong = PlayMusic%
 Let Audio.PlayEffects = TRUE
 
-Dim Shared CURRENT_TRAJECTORY As Integer
-Let CURRENT_TRAJECTORY% = -1
+Dim Shared CurrentTrajectory As Integer
+Let CurrentTrajectory% = -1
 Dim Shared CurrentSprite(3) As SpriteSequence
 
 Dim Shared parallax As Point
 Point_Set parallax, 2, 2
 
-Dim Shared SPRITE_LEVEL(IMG_DEPTH%, M_W, M_H) As SpriteSequence
+Dim Shared SpriteLevel(IMG_DEPTH, MAP_WIDTH, MAP_HEIGHT) As SpriteSequence
 
 LoadPasswords
 MainLoop
@@ -256,58 +255,58 @@ $Console
 
 Sub MainLoop
     Do
-        Viewport_Init MainScreen, SCREEN_ACTUAL_DIMS, P_ORIGIN, SCREEN_ACTUAL_DIMS, SCALE, 1
-        Let MainScreen.ScanlineWidth = SCANLINE_WIDTH
-        Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS, IMG_DEPTH
+        Viewport_Init MainScreen, ScreenActualDims, PtOrigin, ScreenActualDims, SCALE, 1
+        Let MainScreen.ScanlineWidth = ScanlineWidth
+        Viewport_Init_Default ImgBuffer, ScreenDims, ScreenDims, IMG_DEPTH
         Dim rst As RestorePoint
         Screen MainScreen.Layers(0).Buffer
-        PrintConsole Point_ToString(SCREEN_ACTUAL_DIMS)
-        Let MainScreen.Scanlines = SCANLINES
-        Let MainScreen.ScanlineWidth = SCANLINE_WIDTH
-        Let MainScreen.ScanlineColor = SCANLINE_COLOR
-        If CFG_SPLASH Then
+        PrintConsole Point_ToString(ScreenActualDims)
+        Let MainScreen.Scanlines = Scanlines
+        Let MainScreen.ScanlineWidth = ScanlineWidth
+        Let MainScreen.ScanlineColor = ScanlineColor
+        If CfgSplash Then
             DoLifSplash
         End If
         DoIntroduction rst
         If rst.Level >= 0 Then
-            Let CURRENT_LEVEL = rst.Level
+            Let CurrentLevel = rst.Level
             Let Dodu.HasMittens = rst.HasMittens
             Let Dodu.HasTuque = rst.HasTuque
         End If
 
-        Viewport_FadeOut MainScreen, Ceil%(0.3 * FPS%)
-        Viewport_Wait ImgBuffer, MainScreen, 2, FPS%
+        Viewport_FadeOut MainScreen, Ceil%(0.3 * FPS)
+        Viewport_Wait ImgBuffer, MainScreen, 2, FPS
         Do
-            If Levels(CURRENT_LEVEL).CutScene >= 0 And CFG_CUTSCENES Then
+            If Levels(CurrentLevel).CutScene >= 0 And CfgCutscenes Then
                 SoundPlayer_StopSong Audio
-                DoCutScene Levels(CURRENT_LEVEL).CutScene
+                DoCutScene Levels(CurrentLevel).CutScene
                 SoundPlayer_StopSong Audio
             End If
             If Not SoundPlayer_IsPlayingSong(Audio) Then
-                SoundPlayer_PlaySong Audio, Levels(CURRENT_LEVEL).SongIndex
+                SoundPlayer_PlaySong Audio, Levels(CurrentLevel).SongIndex
             End If
             Dim ws As Point
-            Point_Set ws, Levels(CURRENT_LEVEL).Width * BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * BLOCK_SIZE%
+            Point_Set ws, Levels(CurrentLevel).Width * BLOCK_SIZE, Levels(CurrentLevel).Height * BLOCK_SIZE
 
-            Viewport_Init_Default ImgBuffer, SCREEN_DIMS, ws, IMG_DEPTH
-            Viewport_SetFont ImgBuffer, FNT_TINYC
+            Viewport_Init_Default ImgBuffer, ScreenDims, ws, IMG_DEPTH
+            Viewport_SetFont ImgBuffer, FntTinyC
             DoLevel
-            If Levels(CURRENT_LEVEL + 1).CutScene < 0 Then
+            If Levels(CurrentLevel + 1).CutScene < 0 Then
                 SoundPlayer_PlayEffect Audio, SND_LEVELUP
             Else
-                Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
+                Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS
             End If
-            Let LAST_LEVEL = CURRENT_LEVEL
-            Let CURRENT_LEVEL = CURRENT_LEVEL + 1
-            Let LAST_MITTENS = Dodu.HasMittens
-            Let LAST_TUQUE = Dodu.HasTuque
+            Let LastLevel = CurrentLevel
+            Let CurrentLevel = CurrentLevel + 1
+            Let LastMittens = Dodu.HasMittens
+            Let LastTuque = Dodu.HasTuque
         Loop
     Loop
 End Sub
 
 Sub DoLevel
-    Let CURRENT_TRAJECTORY = -1
-    Dim CTRL_PRESSED As Integer
+    Let CurrentTrajectory = -1
+    Dim CtrlPressed As Integer
     Dim panback_ticker As Ticker
     Dim dod_lastgrab As Point
     Dim sq_lastgrab As Square, sq_lastdrop As Square
@@ -319,29 +318,29 @@ Sub DoLevel
     Dim mittensP As Square, tuqueP As Square, cookieP As Square
     Dim coffeeP As Square, snowP As Square, feetP As Square
 
-    Let CTRL_PRESSED = FALSE
+    Let CtrlPressed = FALSE
     Player_Reset Dodu
     Player_Reset DoduPast
     Let DoduPast.IsWalking = TRUE
     Let DoduPast.InSnow = TRUE
     GetDoduSprite CurrentSprite(), Dodu, DoduPast
 
-    Ticker_Init Dodu.ThermoTick, THERMO_TICK_STEPS%, THERMO_TICK_NORMAL%, FALSE
-    Ticker_Init Dodu.SlipTick, SLIP_TICK_STEPS%, SLIP_TICK_NORMAL%, FALSE
-    Ticker_Init panback_ticker, PANBACK_STEPS%, 1, FALSE
+    Ticker_Init Dodu.ThermoTick, THERMO_TICK_STEPS, THERMO_TICK_NORMAL, FALSE
+    Ticker_Init Dodu.SlipTick, SLIP_TICK_STEPS, SLIP_TICK_NORMAL, FALSE
+    Ticker_Init panback_ticker, PANBACK_STEPS, 1, FALSE
 
-  Viewport_SetBackground ImgBuffer, _
-    Backgrounds(Levels(CURRENT_LEVEL%).Background), Levels(CURRENT_LEVEL%).BackgroundParallax
+    Viewport_SetBackground ImgBuffer, _
+        Backgrounds(Levels(CurrentLevel%).Background), Levels(CurrentLevel%).BackgroundParallax
 
     'Color COLOR_WHITE&, , , ImgBuffer.Buffer
     '_PrintMode _KeepBackground , ImgBuffer.Buffer
     Screen MainScreen.Layers(0).Buffer
 
-    Let Dodu.LevPos.x = Levels(CURRENT_LEVEL).StartPoint.col * BLOCK_SIZE%
-    Let Dodu.LevPos.y = (Levels(CURRENT_LEVEL).StartPoint.row - 2) * BLOCK_SIZE%
+    Let Dodu.LevPos.x = Levels(CurrentLevel).StartPoint.col * BLOCK_SIZE
+    Let Dodu.LevPos.y = (Levels(CurrentLevel).StartPoint.row - 2) * BLOCK_SIZE
 
-    PrepareLevel Levels(CURRENT_LEVEL), FALSE ' Back
-    PrepareLevel Levels(CURRENT_LEVEL), TRUE ' Front
+    PrepareLevel Levels(CurrentLevel), FALSE ' Back
+    PrepareLevel Levels(CurrentLevel), TRUE ' Front
 
     Square_Set sq_lastgrab, -1, -1
     Square_Set sq_lastdrop, -1, -1
@@ -357,26 +356,26 @@ Sub DoLevel
     GetDoduCenter center
     Viewport_StopPan ImgBuffer
     Dim target_s As Square, target_p As Point
-    Level_GoalSquare Levels(CURRENT_LEVEL%), target_s
+    Level_GoalSquare Levels(CurrentLevel%), target_s
     Square_ToPoint target_s, target_p
     Viewport_Clear ImgBuffer
     _Dest MainScreen.Layers(0).Buffer
     Cls
-    DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), FALSE
+    DrawLevel ImgBuffer, Levels(CurrentLevel%), FALSE
     Viewport_SetCenter ImgBuffer, target_p
-    DrawThermometer ImgBuffer, DEPTH_CONTROLS%
-    DrawLevelNumber ImgBuffer, DEPTH_CONTROLS%
+    DrawThermometer ImgBuffer, DEPTH_CONTROLS
+    DrawLevelNumber ImgBuffer, DEPTH_CONTROLS
     Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
     'Viewport_Wait ImgBuffer, MainScreen, 0.8, FPS%
-    Viewport_ScrollCenter ImgBuffer, center, INIT_SCROLL_DURATION% * FPS%
+    Viewport_ScrollCenter ImgBuffer, center, INIT_SCROLL_DURATION * FPS
     Do
-        _Limit FPS%
+        _Limit FPS
         Viewport_Clear ImgBuffer
-        DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), FALSE
+        DrawLevel ImgBuffer, Levels(CurrentLevel%), FALSE
         DrawPlayer ImgBuffer, CurrentSprite()
-        DrawLevel ImgBuffer, Levels(CURRENT_LEVEL%), TRUE
-        DrawThermometer ImgBuffer, DEPTH_CONTROLS%
-        DrawLevelNumber ImgBuffer, DEPTH_CONTROLS%
+        DrawLevel ImgBuffer, Levels(CurrentLevel%), TRUE
+        DrawThermometer ImgBuffer, DEPTH_CONTROLS
+        DrawLevelNumber ImgBuffer, DEPTH_CONTROLS
         Viewport_Tick ImgBuffer
         Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
         Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
@@ -393,7 +392,7 @@ Sub DoLevel
     Dim lastClimbIndex As Integer, lastUnclimbIndex As Integer, lastFallIndex As Integer
 
     Do
-        _Limit FPS%
+        _Limit FPS
 
         ' ---------------------------------------
         ' 1. Input and ordinary simulation
@@ -403,51 +402,51 @@ Sub DoLevel
         Viewport_Tick ImgBuffer
 
         ' Thermometer
-        If CFG_THERMO Then
+        If CfgThermo Then
             Ticker_Tick Dodu.ThermoTick
 
-    If Dodu.ThermoTick.TickCnt = 0 Or _
-       (Dodu.Temp < 3 And Dodu.ThermoTick.TickCnt Mod FPS% = 0) Then
-                SoundPlayer_PlayEffect Audio, SND_THERMO%
+            If Dodu.ThermoTick.TickCnt = 0 Or _
+                    (Dodu.Temp < 3 And Dodu.ThermoTick.TickCnt Mod FPS = 0) Then
+                SoundPlayer_PlayEffect Audio, SND_THERMO
             End If
 
             If Dodu.ThermoTick.TickCnt = 0 Then
                 Let Dodu.Temp = Dodu.Temp - 1
-                If CURRENT_TRAJECTORY < 0 Then
-                    Let CURRENT_TRAJECTORY = TRJ_LOOKING_THERMO%
+                If CurrentTrajectory < 0 Then
+                    Let CurrentTrajectory = TRJ_LOOKING_THERMO
                     Let Dodu.IsLooking = TRUE
                 End If
             End If
 
             If Dodu.Temp = 0 Then
                 If Dodu.HasMittens And Not Dodu.HasTuque Then
-                    SoundPlayer_PlayEffect Audio, SND_POWERDOWN%
+                    SoundPlayer_PlayEffect Audio, SND_POWERDOWN
                     Let Dodu.HasMittens = FALSE
                     Let Dodu.Temp = 5
                     If Dodu.HasBlock Then
-                        Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
+                        Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST
                     Else
-                        Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
+                        Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL
                     End If
                     Ticker_Reset Dodu.ThermoTick
                 ElseIf Not Dodu.HasMittens And Dodu.HasTuque Then
-                    SoundPlayer_PlayEffect Audio, SND_POWERDOWN%
+                    SoundPlayer_PlayEffect Audio, SND_POWERDOWN
                     Let Dodu.HasTuque = FALSE
                     Let Dodu.Temp = 5
                     If Dodu.HasBlock Then
-                        Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
+                        Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST
                     Else
-                        Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
+                        Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL
                     End If
                     Ticker_Reset Dodu.ThermoTick
                 ElseIf Dodu.HasMittens And Dodu.HasTuque Then
-                    SoundPlayer_PlayEffect Audio, SND_POWERDOWN%
+                    SoundPlayer_PlayEffect Audio, SND_POWERDOWN
                     If Dodu.HasBlock Then
                         Let Dodu.HasMittens = FALSE
-                        Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
+                        Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST
                     Else
                         Let Dodu.HasTuque = FALSE
-                        Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
+                        Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL
                     End If
                     Let Dodu.Temp = 5
                     Ticker_Reset Dodu.ThermoTick
@@ -458,14 +457,14 @@ Sub DoLevel
         End If
 
         ' Modal commands
-        If _KeyDown(K_ESC) Then GoTo Quit:
+        If _KeyDown(KEY_ESC) Then GoTo Quit:
 
-        If _KeyDown(K_SPACE) Then
+        If _KeyDown(KEY_SPACE) Then
             DoPause
             _Continue
         End If
 
-        If _KeyDown(K_M_UC) Or _KeyDown(K_M_LC) Then
+        If _KeyDown(KEY_M_UC) Or _KeyDown(KEY_M_LC) Then
             DoMiniMap
             _Continue
         End If
@@ -483,28 +482,28 @@ Sub DoLevel
             Let Dodu.ToLeft = FALSE
         End If
 
-        ClimbableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), climbP
-        TakeableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), takeP
-        DroppableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), dropP
-        UnclimbableSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), unclimbP
-        BlockingSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), blockingP
-        PoleSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), poleP
-        MittensSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), mittensP
-        TuqueSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), tuqueP
-        CookieSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), cookieP
-        CoffeeSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), coffeeP
-        SnowSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), snowP
-        FeetSquare Dodu.ToLeft, lp, Levels(CURRENT_LEVEL), feetP
+        ClimbableSquare Dodu.ToLeft, lp, Levels(CurrentLevel), climbP
+        TakeableSquare Dodu.ToLeft, lp, Levels(CurrentLevel), takeP
+        DroppableSquare Dodu.ToLeft, lp, Levels(CurrentLevel), dropP
+        UnclimbableSquare Dodu.ToLeft, lp, Levels(CurrentLevel), unclimbP
+        BlockingSquare Dodu.ToLeft, lp, Levels(CurrentLevel), blockingP
+        PoleSquare Dodu.ToLeft, lp, Levels(CurrentLevel), poleP
+        MittensSquare Dodu.ToLeft, lp, Levels(CurrentLevel), mittensP
+        TuqueSquare Dodu.ToLeft, lp, Levels(CurrentLevel), tuqueP
+        CookieSquare Dodu.ToLeft, lp, Levels(CurrentLevel), cookieP
+        CoffeeSquare Dodu.ToLeft, lp, Levels(CurrentLevel), coffeeP
+        SnowSquare Dodu.ToLeft, lp, Levels(CurrentLevel), snowP
+        FeetSquare Dodu.ToLeft, lp, Levels(CurrentLevel), feetP
 
-        If CURRENT_TRAJECTORY% = TRJ_CLIMBING_SNOW Then
+        If CurrentTrajectory% = TRJ_CLIMBING_SNOW Then
             Let Dodu.InSnow = TRUE
         Else
-            If IsPlayerInSnow(Dodu.LevPos, Levels(CURRENT_LEVEL)) Then
+            If IsPlayerInSnow(Dodu.LevPos, Levels(CurrentLevel)) Then
                 Let Dodu.InSnow = TRUE
                 Let WalkingTicker.Speed = Ceil%(1 / WALKING_SPEED_SNOW)
                 If Dodu.IsWalking _AndAlso Square_IsValid(snowP) Then
-                    SpriteSequence_Start SPRITE_LEVEL(0, snowP.col, snowP.row)
-                    SpriteSequence_Start SPRITE_LEVEL(1, snowP.col, snowP.row)
+                    SpriteSequence_Start SpriteLevel(0, snowP.col, snowP.row)
+                    SpriteSequence_Start SpriteLevel(1, snowP.col, snowP.row)
                 End If
             Else
                 Let Dodu.InSnow = FALSE
@@ -516,32 +515,32 @@ Sub DoLevel
         ' 3. Active movement trajectory
         ' ---------------------------------------
 
-        If CURRENT_TRAJECTORY% >= 0 And CURRENT_TRAJECTORY% < 100 Then
+        If CurrentTrajectory% >= 0 And CurrentTrajectory% < 100 Then
             Tick_Trajectory trjP
 
             MovePlayer ImgBuffer, trjP
 
-            If Ticker_IsFinished%(Trajectories(CURRENT_TRAJECTORY%).Ticker) Then
-                Select Case CURRENT_TRAJECTORY
+            If Ticker_IsFinished%(Trajectories(CurrentTrajectory%).Ticker) Then
+                Select Case CurrentTrajectory
                     Case TRJ_UNCLIMBING
-                        Let lastUnclimbIndex = Trajectories(CURRENT_TRAJECTORY).Ticker.Index
+                        Let lastUnclimbIndex = Trajectories(CurrentTrajectory).Ticker.Index
                     Case TRJ_CLIMBING
-                        Let lastClimbIndex = Trajectories(CURRENT_TRAJECTORY).Ticker.Index
+                        Let lastClimbIndex = Trajectories(CurrentTrajectory).Ticker.Index
                     Case TRJ_FALLING
-                        Let lastFallIndex = Trajectories(CURRENT_TRAJECTORY).Ticker.Index
+                        Let lastFallIndex = Trajectories(CurrentTrajectory).Ticker.Index
                 End Select
-                If Not (CURRENT_TRAJECTORY% = TRJ_UNCLIMBING% Or CURRENT_TRAJECTORY% = TRJ_FALLING%) Then
-                    Let CURRENT_TRAJECTORY% = -1
+                If Not (CurrentTrajectory% = TRJ_UNCLIMBING Or CurrentTrajectory% = TRJ_FALLING) Then
+                    Let CurrentTrajectory% = -1
                     Let Dodu.IsPanting = FALSE
                     Let Dodu.IsLooking = FALSE
                 Else
-                    If Not IsOnGround%(Dodu.LevPos, Levels(CURRENT_LEVEL)) Then
-                        Let CURRENT_TRAJECTORY% = -1
+                    If Not IsOnGround%(Dodu.LevPos, Levels(CurrentLevel)) Then
+                        Let CurrentTrajectory% = -1
                         '   Not reached the ground: fall
-                        Initiate_Trajectory TRJ_FALLING%, Dodu.ToLeft
+                        Initiate_Trajectory TRJ_FALLING, Dodu.ToLeft
                         Let hasfallen = TRUE
                     Else
-                        Let CURRENT_TRAJECTORY% = -1
+                        Let CurrentTrajectory% = -1
                         Let Dodu.IsPanting = FALSE
                         Let Dodu.IsLooking = FALSE
                     End If
@@ -560,23 +559,23 @@ Sub DoLevel
         ' 4'. Power-ups
         ' ---------------------------------------
         If Square_IsValid(mittensP) Then
-            TakeMittens Levels(CURRENT_LEVEL), mittensP
-            SoundPlayer_PlayEffect Audio, SND_POWERUP%
+            TakeMittens Levels(CurrentLevel), mittensP
+            SoundPlayer_PlayEffect Audio, SND_POWERUP
         End If
 
         If Square_IsValid(tuqueP) Then
-            TakeTuque Levels(CURRENT_LEVEL), tuqueP
-            SoundPlayer_PlayEffect Audio, SND_POWERUP%
+            TakeTuque Levels(CurrentLevel), tuqueP
+            SoundPlayer_PlayEffect Audio, SND_POWERUP
         End If
 
         If Square_IsValid(cookieP) Then
-            TakeCookie Levels(CURRENT_LEVEL), cookieP
-            SoundPlayer_PlayEffect Audio, SND_COOKIE%
+            TakeCookie Levels(CurrentLevel), cookieP
+            SoundPlayer_PlayEffect Audio, SND_COOKIE
         End If
 
         If Square_IsValid(coffeeP) Then
-            TakeCoffee Levels(CURRENT_LEVEL), coffeeP
-            SoundPlayer_PlayEffect Audio, SND_COOKIE%
+            TakeCoffee Levels(CurrentLevel), coffeeP
+            SoundPlayer_PlayEffect Audio, SND_COOKIE
         End If
 
 
@@ -585,32 +584,32 @@ Sub DoLevel
         ' 5. Pan-back initiation
         ' ---------------------------------------
 
-    If Not _KeyDown(K_CTRL) And CTRL_PRESSED = TRUE And _
-       CURRENT_TRAJECTORY < 0 Then
+        If Not _KeyDown(KEY_CTRL) And CtrlPressed = TRUE And _
+                CurrentTrajectory < 0 Then
 
-            Let CTRL_PRESSED = FALSE
-            Let CURRENT_TRAJECTORY% = TRJ_PANBACK%
+            Let CtrlPressed = FALSE
+            Let CurrentTrajectory% = TRJ_PANBACK
             Ticker_Reset panback_ticker
             Ticker_Start panback_ticker
 
             GetDoduCenter center
 
-      Point_Set panbacktarget, _
-        (center.x - ImgBuffer.Pan.x - ImgBuffer.Size.x / 2) / PANBACK_STEPS%, _
-        (center.y - ImgBuffer.Pan.y - ImgBuffer.Size.y / 2) / PANBACK_STEPS%
+            Point_Set panbacktarget, _
+                (center.x - ImgBuffer.Pan.x - ImgBuffer.Size.x / 2) / PANBACK_STEPS, _
+                (center.y - ImgBuffer.Pan.y - ImgBuffer.Size.y / 2) / PANBACK_STEPS
         End If
 
         ' ---------------------------------------
         ' 6. Pan-back trajectory
         ' ---------------------------------------
 
-        If CURRENT_TRAJECTORY% = TRJ_PANBACK% Then
+        If CurrentTrajectory% = TRJ_PANBACK Then
 
             Ticker_Tick panback_ticker
             Viewport_MovePan ImgBuffer, panbacktarget
 
             If Ticker_IsFinished%(panback_ticker) Then
-                Let CURRENT_TRAJECTORY% = -1
+                Let CurrentTrajectory% = -1
                 Ticker_Reset panback_ticker
             End If
 
@@ -621,7 +620,7 @@ Sub DoLevel
         ' 7. Manual viewport panning
         ' ---------------------------------------
 
-        If _KeyDown(K_CTRL) Then
+        If _KeyDown(KEY_CTRL) Then
 
             If IsLeft% Then
                 Point_Set panP, -3, 0
@@ -636,7 +635,7 @@ Sub DoLevel
             End If
 
             Viewport_MovePan ImgBuffer, panP
-            Let CTRL_PRESSED = TRUE
+            Let CtrlPressed = TRUE
 
             GoTo RenderFrame:
         End If
@@ -646,9 +645,9 @@ Sub DoLevel
         ' ---------------------------------------
 
         Dim slopetype As Integer
-        Let slopetype = L_SLOPE_NONE%
+        Let slopetype = SLOPE_NONE
         If Square_IsValid(feetP) Then
-            Let slopetype = GetSnowSlopeAt(feetP.col, feetP.row, Levels(CURRENT_LEVEL%))
+            Let slopetype = GetSnowSlopeAt(feetP.col, feetP.row, Levels(CurrentLevel%))
         End If
 
         If IsLeft% Then
@@ -659,12 +658,12 @@ Sub DoLevel
             If Square_IsValid(climbP) Then
 
                 Let Dodu.IsWalking = TRUE
-                If slopetype = L_SLOPE_R Or slopetype = L_SLOPE_R Or slopetype = L_SLOPE_C Then
-                    Initiate_Trajectory TRJ_CLIMBING_SNOW%, TRUE
-                    SpriteSequence_Start SPRITE_LEVEL(0, climbP.col, climbP.row)
-                    SpriteSequence_Start SPRITE_LEVEL(1, climbP.col, climbP.row)
+                If slopetype = SLOPE_R Or slopetype = SLOPE_R Or slopetype = SLOPE_C Then
+                    Initiate_Trajectory TRJ_CLIMBING_SNOW, TRUE
+                    SpriteSequence_Start SpriteLevel(0, climbP.col, climbP.row)
+                    SpriteSequence_Start SpriteLevel(1, climbP.col, climbP.row)
                 Else
-                    Initiate_Trajectory TRJ_CLIMBING%, TRUE
+                    Initiate_Trajectory TRJ_CLIMBING, TRUE
                 End If
 
             Else
@@ -682,7 +681,7 @@ Sub DoLevel
 
             If Square_IsValid(unclimbP) Then
                 Let Dodu.IsWalking = FALSE
-                Initiate_Trajectory TRJ_UNCLIMBING%, TRUE
+                Initiate_Trajectory TRJ_UNCLIMBING, TRUE
             End If
 
         ElseIf IsRight% Then
@@ -693,12 +692,12 @@ Sub DoLevel
             If Square_IsValid(climbP) Then
 
                 Let Dodu.IsWalking = TRUE
-                If slopetype = L_SLOPE_R Or slopetype = L_SLOPE_R Or slopetype = L_SLOPE_C Then
-                    Initiate_Trajectory TRJ_CLIMBING_SNOW%, FALSE
-                    SpriteSequence_Start SPRITE_LEVEL(0, climbP.col, climbP.row)
-                    SpriteSequence_Start SPRITE_LEVEL(1, climbP.col, climbP.row)
+                If slopetype = SLOPE_R Or slopetype = SLOPE_R Or slopetype = SLOPE_C Then
+                    Initiate_Trajectory TRJ_CLIMBING_SNOW, FALSE
+                    SpriteSequence_Start SpriteLevel(0, climbP.col, climbP.row)
+                    SpriteSequence_Start SpriteLevel(1, climbP.col, climbP.row)
                 Else
-                    Initiate_Trajectory TRJ_CLIMBING%, FALSE
+                    Initiate_Trajectory TRJ_CLIMBING, FALSE
                 End If
             Else
 
@@ -720,59 +719,59 @@ Sub DoLevel
 
         ElseIf IsUp% And Square_IsValid(takeP) Then
 
-            SoundPlayer_PlayEffect Audio, SND_GRAB%
-            TakeBlock Levels(CURRENT_LEVEL), takeP
+            SoundPlayer_PlayEffect Audio, SND_GRAB
+            TakeBlock Levels(CurrentLevel), takeP
 
             Point_Set dod_lastgrab, Dodu.LevPos.x, Dodu.LevPos.y
             Let sq_lastgrab.col = takeP.col
             Let sq_lastgrab.row = takeP.row
             If Dodu.HasMittens Then
-                Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST_MITTENS%
+                Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST_MITTENS
             Else
-                Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST%
+                Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST
             End If
 
             Let Dodu.IsWalking = FALSE
 
         ElseIf IsDown% And Square_IsValid(dropP) Then
 
-            SoundPlayer_PlayEffect Audio, SND_DROP%
+            SoundPlayer_PlayEffect Audio, SND_DROP
 
             Let sq_lastdrop.col = dropP.col
             Let sq_lastdrop.row = dropP.row
 
-            DropBlock Levels(CURRENT_LEVEL), dropP
+            DropBlock Levels(CurrentLevel), dropP
             If Dodu.HasTuque Then
-                Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL_TUQUE%
+                Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL_TUQUE
             Else
-                Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL%
+                Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL
             End If
             Let Dodu.IsWalking = FALSE
 
-    ElseIf _KeyDown(K_BACKSPACE) And _
-           Square_IsValid(sq_lastgrab) And _
-           Square_IsValid(sq_lastdrop) Then
+        ElseIf _KeyDown(KEY_BACKSPACE) And _
+                Square_IsValid(sq_lastgrab) And _
+                Square_IsValid(sq_lastdrop) Then
 
             ' Undo last block
             Let Dodu.LevPos.x = dod_lastgrab.x
             Let Dodu.LevPos.y = dod_lastgrab.y
 
-            Let CURRENT_TRAJECTORY% = TRJ_PANBACK%
+            Let CurrentTrajectory% = TRJ_PANBACK
 
-            Let Levels(CURRENT_LEVEL).Topo(sq_lastdrop.col, sq_lastdrop.row) = T_NOTHING
-            Let Levels(CURRENT_LEVEL).Topo(sq_lastgrab.col, sq_lastgrab.row) = T_BLOCK_W
+            Let Levels(CurrentLevel).Topo(sq_lastdrop.col, sq_lastdrop.row) = TILE_NOTHING
+            Let Levels(CurrentLevel).Topo(sq_lastgrab.col, sq_lastgrab.row) = TILE_BLOCK_W
 
             Square_Set sq_lastgrab, -1, -1
             Square_Set sq_lastdrop, -1, -1
 
             GetDoduCenter center
 
-      Point_Set panbacktarget, _
-        (center.x - ImgBuffer.Pan.x - ImgBuffer.Size.x / 2) / PANBACK_STEPS%, _
-        (center.y - ImgBuffer.Pan.y - ImgBuffer.Size.y / 2) / PANBACK_STEPS%
+            Point_Set panbacktarget, _
+                (center.x - ImgBuffer.Pan.x - ImgBuffer.Size.x / 2) / PANBACK_STEPS, _
+                (center.y - ImgBuffer.Pan.y - ImgBuffer.Size.y / 2) / PANBACK_STEPS
 
             Let Dodu.IsWalking = FALSE
-            SoundPlayer_PlayEffect Audio, SND_UNDO%
+            SoundPlayer_PlayEffect Audio, SND_UNDO
 
         Else
 
@@ -807,8 +806,8 @@ Sub DoLevel
 
         RenderFrame:
 
-        If DoduPast.InSnow And (Not Dodu.InSnow Or (DoduPast.IsWalking And Not Dodu.IsWalking And CURRENT_TRAJECTORY <> TRJ_PANTING%)) Then
-            Initiate_Trajectory TRJ_PANTING%, Dodu.ToLeft
+        If DoduPast.InSnow And (Not Dodu.InSnow Or (DoduPast.IsWalking And Not Dodu.IsWalking And CurrentTrajectory <> TRJ_PANTING)) Then
+            Initiate_Trajectory TRJ_PANTING, Dodu.ToLeft
             Let Dodu.IsPanting = TRUE
             Let Dodu.IsWalking = FALSE
         End If
@@ -820,28 +819,28 @@ Sub DoLevel
         SpriteSequence_Tick CurrentSprite(1)
         SpriteSequence_Tick CurrentSprite(2)
 
-    If Dodu.IsWalking And CurrentSprite(2).Ticker.TickCnt = 0 And _
-       CurrentSprite(2).Ticker.Index Mod 2 = 0 Then
+        If Dodu.IsWalking And CurrentSprite(2).Ticker.TickCnt = 0 And _
+                CurrentSprite(2).Ticker.Index Mod 2 = 0 Then
             If Dodu.InSnow Then
-                SoundPlayer_PlayEffect Audio, SND_STEP_SNOW%
+                SoundPlayer_PlayEffect Audio, SND_STEP_SNOW
             Else
-                SoundPlayer_PlayEffect Audio, SND_STEP%
+                SoundPlayer_PlayEffect Audio, SND_STEP
             End If
         End If
 
         ' Draw the complete frame.
         Viewport_Clear ImgBuffer
 
-        DrawLevel ImgBuffer, Levels(CURRENT_LEVEL), FALSE
-        TickLevel Levels(CURRENT_LEVEL)
+        DrawLevel ImgBuffer, Levels(CurrentLevel), FALSE
+        TickLevel Levels(CurrentLevel)
         DrawPlayer ImgBuffer, CurrentSprite()
-        DrawLevel ImgBuffer, Levels(CURRENT_LEVEL), TRUE
+        DrawLevel ImgBuffer, Levels(CurrentLevel), TRUE
         DrawThermometer ImgBuffer, IMG_DEPTH - 1
         DrawLevelNumber ImgBuffer, IMG_DEPTH - 1
 
-        HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), takeP, HIGHLIGHT_COLOR&
-        HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), dropP, HIGHLIGHT_COLOR&
-        HighlightBlock ImgBuffer, Levels(CURRENT_LEVEL), climbP, COLOR_PINK&
+        HighlightBlock ImgBuffer, Levels(CurrentLevel), takeP, HighlightColor&
+        HighlightBlock ImgBuffer, Levels(CurrentLevel), dropP, HighlightColor&
+        HighlightBlock ImgBuffer, Levels(CurrentLevel), climbP, COLOR_PINK
         Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
         Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
         Viewport_Display MainScreen, EYE_NONE
@@ -861,22 +860,22 @@ Sub DoLevel
 End Sub
 
 Sub DoLifSplash
-    Viewport_PutSpriteSequence ImgBuffer, TRUE, LifSplash, P_ORIGIN, FALSE, 0
+    Viewport_PutSpriteSequence ImgBuffer, TRUE, LifSplash, PtOrigin, FALSE, 0
     Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
-    Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
+    Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS
     SpriteSequence_Start LifSplash
     SoundPlayer_PlaySong Audio, SNG_LIF
     Do
-        _Limit FPS%
+        _Limit FPS
         SpriteSequence_Tick LifSplash
-        Viewport_PutSpriteSequence ImgBuffer, TRUE, LifSplash, P_ORIGIN, FALSE, 0
+        Viewport_PutSpriteSequence ImgBuffer, TRUE, LifSplash, PtOrigin, FALSE, 0
         Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
         Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
         Viewport_Display MainScreen, EYE_NONE
     Loop Until SpriteSequence_IsFinished(LifSplash)
-    Viewport_Wait ImgBuffer, MainScreen, 2, FPS%
+    Viewport_Wait ImgBuffer, MainScreen, 2, FPS
     Viewport_FadeOut MainScreen, Ceil%(0.5 * FPS)
-    Viewport_Wait ImgBuffer, MainScreen, 0.5, FPS%
+    Viewport_Wait ImgBuffer, MainScreen, 0.5, FPS
     Viewport_Clear MainScreen
     Viewport_Display MainScreen, EYE_NONE
     SoundPlayer_StopSong Audio
@@ -884,12 +883,12 @@ End Sub
 
 Sub DoGameOver
     SoundPlayer_StopSong Audio
-    SoundPlayer_PlayEffect Audio, SND_GAMEOVER%
+    SoundPlayer_PlayEffect Audio, SND_GAMEOVER
     'Cls
     Dim pw As Password
-    GetPassword pw, CURRENT_LEVEL, LAST_MITTENS, LAST_TUQUE
-    Viewport_PutSpriteSequence ImgBuffer, TRUE, Veil, P_ORIGIN, FALSE, 1
-    Viewport_Print ImgBuffer, "GAME OVER", P_ORIGIN, 2
+    GetPassword pw, CurrentLevel, LastMittens, LastTuque
+    Viewport_PutSpriteSequence ImgBuffer, TRUE, Veil, PtOrigin, FALSE, 1
+    Viewport_Print ImgBuffer, "GAME OVER", PtOrigin, 2
     Dim x As Integer, pws As String, cardP As Point
     For x = 0 To 3
         Point_Set cardP, 6 + x * 17, 20
@@ -899,15 +898,15 @@ Sub DoGameOver
     Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
     Viewport_Display MainScreen, EYE_NONE
     Do
-        _Limit FPS%
-    Loop While Not _KeyDown(K_ESC)
+        _Limit FPS
+    Loop While Not _KeyDown(KEY_ESC)
 End Sub
 
 Sub DoCutScene (nb As Integer)
 
     Viewport_Reset ImgBuffer
     Viewport_Reset MainScreen
-    Viewport_SetBackground ImgBuffer, CutScenes(nb), P_ORIGIN
+    Viewport_SetBackground ImgBuffer, CutScenes(nb), PtOrigin
     Viewport_Clear ImgBuffer
     Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
     Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
@@ -916,15 +915,15 @@ Sub DoCutScene (nb As Integer)
     Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
     'Screen MainScreen.Buffer
 
-    SoundPlayer_PlaySong Audio, SNG_CUTSCENE1%
+    SoundPlayer_PlaySong Audio, SNG_CUTSCENE1
 
     Dim ps As Ticker
-    Ticker_Init ps, 7, FPS%, FALSE
+    Ticker_Init ps, 7, FPS, FALSE
     Viewport_Start ImgBuffer
     Viewport_Start MainScreen
-    Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS%
+    Viewport_Wait ImgBuffer, MainScreen, 0.7, FPS
     Do
-        _Limit FPS%
+        _Limit FPS
         Ticker_Tick ps
         Viewport_Clear ImgBuffer
         Viewport_Tick ImgBuffer
@@ -936,7 +935,7 @@ Sub DoCutScene (nb As Integer)
         End If
     Loop Until Ticker_IsFinished(ps)
     Viewport_FadeOut MainScreen, Ceil%(0.5 * FPS)
-    Viewport_Wait ImgBuffer, MainScreen, 0.5, FPS%
+    Viewport_Wait ImgBuffer, MainScreen, 0.5, FPS
     Viewport_Clear ImgBuffer
     Viewport_Clear MainScreen
     Viewport_Display MainScreen, EYE_NONE
@@ -945,37 +944,37 @@ End Sub
 Sub DoMiniMap
     Dim MapBuffer As Viewport
     Dim ws As Point
-    Point_Set ws, Levels(CURRENT_LEVEL).Width * MINI_BLOCK_SIZE%, Levels(CURRENT_LEVEL).Height * MINI_BLOCK_SIZE%
-    Viewport_Init_Default MapBuffer, SCREEN_DIMS, ws, IMG_DEPTH
-    Viewport_SetBackground MapBuffer, Backgrounds(Levels(CURRENT_LEVEL).Background), P_ORIGIN
+    Point_Set ws, Levels(CurrentLevel).Width * MINI_BLOCK_SIZE, Levels(CurrentLevel).Height * MINI_BLOCK_SIZE
+    Viewport_Init_Default MapBuffer, ScreenDims, ws, IMG_DEPTH
+    Viewport_SetBackground MapBuffer, Backgrounds(Levels(CurrentLevel).Background), PtOrigin
     Viewport_Clear MapBuffer
-    DrawMinimap MapBuffer, Levels(CURRENT_LEVEL%)
+    DrawMinimap MapBuffer, Levels(CurrentLevel%)
     Viewport_Copy MapBuffer, MainScreen, EYE_LEFT
     Viewport_Copy MapBuffer, MainScreen, EYE_RIGHT
     Viewport_Display MainScreen, EYE_NONE
 
     ' Wait until key is released
-    Kbd_WaitRelease FPS%
+    Kbd_WaitRelease FPS
     Do
-        _Limit FPS%
+        _Limit FPS
         Viewport_Display MainScreen, EYE_NONE
-        If _KeyDown(K_LEFT) Then
+        If _KeyDown(KEY_LEFT) Then
             Let MapBuffer.Pan.x = MapBuffer.Pan.x - 2
-        ElseIf _KeyDown(K_RIGHT) Then
+        ElseIf _KeyDown(KEY_RIGHT) Then
             Let MapBuffer.Pan.x = MapBuffer.Pan.x + 2
-        ElseIf _KeyDown(K_UP) Then
+        ElseIf _KeyDown(KEY_UP) Then
             Let MapBuffer.Pan.y = MapBuffer.Pan.y - 2
-        ElseIf _KeyDown(K_DOWN) Then
+        ElseIf _KeyDown(KEY_DOWN) Then
             Let MapBuffer.Pan.y = MapBuffer.Pan.y + 2
 
-        ElseIf _KeyDown(K_M_UC) Or _KeyDown(K_M_LC) Or _KeyDown(K_ESC) Then
+        ElseIf _KeyDown(KEY_M_UC) Or _KeyDown(KEY_M_LC) Or _KeyDown(KEY_ESC) Then
             Exit Do
         End If
         Viewport_Clear MapBuffer
-        DrawMinimap MapBuffer, Levels(CURRENT_LEVEL%)
+        DrawMinimap MapBuffer, Levels(CurrentLevel%)
         Viewport_Copy MapBuffer, MainScreen, EYE_NONE
     Loop
-    Kbd_WaitRelease FPS%
+    Kbd_WaitRelease FPS
 End Sub
 
 Sub DoPause
@@ -988,9 +987,9 @@ Sub DoPause
     ' Wait for the SPACE that invoked us to be released
     Dim k As Long
     Do
-        _Limit FPS%
+        _Limit FPS
         k = _KeyHit
-    Loop While k <> K_SPACE
+    Loop While k <> KEY_SPACE
 End Sub
 ' --------------------------
 ' Ticks animations
@@ -1000,7 +999,7 @@ Sub TickLevel (m As LevelMap)
     For layer = 0 To IMG_DEPTH - 1
         For col = 0 To m.Width - 1
             For row = 0 To m.Height - 1
-                SpriteSequence_Tick SPRITE_LEVEL(layer, col, row)
+                SpriteSequence_Tick SpriteLevel(layer, col, row)
             Next
         Next
     Next
@@ -1011,7 +1010,7 @@ Sub PrepareLevel (m As LevelMap, isfront As Integer)
     For layer = 0 To IMG_DEPTH - 1
         For row = 0 To m.Height
             For col = 0 To m.Width
-                Let SPRITE_LEVEL(layer, col, row).Content = -1
+                Let SpriteLevel(layer, col, row).Content = -1
             Next
         Next
         For row = 0 To m.Height
@@ -1032,16 +1031,16 @@ End Sub
 Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
 
     Dim col, row As Integer, layer As Integer
-    For layer = 0 To IMG_DEPTH% - 1
+    For layer = 0 To IMG_DEPTH - 1
         For row = m.Height To 0 Step -1
             For col = 0 To m.Width
                 Dim s As Square
                 Let s.col = col
                 Let s.row = row
-                If SPRITE_LEVEL(layer, col, row).Content <> -1 Then
+                If SpriteLevel(layer, col, row).Content <> -1 Then
                     Dim p As Point
                     Square_ToPoint s, p
-                    Viewport_PutSpriteSequence v, FALSE, SPRITE_LEVEL(layer, col, row), p, FALSE, layer
+                    Viewport_PutSpriteSequence v, FALSE, SpriteLevel(layer, col, row), p, FALSE, layer
                 End If
             Next
         Next
@@ -1050,22 +1049,22 @@ End Sub
 
 Sub PrepareSnow (m As LevelMap, col As Integer, row As Integer, front As Integer)
     Dim hastop As Integer
-    Let hastop = (row > 0 _AndAlso m.Topo(col, row - 1) = T_SNOW) _OrElse row = 0
+    Let hastop = (row > 0 _AndAlso m.Topo(col, row - 1) = TILE_SNOW) _OrElse row = 0
     If hastop Then
-        SpriteSequence_Copy SPRITE_LEVEL(Abs(front), col, row), SPR_LEVEL(LVL_SNOW_M)
+        SpriteSequence_Copy SpriteLevel(Abs(front), col, row), SprLevel(LVL_SNOW_M)
     Else
         Select Case GetSnowSlopeAt(col, row, m)
-            Case L_SLOPE_C
-                SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL% + Abs(front), col, row), SPR_LEVEL(LVL_SNOW_C)
-            Case L_SLOPE_L
-                SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL% + Abs(front), col, row), SPR_LEVEL(LVL_SNOW_L)
-            Case L_SLOPE_R
-                SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL% + Abs(front), col, row), SPR_LEVEL(LVL_SNOW_R)
+            Case SLOPE_C
+                SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL + Abs(front), col, row), SprLevel(LVL_SNOW_C)
+            Case SLOPE_L
+                SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL + Abs(front), col, row), SprLevel(LVL_SNOW_L)
+            Case SLOPE_R
+                SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL + Abs(front), col, row), SprLevel(LVL_SNOW_R)
         End Select
     End If
-    SpriteSequence_Stop SPRITE_LEVEL(Abs(front), col, row)
-    Let SPRITE_LEVEL(Abs(front), col, row).OnEnd = SPSQ_RESET%
-    Let SPRITE_LEVEL(Abs(front), col, row).Ticker.Loop = FALSE
+    SpriteSequence_Stop SpriteLevel(Abs(front), col, row)
+    Let SpriteLevel(Abs(front), col, row).OnEnd = SPSQ_RESET
+    Let SpriteLevel(Abs(front), col, row).Ticker.Loop = FALSE
 End Sub
 
 Sub DrawMinimap (v As Viewport, m As LevelMap)
@@ -1078,29 +1077,29 @@ Sub DrawMinimap (v As Viewport, m As LevelMap)
             Dim p As Point
             Point_Set p, s.col * 5, s.row * 5
             Select Case m.Topo(col, row)
-                Case T_BLOCK_B
-                    Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_BLOCK_B), p, FALSE, 0
-                Case T_BLOCK_W
-                    Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_BLOCK_W), p, FALSE, 0
-                Case T_POLE
-                    Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_POLE), p, FALSE, 0
-                Case T_COOKIE
-                    Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_COOKIE), p, FALSE, 0
-                Case T_COFFEE
-                    Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_COFFEE), p, FALSE, 0
-                Case T_WATER
-                    Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_WATER), p, FALSE, 0
-                Case T_SNOW
-                    Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_SNOW), p, FALSE, 0
+                Case TILE_BLOCK_B
+                    Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_BLOCK_B), p, FALSE, 0
+                Case TILE_BLOCK_W
+                    Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_BLOCK_W), p, FALSE, 0
+                Case TILE_POLE
+                    Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_POLE), p, FALSE, 0
+                Case TILE_COOKIE
+                    Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_COOKIE), p, FALSE, 0
+                Case TILE_COFFEE
+                    Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_COFFEE), p, FALSE, 0
+                Case TILE_WATER
+                    Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_WATER), p, FALSE, 0
+                Case TILE_SNOW
+                    Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_SNOW), p, FALSE, 0
             End Select
         Next
     Next
     Dim dod_s As Square
-    Let dod_s.col = Dodu.LevPos.x \ BLOCK_SIZE%
-    Let dod_s.row = Dodu.LevPos.y \ BLOCK_SIZE%
+    Let dod_s.col = Dodu.LevPos.x \ BLOCK_SIZE
+    Let dod_s.row = Dodu.LevPos.y \ BLOCK_SIZE
     Dim dod_p As Point
-    Point_Set dod_p, dod_s.col * MINI_BLOCK_SIZE%, (dod_s.row + 1) * MINI_BLOCK_SIZE%
-    Viewport_PutSpriteSequence v, FALSE, SPR_MINIMAP(LVL_PLAYER), dod_p, FALSE, 0
+    Point_Set dod_p, dod_s.col * MINI_BLOCK_SIZE, (dod_s.row + 1) * MINI_BLOCK_SIZE
+    Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_PLAYER), dod_p, FALSE, 0
 End Sub
 
 
@@ -1109,63 +1108,63 @@ End Sub
 ' --------------------------
 Sub DrawPlayer (v As Viewport, seqs() As SpriteSequence)
     Dim s As SpriteSequence
-    Viewport_PutSpriteSequence v, FALSE, seqs(0), Dodu.LevPos, seqs(0).Flipped, DEPTH_PLAYER%
-    Viewport_PutSpriteSequence v, FALSE, seqs(1), Dodu.LevPos, seqs(1).Flipped, DEPTH_PLAYER%
-    Viewport_PutSpriteSequence v, FALSE, seqs(2), Dodu.LevPos, seqs(2).Flipped, DEPTH_PLAYER%
+    Viewport_PutSpriteSequence v, FALSE, seqs(0), Dodu.LevPos, seqs(0).Flipped, DEPTH_PLAYER
+    Viewport_PutSpriteSequence v, FALSE, seqs(1), Dodu.LevPos, seqs(1).Flipped, DEPTH_PLAYER
+    Viewport_PutSpriteSequence v, FALSE, seqs(2), Dodu.LevPos, seqs(2).Flipped, DEPTH_PLAYER
 End Sub
 
 
 Sub ClearSpriteSquare (s As Square)
-    Let SPRITE_LEVEL(DEPTH_LEVEL%, s.col, s.row).Content = -1
+    Let SpriteLevel(DEPTH_LEVEL, s.col, s.row).Content = -1
 End Sub
 
 Sub SetSpriteSquare (m As LevelMap, isfront As Integer, col As Integer, row As Integer, e As String)
     If Not isfront Then
         Select Case e
-            Case T_BLOCK_B
-                SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL%, col, row), SPR_LEVEL(LVL_BLOCK_B)
-            Case T_BLOCK_W
-                SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL%, col, row), SPR_LEVEL(LVL_BLOCK_W)
-            Case T_POLE
-                SpriteSequence_Copy SPRITE_LEVEL(DEPTH_POLE%, col, row), SPR_LEVEL(LVL_POLE)
-            Case T_COOKIE
-                SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL%, col, row), SPR_LEVEL(LVL_COOKIE)
-            Case T_COFFEE
-                SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL%, col, row), SPR_LEVEL(LVL_COFFEE)
-            Case T_MITTENS
-                SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL%, col, row), SprMittens
-            Case T_TUQUE
-                SpriteSequence_Copy SPRITE_LEVEL(DEPTH_LEVEL%, col, row), SprTuque
-            Case T_WATER
-                SpriteSequence_Copy SPRITE_LEVEL(DEPTH_WATER%, col, row), SPR_LEVEL(LVL_WATER)
-            Case T_SNOW
+            Case TILE_BLOCK_B
+                SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_BLOCK_B)
+            Case TILE_BLOCK_W
+                SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_BLOCK_W)
+            Case TILE_POLE
+                SpriteSequence_Copy SpriteLevel(DEPTH_POLE, col, row), SprLevel(LVL_POLE)
+            Case TILE_COOKIE
+                SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_COOKIE)
+            Case TILE_COFFEE
+                SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_COFFEE)
+            Case TILE_MITTENS
+                SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprMittens
+            Case TILE_TUQUE
+                SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprTuque
+            Case TILE_WATER
+                SpriteSequence_Copy SpriteLevel(DEPTH_WATER, col, row), SprLevel(LVL_WATER)
+            Case TILE_SNOW
                 If Dodu.HasRackets Then
                     PrepareSnow m, col, row, FALSE
                 End If
-            Case T_ROPE
+            Case TILE_ROPE
                 PrepareRope m, col, row
         End Select
     Else
-        If e = T_SNOW And Not Dodu.HasRackets Then
+        If e = TILE_SNOW And Not Dodu.HasRackets Then
             PrepareSnow m, col, row, TRUE
         End If
     End If
 End Sub
 
 Sub PrepareRope (m As LevelMap, col As Integer, row As Integer)
-    If (row < M_H - 1 _AndAlso m.Topo(col, row + 1) <> T_ROPE) _OrElse row = M_H - 1 Then
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_ROPE_E)
+    If (row < MAP_HEIGHT - 1 _AndAlso m.Topo(col, row + 1) <> TILE_ROPE) _OrElse row = MAP_HEIGHT - 1 Then
+        SpriteSequence_Copy SpriteLevel(0, col, row), SprLevel(LVL_ROPE_E)
     Else
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row), SPR_LEVEL(LVL_ROPE_M)
+        SpriteSequence_Copy SpriteLevel(0, col, row), SprLevel(LVL_ROPE_M)
     End If
-    If row > 0 _AndAlso m.Topo(col, row - 1) = T_ROPE Then
-        SpriteSequence_Copy SPRITE_LEVEL(0, col, row - 1), SPR_LEVEL(LVL_ROPE_M)
+    If row > 0 _AndAlso m.Topo(col, row - 1) = TILE_ROPE Then
+        SpriteSequence_Copy SpriteLevel(0, col, row - 1), SprLevel(LVL_ROPE_M)
     End If
 End Sub
 
 Sub DropBlock (m As LevelMap, p As Square)
-    Let m.Topo(p.col, p.row) = T_BLOCK_W
-    SetSpriteSquare m, FALSE, p.col, p.row, T_BLOCK_W
+    Let m.Topo(p.col, p.row) = TILE_BLOCK_W
+    SetSpriteSquare m, FALSE, p.col, p.row, TILE_BLOCK_W
     Let Dodu.HasBlock = FALSE
 End Sub
 
@@ -1179,28 +1178,28 @@ Sub MovePlayer (v As Viewport, p_to As Point)
     Let CurrentSprite(2).Flipped = Dodu.ToLeft
     Dim ScreenPos As Point
     Viewport_PointToScreen v, Dodu.LevPos, ScreenPos
-    Let Dodu.LevPos.x = Dodu.LevPos.x + (p_to.x * WALKING_SPEED#)
-    Let Dodu.LevPos.y = Dodu.LevPos.y + (p_to.y * WALKING_SPEED#)
+    Let Dodu.LevPos.x = Dodu.LevPos.x + (p_to.x * WALKING_SPEED)
+    Let Dodu.LevPos.y = Dodu.LevPos.y + (p_to.y * WALKING_SPEED)
     If p_to.x <> 0 Then
         Select Case Dodu.ToLeft
             Case FALSE ' Going right, x > 0
-                If ScreenPos.x >= SCREEN_DIMS.x - (SCREEN_DIMS.x / 3 + PLAYER_WIDTH%) Then
+                If ScreenPos.x >= ScreenDims.x - (ScreenDims.x / 3 + PLAYER_WIDTH) Then
                     'Let v.Pan.x = _Min(v.Pan.x + (p_to.x * WALKING_SPEED#), M_W% * BLOCK_SIZE%)
                     Viewport_MovePan v, p_to
                 End If
             Case TRUE ' Going left, x < 0
-                If ScreenPos.x <= SCREEN_DIMS.x / 3 Then
+                If ScreenPos.x <= ScreenDims.x / 3 Then
                     Viewport_MovePan v, p_to
                 End If
         End Select
     End If
     If p_to.y > 0 Then '   Going down, y > 0
-        If ScreenPos.y >= SCREEN_DIMS.y - (SCREEN_DIMS.y / 3 + PLAYER_HEIGHT%) Then
+        If ScreenPos.y >= ScreenDims.y - (ScreenDims.y / 3 + PLAYER_HEIGHT) Then
             Viewport_MovePan v, p_to
             'Let v.Pan.y = _Min(v.Pan.y + (p_to.y * WALKING_SPEED#), M_H% * BLOCK_SIZE%)
         End If
     ElseIf p_to.y < 0 Then '  Going up, y < 0
-        If ScreenPos.y <= SCREEN_DIMS.y / 3 Then
+        If ScreenPos.y <= ScreenDims.y / 3 Then
             Viewport_MovePan v, p_to
         End If
     End If
@@ -1210,25 +1209,25 @@ Sub HighlightBlock (v As Viewport, m As LevelMap, s As Square, c~&)
     If Square_IsValid(s) Then
         Dim p1 As Point, p2 As Point
         Square_ToPoint s, p1
-        Point_Set p2, p1.x + BLOCK_SIZE% - 1, p1.y + BLOCK_SIZE% - 1
+        Point_Set p2, p1.x + BLOCK_SIZE - 1, p1.y + BLOCK_SIZE - 1
         Viewport_Line v, FALSE, p1, p2, c~&, TRUE, FALSE, 1
     End If
 End Sub
 
 Sub GetDoduSprite (s() As SpriteSequence, DoduNow As Player, DoduPast As Player)
     If PlayerChanged(DoduNow, DoduPast) Then
-        Let s(0) = SPR_DOD_TUQUE(Abs(DoduNow.IsWalking), Abs(DoduNow.HasTuque))
+        Let s(0) = SprDodTuque(Abs(DoduNow.IsWalking), Abs(DoduNow.HasTuque))
         Let s(0).Flipped = DoduNow.ToLeft
         If Dodu.Temp < 3 Then
-            Let s(1) = SPR_DOD_HEAD(Abs(DoduNow.IsWalking), SPR_FREEZING)
+            Let s(1) = SprDodHead(Abs(DoduNow.IsWalking), SPR_FREEZING)
         Else
             If DoduNow.IsPanting Then
-                Let s(1) = SPR_DOD_HEAD(SPR_NOT_WALKING, SPR_PANTING)
+                Let s(1) = SprDodHead(SPR_NOT_WALKING, SPR_PANTING)
                 Let s(1).Flipped = DoduNow.ToLeft
             ElseIf DoduNow.IsLooking Then
                 Dim screenpt As Point
                 Viewport_PointToScreen ImgBuffer, Dodu.LevPos, screenpt
-                Let s(1) = SPR_DOD_HEAD(SPR_NOT_WALKING, SPR_LOOKING_THERMO)
+                Let s(1) = SprDodHead(SPR_NOT_WALKING, SPR_LOOKING_THERMO)
                 'If screenpt.y >= 20 Then
                 '  Let s(1) = SPR_DOD_HEAD(SPR_NOT_WALKING, SPR_LOOKING_THERMO)
                 'Else
@@ -1237,11 +1236,11 @@ Sub GetDoduSprite (s() As SpriteSequence, DoduNow As Player, DoduPast As Player)
                 Let s(1).Flipped = DoduNow.ToLeft
                 SpriteSequence_Start s(1)
             Else
-                Let s(1) = SPR_DOD_HEAD(Abs(DoduNow.IsWalking), Abs(DoduNow.InSnow))
+                Let s(1) = SprDodHead(Abs(DoduNow.IsWalking), Abs(DoduNow.InSnow))
                 Let s(1).Flipped = DoduNow.ToLeft
             End If
         End If
-        Let s(2) = SPR_DOD_BODY(Abs(DoduNow.IsWalking), Abs(DoduNow.HasBlock), Abs(DoduNow.HasMittens), Abs(DoduNow.IsPanting))
+        Let s(2) = SprDodBody(Abs(DoduNow.IsWalking), Abs(DoduNow.HasBlock), Abs(DoduNow.HasMittens), Abs(DoduNow.IsPanting))
         Let s(2).Flipped = DoduNow.ToLeft
         Let DoduPast = DoduNow
     End If
@@ -1249,7 +1248,7 @@ End Sub
 
 
 Sub GetDoduCenter (p As Point)
-    Point_Set p, Dodu.LevPos.x + (PLAYER_WIDTH% / 2), Dodu.LevPos.y + (PLAYER_HEIGHT% / 2)
+    Point_Set p, Dodu.LevPos.x + (PLAYER_WIDTH / 2), Dodu.LevPos.y + (PLAYER_HEIGHT / 2)
 End Sub
 
 Sub DisplayCard (v As Viewport, absolute As Integer, p As Point, value As Integer)
@@ -1257,19 +1256,19 @@ Sub DisplayCard (v As Viewport, absolute As Integer, p As Point, value As Intege
     Dim p1 As Point, p2 As Point
     Let suit = value \ 13
     Let nb = value Mod 13
-    Viewport_PutSpriteSequence v, absolute, SPR_CARD, p, FALSE, DEPTH_CARDS%
+    Viewport_PutSpriteSequence v, absolute, SprCard, p, FALSE, DEPTH_CARDS
     Point_Set p1, p.x + 5, p.y + 9
-    Viewport_PutSpriteSequence v, absolute, SPR_CARDS_SUITS(suit), p1, FALSE, DEPTH_CARDS%
+    Viewport_PutSpriteSequence v, absolute, SprCardsSuits(suit), p1, FALSE, DEPTH_CARDS
     Point_Set p2, p.x + 2, p.y + 2
-    Viewport_PutSpriteSequence v, absolute, SPR_CARDS_DIGITS(nb), p2, FALSE, DEPTH_CARDS%
+    Viewport_PutSpriteSequence v, absolute, SprCardsDigits(nb), p2, FALSE, DEPTH_CARDS
 End Sub
 
 Sub DoPasswordInput (rst As RestorePoint)
     SoundPlayer_StopSong Audio
-    SoundPlayer_PlaySong Audio, SNG_CARDS%
+    SoundPlayer_PlaySong Audio, SNG_CARDS
     Dim PwBuffer As Viewport, ws As Point
-    Point_Set ws, SCREEN_DIMS.x, 1000
-    Viewport_Init_Default PwBuffer, SCREEN_DIMS, ws, IMG_DEPTH
+    Point_Set ws, ScreenDims.x, 1000
+    Viewport_Init_Default PwBuffer, ScreenDims, ws, IMG_DEPTH
     Viewport_Clear PwBuffer
     Dim prlx As Point
     Point_Set prlx, 2, 2
@@ -1283,7 +1282,7 @@ Sub DoPasswordInput (rst As RestorePoint)
     Let coord_row = 0
     Let coord_col = 0
     Do
-        _Limit FPS%
+        _Limit FPS
 
         Viewport_Clear PwBuffer
         Viewport_Tick PwBuffer
@@ -1305,7 +1304,7 @@ Sub DoPasswordInput (rst As RestorePoint)
             Let scc = selection(n) \ 13
             Point_Set p, scc * 18 + 5, scr * 22
             Point_Set q, p.x + 16, p.y + 22
-            Viewport_Line PwBuffer, FALSE, p, q, COLOR_HIGHLIGHT2, TRUE, FALSE, 1
+            Viewport_Line PwBuffer, FALSE, p, q, ColorHighlight2, TRUE, FALSE, 1
         Next
 
         'Viewport_Print PwBuffer, Str$(selection(0)) + Str$(selection(1)) + Str$(selection(2)) + Str$(selection(3)), P_ORIGIN
@@ -1313,7 +1312,7 @@ Sub DoPasswordInput (rst As RestorePoint)
         ' Show selected card
         Point_Set p, coord_col * 18 + 5, coord_row * 22
         Point_Set q, p.x + 16, p.y + 22
-        Viewport_Line PwBuffer, FALSE, p, q, COLOR_HIGHLIGHT, TRUE, FALSE, 1
+        Viewport_Line PwBuffer, FALSE, p, q, ColorHighlight, TRUE, FALSE, 1
 
         Viewport_Copy PwBuffer, MainScreen, EYE_NONE
         Viewport_Display MainScreen, EYE_NONE
@@ -1322,47 +1321,47 @@ Sub DoPasswordInput (rst As RestorePoint)
         Dim moves As Integer: Let moves = FALSE
         If IsDown% Then
             Let coord_row = Clamp%(coord_row + 1, 0, 12)
-            SoundPlayer_PlayEffect Audio, SND_TICK%
-            Kbd_WaitRelease FPS%
+            SoundPlayer_PlayEffect Audio, SND_TICK
+            Kbd_WaitRelease FPS
             Let moves = TRUE
         ElseIf IsUp% Then
             Let coord_row = Clamp%(coord_row - 1, 0, 12)
-            SoundPlayer_PlayEffect Audio, SND_TICK%
-            Kbd_WaitRelease FPS%
+            SoundPlayer_PlayEffect Audio, SND_TICK
+            Kbd_WaitRelease FPS
             Let moves = TRUE
         ElseIf IsLeft% Then
             Let coord_col = Clamp%(coord_col - 1, 0, 3)
-            SoundPlayer_PlayEffect Audio, SND_TICK%
-            Kbd_WaitRelease FPS%
+            SoundPlayer_PlayEffect Audio, SND_TICK
+            Kbd_WaitRelease FPS
             Let moves = TRUE
         ElseIf IsRight% Then
             Let coord_col = Clamp%(coord_col + 1, 0, 3)
-            SoundPlayer_PlayEffect Audio, SND_TICK%
-            Kbd_WaitRelease FPS%
+            SoundPlayer_PlayEffect Audio, SND_TICK
+            Kbd_WaitRelease FPS
             Let moves = TRUE
         End If
         If moves Then
             Point_Set p, coord_col * 18 + 5, coord_row * 22
             Viewport_ScrollCenter PwBuffer, p, 6
         End If
-        If _KeyDown(K_ENTER) Then
+        If _KeyDown(KEY_ENTER) Then
             Let selection(selindex) = coord_col * 13 + coord_row
             Let selindex = selindex + 1
-            SoundPlayer_PlayEffect Audio, SND_TACK%
-            Kbd_WaitRelease FPS%
+            SoundPlayer_PlayEffect Audio, SND_TACK
+            Kbd_WaitRelease FPS
             If selindex = 4 Then
                 Screen 0
                 LookupPassword rst, selection()
                 If rst.Level < 0 Then
-                    SoundPlayer_PlayEffect Audio, SND_WRONG1%
+                    SoundPlayer_PlayEffect Audio, SND_WRONG1
                 Else
-                    SoundPlayer_PlayEffect Audio, SND_LEVELUP%
+                    SoundPlayer_PlayEffect Audio, SND_LEVELUP
                 End If
                 SoundPlayer_StopSong Audio
                 Exit Sub
             End If
         End If
-        If _KeyDown(K_SPACE) Then
+        If _KeyDown(KEY_SPACE) Then
             SoundPlayer_StopSong Audio
             Exit Sub
         End If
@@ -1376,32 +1375,32 @@ Sub DoIntroduction (rst As RestorePoint)
     Let rst.Level = -1
     Dim sel As Integer, n As Integer, h As Integer
     Dim Flakes(50) As Point, downP As Point
-    Dim HeightsInit(SCREEN_DIMS.x) As Integer, Heights(SCREEN_DIMS.x) As Integer
+    Dim HeightsInit(ScreenDims.x) As Integer, Heights(ScreenDims.x) As Integer
     Dim FlakesTickers(50) As Ticker, ShakeTicker As Ticker
     Ticker_Init ShakeTicker, 15, 1, TRUE
-    If SCREEN_DIMS.x = SCREEN_GAMEBUINO_X Then
+    If ScreenDims.x = SCREEN_GAMEBUINO_X Then
         Restore SplashShape_GMB:
     Else
         Restore SplashShape_PC:
     End If
-    For n = 0 To SCREEN_DIMS.x
+    For n = 0 To ScreenDims.x
         Read h
         Let Heights(n) = h
         Let HeightsInit(n) = h
     Next
     Point_Set downP, 0, 1
     For n = 0 To 49
-        Point_Set Flakes(n), Floor%(Rnd * SCREEN_DIMS.x), Floor%(Rnd * SCREEN_DIMS.y)
+        Point_Set Flakes(n), Floor%(Rnd * ScreenDims.x), Floor%(Rnd * ScreenDims.y)
         Ticker_Init FlakesTickers(n), 2, Int(Rnd * 2) + 2, TRUE
     Next
     Viewport_Reset ImgBuffer
     Viewport_Reset MainScreen
-    Viewport_SetBackground ImgBuffer, SplashScreen, P_ORIGIN
+    Viewport_SetBackground ImgBuffer, SplashScreen, PtOrigin
     SpriteSequence_Start SplashScreen
     SoundPlayer_PlaySong Audio, SNG_BIERE
     Dim yoffset As Integer
     Do
-        _Limit FPS%
+        _Limit FPS
         Viewport_Clear ImgBuffer
         Viewport_Clear MainScreen
         Ticker_Tick ShakeTicker
@@ -1416,29 +1415,29 @@ Sub DoIntroduction (rst As RestorePoint)
                 If Heights(Flakes(n).x) >= 0 _AndAlso Flakes(n).y = Heights(Flakes(n).x) - 1 Then
                     If Flakes(n).x > 0 _AndAlso (Heights(Flakes(n).x - 1) = -1 _OrElse Heights(Flakes(n).x - 1) - Heights(Flakes(n).x) >= 3) Then
                         Let Flakes(n).x = Flakes(n).x - 1
-                    ElseIf Flakes(n).x < SCREEN_DIMS.x - 1 _AndAlso (Heights(Flakes(n).x + 1) = -1 _OrElse Heights(Flakes(n).x - 1) - Heights(Flakes(n).x) >= 3) Then
+                    ElseIf Flakes(n).x < ScreenDims.x - 1 _AndAlso (Heights(Flakes(n).x + 1) = -1 _OrElse Heights(Flakes(n).x - 1) - Heights(Flakes(n).x) >= 3) Then
                         Let Flakes(n).x = Flakes(n).x + 1
                     Else
                         Let Heights(Flakes(n).x) = Heights(Flakes(n).x) - 1
-                        Point_Set Flakes(n), Int(Rnd * SCREEN_DIMS.x%), -Int(Rnd * 5)
+                        Point_Set Flakes(n), Int(Rnd * ScreenDims.x%), -Int(Rnd * 5)
                     End If
                 End If
             ElseIf Heights(Flakes(n).x) < 0 Then
                 Point_Add Flakes(n), downP
-                If Flakes(n).y >= SCREEN_DIMS.y Then
-                    Point_Set Flakes(n), Int(Rnd * SCREEN_DIMS.x%), -Int(Rnd * 5)
+                If Flakes(n).y >= ScreenDims.y Then
+                    Point_Set Flakes(n), Int(Rnd * ScreenDims.x%), -Int(Rnd * 5)
                 End If
             End If
-            Viewport_LineC ImgBuffer, TRUE, Flakes(n).x, Flakes(n).y + yoffset, Flakes(n).x, Flakes(n).y + yoffset, COLOR_SNOW, FALSE, FALSE, 0
+            Viewport_LineC ImgBuffer, TRUE, Flakes(n).x, Flakes(n).y + yoffset, Flakes(n).x, Flakes(n).y + yoffset, ColorSnow, FALSE, FALSE, 0
             Ticker_Tick FlakesTickers(n)
         Next
-        For n = 0 To SCREEN_DIMS.x - 1
-            Viewport_LineC ImgBuffer, TRUE, n, HeightsInit(n) + yoffset - 1, n, Heights(n) + yoffset, COLOR_SNOW, TRUE, FALSE, 0
+        For n = 0 To ScreenDims.x - 1
+            Viewport_LineC ImgBuffer, TRUE, n, HeightsInit(n) + yoffset - 1, n, Heights(n) + yoffset, ColorSnow, TRUE, FALSE, 0
         Next
         If sel = 0 Then
-            Viewport_LineC ImgBuffer, TRUE, 23, 45, 39, 56, COLOR_HIGHLIGHT2, TRUE, FALSE, 0
+            Viewport_LineC ImgBuffer, TRUE, 23, 45, 39, 56, ColorHighlight2, TRUE, FALSE, 0
         Else
-            Viewport_LineC ImgBuffer, TRUE, 40, 45, 56, 56, COLOR_HIGHLIGHT2, TRUE, FALSE, 0
+            Viewport_LineC ImgBuffer, TRUE, 40, 45, 56, 56, ColorHighlight2, TRUE, FALSE, 0
         End If
         Viewport_Tick ImgBuffer
         Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
@@ -1447,15 +1446,15 @@ Sub DoIntroduction (rst As RestorePoint)
         Viewport_Display MainScreen, EYE_NONE
         If IsLeft% Or IsRight% Then
             Let sel = (sel + 1) Mod 2
-            SoundPlayer_PlayEffect Audio, SND_TICK%
-            Kbd_WaitRelease FPS%
+            SoundPlayer_PlayEffect Audio, SND_TICK
+            Kbd_WaitRelease FPS
         ElseIf IsEsc% Then
             SoundPlayer_StopSong Audio
             Cls
             End
         ElseIf IsButton1% Then
             If sel = 1 Then
-                Kbd_WaitRelease FPS%
+                Kbd_WaitRelease FPS
                 SoundPlayer_StopSong Audio
                 DoPasswordInput rst
                 If rst.Level < 0 Then
@@ -1473,18 +1472,18 @@ Sub DoIntroduction (rst As RestorePoint)
 End Sub
 
 Sub Initiate_Trajectory (index As Integer, flipped As Integer)
-    If CURRENT_TRAJECTORY >= 0 Then
+    If CurrentTrajectory >= 0 Then
         Exit Sub 'Trajectory already running, ignore
     End If
-    Let CURRENT_TRAJECTORY = index
-    Trajectory_Reset Trajectories(CURRENT_TRAJECTORY)
-    Trajectory_Start Trajectories(CURRENT_TRAJECTORY)
-    Let Trajectories(CURRENT_TRAJECTORY).Flipped = flipped
+    Let CurrentTrajectory = index
+    Trajectory_Reset Trajectories(CurrentTrajectory)
+    Trajectory_Start Trajectories(CurrentTrajectory)
+    Let Trajectories(CurrentTrajectory).Flipped = flipped
 End Sub
 
 Sub Tick_Trajectory (p As Point)
-    If CURRENT_TRAJECTORY% >= 0 And CURRENT_TRAJECTORY% < 100 Then
-        Trajectory_Tick Trajectories(CURRENT_TRAJECTORY), p
+    If CurrentTrajectory% >= 0 And CurrentTrajectory% < 100 Then
+        Trajectory_Tick Trajectories(CurrentTrajectory), p
     End If
 End Sub
 

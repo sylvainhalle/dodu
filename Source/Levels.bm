@@ -21,8 +21,8 @@ Sub Square_Set (s As Square, col As Integer, row As Integer)
     Let s.row = row
 End Sub
 
-Function Square_IsValid% (s as Square)
-    If s.col >= 0 _AndAlso s.col < M_W% _AndAlso s.row >= 0 _AndAlso s.row < M_H% Then
+Function Square_IsValid% (s As Square)
+    If s.col >= 0 _AndAlso s.col < MAP_WIDTH _AndAlso s.row >= 0 _AndAlso s.row < MAP_HEIGHT Then
         Square_IsValid% = TRUE
     Else
         Square_IsValid% = FALSE
@@ -30,185 +30,185 @@ Function Square_IsValid% (s as Square)
 End Function
 
 Sub Level_GoalSquare(l As LevelMap, s As Square)
-	Dim r As Integer, c As Integer
-	For r = 0 To l.Height
-		For c = 0 To l.Width
-			If IsGoalAt(c, r, l) Then
-				Let s.row = r
-				Let s.col = c
-				Exit Sub
-			End If
-		Next
-	Next
+    Dim r As Integer, c As Integer
+    For r = 0 To l.Height
+        For c = 0 To l.Width
+            If IsGoalAt(c, r, l) Then
+                Let s.row = r
+                Let s.col = c
+                Exit Sub
+            End If
+        Next
+    Next
 End Sub
 
-Sub Square_ToPoint (s as Square, p as Point)
-    let p.x = s.col * BLOCK_SIZE%
-    let p.y = s.row * BLOCK_SIZE%
+Sub Square_ToPoint (s As Square, p As Point)
+    Let p.x = s.col * BLOCK_SIZE
+    Let p.y = s.row * BLOCK_SIZE
 End Sub
 
 Function IsGoalAt (col As Integer, row As Integer, l As LevelMap)
-  If col >= 0 _AndAlso col < M_W% _AndAlso row >= 0 _AndAlso row < M_H% Then
-    If l.Topo(col, row) = T_POLE Then
-        Let IsGoalAt = TRUE
-        Exit Function
+    If col >= 0 _AndAlso col < MAP_WIDTH _AndAlso row >= 0 _AndAlso row < MAP_HEIGHT Then
+        If l.Topo(col, row) = TILE_POLE Then
+            Let IsGoalAt = TRUE
+            Exit Function
+        End If
     End If
-  End If
-  Let IsGoalAt = FALSE
+    Let IsGoalAt = FALSE
 End Function
 
 Function IsBlockAt (col As Integer, row As Integer, l As LevelMap)
-  If l.Topo(col, row) = T_BLOCK_B Or l.Topo(col, row) = T_BLOCK_W Or l.Topo(col, row) = T_SNOW Then
-    Let IsBlockAt = TRUE
-  Else
-    Let IsBlockAt = FALSE
-  End If
+    If l.Topo(col, row) = TILE_BLOCK_B Or l.Topo(col, row) = TILE_BLOCK_W Or l.Topo(col, row) = TILE_SNOW Then
+        Let IsBlockAt = TRUE
+    Else
+        Let IsBlockAt = FALSE
+    End If
 End Function
 
 Function IsWhiteBlockAt (col As Integer, row As Integer, l As LevelMap)
-  If l.Topo(col, row) = T_BLOCK_W Then
-    Let IsWhiteBlockAt = TRUE
-  Else
-    Let IsWhiteBlockAt = FALSE
-  End If
+    If l.Topo(col, row) = TILE_BLOCK_W Then
+        Let IsWhiteBlockAt = TRUE
+    Else
+        Let IsWhiteBlockAt = FALSE
+    End If
 End Function
 
 Function IsObstacleAt (col As Integer, row As Integer, l As LevelMap)
-  If l.Topo(col, row) = T_BLOCK_B Or l.Topo(col, row) = T_BLOCK_W Or l.Topo(col, row) = T_SNOW Or l.Topo(col, row) = T_POLE Then
-    Let IsObstacleAt = TRUE
-  Else
-    Let IsObstacleAt = FALSE
-  End If
+    If l.Topo(col, row) = TILE_BLOCK_B Or l.Topo(col, row) = TILE_BLOCK_W Or l.Topo(col, row) = TILE_SNOW Or l.Topo(col, row) = TILE_POLE Then
+        Let IsObstacleAt = TRUE
+    Else
+        Let IsObstacleAt = FALSE
+    End If
 End Function
 
 Function IsCookieAt (col As Integer, row As Integer, l As LevelMap)
-  If l.Topo(col, row) = T_COOKIE Then
-    Let IsCookieAt = TRUE
-  Else
-    Let IsCookieAt = FALSE
-  End If
+    If l.Topo(col, row) = TILE_COOKIE Then
+        Let IsCookieAt = TRUE
+    Else
+        Let IsCookieAt = FALSE
+    End If
 End Function
 
 Function IsTuqueAt (col As Integer, row As Integer, l As LevelMap)
-  If l.Topo(col, row) = T_TUQUE Then
-    Let IsTuqueAt = TRUE
-  Else
-    Let IsTuqueAt = FALSE
-  End If
+    If l.Topo(col, row) = TILE_TUQUE Then
+        Let IsTuqueAt = TRUE
+    Else
+        Let IsTuqueAt = FALSE
+    End If
 End Function
 
 Function IsMittenAt (col As Integer, row As Integer, l As LevelMap)
-  If l.Topo(col, row) = T_MITTENS Then
-    Let IsMittenAt = TRUE
-  Else
-    Let IsMittenAt = FALSE
-  End If
+    If l.Topo(col, row) = TILE_MITTENS Then
+        Let IsMittenAt = TRUE
+    Else
+        Let IsMittenAt = FALSE
+    End If
 End Function
 
 Function IsSnowAt (col As Integer, row As Integer, l As LevelMap)
-  If l.Topo(col, row) = T_SNOW Then
-    Let IsSnowAt = TRUE
-  Else
-    Let IsSnowAt = FALSE
-  End If
+    If l.Topo(col, row) = TILE_SNOW Then
+        Let IsSnowAt = TRUE
+    Else
+        Let IsSnowAt = FALSE
+    End If
 End Function
 
 Function IsPlayerInSnow (lp As Point, l As LevelMap)
-	Let IsPlayerInSnow = FALSE
-	Dim feetrow As Integer, col1 As Integer, col2 As Integer
-	Let feetrow = Ceil%((lp.y + PLAYER_HEIGHT%) / BLOCK_SIZE%)
-	Let col1 = Floor%(lp.x / BLOCK_SIZE%)
-	If IsSnowAt (col1, feetrow, l) Then
-		Let IsPlayerInSnow = TRUE
-		Exit Function
-	End If
-	Let col2 = Floor%((lp.x + PLAYER_WIDTH%) / BLOCK_SIZE%)
-	If IsSnowAt (col2, feetrow, l) Then
-		Let IsPlayerInSnow = TRUE
-		Exit Function
-	End If
+    Let IsPlayerInSnow = FALSE
+    Dim feetrow As Integer, col1 As Integer, col2 As Integer
+    Let feetrow = Ceil%((lp.y + PLAYER_HEIGHT) / BLOCK_SIZE)
+    Let col1 = Floor%(lp.x / BLOCK_SIZE)
+    If IsSnowAt (col1, feetrow, l) Then
+        Let IsPlayerInSnow = TRUE
+        Exit Function
+    End If
+    Let col2 = Floor%((lp.x + PLAYER_WIDTH) / BLOCK_SIZE)
+    If IsSnowAt (col2, feetrow, l) Then
+        Let IsPlayerInSnow = TRUE
+        Exit Function
+    End If
 End Function
 
 Function GetSnowSlopeAt (col As Integer, row As Integer, m As LevelMap)
-	Let GetSnowSlopeAt = L_SLOPE_NONE
-	'If IsSnowAt(col, row, m) Then Exit Function
-	Dim hasleft As Integer, hasright As Integer, hastop As Integer
-	Let hastop = (row > 0 _AndAlso m.Topo(col, row - 1) = T_SNOW) _OrElse row = 0
-	Let hasleft = (col > 0 _AndAlso (m.Topo(col - 1, row) = T_SNOW _OrElse IsBlockAt(col - 1, row, m))) _OrElse col = 0
-	Let hasright = (col < m.Width - 1 _AndAlso (m.Topo(col + 1, row) = T_SNOW _OrElse IsBlockAt(col + 1, row, m))) _OrElse col = m.Width - 1
-	If hasleft And hasright Then
-	  Let GetSnowSlopeAt = L_SLOPE_C
-	ElseIf hasleft And Not hasright Then
-	  Let GetSnowSlopeAt = L_SLOPE_R
-	ElseIf Not hasleft And hasright Then
-	  Let GetSnowSlopeAt = L_SLOPE_L
-	End If
+    Let GetSnowSlopeAt = SLOPE_NONE
+    'If IsSnowAt(col, row, m) Then Exit Function
+    Dim hasleft As Integer, hasright As Integer, hastop As Integer
+    Let hastop = (row > 0 _AndAlso m.Topo(col, row - 1) = TILE_SNOW) _OrElse row = 0
+    Let hasleft = (col > 0 _AndAlso (m.Topo(col - 1, row) = TILE_SNOW _OrElse IsBlockAt(col - 1, row, m))) _OrElse col = 0
+    Let hasright = (col < m.Width - 1 _AndAlso (m.Topo(col + 1, row) = TILE_SNOW _OrElse IsBlockAt(col + 1, row, m))) _OrElse col = m.Width - 1
+    If hasleft And hasright Then
+        Let GetSnowSlopeAt = SLOPE_C
+    ElseIf hasleft And Not hasright Then
+        Let GetSnowSlopeAt = SLOPE_R
+    ElseIf Not hasleft And hasright Then
+        Let GetSnowSlopeAt = SLOPE_L
+    End If
 End Function
 
 Function Square_ToString$ (s As Square)
-	Let Square_ToString$ = "[" + str$(s.col) + "," + str$(s.row) + "]"
+    Let Square_ToString$ = "[" + Str$(s.col) + "," + Str$(s.row) + "]"
 End Function
 
 Function IsCoffeeAt (col As Integer, row As Integer, l As LevelMap)
-  If l.Topo(col, row) = T_COFFEE Then
-    Let IsCoffeeAt = TRUE
-  Else
-    Let IsCoffeeAt = FALSE
-  End If
+    If l.Topo(col, row) = TILE_COFFEE Then
+        Let IsCoffeeAt = TRUE
+    Else
+        Let IsCoffeeAt = FALSE
+    End If
 End Function
 
 ' --------------------------
 ' Loads a level
 ' --------------------------
 Function LoadLevel% (l As LevelMap)
-  Dim lline As String, idx As Integer, char As String, row As Integer
-	Dim bg As Integer, fg As Integer, cutscene As Integer, songindex As Integer
-	Dim bgp_x As Integer, bgp_y As Integer, bgo_x As Integer, bgo_y As Integer
-  Read bg
-  Read fg
-  Read cutscene
-  Read songindex
-  Read bgp_x
-  Read bgp_y
-  Read bgo_x
-  Read bgo_y
-  Point_Set l.BackgroundParallax, bgp_x, bgp_y
-  Point_Set l.BackgroundOffset, bgo_x, bgo_y
-  Let l.Background = bg
-  Let l.Foreground = fg
-  Let l.CutScene = cutscene
-  Let l.SongIndex = songindex
-  Read lline
-  Let l.Width = Len(lline)
-  Let row = 0
-  While lline <> T_END And lline <> T_ENDALL
-      For idx = 1 TO l.Width
-        Let char = MID$(lline, idx, 1)
-        If char = "*" Then
-            Let l.StartPoint.col = idx - 1
-            Let l.StartPoint.row = row
-        Else
-            Let l.Topo(idx - 1, row) = char
-        End If
-      Next
-      Read lline
-      Let row = row + 1
-  Wend
-  Let l.Height = row
-  If lline = T_ENDALL Then
-  	  Let LoadLevel% = TRUE
-  Else
-  	  Let LoadLevel% = FALSE
-  End If
+    Dim lline As String, idx As Integer, char As String, row As Integer
+    Dim bg As Integer, fg As Integer, cutscene As Integer, songindex As Integer
+    Dim bgp_x As Integer, bgp_y As Integer, bgo_x As Integer, bgo_y As Integer
+    Read bg
+    Read fg
+    Read cutscene
+    Read songindex
+    Read bgp_x
+    Read bgp_y
+    Read bgo_x
+    Read bgo_y
+    Point_Set l.BackgroundParallax, bgp_x, bgp_y
+    Point_Set l.BackgroundOffset, bgo_x, bgo_y
+    Let l.Background = bg
+    Let l.Foreground = fg
+    Let l.CutScene = cutscene
+    Let l.SongIndex = songindex
+    Read lline
+    Let l.Width = Len(lline)
+    Let row = 0
+    While lline <> TILE_END And lline <> TILE_ENDALL
+        For idx = 1 To l.Width
+            Let char = Mid$(lline, idx, 1)
+            If char = "*" Then
+                Let l.StartPoint.col = idx - 1
+                Let l.StartPoint.row = row
+            Else
+                Let l.Topo(idx - 1, row) = char
+            End If
+        Next
+        Read lline
+        Let row = row + 1
+    Wend
+    Let l.Height = row
+    If lline = TILE_ENDALL Then
+        Let LoadLevel% = TRUE
+    Else
+        Let LoadLevel% = FALSE
+    End If
 End Function
 
 Sub LoadLevels()
     Restore LevelData
-	Dim last As Integer, n As Integer
-	Let last = FALSE
-	Do
-    	Let last = LoadLevel%(Levels(n))
-    	Let n = n + 1
+    Dim last As Integer, n As Integer
+    Let last = FALSE
+    Do
+        Let last = LoadLevel%(Levels(n))
+        Let n = n + 1
     Loop Until last
 End Sub
 
@@ -217,18 +217,18 @@ End Sub
 ' Prints a level as characters onscreen
 ' --------------------------
 Sub PrintLevel (m As LevelMap)
-  Dim i, j As Integer
-  For i = 1 To m.Height
-    For j = 1 To m.Width
-      Locate i, j
-  	  if m.Topo(i-1,j-1) = " " then
-  	  	  Print "x"
-  	  else
-  	  	  Print m.Topo(i - 1, j - 1)
-  	  end if
+    Dim i, j As Integer
+    For i = 1 To m.Height
+        For j = 1 To m.Width
+            Locate i, j
+            If m.Topo(i-1,j-1) = " " Then
+                Print "x"
+            Else
+                Print m.Topo(i - 1, j - 1)
+            End If
+        Next
+        Print
     Next
-    Print
-  Next
 End Sub
 
 

@@ -17,21 +17,33 @@
 '-----------------------------------------------------------------------------
 
 Type Password
-	Elements(4) As Integer
+    Elements(4) As Integer
 End Type
 
 Type RestorePoint
-	Level As Integer
-	HasMittens As Integer
-	HasTuque As Integer
+    Level As Integer
+    HasMittens As Integer
+    HasTuque As Integer
 End Type
 
-Dim Shared PASSWORDS(20, 4) As Password
+Dim Shared Passwords(20, 4) As Password
 
+'**
+'* Loads the password table (4 symbols for each level and each
+'* mittens/tuque combination) from the PWS DATA block.
+'**
 Declare Sub LoadPasswords ()
 
-Declare Function GetPassword (p As Password, level As Integer, hasmittens As Integer, hastuque As Integer)
+'**
+'* Stores in p the password for the given level and power-up combination
+'* (hasmittens, hastuque).
+'**
+Declare Sub GetPassword (p As Password, level As Integer, hasmittens As Integer, hastuque As Integer)
 
-Declare Sub LookupPassword (rp As RestorePoint, selection(4) As Integer)
+'**
+'* Finds the level and power-ups matching the 4 symbols in selection(),
+'* in any order. Sets rp.Level to -1 if no password matches.
+'**
+Declare Sub LookupPassword (rp As RestorePoint, selection() As Integer)
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

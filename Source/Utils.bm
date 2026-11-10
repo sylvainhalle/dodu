@@ -17,63 +17,63 @@
 '-----------------------------------------------------------------------------
 
 Function Ceil% (x As Single)
-  Dim z As Integer
-  Let z = CInt(x)
-  If z < x Then z = z + 1
-  Let Ceil% = z
+    Dim z As Integer
+    Let z = CInt(x)
+    If z < x Then z = z + 1
+    Let Ceil% = z
 End Function
 
 Function Floor% (x As Single)
-  Dim z As Integer
-  Let z = CInt(x)
-  If z > x Then z = z - 1
-  Let Floor% = z
+    Dim z As Integer
+    Let z = CInt(x)
+    If z > x Then z = z - 1
+    Let Floor% = z
 End Function
 
 Function NbFormat$ (x As Integer)
-	if x < 10 Then
-		let NbFormat$ = " " + _Trim$(Str$(x))
-	else
-		let NbFormat$ = _Trim$(Str$(x))
-	end if
+    If x < 10 Then
+        Let NbFormat$ = " " + _Trim$(Str$(x))
+    Else
+        Let NbFormat$ = _Trim$(Str$(x))
+    End If
 End Function
 
-FUNCTION Clamp% (value%, minimum%, maximum%)
-    IF value% > maximum% THEN
+Function Clamp% (value%, minimum%, maximum%)
+    If value% > maximum% Then
         Clamp% = maximum%
-    ELSEIF value% < minimum% THEN
+    ElseIf value% < minimum% Then
         Clamp% = minimum%
-    ELSE
+    Else
         Clamp% = value%
-    END IF
-END FUNCTION
+    End If
+End Function
 
 Function Within% (x As Integer, min As Integer, max As Integer)
-	Let Within% = x >= min And x <= max
+    Let Within% = x >= min And x <= max
 End Function
 
 Function Array_Contains% (a() As Integer, v As Integer)
-	Dim i As Integer
-	Let Array_Contains% = FALSE
-	For i = 0 To UBOUND(a)
-		If a(i) = v Then
-			Let Array_Contains% = TRUE
-			Exit Function
-		End If
-	Next
+    Dim i As Integer
+    Let Array_Contains% = FALSE
+    For i = 0 To UBound(a)
+        If a(i) = v Then
+            Let Array_Contains% = TRUE
+            Exit Function
+        End If
+    Next
 End Function
 
 Sub DummyWait (secs As Single, units As Integer)
-	Dim n As Integer
-	Let n = CInt(secs * units)
-	While n > 0
-		_Limit units
-		Let n = n - 1
-	Wend
+    Dim n As Integer
+    Let n = CInt(secs * units)
+    While n > 0
+        _Limit units
+        Let n = n - 1
+    Wend
 End Sub
 
 Sub PrintConsole (s As String)
-    Dim prev As Longc
+    Dim prev As Long
     Let prev = _Dest
     _Dest _Console
     Print s

@@ -17,17 +17,33 @@
 '-----------------------------------------------------------------------------
 
 Type BitmapFont
-	Content As Long
-	Width As Integer
-	Height As Integer
+    Content As Long
+    Width As Integer
+    Height As Integer
 End Type
 
+'**
+'* Loads a bitmap font from an image file. The image must contain a
+'* 16x16 grid of glyphs, ordered by ASCII code; color 0 is transparent.
+'**
 Declare Sub BitmapFont_LoadFile (b As BitmapFont, filename As String)
 
+'**
+'* Initializes a bitmap font from an already-loaded image handle h
+'* (same 16x16 glyph grid layout as BitmapFont_LoadFile).
+'**
 Declare Sub BitmapFont_LoadHandle (b As BitmapFont, h As Long)
 
+'**
+'* Draws a single character c of font f at point p on the given layer
+'* of the viewport.
+'**
 Declare Sub BitmapFont_WriteCharacter (v As Viewport, f As BitmapFont, p As Point, c As String, layer As Integer)
 
+'**
+'* Draws string s at point p on the given layer of the viewport, using
+'* font f recolored with color clr (palette index 1 of the font image).
+'**
 Declare Sub BitmapFont_WriteString (v As Viewport, f As BitmapFont, p As Point, s As String, clr As Long, layer As Integer)
 
 ' :mode=visualbasic:

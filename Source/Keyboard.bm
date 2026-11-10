@@ -17,134 +17,134 @@
 '-----------------------------------------------------------------------------
 
 Sub Kbd_FindDevices ()
-  Dim Device As String '                   device description                      (_DEVICE$)
-  Dim Dcount As Integer '                  device loop counter
-  Dim Start As Integer '                   start position of controller description
-  Dim Finish As Integer '                  end position of controller description
-  Dim Format As String '                   format of single chart line
-  Dim a As String '                        axis "YES" or "NO"
-  Dim b As String '                        button "YES" or "NO"
-  Dim w As String '                        wheel "YES" or "NO"
+    Dim Device As String '                   device description                      (_DEVICE$)
+    Dim Dcount As Integer '                  device loop counter
+    Dim Start As Integer '                   start position of controller description
+    Dim Finish As Integer '                  end position of controller description
+    Dim Format As String '                   format of single chart line
+    Dim a As String '                        axis "YES" or "NO"
+    Dim b As String '                        button "YES" or "NO"
+    Dim w As String '                        wheel "YES" or "NO"
 
-  Do '                                                                               begin device search
-    Let Dcount = Dcount + 1 '                                                          increment device loop counter
-    Device = _Device$(Dcount) '                                                    get controller information
-  let Controllers(Dcount).id = Dcount '                                               record device id number
-  If InStr(Device, "[KEYBOARD]") Then '                                           is this a keyboard?
-    let Controllers(Dcount).Description = "Keyboard" '                              yes, save description
-    Controllers(Dcount).Kind = KBD_CONTROLLER '                                 record device type
-  ElseIf InStr(Device, "[MOUSE]") Then '                                          no, is this a mouse?
-    let Controllers(Dcount).Description = "Mouse" '                                 yes, save description
-    let Controllers(Dcount).Kind = MOUSE_CONTROLLER '                               record device type
-  ElseIf InStr(Device, "[CONTROLLER]") Then '                                     no, is this a controller?
-    If InStr(Device, "[NAME]") Then '                                           yes, with descriptive name?
-      let Start = InStr(Device, "[NAME]") + 7 '                                  yes, get start of description
-      Finish = InStr(Start, Device, "]") '                                   get end of description
-      let Controllers(Dcount).Description = Mid$(Device, Start, Finish - Start) ' parse out descriptive name
-      Controllers(Dcount).Kind = JPAD_CONTROLLER '                            record device type
-    End If
-  End If
-  If InStr(Device, "[BUTTON]") Then Controllers(Dcount).Buttons = TRUE '          record controller has buttons
-  If InStr(Device, "[AXIS]") Then Controllers(Dcount).Axis = TRUE '               record controller has axes
-  If InStr(Device, "[WHEEL]") Then Controllers(Dcount).Wheels = TRUE '            record controller has wheels
-  If Controllers(Dcount).Buttons Then b = "YES" Else b = "NO"
-  If Controllers(Dcount).Axis Then a = "YES" Else a = "NO" '                      print current chart line
-  If Controllers(Dcount).Wheels Then w = "YES" Else w = "NO"
-Loop Until Dcount = DeviceCount '                                                  leave when all devices polled
+    Do '                                                                               begin device search
+        Let Dcount = Dcount + 1 '                                                          increment device loop counter
+        Device = _Device$(Dcount) '                                                    get controller information
+        Let Controllers(Dcount).id = Dcount '                                               record device id number
+        If InStr(Device, "[KEYBOARD]") Then '                                           is this a keyboard?
+            Let Controllers(Dcount).Description = "Keyboard" '                              yes, save description
+            Controllers(Dcount).Kind = KBD_CONTROLLER '                                 record device type
+        ElseIf InStr(Device, "[MOUSE]") Then '                                          no, is this a mouse?
+            Let Controllers(Dcount).Description = "Mouse" '                                 yes, save description
+            Let Controllers(Dcount).Kind = MOUSE_CONTROLLER '                               record device type
+        ElseIf InStr(Device, "[CONTROLLER]") Then '                                     no, is this a controller?
+            If InStr(Device, "[NAME]") Then '                                           yes, with descriptive name?
+                Let Start = InStr(Device, "[NAME]") + 7 '                                  yes, get start of description
+                Finish = InStr(Start, Device, "]") '                                   get end of description
+                Let Controllers(Dcount).Description = Mid$(Device, Start, Finish - Start) ' parse out descriptive name
+                Controllers(Dcount).Kind = JPAD_CONTROLLER '                            record device type
+            End If
+        End If
+        If InStr(Device, "[BUTTON]") Then Controllers(Dcount).Buttons = TRUE '          record controller has buttons
+        If InStr(Device, "[AXIS]") Then Controllers(Dcount).Axis = TRUE '               record controller has axes
+        If InStr(Device, "[WHEEL]") Then Controllers(Dcount).Wheels = TRUE '            record controller has wheels
+        If Controllers(Dcount).Buttons Then b = "YES" Else b = "NO"
+        If Controllers(Dcount).Axis Then a = "YES" Else a = "NO" '                      print current chart line
+        If Controllers(Dcount).Wheels Then w = "YES" Else w = "NO"
+    Loop Until Dcount = DeviceCount '                                                  leave when all devices polled
 End Sub
 
 Sub ReadJoystick
-	Dim di As Integer
-	Do
-		Let di = _DeviceInput
-		Select Case di
-			Case 3
-				Let JOYSTICK.H = _AXIS(1)
-				Let JOYSTICK.V = _AXIS(2)
-				Let JOYSTICK.Buttons(0) = _BUTTON(1)
-				Let JOYSTICK.Buttons(1) = _BUTTON(2)
-				Let JOYSTICK.Buttons(2) = _BUTTON(3)
-				Let JOYSTICK.Buttons(3) = _BUTTON(4)
-				Let JOYSTICK.Buttons(4) = _BUTTON(5)
-		End Select
-	Loop Until di = 0
+    Dim di As Integer
+    Do
+        Let di = _DeviceInput
+        Select Case di
+            Case 3
+                Let Joystick.H = _Axis(1)
+                Let Joystick.V = _Axis(2)
+                Let Joystick.Buttons(0) = _Button(1)
+                Let Joystick.Buttons(1) = _Button(2)
+                Let Joystick.Buttons(2) = _Button(3)
+                Let Joystick.Buttons(3) = _Button(4)
+                Let Joystick.Buttons(4) = _Button(5)
+        End Select
+    Loop Until di = 0
 End Sub
 
 Function In_Down (k As Integer)
-	Let In_Down = FALSE
-	If k = J_1 Or k = J_2 Or k = J_3 Or k = J_4 Then
-		Let In_Down = Joy_Down (k)
-	ElseIf Kbd_Down (k) Then
-		Let In_Down = TRUE
-	ElseIf Joy_Down (k) Then
-		Let In_Down = TRUE
-	End If
+    Let In_Down = FALSE
+    If k = JOY_1 Or k = JOY_2 Or k = JOY_3 Or k = JOY_4 Then
+        Let In_Down = Joy_Down (k)
+    ElseIf Kbd_Down (k) Then
+        Let In_Down = TRUE
+    ElseIf Joy_Down (k) Then
+        Let In_Down = TRUE
+    End If
 End Function
 
 Function Joy_Down (k As Integer)
-	Let Joy_Down = FALSE
-	Select Case k
-		Case K_DOWN
-			Let Joy_Down = JOYSTICK.V > 0.5
-		Case K_UP
-			Let Joy_Down = JOYSTICK.V < 0 And Abs(JOYSTICK.V) > 0.5
-		Case K_LEFT
-			Let Joy_Down = JOYSTICK.H < 0 And Abs(JOYSTICK.H) > 0.5
-		Case K_RIGHT
-			Let Joy_Down = JOYSTICK.H > 0.5
-		Case J_1
-			Let Joy_Down = JOYSTICK.Buttons(0)
-		Case J_2
-			Let Joy_Down = JOYSTICK.Buttons(1)
-		Case J_3
-			Let Joy_Down = JOYSTICK.Buttons(2)
-		Case J_4
-			Let Joy_Down = JOYSTICK.Buttons(3)
-	End Select
+    Let Joy_Down = FALSE
+    Select Case k
+        Case KEY_DOWN
+            Let Joy_Down = Joystick.V > 0.5
+        Case KEY_UP
+            Let Joy_Down = Joystick.V < 0 And Abs(Joystick.V) > 0.5
+        Case KEY_LEFT
+            Let Joy_Down = Joystick.H < 0 And Abs(Joystick.H) > 0.5
+        Case KEY_RIGHT
+            Let Joy_Down = Joystick.H > 0.5
+        Case JOY_1
+            Let Joy_Down = Joystick.Buttons(0)
+        Case JOY_2
+            Let Joy_Down = Joystick.Buttons(1)
+        Case JOY_3
+            Let Joy_Down = Joystick.Buttons(2)
+        Case JOY_4
+            Let Joy_Down = Joystick.Buttons(3)
+    End Select
 End Function
 
 Function Kbd_Down (k As Integer)
-	Let Kbd_Down = _KeyDown (k)
+    Let Kbd_Down = _KeyDown (k)
 End Function
 
 Sub Kbd_WaitRelease (fps As Integer)
-  Dim k As Long
-  Do
-    _Limit fps%
-    Let k = _KeyHit
-  Loop While k >= 0
+    Dim k As Long
+    Do
+        _Limit fps%
+        Let k = _KeyHit
+    Loop While k >= 0
 End Sub
 
 Function IsButton1% ()
-  Let IsButton1% = In_Down(K_ENTER) Or In_Down(J_1)
+    Let IsButton1% = In_Down(KEY_ENTER) Or In_Down(JOY_1)
 End Function
 
 Function IsButton2% ()
-  Let IsButton2% = In_Down(K_BACKSPACE) Or In_Down(J_2)
+    Let IsButton2% = In_Down(KEY_BACKSPACE) Or In_Down(JOY_2)
 End Function
 
 Function IsLeft% ()
-  Let IsLeft% = In_Down(K_LEFT)
+    Let IsLeft% = In_Down(KEY_LEFT)
 End Function
 
 Function IsRight% ()
-  Let IsRight% = In_Down(K_RIGHT)
+    Let IsRight% = In_Down(KEY_RIGHT)
 End Function
 
 Function IsUp% ()
-  Let IsUp% = In_Down(K_UP)
+    Let IsUp% = In_Down(KEY_UP)
 End Function
 
 Function IsDown% ()
-  Let IsDown% = In_Down(K_DOWN)
+    Let IsDown% = In_Down(KEY_DOWN)
 End Function
 
 Function IsEsc% ()
-  Let IsEsc% = In_Down(K_ESC)
+    Let IsEsc% = In_Down(KEY_ESC)
 End Function
 
 Function IsEnter% ()
-  Let IsEnter% = In_Down(K_ENTER)
+    Let IsEnter% = In_Down(KEY_ENTER)
 End Function
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

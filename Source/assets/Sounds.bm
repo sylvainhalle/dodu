@@ -17,19 +17,19 @@
 '-----------------------------------------------------------------------------
 
 Sub Audio_SongLow
-  SoundPlayer_SetSongVolume Audio, 0.1
+    SoundPlayer_SetSongVolume Audio, 0.1
 End Sub
 
 Sub Audio_SongNormal
-  SoundPlayer_SetSongVolume Audio, 0.7
+    SoundPlayer_SetSongVolume Audio, 0.7
 End Sub
 
 Sub Audio_SongPause
-  SoundPlayer_PauseSong Audio
+    SoundPlayer_PauseSong Audio
 End Sub
 
 Sub Audio_SongResume
-  SoundPlayer_ResumeSong Audio
+    SoundPlayer_ResumeSong Audio
 End Sub
 
 ' :mode=visualbasic:

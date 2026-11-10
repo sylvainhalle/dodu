@@ -28,6 +28,34 @@ Dodu is as much an exercise in designing *within* constraints as it is a return 
 
 These constraints influence the artwork, interface, level design, and implementation. They are not intended to make the game difficult to play.
 
+### One game, several graphical identities
+
+The original Dodu was developed in the 1990s for
+CGA's 640 × 200 two-color graphics mode. Its monochrome
+appearance was therefore much closer to the present
+Hercules rendering, although the pixel aspect ratio
+was different.
+
+The current version revisits the graphical constraints
+of early PCs through several display modes. EGA serves
+as the reference for new artwork, while CGA, Hercules,
+and other modes use separately adapted assets.
+
+Rather than relying on automatic color reduction, each
+version is adjusted by hand to preserve readability
+and visual character within its palette and resolution
+constraints.
+
+| CGA (4 colors) | EGA | Hercules |
+|:---:|:---:|:---:|
+| ![CGA](screenshots/CGA.png) | ![EGA](screenshots/EGA.png) | ![Hercules](screenshots/HER.png) |
+
+The `Viewport` engine can also reproduce display
+characteristics such as CRT scanlines, monochrome
+green phosphor, and the pixel grid of a TI-83
+calculator.
+
+
 ## Features
 
 ### Retro graphics and display emulation

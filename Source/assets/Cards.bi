@@ -16,30 +16,30 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
-Dim Shared SPR_CARD As SpriteSequence
-Dim Shared SPR_CARDS_SUITS(4) As SpriteSequence
-Dim Shared SPR_CARDS_DIGITS(13) As SpriteSequence
+Dim Shared SprCard As SpriteSequence
+Dim Shared SprCardsSuits(4) As SpriteSequence
+Dim Shared SprCardsDigits(13) As SpriteSequence
 
 ' Playing cards
 
-SpriteSequence_InitFile SPR_CARD, IMG_DIR$ + "/cards/Card.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_SUITS(0), IMG_DIR$ + "/cards/Hearts.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_SUITS(1), IMG_DIR$ + "/cards/Spades.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_SUITS(2), IMG_DIR$ + "/cards/Diamonds.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_SUITS(3), IMG_DIR$ + "/cards/Clubs.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_DIGITS(0), IMG_DIR$ + "/cards/Digit_A.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_DIGITS(1), IMG_DIR$ + "/cards/Digit_2.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_DIGITS(2), IMG_DIR$ + "/cards/Digit_3.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_DIGITS(3), IMG_DIR$ + "/cards/Digit_4.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_DIGITS(4), IMG_DIR$ + "/cards/Digit_5.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_DIGITS(5), IMG_DIR$ + "/cards/Digit_6.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_DIGITS(6), IMG_DIR$ + "/cards/Digit_7.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_DIGITS(7), IMG_DIR$ + "/cards/Digit_8.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_DIGITS(8), IMG_DIR$ + "/cards/Digit_9.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_DIGITS(9), IMG_DIR$ + "/cards/Digit_10.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_DIGITS(10), IMG_DIR$ + "/cards/Digit_J.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_DIGITS(11), IMG_DIR$ + "/cards/Digit_Q.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
-SpriteSequence_InitFile SPR_CARDS_DIGITS(12), IMG_DIR$ + "/cards/Digit_K.gif",1, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCard, ImgDir$ + "/cards/Card.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsSuits(0), ImgDir$ + "/cards/Hearts.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsSuits(1), ImgDir$ + "/cards/Spades.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsSuits(2), ImgDir$ + "/cards/Diamonds.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsSuits(3), ImgDir$ + "/cards/Clubs.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsDigits(0), ImgDir$ + "/cards/Digit_A.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsDigits(1), ImgDir$ + "/cards/Digit_2.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsDigits(2), ImgDir$ + "/cards/Digit_3.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsDigits(3), ImgDir$ + "/cards/Digit_4.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsDigits(4), ImgDir$ + "/cards/Digit_5.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsDigits(5), ImgDir$ + "/cards/Digit_6.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsDigits(6), ImgDir$ + "/cards/Digit_7.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsDigits(7), ImgDir$ + "/cards/Digit_8.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsDigits(8), ImgDir$ + "/cards/Digit_9.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsDigits(9), ImgDir$ + "/cards/Digit_10.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsDigits(10), ImgDir$ + "/cards/Digit_J.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsDigits(11), ImgDir$ + "/cards/Digit_Q.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprCardsDigits(12), ImgDir$ + "/cards/Digit_K.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 
 ' :mode=visualbasic:
