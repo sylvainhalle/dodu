@@ -72,6 +72,15 @@ Sub DummyWait (secs As Single, units As Integer)
 	Wend
 End Sub
 
+Sub PrintConsole (s As String)
+    Dim prev As Long
+    Let prev = _Dest
+    _Dest _Console
+    Print s
+    _Dest prev
+End Sub
+
+
 ' From https://qb64phoenix.com/forum/showthread.php?tid=3629&pid=34029
 Function String.Find& (Content As String, Search As String, CountTo As Long)
     'If CountTo is 0, this routine will count the number of instances of the search term inside the content string

@@ -39,8 +39,10 @@ SoundPlayer_AddSong Audio, SNG_CARDS, _SndOpen("/home/sylvain/Workspaces/dodu/So
 SoundPlayer_AddSong Audio, SNG_CUTSCENE1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/cutscene1.mid", "STREAM"), 0.5
 Let Audio.Loops(SNG_CUTSCENE1) = FALSE
 SoundPlayer_AddSong Audio, SNG_BIERE, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/biere_q.mid", "STREAM"), 0.4
+Let Audio.Loops(SNG_BIERE) = FALSE
 SoundPlayer_AddSong Audio, SNG_PASTORAL, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/lullaby.mid", "STREAM"), 0.4
 SoundPlayer_AddSong Audio, SNG_LIF, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/lif.mid", "STREAM"), 0.4
+Let Audio.Loops(SNG_LIF) = FALSE
 'SoundPlayer_AddSong Audio, SNG_PASTORAL, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/lullaby.mid"), 0.5
 
 Const SND_STEP% = 0

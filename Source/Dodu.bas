@@ -1,3 +1,4 @@
+$Debug
 '-----------------------------------------------------------------------------
 '    Dodu, an old-school QuickBasic game
 '    Copyright (C) 1994-2026  Sylvain Hallé
@@ -215,6 +216,8 @@ Next
 ' Do we enlarge to handle two images?
 If CFG_STEREOSCOPIC Then
     Point_Set SCREEN_ACTUAL_DIMS, SCREEN_DIMS.x * 2 + EYE_SEP, SCREEN_DIMS.y
+Else
+    Point_Set SCREEN_ACTUAL_DIMS, SCREEN_DIMS.x, SCREEN_DIMS.y
 End If
 
 ' Loading assets
@@ -248,6 +251,8 @@ Dim Shared SPRITE_LEVEL(IMG_DEPTH%, M_W, M_H) As SpriteSequence
 
 LoadPasswords
 MainLoop
+$Console
+
 
 Sub MainLoop
     Do
@@ -256,21 +261,10 @@ Sub MainLoop
         Viewport_Init_Default ImgBuffer, SCREEN_DIMS, SCREEN_DIMS, IMG_DEPTH
         Dim rst As RestorePoint
         Screen MainScreen.Layers(0).Buffer
+        PrintConsole Point_ToString(SCREEN_ACTUAL_DIMS)
         Let MainScreen.Scanlines = SCANLINES
         Let MainScreen.ScanlineWidth = SCANLINE_WIDTH
         Let MainScreen.ScanlineColor = SCANLINE_COLOR
-        'Viewport_SetBackground ImgBuffer, Backgrounds(0), P_ORIGIN
-        'Do
-        '  _Limit FPS%
-        '  Viewport_Clear ImgBuffer
-        '  Viewport_LineC ImgBuffer, FALSE, 0, 0, 80, 64, COLOR_GREEN, TRUE, TRUE, 0
-        '  Viewport_LineC ImgBuffer, FALSE, 30, 10, 60, 20, COLOR_YELLOW, TRUE, FALSE, 0
-        '  Viewport_LineC ImgBuffer, FALSE, 30, 30, 60, 40, COLOR_RED, TRUE, FALSE, 1
-        '  Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
-        '  Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
-        '  Viewport_Display MainScreen, EYE_NONE
-        'Loop While InKey$ = ""
-        'End
         If CFG_SPLASH Then
             DoLifSplash
         End If

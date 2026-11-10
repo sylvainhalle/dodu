@@ -32,8 +32,8 @@ Let IMG_MODE = IMG_MODE_EGA$ ' EGA by default
 ' -------------------------- 
 Const SCREEN_GAMEBUINO_X% = 80
 Const SCREEN_GAMEBUINO_Y% = 64
-Const SCREEN_PC_X% = 320
-Const SCREEN_PC_Y% = 240
+Const SCREEN_PC_X% = 160
+Const SCREEN_PC_Y% = 120
 Dim Shared SCREEN_DIMS As Point
 Point_Set SCREEN_DIMS, SCREEN_GAMEBUINO_X%, SCREEN_GAMEBUINO_Y%
 Dim Shared SCREEN_ACTUAL_DIMS As Point

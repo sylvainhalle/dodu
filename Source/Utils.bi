@@ -36,6 +36,8 @@ Declare Function Clamp% (value%, minimum%, maximum%)
 
 Declare Function Array_Contains% (a() As Integer, v As Integer)
 
+Declare Sub PrintConsole (s As String)
+
 Declare Function String.Find& (Content As String, Search As String, CountTo As Long)
 
 Declare Function String.Replace$ (content$, from$, to$)

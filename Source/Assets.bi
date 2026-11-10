@@ -99,7 +99,11 @@ Let DEFAULT_OFFSET = P_ORIGIN
 
 ' Splash screen
 Dim Shared SplashScreen As SpriteSequence
-SpriteSequence_InitFile SplashScreen, IMG_DIR$ + "/splash/Title.png",15, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+If SCREEN_DIMS.x = SCREEN_GAMEBUINO_X% Then
+	SpriteSequence_InitFile SplashScreen, IMG_DIR$ + "/splash/Title.png",15, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+Else
+	SpriteSequence_InitFile SplashScreen, IMG_DIR$ + "/splash/Title_160.png",15, 1, TRUE, TRUE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
+End If
 
 Dim Shared LifSplash As SpriteSequence
 SpriteSequence_InitFile LifSplash, IMG_DIR$ + "/splash/LIF.png",24, 1, TRUE, FALSE, DEFAULT_OFFSET, DEFAULT_OFFSET, COLOR_TRANSPARENT
