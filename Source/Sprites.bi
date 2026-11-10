@@ -16,7 +16,32 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
+' -------------------------- 
+' Video modes
+' -------------------------- 
+Const IMG_MODE_CGA$ = "cga"
+Const IMG_MODE_MCGA$ = "mcga"
+Const IMG_MODE_EGA$ = "ega"
+Const IMG_MODE_HER$ = "her"
+Const IMG_MODE_TI83$ = "ti83"
+Dim Shared IMG_MODE As String
+Let IMG_MODE = IMG_MODE_EGA$ ' EGA by default
+
+' -------------------------- 
+' Screen dimensions
+' -------------------------- 
+Const SCREEN_GAMEBUINO_X% = 80
+Const SCREEN_GAMEBUINO_Y% = 64
+Const SCREEN_PC_X% = 320
+Const SCREEN_PC_Y% = 240
+Dim Shared SCREEN_DIMS As Point
+Point_Set SCREEN_DIMS, SCREEN_GAMEBUINO_X%, SCREEN_GAMEBUINO_Y%
+Dim Shared SCREEN_ACTUAL_DIMS As Point
+Point_Set SCREEN_ACTUAL_DIMS, SCREEN_DIMS.x, SCREEN_DIMS.y
+
+' -------------------------- 
 ' Colors
+' -------------------------- 
 Const COLOR_BLACK& = _RGB32(0, 0, 0)
 Const COLOR_WHITE& = _RGB32(255, 255, 255)
 Const COLOR_RED& = _RGB32(255, 0, 0)
@@ -33,8 +58,15 @@ Const COLOR_GREEN_HI = _RGB32(0, 255, 0)
 Const COLOR_GREEN_MD = _RGB32(0, 170, 0)
 Const COLOR_GREEN_LO = _RGB32(0, 85, 0)
 
-Const LOAD_ASSETS = FALSE
-
+' -------------------------- 
+' Scanline settings
+' -------------------------- 
+Dim Shared SCANLINES As Integer
+Let SCANLINES = FALSE
+Dim Shared SCANLINE_COLOR As Long
+Let SCANLINE_COLOR = _RGB32(0, 0, 0, 56)
+Dim Shared SCANLINE_WIDTH As Integer
+Let SCANLINE_WIDTH = 1
 
 ' Sprite mode (32 = software, 33 = hardware)
 Const SPRITE_MODE% = 32
@@ -42,7 +74,9 @@ Const SPRITE_MODE% = 32
 ' Mode when loading sprites (257 = paletted) 
 Const IMAGE_MODE% = 257
 
+' -------------------------- 
 ' Stereoscopic flags
+' -------------------------- 
 Dim Shared CFG_STEREOSCOPIC As Integer
 Let CFG_STEREOSCOPIC = FALSE
 Const LAYER_DIVERGENCE = 0.5
