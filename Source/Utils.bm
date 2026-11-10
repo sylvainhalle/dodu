@@ -73,7 +73,7 @@ Sub DummyWait (secs As Single, units As Integer)
 End Sub
 
 Sub PrintConsole (s As String)
-    Dim prev As Long
+    Dim prev As Longc
     Let prev = _Dest
     _Dest _Console
     Print s
