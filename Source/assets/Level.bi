@@ -25,11 +25,11 @@ SpriteSequence_InitFile SprLevel(LVL_BLOCK_B), ImgDir$ + "/level/BlockBlue.gif",
 SpriteSequence_InitFile SprLevel(LVL_BLOCK_W), ImgDir$ + "/level/BlockWhite.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprLevel(LVL_WATER), ImgDir$ + "/level/Water.png",11, 3, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 Dim Coffset As Point
-Point_Set Coffset, 0, -14
-SpriteSequence_InitFile SprLevel(LVL_SNOW_C), ImgDir$ + "/level/Snow_C.png",7, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
+Point_Set Coffset, 0, -4
+SpriteSequence_InitFile SprLevel(LVL_SNOW_C), ImgDir$ + "/level/Snow_C.png",7, 2, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprLevel(LVL_SNOW_L), ImgDir$ + "/level/Snow_L.png",6, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprLevel(LVL_SNOW_R), ImgDir$ + "/level/Snow_R.png",6, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
-SpriteSequence_InitFile SprLevel(LVL_SNOW_M), ImgDir$ + "/level/Snow_M.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_SNOW_M), ImgDir$ + "/level/Snow_M.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprLevel(LVL_ROPE_M), ImgDir$ + "/level/Rope_M.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprLevel(LVL_ROPE_E), ImgDir$ + "/level/Rope_E.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 

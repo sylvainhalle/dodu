@@ -1,3 +1,4 @@
+$Debug
 '-----------------------------------------------------------------------------
 '    Dodu, an old-school QuickBasic game
 '    Copyright (C) 1994-2026  Sylvain Hallé
@@ -38,7 +39,7 @@ Dim dummy As String
 Const FPS% = 25
 
 ' Window scaling factor
-Const SCALE% = 2
+Const SCALE% = 6
 
 
 ' Number of frames between ticks of the thermometer
@@ -120,6 +121,8 @@ Const DEPTH_WATER% = 1
 Const DEPTH_PLAYER% = 2
 Const DEPTH_LEVEL% = 2
 Const DEPTH_CARDS% = 2
+Const DEPTH_SNOW_BACK% = 1
+Const DEPTH_SNOW_FRONT = 3
 Const DEPTH_CONTROLS% = 3
 
 ' --------------------------
@@ -1047,24 +1050,20 @@ Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
     Next
 End Sub
 
-Sub PrepareSnow (m As LevelMap, col As Integer, row As Integer, front As Integer)
-    Dim hastop As Integer
-    Let hastop = (row > 0 _AndAlso m.Topo(col, row - 1) = TILE_SNOW) _OrElse row = 0
-    If hastop Then
-        SpriteSequence_Copy SpriteLevel(Abs(front), col, row), SprLevel(LVL_SNOW_M)
-    Else
-        Select Case GetSnowSlopeAt(col, row, m)
-            Case SLOPE_C
-                SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL + Abs(front), col, row), SprLevel(LVL_SNOW_C)
-            Case SLOPE_L
-                SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL + Abs(front), col, row), SprLevel(LVL_SNOW_L)
-            Case SLOPE_R
-                SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL + Abs(front), col, row), SprLevel(LVL_SNOW_R)
-        End Select
-    End If
-    SpriteSequence_Stop SpriteLevel(Abs(front), col, row)
-    Let SpriteLevel(Abs(front), col, row).OnEnd = SPSQ_RESET
-    Let SpriteLevel(Abs(front), col, row).Ticker.Loop = FALSE
+Sub PrepareSnow (m As LevelMap, col As Integer, row As Integer, hasrackets As Integer)
+    Select Case GetSnowSlopeAt(col, row, m)
+        Case SLOPE_NONE
+            SpriteSequence_Copy SpriteLevel(DEPTH_SNOW_FRONT, col, row), SprLevel(LVL_SNOW_M)
+        Case SLOPE_C
+            SpriteSequence_Copy SpriteLevel(DEPTH_SNOW_FRONT, col, row), SprLevel(LVL_SNOW_C)
+        Case SLOPE_L
+            SpriteSequence_Copy SpriteLevel(DEPTH_SNOW_FRONT, col, row), SprLevel(LVL_SNOW_L)
+        Case SLOPE_R
+            SpriteSequence_Copy SpriteLevel(DEPTH_SNOW_FRONT, col, row), SprLevel(LVL_SNOW_R)
+    End Select
+    SpriteSequence_Stop SpriteLevel(DEPTH_SNOW_FRONT, col, row)
+    Let SpriteLevel(DEPTH_SNOW_FRONT, col, row).OnEnd = SPSQ_RESET
+    Let SpriteLevel(DEPTH_SNOW_FRONT, col, row).Ticker.Loop = FALSE
 End Sub
 
 Sub DrawMinimap (v As Viewport, m As LevelMap)
@@ -1138,9 +1137,7 @@ Sub SetSpriteSquare (m As LevelMap, isfront As Integer, col As Integer, row As I
             Case TILE_WATER
                 SpriteSequence_Copy SpriteLevel(DEPTH_WATER, col, row), SprLevel(LVL_WATER)
             Case TILE_SNOW
-                If Dodu.HasRackets Then
-                    PrepareSnow m, col, row, FALSE
-                End If
+                PrepareSnow m, col, row, Dodu.HasRackets
             Case TILE_ROPE
                 PrepareRope m, col, row
         End Select
@@ -1153,12 +1150,12 @@ End Sub
 
 Sub PrepareRope (m As LevelMap, col As Integer, row As Integer)
     If (row < MAP_HEIGHT - 1 _AndAlso m.Topo(col, row + 1) <> TILE_ROPE) _OrElse row = MAP_HEIGHT - 1 Then
-        SpriteSequence_Copy SpriteLevel(0, col, row), SprLevel(LVL_ROPE_E)
+        SpriteSequence_Copy SpriteLevel(DEPTH_ROPE, col, row), SprLevel(LVL_ROPE_E)
     Else
-        SpriteSequence_Copy SpriteLevel(0, col, row), SprLevel(LVL_ROPE_M)
+        SpriteSequence_Copy SpriteLevel(DEPTH_ROPE, col, row), SprLevel(LVL_ROPE_M)
     End If
     If row > 0 _AndAlso m.Topo(col, row - 1) = TILE_ROPE Then
-        SpriteSequence_Copy SpriteLevel(0, col, row - 1), SprLevel(LVL_ROPE_M)
+        SpriteSequence_Copy SpriteLevel(DEPTH_ROPE, col, row - 1), SprLevel(LVL_ROPE_M)
     End If
 End Sub
 
