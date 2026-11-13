@@ -164,7 +164,7 @@ Dim Shared ClipboardLevel As LevelMap
 Dim Shared ClipboardTopLeft As Square, ClipboardBotRight As Square
 ResetLevelSprites
 
-Let CFG_NEIGHBORS = TRUE
+Let CFG_NEIGHBORS = FALSE
 
 'Other assets
 'Dim Shared ICN_MUSIC As SpriteSequence
@@ -815,6 +815,7 @@ Sub ApplyToSquare (topleft As Square, botright As Square, sel As String)
             If PaletteShortcuts(selection) = TILE_NOTHING Then
                 ClearSpriteSquare s
             Else
+                PrintConsole Levels(CurrentLevel).Topo(col, row)
                 SetSpriteSquare Levels(CurrentLevel), FALSE, col, row, sel
                 SpriteSequence_Start SpriteLevel(0, col, row)
             End If

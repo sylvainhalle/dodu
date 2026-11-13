@@ -130,18 +130,19 @@ Function IsPlayerInSnow (lp As Point, l As LevelMap)
 End Function
 
 Function GetSnowSlopeAt (col As Integer, row As Integer, m As LevelMap)
-    Let GetSnowSlopeAt = SLOPE_NONE
     Dim hasleft As Integer, hasright As Integer, hastop As Integer
+
     Let hastop = (row > 0 _AndAlso m.Topo(col, row - 1) = TILE_SNOW) _OrElse row = 0
     Let hasleft = (col > 0 _AndAlso (m.Topo(col - 1, row) = TILE_SNOW _OrElse IsBlockAt(col - 1, row, m))) _OrElse col = 0
     Let hasright = (col < m.Width - 1 _AndAlso (m.Topo(col + 1, row) = TILE_SNOW _OrElse IsBlockAt(col + 1, row, m))) _OrElse col = m.Width - 1
+
     If hastop Then
-    	Let GetSnowSlopeAt = SLOPE_NONE
-    ElseIf Not hasleft And Not hasright Then
+        Let GetSnowSlopeAt = SLOPE_NONE
+    ElseIf hasleft = hasright Then
         Let GetSnowSlopeAt = SLOPE_C
-    ElseIf hasleft And Not hasright Then
+    ElseIf hasleft Then
         Let GetSnowSlopeAt = SLOPE_R
-    ElseIf Not hasleft And hasright Then
+    Else
         Let GetSnowSlopeAt = SLOPE_L
     End If
 End Function

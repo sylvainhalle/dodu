@@ -40,11 +40,6 @@ Const LVL_ROPE_M = 17
 Const LVL_ROPE_E = 18
 Const LVL_MARK = 19
 
-'**
-'* Draws the thermometer showing the player's temperature on the given
-'* layer. The mercury flashes blue and red when the temperature is 2 or less.
-'**
-Declare Sub DrawThermometer (v As Viewport, layer As Integer)
 
 Dim Shared ColorHighlight As Long, ColorHighlight2 As Long, ColorSnow As Long
 If ImgMode$ = IMG_MODE_EGA Then
@@ -83,19 +78,12 @@ Dim DefaultOffset As Point
 Let DefaultOffset = PtOrigin
 
 '$Include:'assets/Player.bi'
-
 '$Include:'assets/Level.bi'
-
 '$Include:'assets/Cards.bi'
-
 '$Include:'assets/Minimap.bi'
-
 '$Include:'assets/Counter.bi'
-
 '$Include:'assets/Sounds.bi'
-
 '$Include:'assets/Backgrounds.bi'
-
 '$Include:'assets/Fonts.bi'
 
 
