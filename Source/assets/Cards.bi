@@ -20,6 +20,8 @@ Dim Shared SprCard As SpriteSequence
 Dim Shared SprCardsSuits(4) As SpriteSequence
 Dim Shared SprCardsDigits(13) As SpriteSequence
 
+Declare Sub DisplayCard (v As Viewport, absolute As Integer, p As Point, value As Integer)
+
 ' Playing cards
 
 SpriteSequence_InitFile SprCard, ImgDir$ + "/cards/Card.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT

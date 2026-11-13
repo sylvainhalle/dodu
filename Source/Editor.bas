@@ -26,6 +26,9 @@ Option _Explicit
 '$IncludeOnce
 '$Include:'Utils.bi'
 
+
+$Console
+
 ' --------------------------
 ' Program constants
 ' --------------------------
@@ -38,38 +41,12 @@ Const UNDO_LEVELS = 11
 ' Screen dimensions
 Const TOPBAR_HEIGHT = 16
 Const PALETTE_WIDTH = 26
-Dim Shared ScreenDims As Point
-Point_Set ScreenDims, 512, 342
-Dim Shared LevelDims As Point
-Point_Set LevelDims, ScreenDims.x - PALETTE_WIDTH, ScreenDims.y - TOPBAR_HEIGHT
-Dim Shared LevelTopLeft As Point
-Point_Set LevelTopLeft, PALETTE_WIDTH, TOPBAR_HEIGHT + 1
-Dim Shared PaletteTopLeft As Point, PaletteBotRight As Point
-Point_Set PaletteTopLeft, 0, TOPBAR_HEIGHT + 1
-Point_Set PaletteBotRight, PALETTE_WIDTH, ScreenDims.y
-Const PALETTE_BTN_SIZE = 6
-Dim Shared PtCoords1 As Point, PtCoords2 As Point
-Point_Set PtCoords1, 3, PaletteBotRight.y - 22
-Point_Set PtCoords2, 19, PaletteBotRight.y - 22
-
-Const GUI_BUTTON_SIZE = 17
-Dim Shared GuiIconButtonSize As Point
-Point_Set GuiIconButtonSize, 11, 11
 
 ' Window scaling factor
 Const SCALE% = 3
 
 ' Refresh rate
 Const FPS% = 25
-
-' Video modes
-Const IMG_MODE_CGA$ = "cga"
-Const IMG_MODE_MCGA$ = "mcga"
-Const IMG_MODE_EGA$ = "ega"
-Const IMG_MODE_HER$ = "her"
-Const IMG_MODE_TI83$ = "ti83"
-Dim Shared ImgMode As String
-Let ImgMode$ = IMG_MODE_EGA
 
 ' Colors
 Const COLOR_BG& = _RGB32(83, 83, 255)
@@ -98,6 +75,26 @@ Point_Set PtUnit, 1, 1
 ' World size
 Dim Shared WorldSize As Point
 Point_Set WorldSize, MAP_WIDTH * BLOCK_SIZE, MAP_HEIGHT * BLOCK_SIZE
+
+Point_Set ScreenDims, 512, 342
+Dim Shared LevelDims As Point
+Point_Set LevelDims, ScreenDims.x - PALETTE_WIDTH, ScreenDims.y - TOPBAR_HEIGHT
+Dim Shared LevelTopLeft As Point
+Point_Set LevelTopLeft, PALETTE_WIDTH, TOPBAR_HEIGHT + 1
+Dim Shared PaletteTopLeft As Point, PaletteBotRight As Point
+Point_Set PaletteTopLeft, 0, TOPBAR_HEIGHT + 1
+Point_Set PaletteBotRight, PALETTE_WIDTH, ScreenDims.y
+Const PALETTE_BTN_SIZE = 6
+Dim Shared PtCoords1 As Point, PtCoords2 As Point
+Point_Set PtCoords1, 3, PaletteBotRight.y - 22
+Point_Set PtCoords2, 19, PaletteBotRight.y - 22
+
+Const GUI_BUTTON_SIZE = 17
+Dim Shared GuiIconButtonSize As Point
+Point_Set GuiIconButtonSize, 11, 11
+
+Const DEFAULT_FILENAME$ = "Untitled.lvl"
+
 
 ' --------------------------
 ' Level data
@@ -158,14 +155,16 @@ Let PaletteShortcuts(7) = "t"
 Let PaletteShortcuts(8) = "f"
 Let PaletteShortcuts(9) = "c"
 Let PaletteShortcuts(10) = "~"
-Let PaletteShortcuts(11) = "s"
+Let PaletteShortcuts(11) = "S"
 Let PaletteShortcuts(12) = "$"
 
 Dim Shared LvlSprites(MAP_WIDTH, MAP_HEIGHT) As SpriteSequence
-Dim Shared SpriteLevel(2, MAP_WIDTH, MAP_HEIGHT) As SpriteSequence
+Dim Shared SpriteLevel(IMG_DEPTH, MAP_WIDTH, MAP_HEIGHT) As SpriteSequence
 Dim Shared ClipboardLevel As LevelMap
 Dim Shared ClipboardTopLeft As Square, ClipboardBotRight As Square
 ResetLevelSprites
+
+Let CFG_NEIGHBORS = TRUE
 
 'Other assets
 'Dim Shared ICN_MUSIC As SpriteSequence
@@ -188,16 +187,15 @@ Viewport_Init ImgBuffer, ScreenDims, ScreenDims, PtOrigin, 1, 1
 Dim Shared PaletteDims As Point
 Point_Set PaletteDims, PaletteBotRight.x - PaletteTopLeft.x, PaletteBotRight.y - PaletteTopLeft.y
 Viewport_Init PaletteBuffer, PaletteDims, PaletteDims, PtOrigin, 1, 1
-Viewport_Init LevelBuffer, LevelDims, WorldSize, PtOrigin, 1, 1
+Viewport_Init LevelBuffer, LevelDims, WorldSize, PtOrigin, 1, IMG_DEPTH
 Viewport_Init MainScreen, ScreenDims, PtOrigin, PtOrigin, SCALE, 1
 Let MainScreen.Scanlines = 1
 Viewport_SetBackground LevelBuffer, Backgrounds(CurrentBg), PtUnit
 
+' Initial screen setup
 Screen MainScreen.Layers(0).Buffer
-
 _Title "The Dodu Level Editor"
 _Icon SprLevel(LVL_BLOCK_B).Content
-
 
 Dim Shared sel_topleft As Square, sel_botright As Square
 Square_Set sel_topleft, 0, 0
@@ -230,8 +228,9 @@ Sub MainLoop
     ' --------------------------
     ' State variables
     ' --------------------------
+    _ScreenMove _Middle
     Dim keyb As Integer
-    Let filename = "Untitled.lvl"
+    Let filename = DEFAULT_FILENAME
 
     Dim khit As Long, shift As Integer, ctrl As Integer, alt As Integer, msinput As Integer, mousex As Integer, mousey As Integer
     Do
@@ -248,7 +247,7 @@ Sub MainLoop
         'Viewport_Clear LevelBuffer
         TickAll
         DrawPalette
-        DrawLevel
+        DrawLevelGrid
         Viewport_PutViewport ImgBuffer, TRUE, PaletteBuffer, PaletteTopLeft, PtOrigin, PaletteDims, EYE_NONE
         Viewport_PutViewport ImgBuffer, TRUE, LevelBuffer, LevelTopLeft, PtOrigin, LevelDims, EYE_NONE
         DrawTopBar
@@ -481,7 +480,7 @@ Sub DoNew
             Next
         Next
     Next
-    Let filename = "Untitled.lvl"
+    Let filename = DEFAULT_FILENAME
 End Sub
 
 Sub HandleClickLevel (x As Single, y As Single)
@@ -523,7 +522,7 @@ End Sub
 
 Sub DoSave
     Dim outfile As String
-    If filename = "Untitled.lvl" Then
+    If filename = DEFAULT_FILENAME Then
         Let outfile = _SaveFileDialog$("Save level", "", "*.lvl", "Level files")
     Else
         Let outfile = filename
@@ -801,6 +800,8 @@ Sub ResetLevelSprites
             ClearSpriteSquare s
         Next
     Next
+    Let Levels(CurrentLevel%).Width = MAP_WIDTH
+    Let Levels(CurrentLevel%).Height = MAP_HEIGHT
 End Sub
 
 Sub ApplyToSquare (topleft As Square, botright As Square, sel As String)
@@ -873,7 +874,7 @@ Sub DrawPalette
     DrawNumber PaletteBuffer, PtCoords2, sel_topleft.row, 0
 End Sub
 
-Sub DrawLevel
+Sub DrawLevelGrid
     Viewport_Clear LevelBuffer
     Dim col As Integer, row As Integer
     For col = 0 To MAP_WIDTH - 1
@@ -882,20 +883,8 @@ Sub DrawLevel
             Viewport_LineC LevelBuffer, FALSE, col * BLOCK_SIZE, row * BLOCK_SIZE - 1, col * BLOCK_SIZE, row * BLOCK_SIZE + 1, COLOR_GRID, FALSE, FALSE, 0
         Next
     Next
-    For row = MAP_HEIGHT - 1 To 0 Step -1
-        For col = 0 To MAP_WIDTH - 1
-            Dim s As Square
-            Let s.col = col
-            Let s.row = row
-            If SpriteLevel(FALSE, col, row).Content <> -1 Then
-                Dim p As Point
-                Square_ToPoint s, p
-                Viewport_PutSpriteSequence LevelBuffer, FALSE, SpriteLevel(FALSE, col, row), p, FALSE, 0
-            End If
-        Next
-    Next
-    Viewport_LineC LevelBuffer, FALSE, _Min(sel_topleft.col, sel_botright.col) * BLOCK_SIZE, _Min(sel_topleft.row, sel_botright.row) * BLOCK_SIZE, (_Max(sel_topleft.col, sel_botright.col) + 1) * BLOCK_SIZE - 1, (_Max(sel_topleft.row, sel_botright.row) + 1) * BLOCK_SIZE - 1, COLOR_CURSOR, TRUE, FALSE, 0
-
+    DrawLevel LevelBuffer, Levels(CurrentLevel), FALSE
+    Viewport_LineC LevelBuffer, FALSE, _Min(sel_topleft.col, sel_botright.col) * BLOCK_SIZE, _Min(sel_topleft.row, sel_botright.row) * BLOCK_SIZE, (_Max(sel_topleft.col, sel_botright.col) + 1) * BLOCK_SIZE - 1, (_Max(sel_topleft.row, sel_botright.row) + 1) * BLOCK_SIZE - 1, COLOR_CURSOR, TRUE, FALSE, IMG_DEPTH - 1
 End Sub
 
 Sub TickAll
@@ -908,79 +897,6 @@ Sub TickAll
         Next
     Next
 End Sub
-
-Sub SetSpriteSquare (m As LevelMap, isfront As Integer, col As Integer, row As Integer, e As String)
-    If Not isfront Then
-        Select Case e
-            Case TILE_BLOCK_B
-                SpriteSequence_Copy SpriteLevel(Abs(isfront), col, row), SprLevel(LVL_BLOCK_B)
-            Case TILE_BLOCK_W
-                SpriteSequence_Copy SpriteLevel(Abs(isfront), col, row), SprLevel(LVL_BLOCK_W)
-            Case TILE_POLE
-                SpriteSequence_Copy SpriteLevel(Abs(isfront), col, row), SprLevel(LVL_POLE)
-            Case TILE_COOKIE
-                SpriteSequence_Copy SpriteLevel(Abs(isfront), col, row), SprLevel(LVL_COOKIE)
-            Case TILE_COFFEE
-                SpriteSequence_Copy SpriteLevel(Abs(isfront), col, row), SprLevel(LVL_COFFEE)
-            Case TILE_MITTENS
-                SpriteSequence_Copy SpriteLevel(Abs(isfront), col, row), SprLevel(LVL_MITTENS)
-            Case TILE_TUQUE
-                SpriteSequence_Copy SpriteLevel(Abs(isfront), col, row), SprLevel(LVL_TUQUE)
-            Case TILE_WATER
-                SpriteSequence_Copy SpriteLevel(Abs(isfront), col, row), SprLevel(LVL_WATER)
-            Case TILE_MARK
-                SpriteSequence_Copy SpriteLevel(Abs(isfront), col, row), SprLevel(LVL_MARK)
-            Case TILE_SNOW
-                If Dodu.HasRackets Then
-                    PrepareSnow m, col, row, FALSE
-                End If
-            Case TILE_ROPE
-                PrepareRope m, col, row
-        End Select
-    Else
-        If e = TILE_SNOW And Not Dodu.HasRackets Then
-            PrepareSnow m, col, row, TRUE
-        End If
-    End If
-    SpriteSequence_Start LvlSprites(col, row)
-End Sub
-
-Sub PrepareRope (m As LevelMap, col As Integer, row As Integer)
-    If (row < MAP_HEIGHT - 1 _AndAlso m.Topo(col, row + 1) <> TILE_ROPE) _OrElse row = MAP_HEIGHT - 1 Then
-        SpriteSequence_Copy SpriteLevel(0, col, row), SprLevel(LVL_ROPE_E)
-    Else
-        SpriteSequence_Copy SpriteLevel(0, col, row), SprLevel(LVL_ROPE_M)
-    End If
-    If row > 0 _AndAlso m.Topo(col, row - 1) = TILE_ROPE Then
-        SpriteSequence_Copy SpriteLevel(0, col, row - 1), SprLevel(LVL_ROPE_M)
-    End If
-End Sub
-
-Sub ClearSpriteSquare (s As Square)
-    Let SpriteLevel(0, s.col, s.row).Content = -1
-    Let SpriteLevel(1, s.col, s.row).Content = -1
-End Sub
-
-Sub PrepareSnow (m As LevelMap, col As Integer, row As Integer, front As Integer)
-    Dim hastop As Integer
-    Let hastop = (row > 0 _AndAlso m.Topo(col, row - 1) = TILE_SNOW) _OrElse row = 0
-    If hastop Then
-        SpriteSequence_Copy SpriteLevel(Abs(front), col, row), SprLevel(LVL_SNOW_M)
-    Else
-        Select Case GetSnowSlopeAt(col, row, m)
-            Case SLOPE_C
-                SpriteSequence_Copy SpriteLevel(Abs(front), col, row), SprLevel(LVL_SNOW_C)
-            Case SLOPE_L
-                SpriteSequence_Copy SpriteLevel(Abs(front), col, row), SprLevel(LVL_SNOW_L)
-            Case SLOPE_R
-                SpriteSequence_Copy SpriteLevel(Abs(front), col, row), SprLevel(LVL_SNOW_R)
-        End Select
-    End If
-    SpriteSequence_Stop SpriteLevel(Abs(front), col, row)
-    Let SpriteLevel(Abs(front), col, row).OnEnd = SPSQ_RESET
-    Let SpriteLevel(Abs(front), col, row).Ticker.Loop = FALSE
-End Sub
-
 
 ' --------------------------
 ' Includes (implementations)

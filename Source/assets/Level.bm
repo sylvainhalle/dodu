@@ -34,4 +34,179 @@ Sub DrawThermometer (v As Viewport, layer As Integer)
     Viewport_LineC v, TRUE, 5, 16, 8, 18, red, TRUE, TRUE, layer
 End Sub
 
+Sub ClearSpriteSquare (s As Square)
+  Let SpriteLevel(DEPTH_LEVEL, s.col, s.row).Content = -1
+  Let SpriteLevel(DEPTH_SNOW_BACK, s.col, s.row).Content = -1
+  Let SpriteLevel(DEPTH_SNOW_FRONT, s.col, s.row).Content = -1
+  Let SpriteLevel(DEPTH_POLE, s.col, s.row).Content = -1
+  Let SpriteLevel(DEPTH_ROPE, s.col, s.row).Content = -1
+  Let SpriteLevel(DEPTH_WATER, s.col, s.row).Content = -1
+  Let SpriteLevel(DEPTH_MARK, s.col, s.row).Content = -1
+End Sub
+
+Sub SetSpriteSquare (m As LevelMap, isfront As Integer, col As Integer, row As Integer, e As String)
+    Select Case e
+      Case TILE_BLOCK_B
+        SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_BLOCK_B)
+      Case TILE_BLOCK_W
+        SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_BLOCK_W)
+      Case TILE_POLE
+        SpriteSequence_Copy SpriteLevel(DEPTH_POLE, col, row), SprLevel(LVL_POLE)
+      Case TILE_COOKIE
+        SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_COOKIE)
+      Case TILE_COFFEE
+        SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_COFFEE)
+      Case TILE_MITTENS
+        SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprMittens
+      Case TILE_TUQUE
+        SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprTuque
+      Case TILE_WATER
+        SpriteSequence_Copy SpriteLevel(DEPTH_WATER, col, row), SprLevel(LVL_WATER)
+      Case TILE_MARK
+        SpriteSequence_Copy SpriteLevel(DEPTH_MARK, col, row), SprLevel(LVL_MARK)
+      Case TILE_SNOW
+        PrepareSnow m, FALSE, col, row, Dodu.HasRackets
+      Case TILE_ROPE
+        PrepareRope m, col, row
+    End Select
+End Sub
+
+Sub PrepareRope (m As LevelMap, col As Integer, row As Integer)
+  If (row < MAP_HEIGHT - 1 _AndAlso m.Topo(col, row + 1) <> TILE_ROPE) _OrElse row = MAP_HEIGHT - 1 Then
+    SpriteSequence_Copy SpriteLevel(DEPTH_ROPE, col, row), SprLevel(LVL_ROPE_E)
+  Else
+    SpriteSequence_Copy SpriteLevel(DEPTH_ROPE, col, row), SprLevel(LVL_ROPE_M)
+  End If
+  If row > 0 _AndAlso m.Topo(col, row - 1) = TILE_ROPE Then
+    SpriteSequence_Copy SpriteLevel(DEPTH_ROPE, col, row - 1), SprLevel(LVL_ROPE_M)
+  End If
+End Sub
+
+Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
+  Dim col, row As Integer, layer As Integer
+  For layer = 0 To IMG_DEPTH - 1
+    For row = m.Height - 1 To 0 Step -1
+      For col = 0 To m.Width - 1
+        Dim s As Square
+        Let s.col = col
+        Let s.row = row
+        If SpriteLevel(layer, col, row).Content <> -1 Then
+          Dim p As Point
+          Square_ToPoint s, p
+          Viewport_PutSpriteSequence v, FALSE, SpriteLevel(layer, col, row), p, FALSE, layer
+        End If
+      Next
+    Next
+  Next
+End Sub
+
+Sub PrepareSnow (m As LevelMap, isfront As Integer, col As Integer, row As Integer, hasrackets As Integer)
+	SelectSnowSprite m, col, row, hasrackets
+	If CFG_NEIGHBORS Then
+		If col > 0 Then SelectSnowSprite m, col - 1, row, hasrackets
+		If col < MAP_WIDTH - 1 Then SelectSnowSprite m, col + 1, row, hasrackets
+		If row > 0 Then SelectSnowSprite m, col, row - 1, hasrackets
+		If row < MAP_HEIGHT - 1 Then SelectSnowSprite m, col, row + 1, hasrackets
+	End If
+End Sub
+
+Sub SelectSnowSprite (m As LevelMap, col As Integer, row As Integer, hasrackets As Integer)
+  If m.Topo(col, row) <> TILE_SNOW Then Exit Sub
+  Select Case GetSnowSlopeAt(col, row, m)
+    Case SLOPE_NONE
+      SpriteSequence_Copy SpriteLevel(DEPTH_SNOW_FRONT, col, row), SprLevel(LVL_SNOW_M)
+    Case SLOPE_C
+      SpriteSequence_Copy SpriteLevel(DEPTH_SNOW_FRONT, col, row), SprLevel(LVL_SNOW_C)
+    Case SLOPE_L
+      SpriteSequence_Copy SpriteLevel(DEPTH_SNOW_FRONT, col, row), SprLevel(LVL_SNOW_L)
+    Case SLOPE_R
+      SpriteSequence_Copy SpriteLevel(DEPTH_SNOW_FRONT, col, row), SprLevel(LVL_SNOW_R)
+  End Select
+  SpriteSequence_Stop SpriteLevel(DEPTH_SNOW_FRONT, col, row)
+  Let SpriteLevel(DEPTH_SNOW_FRONT, col, row).OnEnd = SPSQ_RESET
+  Let SpriteLevel(DEPTH_SNOW_FRONT, col, row).Ticker.Loop = FALSE
+End Sub
+
+Sub DrawMinimap (v As Viewport, m As LevelMap)
+  Dim col, row As Integer
+  For row = 0 To m.Height
+    For col = 0 To m.Width
+      Dim s As Square
+      Let s.col = col
+      Let s.row = row
+      Dim p As Point
+      Point_Set p, s.col * 5, s.row * 5
+      Select Case m.Topo(col, row)
+        Case TILE_BLOCK_B
+          Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_BLOCK_B), p, FALSE, 0
+        Case TILE_BLOCK_W
+          Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_BLOCK_W), p, FALSE, 0
+        Case TILE_POLE
+          Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_POLE), p, FALSE, 0
+        Case TILE_COOKIE
+          Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_COOKIE), p, FALSE, 0
+        Case TILE_COFFEE
+          Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_COFFEE), p, FALSE, 0
+        Case TILE_WATER
+          Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_WATER), p, FALSE, 0
+        Case TILE_SNOW
+          Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_SNOW), p, FALSE, 0
+        Case TILE_MARK
+          Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_MARK), p, FALSE, 0
+      End Select
+    Next
+  Next
+  Dim dod_s As Square
+  Let dod_s.col = Dodu.LevPos.x \ BLOCK_SIZE
+  Let dod_s.row = Dodu.LevPos.y \ BLOCK_SIZE
+  Dim dod_p As Point
+  Point_Set dod_p, dod_s.col * MINI_BLOCK_SIZE, (dod_s.row + 1) * MINI_BLOCK_SIZE
+  Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_PLAYER), dod_p, FALSE, 0
+End Sub
+
+Sub HighlightBlock (v As Viewport, m As LevelMap, s As Square, c~&)
+  If Square_IsValid(s) Then
+    Dim p1 As Point, p2 As Point
+    Square_ToPoint s, p1
+    Point_Set p2, p1.x + BLOCK_SIZE - 1, p1.y + BLOCK_SIZE - 1
+    Viewport_Line v, FALSE, p1, p2, c~&, TRUE, FALSE, 1
+  End If
+End Sub
+
+Sub DropBlock (m As LevelMap, p As Square)
+  Let m.Topo(p.col, p.row) = TILE_BLOCK_W
+  SetSpriteSquare m, FALSE, p.col, p.row, TILE_BLOCK_W
+  Let Dodu.HasBlock = FALSE
+End Sub
+
+Sub PrepareLevel (m As LevelMap, isfront As Integer)
+  Dim col, row As Integer, layer As Integer
+  For layer = 0 To IMG_DEPTH - 1
+    For row = 0 To m.Height
+      For col = 0 To m.Width
+        Let SpriteLevel(layer, col, row).Content = -1
+      Next
+    Next
+    For row = 0 To m.Height
+      For col = 0 To m.Width
+        Dim s As Square
+        Let s.col = col
+        Let s.row = row
+        SetSpriteSquare m, layer, col, row, m.Topo(col, row)
+      Next
+    Next
+  Next
+End Sub
+
+' --------------------------
+' Player drawing
+' --------------------------
+Sub DrawPlayer (v As Viewport, seqs() As SpriteSequence)
+  Dim s As SpriteSequence
+  Viewport_PutSpriteSequence v, FALSE, seqs(0), Dodu.LevPos, seqs(0).Flipped, DEPTH_PLAYER
+  Viewport_PutSpriteSequence v, FALSE, seqs(1), Dodu.LevPos, seqs(1).Flipped, DEPTH_PLAYER
+  Viewport_PutSpriteSequence v, FALSE, seqs(2), Dodu.LevPos, seqs(2).Flipped, DEPTH_PLAYER
+End Sub
+
+
 ' :mode=visualbasic:

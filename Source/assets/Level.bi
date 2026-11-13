@@ -19,13 +19,43 @@
 Const LAYER_THERMO% = 2
 
 Dim Shared SprLevel(20) As SpriteSequence
+Dim Shared CFG_NEIGHBORS As Integer
+Let CFG_NEIGHBORS = FALSE
+
+' --------------------------
+' Depth settings
+' --------------------------
+Const IMG_DEPTH% = 4
+Const DEPTH_BACKGROUND% = 0
+Const DEPTH_POLE% = 1
+Const DEPTH_ROPE% = 1
+Const DEPTH_WATER% = 1
+Const DEPTH_PLAYER% = 2
+Const DEPTH_LEVEL% = 2
+Const DEPTH_CARDS% = 2
+Const DEPTH_MARK% = 2
+Const DEPTH_SNOW_BACK% = 1
+Const DEPTH_SNOW_FRONT% = 3
+Const DEPTH_CONTROLS% = 3
+
+Declare Sub PrepareLevel (m As LevelMap, isfront As Integer)
+Declare Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
+Declare Sub SetSpriteSquare (m As LevelMap, isfront As Integer, col As Integer, row As Integer, e As String)
+Declare Sub ClearSpriteSquare (s As Square)
+Declare Sub PrepareRope (m As LevelMap, col As Integer, row As Integer)
+Declare Sub PrepareSnow (m As LevelMap, col As Integer, row As Integer, hasrackets As Integer)
+Declare Sub DrawPlayer (v As Viewport, seqs() As SpriteSequence)
+Declare Sub DrawMinimap (v As Viewport, m As LevelMap)
+Declare Sub HighlightBlock (v As Viewport, m As LevelMap, s As Square, c~&)
+Declare Sub DropBlock (m As LevelMap, p As Square)
+Declare Sub SelectSnowSprite (m As LevelMap, col As Integer, row As Integer, hasrackets As Integer)
 
 ' Blocks
 SpriteSequence_InitFile SprLevel(LVL_BLOCK_B), ImgDir$ + "/level/BlockBlue.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprLevel(LVL_BLOCK_W), ImgDir$ + "/level/BlockWhite.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprLevel(LVL_WATER), ImgDir$ + "/level/Water.png",11, 3, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 Dim Coffset As Point
-Point_Set Coffset, 0, -4
+Point_Set Coffset, 0, -11
 SpriteSequence_InitFile SprLevel(LVL_SNOW_C), ImgDir$ + "/level/Snow_C.png",7, 2, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprLevel(LVL_SNOW_L), ImgDir$ + "/level/Snow_L.png",6, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprLevel(LVL_SNOW_R), ImgDir$ + "/level/Snow_R.png",6, 2, TRUE, TRUE, Coffset, Coffset, COLOR_TRANSPARENT

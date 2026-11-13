@@ -1,0 +1,31 @@
+'-----------------------------------------------------------------------------
+'    Dodu, an old-school QuickBasic game
+'    Copyright (C) 1994-2026  Sylvain Hallé
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU General Public License for more details.
+'
+'    You should have received a copy of the GNU General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'-----------------------------------------------------------------------------
+
+Sub DisplayCard (v As Viewport, absolute As Integer, p As Point, value As Integer)
+  Dim suit As Integer, nb As Integer
+  Dim p1 As Point, p2 As Point
+  Let suit = value \ 13
+  Let nb = value Mod 13
+  Viewport_PutSpriteSequence v, absolute, SprCard, p, FALSE, DEPTH_CARDS
+  Point_Set p1, p.x + 5, p.y + 9
+  Viewport_PutSpriteSequence v, absolute, SprCardsSuits(suit), p1, FALSE, DEPTH_CARDS
+  Point_Set p2, p.x + 2, p.y + 2
+  Viewport_PutSpriteSequence v, absolute, SprCardsDigits(nb), p2, FALSE, DEPTH_CARDS
+End Sub
+
+' :mode=visualbasic:
