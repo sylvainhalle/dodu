@@ -17,12 +17,42 @@
 '-----------------------------------------------------------------------------
 
 ' --------------------------
-' Level data
+
 ' --------------------------
 
 '$IncludeOnce
 
-LevelData:
+Sections:
+
+
+Data "SECTION", "onlyice", 0
+Data "BACKGROUNDS", 0, 1
+Data "CUTSCENE", 0
+Data "LEVEL", "just_walk"
+Data "LEVEL", "choose_side"
+Data "LEVEL", "choose_again"
+
+
+Data "SECTION", "snowblocks", 2
+Data "BACKGROUNDS", 6, 7
+Data "CUTSCENE", 1
+Data "LEVEL", "take_one"
+Data "LEVEL", "take_two"
+Data "LEVEL", "take_three"
+Data "LEVEL", "pick_side"
+
+Data "SECTION", "cookies", 1
+Data "BACKGROUNDS", 3, 4
+Data "CUTSCENE", 2
+Data "LEVEL", "little_help"
+Data "LEVEL", "take_it"
+Data "LEVEL", "leapfrog"
+
+Data "SECTION", "mittens", 7
+Data "CUTSCENE", 3
+
+
+Data "END"
 
 ' Backgrounds
 ' -----------
@@ -49,293 +79,5 @@ LevelData:
 ' 7: Homage to Brubeck
 ' 8: Kraftwerk
 
-' Level data
-' ----------
-' Format:
-' - first line: background index, foreground index (-1 if none),
-'   cutscene index (-1 if none), song index
-' - second line: x-y coordinates of the background offset
-' - third line: x-y coordinates of the background parallax
-' - remaining lines: map
-' - last line: "x" to indicate the end of a level; "X" to indicate that
-'   this is the last level
-
-' --- Cut scene: walking
-
-Data 0, -1, 0, 0
-Data 2, 2
-Data 0, 0
-Data "             "
-Data "             "
-Data "@           @"
-Data "@   @ * @   @"
-Data "@!  @@@@@@  @"
-Data "@@@@@@@@@@@@@"
-Data "x"
-
-
-Data 1, -1, -1, 0
-Data 2, 2
-Data 0, 0
-Data "                                       "
-Data "                                       "
-Data "                                       "
-Data "                       @@              "
-Data "                      @                "
-Data "@   @@@              @     @@         @"
-Data "@   @@@@           @@   @@@@@   @     @"
-Data "@@@@@@@@@   *     @     @@@    @@  !  @"
-Data "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-Data "x"
-
-
-Data 0, -1, -1, 0
-Data 2, 2
-Data 0, 0
-Data "                                "
-Data "                                "
-Data "               *                "
-Data "          @@@@@@@@@@@@@        @"
-Data "        @@@                    @"
-Data "@     @@             @@@@      @"
-Data "@    @       @@@@@            @@"
-Data "@   @  @          @            @"
-Data "@@@@@  @          @@@@@@@@@@   @"
-Data "@      @                       @"
-Data "@      @@@@@@                  @"
-Data "@    @@@         @        @    @"
-Data "@               @@     @@@@    @"
-Data "@            @@@@@             @"
-Data "@                              @"
-Data "@@@@@                       @@@@"
-Data "@                              @"
-Data "@                 @@@          @"
-Data "@  !              @@@@         @"
-Data "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-Data "x"
-
-' --- Cut scene: picking blocks
-
-Data 3, -1, 1, 1
-Data 2, 2
-Data 0, 0
-Data "                  "
-Data "                  "
-Data "@                @"
-Data "@        @@     @@"
-Data "@@* #@@  @@@  ! @@"
-Data "@@@@@@@@@@@@@@@@@@"
-Data "x"
-
-
-Data 4, -1, -1, 1
-Data 2, 2
-Data 0, 0
-Data "@              "
-Data "@              "
-Data "@             @"
-Data "@       @     @"
-Data "@       @ *  #@"
-Data "@    @  @@@@@@@"
-Data "@    @        @"
-Data "@    @        @"
-Data "@    @      ! @"
-Data "@@@@@@@@@@@@@@@"
-Data "x"
-
-Data 3, -1, -1, 1
-Data 2, 2
-Data 0, 0
-Data "@               "
-Data "@               "
-Data "@               "
-Data "@     @    #   @"
-Data "@     @#* #@   @"
-Data "@     @@@@@@   @"
-Data "@ !            @"
-Data "@ @            @"
-Data "@@@            @"
-Data "@@@@@@@@@@@@@@@@"
-Data "x"
-
-Data 4, -1, -1, 1
-Data 2, 2
-Data 0, 0
-Data "@   @                    "
-Data "@  @@@@@                 "
-Data "@   @        *           "
-Data "@        @@@@@@@@       @"
-Data "@                       @"
-Data "@                       @"
-Data "@            @          @"
-Data "@       @    @        ##@"
-Data "@      @@    @       ##@@"
-Data "@@@   @@@ !  @      ##@@@"
-Data "@@@@@@@@@@@@@@@@@@@@@@@@@"
-Data "x"
-
-Data 3, -1, -1, 1
-Data 2, 2
-Data 0, 0
-Data "                                          "
-Data "                                          "
-Data "      * #                                 "
-Data "     @@@@@                                "
-Data "@                                         "
-Data "@                         @      @@      @"
-Data "@        @    @    @@    @@@    @@@@     @"
-Data "@ !      @@  @@@  @@@@  @@@@@  @@@@@@  ! @"
-Data "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-Data "x"
-
-' --- Cut scene: cookies
-
-Data 6, -1, 2, 2
-Data 2, 2
-Data 0, 0
-Data "                            "
-Data "                            "
-Data "                            "
-Data "@                  @       @"
-Data "@ !              @@@@@     @"
-Data "@@@@@      c    @@@@@@ * ##@"
-Data "@@@@@@~@@@@@@@@@@@@@@@@@@@@@"
-Data "x"
-
-
-Data 7, -1, -1, 2
-Data 2, 2
-Data 0, 0
-Data "                   "
-Data "@                  "
-Data "@                  "
-Data "@#            @   @"
-Data "@@#        c# @   @"
-Data "@@##  *    @@ @ ! @"
-Data "@@@@@@@@~@~@@@@@@@@"
-Data "x"
-
-
-Data 6, -1, -1, 2
-Data 2, 2
-Data 0, 0
-Data "                   "
-Data "                   "
-Data "         *         "
-Data "        @@@        "
-Data "@        @        @"
-Data "@    @@@@@@@@@    @"
-Data "@      @@@        @"
-Data "@        @        @"
-Data "@        @        @"
-Data "@        @   @@@@@@"
-Data "@@@@@@   @        @"
-Data "@        @        @"
-Data "@        @        @"
-Data "@    @@@@@@@@     @"
-Data "@        @        @"
-Data "@        @        @"
-Data "@        @     @@@@"
-Data "@@@@@@            @"
-Data "@                 @"
-Data "@           c     @"
-Data "@    @@  @@@@@@@  @"
-Data "@    @@@@@        @"
-Data "@        @@       @"
-Data "@                 @"
-Data "@                 @"
-Data "@        !        @"
-Data "@        @        @"
-Data "@   #    @    #   @"
-Data "@  ##    @    ##  @"
-Data "@####    @    ####@"
-Data "@@@@@@@@~@~@@@@@@@@"
-Data "x"
-
-Data 7, -1, -1, 2
-Data 2, 2
-Data 0, 0
-Data "                    "
-Data "                   @"
-Data "@                 #@"
-Data "@    @   @#      ##@"
-Data "@!   @   @c# *  ##@@"
-Data "@@@@@@~~~@@@@@@@@@@@"
-Data "x"
-
-Data 6, -1, -1, 2
-Data 2, 2
-Data 0, 0
-Data "@                       "
-Data "@                       "
-Data "@     #                 "
-Data "@ c   @     #     !     "
-Data "@@@@@@@    ##  @  @    @"
-Data "@@@@@@@#*  ##  @  @    @"
-Data "@@@@@@@@@@@@@@@@@@@~~~~@"
-Data "x"
-
-' --- Cut scene: snow
-
-Data 5, -1, 3, 7
-Data 2, 2
-Data 0, 0
-Data "                          "
-Data "@                         "
-Data "@                        @"
-Data "@S                       @"
-Data "@SS               S     @@"
-Data "@SSS  !    SSS   SSS * @@@"
-Data "@@@@@@@@@@@@@@@@@@@@@@@@@@"
-Data "x"
-
-Data 9, -1, 3, 7
-Data 2, 2
-Data 0, 0
-Data "@                           "
-Data "@S                          "
-Data "@S                          "
-Data "@SS S                 ##   @"
-Data "@SSSS !        *     ### c @"
-Data "@@SSSSSSSSSSSSSSSS@@@@@@@@@@"
-Data "x"
-
-Data 5, -1, 3, 7
-Data 2, 2
-Data 0, 0
-Data "                                  "
-Data "                                  "
-Data "                                  "
-Data "                  !               "
-Data "@                SSSSSSSSSS     @@"
-Data "@   *    SSS   SSSSSSSSSSSSS   !@@"
-Data "@@@@@@SSSSSSSSSSSSSSSSSSSSSSSSSS@@"
-Data "x"
-
-' --- Cut scene: mittens
-
-Data 5, -1, 3, 7
-Data 2, 2
-Data 0, 0
-Data "                    @"
-Data "                    @"
-Data "@                  !@"
-Data "@c        @        @@"
-Data "@#   @#   @##      @@"
-Data "@### @#* #@##m  @@@@@"
-Data "@@@@@@@@@@@@@@@@@@@@@"
-Data "x"
-
-Data 5, -1, 3, 7
-Data 2, 2
-Data 0, 0
-Data "@                                "
-Data "@                                "
-Data "@                                "
-Data "@ ! SSSS          *      c       "
-Data "@@@@SSSSSSSS      ##     @     t@"
-Data "@SSSSSSSSSSSS f  ####   S@#  @@@@"
-Data "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-Data "X"
 
 ' :mode=visualbasic:

@@ -162,10 +162,12 @@ End Function
 ' --------------------------
 ' Loads a level
 ' --------------------------
-Function LoadLevel% (l As LevelMap)
+Sub LoadLevel (mapid As String, l As LevelMap)
+	PrintConsole "LOADING"
     Dim lline As String, idx As Integer, char As String, row As Integer
     Dim bg As Integer, fg As Integer, cutscene As Integer, songindex As Integer
     Dim bgp_x As Integer, bgp_y As Integer, bgo_x As Integer, bgo_y As Integer
+    Let l.MapId = mapid
     Read bg
     Read fg
     Read cutscene
@@ -183,7 +185,7 @@ Function LoadLevel% (l As LevelMap)
     Read lline
     Let l.Width = Len(lline)
     Let row = 0
-    While lline <> TILE_END And lline <> TILE_ENDALL
+    While lline <> TILE_END
         For idx = 1 To l.Width
             Let char = Mid$(lline, idx, 1)
             If char = "*" Then
@@ -197,21 +199,22 @@ Function LoadLevel% (l As LevelMap)
         Let row = row + 1
     Wend
     Let l.Height = row
-    If lline = TILE_ENDALL Then
-        Let LoadLevel% = TRUE
-    Else
-        Let LoadLevel% = FALSE
-    End If
-End Function
+    PrintConsole l.MapId + " " +  str$(l.StartPoint.col) + " " + str$(l.StartPoint.row)
+End Sub
 
 Sub LoadLevels()
     Restore LevelData
-    Dim last As Integer, n As Integer
-    Let last = FALSE
+    Dim n As Integer, id As String
+    Let n = 0
     Do
-        Let last = LoadLevel%(Levels(n))
+    	Read id
+    	If id = TILE_ENDALL Then Exit Do
+    	PrintConsole str$(n)
+        LoadLevel id, Maps(n)
+        PrintConsole Maps(n).MapId
         Let n = n + 1
-    Loop Until last
+    Loop
+    Let NumMaps = n
 End Sub
 
 
@@ -232,6 +235,88 @@ Sub PrintLevel (m As LevelMap)
         Print
     Next
 End Sub
+
+Sub LoadSections
+    Dim entry As String, levelId As String
+    Dim s As Integer, l As Integer, m As Integer
+    Dim pendingCutscene As Integer
+
+    Let s = -1
+    Let l = -1
+    Let pendingCutscene = -1
+
+    Restore Sections
+
+    Do
+        Read entry
+
+        Select Case entry
+
+            Case "SECTION"
+                Let s = s + 1
+                Read GameSections(s).Name
+                Read GameSections(s).Music
+                Let GameSections(s).FirstLevel = l + 1
+                Let GameSections(s).LastLevel = l
+                Let GameSections(s).Cutscene = -1
+                Let GameSections(s).Backgrounds(0) = -1
+                Let GameSections(s).Backgrounds(1) = -1
+                Let pendingCutscene = -1
+
+            Case "CUTSCENE"
+                Read pendingCutscene
+
+                ' Remember the section's introductory cutscene
+                If GameSections(s).FirstLevel = l + 1 Then
+                    Let GameSections(s).Cutscene = pendingCutscene
+                End If
+                
+            Case "BACKGROUNDS"
+            	Read GameSections(s).Backgrounds(0)
+            	Read GameSections(s).Backgrounds(1)
+
+            Case "LEVEL"
+                Read levelId
+                Let m = FindMap%(levelId)
+
+                If m < 0 Then
+                    Print "Unknown level: "; levelId
+                    End
+                End If
+
+                Let l = l + 1
+                Let Levels(l) = Maps(m)
+                Let Levels(l).Section = s
+                Let Levels(l).Music = GameSections(s).Music
+                Let Levels(l).Cutscene = pendingCutscene
+                Let GameSections(s).LastLevel = l
+                Let pendingCutscene = -1
+
+            Case "END"
+                Exit Do
+
+            Case Else
+                Print "Unknown section entry: "; entry
+                End
+
+        End Select
+    Loop
+
+    Let NumLevels = l + 1
+    Let NumSections = s + 1
+End Sub
+
+Function FindMap% (levelId As String)
+    Dim i As Integer
+    For i = 0 To NumMaps - 1
+        If Maps(i).MapId = levelId Then
+            Let FindMap% = i
+            Exit Function
+        End If
+    Next
+
+    Let FindMap% = -1
+End Function
 
 
 ' :mode=visualbasic:folding=explicit:wrap=none

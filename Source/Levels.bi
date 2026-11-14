@@ -73,9 +73,12 @@ Declare Function IsPlayerInSnow (lp As Point, l As LevelMap)
 Declare Sub Square_ToPoint (s As Square, p As Point)
 
 Type LevelMap
+	MapId As String
+	Section As Integer
     CutScene As Integer
     SongIndex As Integer
     Width As Integer
+    Music As Integer
     Height As Integer
     Topo(MAP_WIDTH, MAP_HEIGHT) As String
     StartPoint As Square
@@ -158,7 +161,7 @@ Declare Function GetSnowSlopeAt (col As Integer, row As Integer, m As LevelMap)
 '* foreground, cut scene, song, parallax and map rows). Returns TRUE when
 '* this was the last level (map terminated by TILE_ENDALL).
 '**
-Declare Function LoadLevel% (l As LevelMap)
+Declare Sub LoadLevel (mapid As String, l As LevelMap)
 
 '**
 '* Loads all levels from the LevelData DATA block into the Levels array.
@@ -174,6 +177,25 @@ Declare Sub PrintLevel (m As LevelMap)
 ' Level loading
 ' --------------------------
 Dim Shared Levels(20) As LevelMap
+Dim Shared Maps(20) As LevelMap
+Dim Shared GameSections(10) As GameSection
 
+Type GameSection
+    Name As String
+    Music As Integer
+    Cutscene As Integer
+    FirstLevel As Integer
+    LastLevel As Integer
+    Backgrounds(2) As Integer
+End Type
+
+Declare Function FindMap% (levelId As String)
+
+Declare Sub LoadSections ()
+
+Dim Shared NumLevels As Integer, NumSections As Integer, NumMaps As Integer
+Let NumLevels = -1
+Let NumSections = -1
+Let NumMaps = -1
 
 ' :mode=visualbasic:folding=explicit:wrap=none:

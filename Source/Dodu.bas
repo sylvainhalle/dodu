@@ -95,6 +95,7 @@ Let CfgThermo = TRUE
 '$Include:'Keyboard.bi'
 '$Include:'Sounds.bi'
 '$Include:'Levels.bi'
+'$Include:'LevelMaps.bi'
 '$Include:'Gameplay.bi'
 '$Include:'Passwords.bi'
 
@@ -102,6 +103,8 @@ Let CfgThermo = TRUE
 ' Levels
 ' --------------------------
 LoadLevels
+PrintConsole "DONE"
+LoadSections
 Dim Shared CurrentLevel As Integer, LastLevel As Integer
 Dim Shared LastTuque As Integer, LastMittens As Integer
 Let CurrentLevel = 0
@@ -494,8 +497,8 @@ Sub DoLevel
                 Let Dodu.InSnow = TRUE
                 Let WalkingTicker.Speed = Ceil%(1 / WALKING_SPEED_SNOW)
                 If Dodu.IsWalking _AndAlso Square_IsValid(snowP) Then
-                    SpriteSequence_Start SpriteLevel(0, snowP.col, snowP.row)
-                    SpriteSequence_Start SpriteLevel(1, snowP.col, snowP.row)
+                    SpriteSequence_Start SpriteLevel(DEPTH_SNOW_BACK, snowP.col, snowP.row)
+                    SpriteSequence_Start SpriteLevel(DEPTH_SNOW_FRONT, snowP.col, snowP.row)
                 End If
             Else
                 Let Dodu.InSnow = FALSE
@@ -1309,9 +1312,9 @@ End Sub
 '$Include:'Fonts.bm'
 '$Include:'Sounds.bm'
 '$Include:'Keyboard.bm'
+'$Include:'LevelMaps.bm'
 '$Include:'Levels.bm'
 '$Include:'Gameplay.bm'
-'$Include:'LevelMaps.bm'
 '$Include:'Passwords.bm'
 '$Include:'Assets.bm'
 ' :mode=visualbasic:folding=explicit:wrap=none:
