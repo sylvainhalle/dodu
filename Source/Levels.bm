@@ -131,6 +131,8 @@ End Function
 
 Function GetSnowSlopeAt (col As Integer, row As Integer, m As LevelMap)
     Dim hasleft As Integer, hasright As Integer, hastop As Integer
+	Let GetSnowSlopeAt = SLOPE_NONE
+	If m.Topo(col, row) <> TILE_SNOW Then Exit Function
 
     Let hastop = (row > 0 _AndAlso m.Topo(col, row - 1) = TILE_SNOW) _OrElse row = 0
     Let hasleft = (col > 0 _AndAlso (m.Topo(col - 1, row) = TILE_SNOW _OrElse IsBlockAt(col - 1, row, m))) _OrElse col = 0
