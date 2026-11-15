@@ -86,25 +86,28 @@ Let DefaultOffset = PtOrigin
 '$Include:'assets/Backgrounds.bi'
 '$Include:'assets/Fonts.bi'
 
+' Load the proper files depending on screen size
+Dim SizeSuffix As String
+If ScreenDims.x = SCREEN_PC_X Then
+	Let SizeSuffix = "_160.png"
+Else
+	Let SizeSuffix = ".png"
+End If
 
 ' Splash screen
 Dim Shared SplashScreen As SpriteSequence
-If ScreenDims.x = SCREEN_GAMEBUINO_X Then
-    SpriteSequence_InitFile SplashScreen, ImgDir$ + "/splash/Title.png",15, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
-Else
-    SpriteSequence_InitFile SplashScreen, ImgDir$ + "/splash/Title_160.png",15, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
-End If
+SpriteSequence_InitFile SplashScreen, ImgDir$ + "/splash/Title" + SizeSuffix, 15, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 Dim Shared LifSplash As SpriteSequence
-SpriteSequence_InitFile LifSplash, ImgDir$ + "/splash/LIF.png",24, 1, TRUE, FALSE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile LifSplash, ImgDir$ + "/splash/LIF" + SizeSuffix, 24, 1, TRUE, FALSE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' ---------------------
 ' Cut scenes
 ' ---------------------
 Dim Shared CutScenes(10) As SpriteSequence
-SpriteSequence_InitFile CutScenes(0), ImgDir$ + "/cutscenes/Cutscene_0.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
-SpriteSequence_InitFile CutScenes(1), ImgDir$ + "/cutscenes/Cutscene_1.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
-SpriteSequence_InitFile CutScenes(2), ImgDir$ + "/cutscenes/Cutscene_2.png",4, 3, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
-SpriteSequence_InitFile CutScenes(3), ImgDir$ + "/cutscenes/Cutscene_3.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile CutScenes(0), ImgDir$ + "/cutscenes/Cutscene_0" + SizeSuffix,1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile CutScenes(1), ImgDir$ + "/cutscenes/Cutscene_1" + SizeSuffix,1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile CutScenes(2), ImgDir$ + "/cutscenes/Cutscene_2" + SizeSuffix,4, 3, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile CutScenes(3), ImgDir$ + "/cutscenes/Cutscene_3" + SizeSuffix,1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' :mode=visualbasic:

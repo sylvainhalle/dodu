@@ -87,6 +87,7 @@ End Sub
 Sub SpriteSequence_InitFile (s As SpriteSequence, filename As String, frames As Integer, spd As Integer, animate As Integer, isloop As Integer, offsetL As Point, offsetR As Point, clr As _Unsigned Long)
     Dim e As Long
     Let e = _LoadImage(filename, SPRITE_MODE)
+    PrintConsole filename
     If e = -1 Then
         Let ErrFile = filename
         Error 97 ' 97 is the user-defined code

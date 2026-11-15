@@ -214,6 +214,12 @@ Else
     Point_Set ScreenActualDims, ScreenDims.x, ScreenDims.y
 End If
 
+Dim Shared ScreenOffset As Point
+If ScreenDims.x = SCREEN_PC_X Then
+    Point_Set ScreenOffset, (SCREEN_PC_X - SCREEN_GAMEBUINO_X) \ 2, (SCREEN_PC_Y - SCREEN_GAMEBUINO_Y) \ 2
+End If
+
+
 ' Loading assets
 '$Include:'Assets.bi'
 
@@ -541,7 +547,9 @@ Sub DoLevel
                     End If
                 End If
             End If
+            'If CurrentTrajectory <> TRJ_UNCLIMBING And CurrentTrajectory <> TRJ_CLIMBING Then
             GoTo RenderFrame:
+            'End If
         End If
 
         ' ---------------------------------------
@@ -1197,11 +1205,14 @@ Sub DoIntroduction (rst As RestorePoint)
     Else
         Restore SplashShape_PC:
     End If
-    For n = 0 To ScreenDims.x
+    For n = 0 To ScreenDims.x - 1
         Read h
         Let Heights(n) = h
         Let HeightsInit(n) = h
     Next
+    PrintConsole "Screen height:" + Str$(ScreenDims.y)
+    PrintConsole "Height at x=44:" + Str$(Heights(44))
+
     Point_Set downP, 0, 1
     For n = 0 To 49
         Point_Set Flakes(n), Floor%(Rnd * ScreenDims.x), Floor%(Rnd * ScreenDims.y)
@@ -1229,7 +1240,7 @@ Sub DoIntroduction (rst As RestorePoint)
                 If Heights(Flakes(n).x) >= 0 _AndAlso Flakes(n).y = Heights(Flakes(n).x) - 1 Then
                     If Flakes(n).x > 0 _AndAlso (Heights(Flakes(n).x - 1) = -1 _OrElse Heights(Flakes(n).x - 1) - Heights(Flakes(n).x) >= 3) Then
                         Let Flakes(n).x = Flakes(n).x - 1
-                    ElseIf Flakes(n).x < ScreenDims.x - 1 _AndAlso (Heights(Flakes(n).x + 1) = -1 _OrElse Heights(Flakes(n).x - 1) - Heights(Flakes(n).x) >= 3) Then
+                    ElseIf Flakes(n).x < ScreenDims.x - 1 _AndAlso (Heights(Flakes(n).x + 1) = -1 _OrElse Heights(Flakes(n).x + 1) - Heights(Flakes(n).x) >= 3) Then
                         Let Flakes(n).x = Flakes(n).x + 1
                     Else
                         Let Heights(Flakes(n).x) = Heights(Flakes(n).x) - 1

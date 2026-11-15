@@ -160,7 +160,7 @@ Sub DrawMinimap (v As Viewport, m As LevelMap)
   Let dod_s.col = Dodu.LevPos.x \ BLOCK_SIZE
   Let dod_s.row = Dodu.LevPos.y \ BLOCK_SIZE
   Dim dod_p As Point
-  Point_Set dod_p, dod_s.col * MINI_BLOCK_SIZE, (dod_s.row + 1) * MINI_BLOCK_SIZE
+  Point_Set dod_p, dod_s.col * MINI_BLOCK_SIZE, (dod_s.row + 1) * MINI_BLOCK_SIZE + 1
   Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_PLAYER), dod_p, FALSE, 0
 End Sub
 

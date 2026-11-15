@@ -276,21 +276,32 @@ Sub LoadSections
             	Read GameSections(s).Backgrounds(1)
 
             Case "LEVEL"
-                Read levelId
-                Let m = FindMap%(levelId)
+    Read levelId
+    Let m = FindMap%(levelId)
 
-                If m < 0 Then
-                    Print "Unknown level: "; levelId
-                    End
-                End If
+    If m < 0 Then
+        Print "Unknown level: "; levelId
+        End
+    End If
 
-                Let l = l + 1
-                Let Levels(l) = Maps(m)
-                Let Levels(l).Section = s
-                Let Levels(l).Music = GameSections(s).Music
-                Let Levels(l).Cutscene = pendingCutscene
-                Let GameSections(s).LastLevel = l
-                Let pendingCutscene = -1
+    Let l = l + 1
+    Let Levels(l) = Maps(m)
+    Let Levels(l).Section = s
+
+    ' Inherit music if unspecified
+    If Levels(l).Music = -1 Then
+        Let Levels(l).Music = GameSections(s).Music
+    End If
+
+    ' Inherit alternating background if unspecified
+    If Levels(l).Background = -1 Then
+        Let Levels(l).Background = GameSections(s).Backgrounds( _
+            (l - GameSections(s).FirstLevel) Mod 2)
+    End If
+
+    Let Levels(l).Cutscene = pendingCutscene
+    Let GameSections(s).LastLevel = l
+    Let pendingCutscene = -1
 
             Case "END"
                 Exit Do
