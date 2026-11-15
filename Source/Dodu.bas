@@ -253,7 +253,6 @@ LoadPasswords
 MainLoop
 $Console
 
-
 Sub MainLoop
     Do
         Viewport_Init MainScreen, ScreenActualDims, PtOrigin, ScreenActualDims, SCALE, 1
@@ -1210,9 +1209,6 @@ Sub DoIntroduction (rst As RestorePoint)
         Let Heights(n) = h
         Let HeightsInit(n) = h
     Next
-    PrintConsole "Screen height:" + Str$(ScreenDims.y)
-    PrintConsole "Height at x=44:" + Str$(Heights(44))
-
     Point_Set downP, 0, 1
     For n = 0 To 49
         Point_Set Flakes(n), Floor%(Rnd * ScreenDims.x), Floor%(Rnd * ScreenDims.y)
@@ -1260,9 +1256,9 @@ Sub DoIntroduction (rst As RestorePoint)
             Viewport_LineC ImgBuffer, TRUE, n, HeightsInit(n) + yoffset - 1, n, Heights(n) + yoffset, ColorSnow, TRUE, FALSE, 0
         Next
         If sel = 0 Then
-            Viewport_LineC ImgBuffer, TRUE, 23, 45, 39, 56, ColorHighlight2, TRUE, FALSE, 0
+            Viewport_LineC ImgBuffer, TRUE, 23 + ScreenOffset.x, 45 + ScreenOffset.y, 39 + ScreenOffset.x, 56 + ScreenOffset.y, ColorHighlight2, TRUE, FALSE, 0
         Else
-            Viewport_LineC ImgBuffer, TRUE, 40, 45, 56, 56, ColorHighlight2, TRUE, FALSE, 0
+            Viewport_LineC ImgBuffer, TRUE, 40 + ScreenOffset.x, 45 + ScreenOffset.y, 56 + ScreenOffset.x, 56 + ScreenOffset.y, ColorHighlight2, TRUE, FALSE, 0
         End If
         Viewport_Tick ImgBuffer
         Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT

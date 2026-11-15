@@ -22,6 +22,31 @@
 
 '$IncludeOnce
 
+' Backgrounds
+' -----------
+' 0: blue 1
+' 1: blue 2
+' 2: cards
+' 3: cyan 1
+' 4: cyan 2
+' 5: falling snow
+' 6: pizza 1
+' 7: pizza 2
+' 8: digits
+' 9: night sky
+
+' Songs
+' -----
+' 0: Dodu
+' 1: Yaya
+' 2: Pizza
+' 3: Cards
+' 4: Cutscene 1
+' 5: Bière qui roule (Dompierre)
+' 6: Pastoral
+' 7: Homage to Brubeck
+' 8: Kraftwerk
+
 Sections:
 
 
@@ -53,31 +78,6 @@ Data "CUTSCENE", 3
 
 
 Data "END"
-
-' Backgrounds
-' -----------
-' 0: blue 1
-' 1: blue 2
-' 2: cards
-' 3: cyan 1
-' 4: cyan 2
-' 5: falling snow
-' 6: pizza 1
-' 7: pizza 2
-' 8: digits
-' 9: night sky
-
-' Songs
-' -----
-' 0: Dodu
-' 1: Yaya
-' 2: Pizza
-' 3: Cards
-' 4: Cutscene 1
-' 5: Bière qui roule (Dompierre)
-' 6: Pastoral
-' 7: Homage to Brubeck
-' 8: Kraftwerk
 
 
 ' :mode=visualbasic:

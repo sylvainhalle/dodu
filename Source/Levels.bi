@@ -78,7 +78,6 @@ Type LevelMap
     CutScene As Integer
     SongIndex As Integer
     Width As Integer
-    Music As Integer
     Height As Integer
     Topo(MAP_WIDTH, MAP_HEIGHT) As String
     StartPoint As Square

@@ -33,7 +33,7 @@ Let ImgMode = IMG_MODE_EGA ' EGA by default
 Const SCREEN_GAMEBUINO_X% = 80
 Const SCREEN_GAMEBUINO_Y% = 64
 Const SCREEN_PC_X% = 160
-Const SCREEN_PC_Y% = 120
+Const SCREEN_PC_Y% = 128
 Dim Shared ScreenDims As Point
 Point_Set ScreenDims, SCREEN_GAMEBUINO_X, SCREEN_GAMEBUINO_Y
 Dim Shared ScreenActualDims As Point

@@ -289,8 +289,8 @@ Sub LoadSections
     Let Levels(l).Section = s
 
     ' Inherit music if unspecified
-    If Levels(l).Music = -1 Then
-        Let Levels(l).Music = GameSections(s).Music
+    If Levels(l).SongIndex = -1 Then
+        Let Levels(l).SongIndex = GameSections(s).Music
     End If
 
     ' Inherit alternating background if unspecified
@@ -315,6 +315,11 @@ Sub LoadSections
 
     Let NumLevels = l + 1
     Let NumSections = s + 1
+    For l = 0 To NumLevels - 1
+    PrintConsole Levels(l).MapId + _
+        " BG=" + Str$(Levels(l).Background) + _
+        " Song=" + Str$(Levels(l).SongIndex)
+Next
 End Sub
 
 Function FindMap% (levelId As String)
