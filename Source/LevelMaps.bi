@@ -100,6 +100,7 @@ Data 2, 2
 Data 0, 0
 Data "@                 @"
 Data "@                 @"
+Data "@                 @"
 Data "@     @           @"
 Data "@     @   @       @"
 Data "@ !  @@@ @@@ * ## @"

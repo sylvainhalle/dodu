@@ -280,8 +280,8 @@ Sub MainLoop
             If Levels(CurrentLevel).CutScene >= 0 And CfgCutscenes Then
                 SoundPlayer_StopSong Audio
                 DoCutScene Levels(CurrentLevel).CutScene
-                SoundPlayer_StopSong Audio
             End If
+            SoundPlayer_StopSong Audio
             If Not SoundPlayer_IsPlayingSong(Audio) Then
                 SoundPlayer_PlaySong Audio, Levels(CurrentLevel).SongIndex
             End If
@@ -325,7 +325,7 @@ Sub DoLevel
     Let DoduPast.InSnow = TRUE
     GetDoduSprite CurrentSprite(), Dodu, DoduPast
 
-    Ticker_Init Dodu.ThermoTick, THERMO_TICK_STEPS, THERMO_TICK_NORMAL, FALSE
+    Ticker_Init Dodu.ThermoTick, 1, THERMO_TICK_NORMAL, TRUE
     Ticker_Init Dodu.SlipTick, SLIP_TICK_STEPS, SLIP_TICK_NORMAL, FALSE
     Ticker_Init panback_ticker, PANBACK_STEPS, 1, FALSE
 
@@ -411,6 +411,13 @@ Sub DoLevel
             End If
 
             If Dodu.ThermoTick.TickCnt = 0 Then
+
+    PrintConsole "Temp=" + Str$(Dodu.Temp) + _
+        " Running=" + Str$(Dodu.ThermoTick.Running) + _
+        " Speed=" + Str$(Dodu.ThermoTick.Speed) + _
+        " Index=" + Str$(Dodu.ThermoTick.Index) + _
+        " Loop=" + Str$(Dodu.ThermoTick.Loop)
+
                 Let Dodu.Temp = Dodu.Temp - 1
                 If CurrentTrajectory < 0 Then
                     Let CurrentTrajectory = TRJ_LOOKING_THERMO
@@ -429,6 +436,7 @@ Sub DoLevel
                         Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL
                     End If
                     Ticker_Reset Dodu.ThermoTick
+                    Ticker_Start Dodu.ThermoTick
                 ElseIf Not Dodu.HasMittens And Dodu.HasTuque Then
                     SoundPlayer_PlayEffect Audio, SND_POWERDOWN
                     Let Dodu.HasTuque = FALSE
@@ -439,6 +447,7 @@ Sub DoLevel
                         Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL
                     End If
                     Ticker_Reset Dodu.ThermoTick
+                    Ticker_Start Dodu.ThermoTick
                 ElseIf Dodu.HasMittens And Dodu.HasTuque Then
                     SoundPlayer_PlayEffect Audio, SND_POWERDOWN
                     If Dodu.HasBlock Then

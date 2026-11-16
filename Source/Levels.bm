@@ -106,11 +106,12 @@ Function IsMittenAt (col As Integer, row As Integer, l As LevelMap)
 End Function
 
 Function IsSnowAt (col As Integer, row As Integer, l As LevelMap)
-    If l.Topo(col, row) = TILE_SNOW Then
-        Let IsSnowAt = TRUE
-    Else
-        Let IsSnowAt = FALSE
-    End If
+    Let IsSnowAt = FALSE
+
+    If col < 0 Or col >= l.Width Then Exit Function
+    If row < 0 Or row >= l.Height Then Exit Function
+
+    Let IsSnowAt = (l.Topo(col, row) = TILE_SNOW)
 End Function
 
 Function IsPlayerInSnow (lp As Point, l As LevelMap)

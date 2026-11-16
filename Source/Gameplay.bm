@@ -34,7 +34,11 @@ End Sub
 Sub TakeCookie (m As LevelMap, p As Square)
     Let m.Topo(p.col, p.row) = TILE_NOTHING
     ClearSpriteSquare p
+    PrintConsole "Before cookie: " + Str$(Dodu.Temp)
     Let Dodu.Temp = Clamp%(Dodu.Temp + 5, 0, 10)
+    Ticker_Reset Dodu.ThermoTick
+    Ticker_Start Dodu.ThermoTick
+    PrintConsole "After cookie: " + Str$(Dodu.Temp)
 End Sub
 
 Sub TakeCoffee (m As LevelMap, p As Square)
