@@ -280,8 +280,8 @@ Sub MainLoop
             If Levels(CurrentLevel).CutScene >= 0 And CfgCutscenes Then
                 SoundPlayer_StopSong Audio
                 DoCutScene Levels(CurrentLevel).CutScene
+                SoundPlayer_StopSong Audio
             End If
-            SoundPlayer_StopSong Audio
             If Not SoundPlayer_IsPlayingSong(Audio) Then
                 SoundPlayer_PlaySong Audio, Levels(CurrentLevel).SongIndex
             End If
