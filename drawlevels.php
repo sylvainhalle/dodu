@@ -293,44 +293,102 @@ for ($l = 0; $l < count($levels); $l++)
 // Write LaTeX
 // ------------------------------------------------------------
 
-/*
-$latex = <<< EOD
-\\documentclass[legalpaper,landscape]{article}
-\\usepackage[margin=0.5in]{geometry}
-\\usepackage{graphicx}
-\\begin{document}
-EOD;
-for ($l = 0; $l < count($levels); $l++)
-{
-    $latex .= sprintf("{\\Large\\textbf{%d}}~~\\includegraphics[scale=0.3]{%02d.png}\\hspace{0.5in}\n", $l, $l);
-    if ($l % 3 === 2)
-    	$latex .= "\\\\\n";
-}
-$latex .= "\\end{document}";
-file_put_contents("Levels.tex", $latex);
-*/
-$PAGE_HEIGHT = 355;
-$PAGE_WIDTH = 216;
+//define("PX_PER_MM", 3.78);
+define("PX_PER_MM", 2.5);
+$PAGE_WIDTH = 342.9;
+$PAGE_HEIGHT = 203.2;
+$MARGIN_MM_TOP = 10;
+$MARGIN_MM_OTHER = 2;
 
+$pages = array();
 $placed = array();
 for ($l = 0; $l < count($levels); $l++)
 {
 	$level = $levels[$l];
-	$h = count($level["map"]) * 11 / 3;
-	$w = count($level["map"][0]) * 11 / 3;
+	$h = count($level["map"]) * 11 / PX_PER_MM + $MARGIN_MM_TOP + $MARGIN_MM_OTHER;
+	$w = count($level["map"][0]) * 11 / PX_PER_MM + 2 * $MARGIN_MM_OTHER;
 	$p = findPosition($w, $h, $placed, $PAGE_WIDTH, $PAGE_HEIGHT);
 	if ($p === null)
-		break;
+	{
+		$pages[] = $placed;
+		$placed = array();
+		$l--;
+		continue;
+	}
 	$p["id"] = $l;
 	$placed[] = $p;
 }
-
-$html = "";
-foreach ($placed as $rectangle)
+if (!empty($placed))
 {
-	$html .= sprintf("<div style=\"left: %fpx; top:%fpx;\"><img src=\"%02d.png\"></div>\n", $rectangle["x"], $rectangle["y"], $rectangle["id"]);
+	$pages[] = $placed;
 }
-echo $html;
+$html = <<<EOD
+<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">
+body {
+  margin: 0;
+}
+.number {
+	size: 200%;
+	font-family: sans-serif;
+	font-weight: bold;
+}
+.level {
+  position: absolute;
+  padding-left: {$MARGIN_MM_OTHER}mm;
+  box-sizing: border-box;
+}
+.level img {
+    display: block;
+}
+.page {
+    position: relative;
+    width: {$PAGE_WIDTH}mm;
+    height: {$PAGE_HEIGHT}mm;
+    break-after: page;
+}
+</style>
+<style type="text/css" media="screen">
+</style>
+<style type="text/css" media="print">
+@page {
+  size: legal landscape;
+  margin: 0.25in;
+}
+.br {
+  break-before: page;
+}
+</style>
+
+<body>
+EOD;
+
+foreach ($pages as $placed)
+{
+	$html .= "<div class=\"page\">\n";
+	foreach ($placed as $rectangle)
+	{
+		$html .= sprintf("<div class=\"level\" style=\"left: %fmm; top:%fmm; width: %fmm; height: %fmm;\"><span class=\"number\">%d</span><img src=\"%02d.png\" style=\"width:%fmm;height:%fmm\"></div>\n", 
+			$rectangle["x"], 
+			$rectangle["y"],  
+			$rectangle["w"],
+			$rectangle["h"],
+			$rectangle["id"] + 1,
+			$rectangle["id"],
+			$rectangle["w"] - 2 * $MARGIN_MM_OTHER,
+			$rectangle["h"] - $MARGIN_MM_TOP - $MARGIN_MM_OTHER,
+			);
+	}
+	$html .= "</div>\n"; //<div class=\"br\"></div>\n";
+}
+$html .= <<<EOD
+</div>
+</body>
+</html>
+EOD;
+file_put_contents("Levels.html", $html);
 
 function intersects($a, $b)
 {
@@ -397,57 +455,4 @@ function findPosition($w, $h, $placed, $page_w, $page_h)
 
     return null;
 }
-$page_layout = array();
-for ($l = 0; $l < count($levels); $l++)
-{
-	$lvl = $levels[$l];
-    $h = count($lvl["map"]);
-    $w = count($lvl["map"][0]);
-    for ($y = 0; $y < $PAGE_HEIGHT; $y++)
-    {
-    }
-}
-
-$html = <<<EOD
-<!DOCTYPE html>
-<html>
-<head>
-<style type="text/css">
-#levels {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-between;
-	align-items: flex-end;
-}
-.number {
-	size: 200%;
-	font-family: sans-serif;
-	font-weight: bold;
-}
-</style>
-<style type="text/css" media="screen">
-</style>
-<style type="text/css" media="print">
-@page {
-  size: legal landscape;
-  margin: 0.5in;
-}
-#levels div {
-	margin: 0.125in;
-}
-</style>
-
-<body>
-<div id="levels">
-EOD;
-for ($l = 0; $l < count($levels); $l++)
-{
-	$html .= sprintf("<div><span class=\"number\">%d</span><br/><img srcset=\"%02d.png 2.5x\"></div>\n", $l, $l);
-}
-$html .= <<<EOD
-</div>
-</body>
-</html>
-EOD;
-file_put_contents("Levels.html", $html);
 ?>
