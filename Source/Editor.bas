@@ -43,7 +43,7 @@ Const TOPBAR_HEIGHT = 16
 Const PALETTE_WIDTH = 26
 
 ' Window scaling factor
-Const SCALE% = 3
+Const SCALE% = 2
 
 ' Refresh rate
 Const FPS% = 25
@@ -529,6 +529,13 @@ Sub DoSave
         Let outfile = filename
     End If
     If outfile = "" Then Exit Sub
+    If Levels(CurrentLevel).MapId = "" Then
+        Dim slashl As Integer, dotl As Integer
+        Let slashl = _InStrRev(outfile, "/")
+        Let dotl = _InStrRev(outfile, ".")
+        Let Levels(CurrentLevel).MapId = Mid$(outfile, slashl + 1, dotl - slashl - 1)
+    End If
+    PrintConsole Levels(CurrentLevel).MapId
     'Find convex envelope of level
     Dim topleft As Square, botright As Square
     ConvexEnvelope topleft, botright
@@ -626,7 +633,7 @@ Sub DoLoad
             End If
             _Continue
         End If
-        Let file_lines(k) = Mid$(s_line, 7, Len(s_line) - 7)
+        Let file_lines(k) = Mid$(s_line, 7, Len(s_line) - 8)
         Let k = k + 1
     Loop
     Level_LoadLevelArray CurrentLevel, file_lines(), k

@@ -32,14 +32,11 @@ Dim dummy As String
 ' Program constants
 ' --------------------------
 
-' Screen dimensions
-
 ' Frame rate
 Const FPS% = 25
 
 ' Window scaling factor
 Const SCALE% = 6
-
 
 ' Number of frames between ticks of the thermometer
 Const THERMO_TICK_NORMAL% = 100
