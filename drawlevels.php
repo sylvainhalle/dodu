@@ -13,6 +13,13 @@ $level_order = array();
 $section_bgs = array(-1, -1);
 $section_index = 0;
 
+$pwsymbols = array();
+$pwsymbols[] = "plain";
+$pwsymbols[] = "mittens";
+$pwsymbols[] = "tuque";
+$pwsymbols[] = "both";
+
+
 foreach (explode("\n", $sections) as $line)
 {
     $line = trim($line);
@@ -357,6 +364,7 @@ $html = <<<EOD
 <!DOCTYPE html>
 <html>
 <head>
+<title>Dodu! Levels</title>
 <style type="text/css">
 body {
   margin: 0;
@@ -382,6 +390,22 @@ body {
 }
 .red {
 	color: red;
+}
+.password {
+	display: inline-block;
+	font-size: 75%;
+	padding-left: 4mm;
+	background-repeat: no-repeat;
+	background-size: 2mm;
+}
+.password.mittens {
+	background-image: url('Source/images/ega/minimap/Mitten.png');
+}
+.password.tuque {
+	background-image: url('Source/images/ega/level/Tuque.png');
+}
+.password.both {
+	background-image: url('Source/images/ega/level/Tuque.png');
 }
 </style>
 <style type="text/css" media="screen">
@@ -420,20 +444,19 @@ foreach ($pages as $placed)
 	$html .= "</div>\n";
 }
 $html .= <<<EOD
-</div>
 </body>
 </html>
 EOD;
 file_put_contents("Levels.html", $html);
 
-
 function get_passwords($levelnb)
 {
-	global $passwords;
+	global $passwords, $pwsymbols;
 	$out = "";
+	
 	for ($i = 0; $i < 4; $i++)
 	{
-		$out .= "<span class=\"password\">";
+		$out .= sprintf("<span class=\"password %s\">", $pwsymbols[$i]);
 		for ($j = 0; $j < 4; $j++)
 		{
 			$out .= print_card($passwords[$levelnb][$i][$j][0], $passwords[$levelnb][$i][$j][1]);

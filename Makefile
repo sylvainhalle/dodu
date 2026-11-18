@@ -1,4 +1,10 @@
-.PHONY: levelmaps
+.PHONY: levelmaps normalize-sprites
+
+normalize-sprites:
+	find Source/images/ega -name '*.png' \
+	    -exec mogrify -alpha off \
+	    -transparent '#343434' \
+	    -define png:color-type=3 {} +
 
 levelmaps:
 	@rm -f Source/LevelMaps.bi
