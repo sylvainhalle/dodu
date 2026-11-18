@@ -5,5 +5,10 @@
 .DS_Store/
 Dodu
 Editor
+# Since it is now auto-generated
+Source/LevelMaps.bi
+Levels.html
+*.png
+!Source/**/*.png
 " Demo1.bas"
 Source/_web
