@@ -1,7 +1,7 @@
 <?php
 $root = __DIR__ . "/Source/images";
 $reference = "ega";
-$modes = ["cga", "mcga", "her"];
+$modes = ["cga"];//, "mcga", "her"];
 
 function getAssets(string $directory): array
 {
@@ -69,7 +69,7 @@ foreach ($referenceAssets as $asset) {
 
     foreach ($modes as $mode) {
         printf(
-            " %-6s",
+            " %-7s",
             isset($missing[$mode]) ? "MISSING" : "OK"
         );
     }

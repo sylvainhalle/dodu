@@ -91,7 +91,38 @@ foreach (explode("\n", $contents) as $line)
     }
 }
 
-print_r($lvl);
+// ------------------------------------------------------------
+// Parse passwords
+// ------------------------------------------------------------
+
+$line_cnt = 0;
+$passwords = array();
+$pw_line = array();
+foreach (explode("\n", file_get_contents("Source/Passwords.bm")) as $line)
+{
+	if (substr($line, 0, 4) !== "Data")
+		continue;
+	$cards = explode(",", substr($line, 4));
+	$column = $line_cnt % 4;
+	$level = floor($line_cnt / 4);
+	$pw_entry = array();
+	for ($i = 0; $i < 4; $i++)
+	{
+		$number = $cards[$i] % 13;
+		$suit = floor($cards[$i] / 13);
+		$pw_entry[] = array($number, $suit);
+	}
+	$pw_line[] = $pw_entry;
+	if ($column == 3)
+	{
+		$passwords[$level] = $pw_line;
+		$pw_line = array();
+	}
+	$line_cnt++;
+}
+
+//print_r($passwords);
+//exit(0);
 
 // ------------------------------------------------------------
 // Assemble levels and resolve inherited backgrounds
@@ -349,6 +380,9 @@ body {
     height: {$PAGE_HEIGHT}mm;
     break-after: page;
 }
+.red {
+	color: red;
+}
 </style>
 <style type="text/css" media="screen">
 </style>
@@ -370,18 +404,20 @@ foreach ($pages as $placed)
 	$html .= "<div class=\"page\">\n";
 	foreach ($placed as $rectangle)
 	{
-		$html .= sprintf("<div class=\"level\" style=\"left: %fmm; top:%fmm; width: %fmm; height: %fmm;\"><span class=\"number\">%d</span><img src=\"%02d.png\" style=\"width:%fmm;height:%fmm\"></div>\n", 
+		$pwstring = get_passwords($rectangle["id"]);
+		$html .= sprintf("<div class=\"level\" style=\"left: %fmm; top:%fmm; width: %fmm; height: %fmm;\"><span class=\"number\">%d</span>%s<img src=\"%02d.png\" style=\"width:%fmm;height:%fmm\"></div>\n", 
 			$rectangle["x"], 
 			$rectangle["y"],  
 			$rectangle["w"],
 			$rectangle["h"],
 			$rectangle["id"] + 1,
+			$pwstring,
 			$rectangle["id"],
 			$rectangle["w"] - 2 * $MARGIN_MM_OTHER,
 			$rectangle["h"] - $MARGIN_MM_TOP - $MARGIN_MM_OTHER,
 			);
 	}
-	$html .= "</div>\n"; //<div class=\"br\"></div>\n";
+	$html .= "</div>\n";
 }
 $html .= <<<EOD
 </div>
@@ -389,6 +425,59 @@ $html .= <<<EOD
 </html>
 EOD;
 file_put_contents("Levels.html", $html);
+
+
+function get_passwords($levelnb)
+{
+	global $passwords;
+	$out = "";
+	for ($i = 0; $i < 4; $i++)
+	{
+		$out .= "<span class=\"password\">";
+		for ($j = 0; $j < 4; $j++)
+		{
+			$out .= print_card($passwords[$levelnb][$i][$j][0], $passwords[$levelnb][$i][$j][1]);
+		}
+		$out .= "</span>";
+	}
+	return $out;
+}
+
+function print_card($number, $suit)
+{
+	//return "$number$suit ";
+	$out = "";
+	if ($suit == 0) // hearts
+		$out .= "<span class=\"red\">&#x2665;";
+	elseif ($suit == 1) // spades
+		$out .= "<span class=\"black\">&#x2660;";
+	elseif ($suit == 2) // diamonds
+		$out .= "<span class=\"red\">&#x2666;";
+	elseif ($suit == 3) // clubs
+		$out .= "<span class=\"black\">&#x2663;";
+	if ($number > 0 && $number < 10)
+		$out .= dechex($number + 1);
+	else
+	{
+		switch ($number)
+		{
+			case 0:
+				$out .= "A";
+				break;
+			case 10:
+				$out .= "J";
+				break;
+			case 11:
+				$out .= "Q";
+				break;
+			case 12:
+				$out .= "K";
+				break;
+		}
+	}
+	$out .= "</span>";
+	return $out;
+}
 
 function intersects($a, $b)
 {
