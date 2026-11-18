@@ -22,8 +22,8 @@ Dim Shared SprMinimap(19) As SpriteSequence
 SpriteSequence_InitFile SprMinimap(LVL_PLAYER), ImgDir$ + "/minimap/Player.png", 1,  1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' Blocks
-SpriteSequence_InitFile SprMinimap(LVL_BLOCK_B), ImgDir$ + "/minimap/BlockBlue.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
-SpriteSequence_InitFile SprMinimap(LVL_BLOCK_W), ImgDir$ + "/minimap/BlockWhite.gif",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_BLOCK_B), ImgDir$ + "/minimap/BlockBlue.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_BLOCK_W), ImgDir$ + "/minimap/BlockWhite.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprMinimap(LVL_WATER), ImgDir$ + "/minimap/Water.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprMinimap(LVL_ROPE_M), ImgDir$ + "/minimap/Rope_M.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprMinimap(LVL_ROPE_E), ImgDir$ + "/minimap/Rope_E.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
@@ -32,7 +32,7 @@ SpriteSequence_InitFile SprMinimap(LVL_ROPE_E), ImgDir$ + "/minimap/Rope_E.png",
 Dim MiniPoleOffset As Point, MiniPoleOffsetFlip As Point
 Point_Set MiniPoleOffset, 1, -2
 Point_Set MiniPoleOffsetFlip, 1, 2
-SpriteSequence_InitFile SprMinimap(LVL_POLE), ImgDir$ + "/minimap/Pole.gif",1, 1, TRUE, TRUE, MiniPoleOffset, MiniPoleOffsetFlip, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_POLE), ImgDir$ + "/minimap/Pole.png",1, 1, TRUE, TRUE, MiniPoleOffset, MiniPoleOffsetFlip, COLOR_TRANSPARENT
 
 ' Cookie
 SpriteSequence_InitFile SprMinimap(LVL_COOKIE), ImgDir$ + "/minimap/Cookie.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
