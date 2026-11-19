@@ -524,7 +524,7 @@ End Sub
 Sub DoSave
     Dim outfile As String
     If filename = DEFAULT_FILENAME Then
-        Let outfile = _SaveFileDialog$("Save level", "", "*.lvl", "Level files")
+        Let outfile = _SaveFileDialog$("Save level", "", "*.bm", "Level files")
     Else
         Let outfile = filename
     End If

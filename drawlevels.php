@@ -164,11 +164,11 @@ foreach ($level_order as $id)
 // ------------------------------------------------------------
 
 $backgrounds = array(
-    array("data" => imagecreatefromgif($BG_FOLDER . "Blue_1.gif"), "offset" => array(0, 0), "size" => array(20, 20)),
-    array("data" => imagecreatefromgif($BG_FOLDER . "Blue_2.gif"), "offset" => array(0, 0), "size" => array(20, 20)),
-    array("data" => imagecreatefromgif($BG_FOLDER . "Cards.gif"), "offset" => array(0, 0), "size" => array(20, 20)),
-    array("data" => imagecreatefromgif($BG_FOLDER . "Cyan_1.gif"), "offset" => array(0, 0), "size" => array(20, 20)),
-    array("data" => imagecreatefromgif($BG_FOLDER . "Cyan_2.gif"), "offset" => array(0, 0), "size" => array(20, 20)),
+    array("data" => imagecreatefrompng($BG_FOLDER . "Blue_1.png"), "offset" => array(0, 0), "size" => array(20, 20)),
+    array("data" => imagecreatefrompng($BG_FOLDER . "Blue_2.png"), "offset" => array(0, 0), "size" => array(20, 20)),
+    array("data" => imagecreatefrompng($BG_FOLDER . "Cards.png"), "offset" => array(0, 0), "size" => array(20, 20)),
+    array("data" => imagecreatefrompng($BG_FOLDER . "Cyan_1.png"), "offset" => array(0, 0), "size" => array(20, 20)),
+    array("data" => imagecreatefrompng($BG_FOLDER . "Cyan_2.png"), "offset" => array(0, 0), "size" => array(20, 20)),
     array("data" => imagecreatefrompng($BG_FOLDER . "Snow_1.png"), "offset" => array(0, 0), "size" => array(20, 20)),
     array("data" => imagecreatefrompng($BG_FOLDER . "Pizza_1.png"), "offset" => array(0, 0), "size" => array(40, 40)),
     array("data" => imagecreatefrompng($BG_FOLDER . "Pizza_2.png"), "offset" => array(0, 0), "size" => array(40, 40)),
@@ -335,7 +335,7 @@ for ($l = 0; $l < count($levels); $l++)
 define("PX_PER_MM", 2.5);
 $PAGE_WIDTH = 342.9;
 $PAGE_HEIGHT = 203.2;
-$MARGIN_MM_TOP = 10;
+$MARGIN_MM_TOP = 17;
 $MARGIN_MM_OTHER = 2;
 
 $pages = array();
@@ -368,11 +368,12 @@ $html = <<<EOD
 <style type="text/css">
 body {
   margin: 0;
+  font-family: sans-serif;
 }
 .number {
 	size: 200%;
-	font-family: sans-serif;
 	font-weight: bold;
+	margin-right: 3mm;
 }
 .level {
   position: absolute;
@@ -391,21 +392,32 @@ body {
 .red {
 	color: red;
 }
+.suit {
+	margin-right: 0.5mm;
+}
 .password {
 	display: inline-block;
 	font-size: 75%;
-	padding-left: 4mm;
+	margin-right: 3mm;
 	background-repeat: no-repeat;
-	background-size: 2mm;
+	background-size: contain;
+	width: 22mm;
+}
+.password.plain {
+	background-image: url('Source/images/maps/Plain_T.png');
+	padding-left: 4mm;
 }
 .password.mittens {
-	background-image: url('Source/images/ega/minimap/Mitten.png');
+	background-image: url('Source/images/maps/Mittens_T.png');
+	padding-left: 5mm;
 }
 .password.tuque {
-	background-image: url('Source/images/ega/level/Tuque.png');
+	background-image: url('Source/images/maps/Tuque_T.png');
+	padding-left: 4mm;
 }
 .password.both {
-	background-image: url('Source/images/ega/level/Tuque.png');
+	background-image: url('Source/images/maps/Both_T.png');
+	padding-left: 8mm;
 }
 </style>
 <style type="text/css" media="screen">
@@ -429,7 +441,7 @@ foreach ($pages as $placed)
 	foreach ($placed as $rectangle)
 	{
 		$pwstring = get_passwords($rectangle["id"]);
-		$html .= sprintf("<div class=\"level\" style=\"left: %fmm; top:%fmm; width: %fmm; height: %fmm;\"><span class=\"number\">%d</span>%s<img src=\"%02d.png\" style=\"width:%fmm;height:%fmm\"></div>\n", 
+		$html .= sprintf("<div class=\"level\" style=\"left: %fmm; top:%fmm; width: %fmm; height: %fmm;\"><span class=\"number\">%d</span><div>%s</div><img src=\"%02d.png\" style=\"width:%fmm;height:%fmm\"></div>\n", 
 			$rectangle["x"], 
 			$rectangle["y"],  
 			$rectangle["w"],
@@ -468,18 +480,17 @@ function get_passwords($levelnb)
 
 function print_card($number, $suit)
 {
-	//return "$number$suit ";
 	$out = "";
 	if ($suit == 0) // hearts
-		$out .= "<span class=\"red\">&#x2665;";
+		$out .= "<span class=\"suit red\">&#x2665;";
 	elseif ($suit == 1) // spades
-		$out .= "<span class=\"black\">&#x2660;";
+		$out .= "<span class=\"suit black\">&#x2660;";
 	elseif ($suit == 2) // diamonds
-		$out .= "<span class=\"red\">&#x2666;";
+		$out .= "<span class=\"suit red\">&#x2666;";
 	elseif ($suit == 3) // clubs
-		$out .= "<span class=\"black\">&#x2663;";
-	if ($number > 0 && $number < 10)
-		$out .= dechex($number + 1);
+		$out .= "<span class=\"suit black\">&#x2663;";
+	if ($number > 0 && $number <= 10)
+		$out .= $number;
 	else
 	{
 		switch ($number)
