@@ -827,10 +827,15 @@ End Sub
 Sub ApplyToSquare (topleft As Square, botright As Square, sel As String)
     Let Dirty = TRUE
     Dim col As Integer, row As Integer, s As Square
+    Dim x As Integer, y As Integer
     ReorderPoints
     For col = topleft.col To botright.col
         For row = topleft.row To botright.row
             Square_Set s, col, row
+        Next
+    Next
+    For col = topleft.col To botright.col
+        For row = topleft.row To botright.row
             Let Levels(CurrentLevel).Topo(col, row) = PaletteShortcuts(selection)
             If PaletteShortcuts(selection) = TILE_NOTHING Then
                 ClearSpriteSquare s
@@ -841,6 +846,38 @@ Sub ApplyToSquare (topleft As Square, botright As Square, sel As String)
             End If
         Next
     Next
+    If topleft.col > 0 Then
+        For row = topleft.row To botright.row
+            UpdateSpriteSquare Levels(CurrentLevel), col - 1, row
+        Next
+    End If
+    If topleft.col < MAP_WIDTH - 1 Then
+        For row = topleft.row To botright.row
+            UpdateSpriteSquare Levels(CurrentLevel), col + 1, row
+        Next
+    End If
+    If topleft.row > 0 Then
+        For col = topleft.col To botright.col
+            UpdateSpriteSquare Levels(CurrentLevel), col, row - 1
+        Next
+    End If
+    If topleft.row < MAP_HEIGHT - 1 Then
+        For col = topleft.col To botright.col
+            UpdateSpriteSquare Levels(CurrentLevel), col, row + 1
+        Next
+    End If
+
+
+    If topleft.col < MAP_WIDTH - 1 Then UpdateSpriteSquare Levels(CurrentLevel), col + 1, row
+End Sub
+
+Sub UpdateSpriteSquare (m As LevelMap, col As Integer, row As Integer)
+    Dim s As Square
+    Square_Set s, col, row
+    If Levels(CurrentLevel).Topo(col, row) <> " " Then
+        ClearSpriteSquare s
+        SetSpriteSquare Levels(CurrentLevel), FALSE, col, row, Levels(CurrentLevel).Topo(col, row)
+    End If
 End Sub
 
 Sub ApplyUndo
