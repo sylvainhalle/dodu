@@ -24,28 +24,30 @@
 
 ' Backgrounds
 ' -----------
-' 0: blue 1
-' 1: blue 2
-' 2: cards
-' 3: cyan 1
-' 4: cyan 2
-' 5: falling snow
-' 6: pizza 1
-' 7: pizza 2
-' 8: digits
-' 9: night sky
+'  0: blue 1
+'  1: blue 2
+'  2: cards
+'  3: cyan 1
+'  4: cyan 2
+'  5: falling snow
+'  6: pizza 1
+'  7: pizza 2
+'  8: digits
+'  9: night sky
+' 10: editor
+' 11: dusk
 
 ' Songs
 ' -----
-' 0: Dodu
-' 1: Yaya
-' 2: Pizza
-' 3: Cards
-' 4: Cutscene 1
-' 5: Bière qui roule (Dompierre)
-' 6: Pastoral
-' 7: Homage to Brubeck
-' 8: Kraftwerk
+'  0: Dodu
+'  1: Yaya
+'  2: Pizza
+'  3: Cards
+'  4: Cutscene 1
+'  5: Bière qui roule (Dompierre)
+'  6: Pastoral
+'  7: Homage to Brubeck
+'  8: Kraftwerk
 
 Sections:
 
@@ -73,20 +75,12 @@ Data "CUTSCENE", 2
 Data "LEVEL", "little_help"
 Data "LEVEL", "take_it"
 Data "LEVEL", "leapfrog"
+Data "LEVEL", "now_two"
 
 Data "SECTION", "mittens", 7
 Data "CUTSCENE", 3
-
-Data "SECTION", "snow", 1
-Data "BACKGROUNDS", 3, 4
-Data "CUTSCENE", 3
-Data "LEVEL", "little_help"
-Data "LEVEL", "take_it"
-Data "LEVEL", "leapfrog"
-
-Data "SECTION", "mittens", 7
-Data "CUTSCENE", 3
-
+Data "BACKGROUNDS", 11, -1
+Data "LEVEL", "first_mitts"
 
 Data "END"
 

@@ -128,14 +128,12 @@ foreach (explode("\n", file_get_contents("Source/Passwords.bm")) as $line)
 	$line_cnt++;
 }
 
-//print_r($passwords);
-//exit(0);
-
 // ------------------------------------------------------------
 // Assemble levels and resolve inherited backgrounds
 // ------------------------------------------------------------
 
 $levels = array();
+print_r($level_bgs);
 
 foreach ($level_order as $id)
 {
@@ -146,7 +144,7 @@ foreach ($level_order as $id)
 
     $lvl = $maps[$id];
 
-    if ($lvl["bg"] === -1)
+    //if ($lvl["bg"] === -1)
     {
         $lvl["bg"] = $level_bgs[$id];
     }
@@ -174,6 +172,8 @@ $backgrounds = array(
     array("data" => imagecreatefrompng($BG_FOLDER . "Pizza_2.png"), "offset" => array(0, 0), "size" => array(40, 40)),
     array("data" => imagecreatefrompng($BG_FOLDER . "Digits.png"), "offset" => array(0, 0), "size" => array(20, 20)),
     array("data" => imagecreatefrompng($BG_FOLDER . "Snow_2b.png"), "offset" => array(0, 0), "size" => array(20, 20)),
+    array("data" => imagecreatefrompng($BG_FOLDER . "Editor.png"), "offset" => array(0, 0), "size" => array(20, 20)),
+    array("data" => imagecreatefrompng($BG_FOLDER . "Clouds_animated.png"), "offset" => array(0, 0), "size" => array(160, 256)),
 );
 
 // ------------------------------------------------------------
