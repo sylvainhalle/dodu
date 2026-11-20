@@ -386,7 +386,7 @@ Sub MainLoop
 End Sub
 
 Sub ToggleBackground (direction As Integer)
-    Let CurrentBg = (CurrentBg + direction) Mod 11
+    Let CurrentBg = (CurrentBg + direction) Mod Len(Backgrounds())
     Viewport_SetBackground LevelBuffer, Backgrounds(CurrentBg), PtOrigin
 End Sub
 
@@ -481,6 +481,7 @@ Sub DoNew
             Next
         Next
     Next
+    Let Levels(CurrentLevel).MapId = ""
     Let filename = DEFAULT_FILENAME
 End Sub
 
@@ -840,12 +841,12 @@ Sub ApplyToSquare (topleft As Square, botright As Square, sel As String)
             If PaletteShortcuts(selection) = TILE_NOTHING Then
                 ClearSpriteSquare s
             Else
-                'PrintConsole Levels(CurrentLevel).Topo(col, row)
                 SetSpriteSquare Levels(CurrentLevel), FALSE, col, row, sel
                 SpriteSequence_Start SpriteLevel(0, col, row)
             End If
         Next
     Next
+    PrintConsole PaletteShortcuts(selection)
     If topleft.col > 0 Then
         For row = topleft.row To botright.row
             UpdateSpriteSquare Levels(CurrentLevel), col - 1, row

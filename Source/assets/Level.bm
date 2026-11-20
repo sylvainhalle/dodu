@@ -57,9 +57,9 @@ Sub SetSpriteSquare (m As LevelMap, isfront As Integer, col As Integer, row As I
       Case TILE_COFFEE
         SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_COFFEE)
       Case TILE_MITTENS
-        SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprMittens
+        SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_MITTENS)
       Case TILE_TUQUE
-        SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprTuque
+        SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_TUQUE)
       Case TILE_WATER
         SpriteSequence_Copy SpriteLevel(DEPTH_WATER, col, row), SprLevel(LVL_WATER)
       Case TILE_MARK
