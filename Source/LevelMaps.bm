@@ -56,6 +56,7 @@ Data "CUTSCENE", 0
 Data "LEVEL", "just_walk"
 Data "LEVEL", "choose_side"
 Data "LEVEL", "choose_again"
+Data "LEVEL", "mini_maze"
 
 
 Data "SECTION", "snowblocks", 2
@@ -69,6 +70,16 @@ Data "LEVEL", "pick_side"
 Data "SECTION", "cookies", 1
 Data "BACKGROUNDS", 3, 4
 Data "CUTSCENE", 2
+Data "LEVEL", "little_help"
+Data "LEVEL", "take_it"
+Data "LEVEL", "leapfrog"
+
+Data "SECTION", "mittens", 7
+Data "CUTSCENE", 3
+
+Data "SECTION", "snow", 1
+Data "BACKGROUNDS", 3, 4
+Data "CUTSCENE", 3
 Data "LEVEL", "little_help"
 Data "LEVEL", "take_it"
 Data "LEVEL", "leapfrog"
