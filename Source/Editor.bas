@@ -866,9 +866,6 @@ Sub ApplyToSquare (topleft As Square, botright As Square, sel As String)
             UpdateSpriteSquare Levels(CurrentLevel), col, row + 1
         Next
     End If
-
-
-    If topleft.col < MAP_WIDTH - 1 Then UpdateSpriteSquare Levels(CurrentLevel), col + 1, row
 End Sub
 
 Sub UpdateSpriteSquare (m As LevelMap, col As Integer, row As Integer)
