@@ -36,7 +36,14 @@ foreach (explode("\n", $sections) as $line)
     elseif (preg_match('/^Data "LEVEL",\s*"([^"]+)"/i', $line, $matches))
     {
         $id = $matches[1];
-        $level_bgs[$id] = $section_bgs[$section_index % 2];
+        if ($section_bgs[$section_index % 2] !== -1)
+        {
+        	$level_bgs[$id] = $section_bgs[$section_index % 2];
+        }
+        else
+        {
+        	$level_bgs[$id] = $section_bgs[$section_index % 2 - 1];
+        }
         $level_order[] = $id;
         $section_index++;
     }
@@ -171,9 +178,12 @@ $backgrounds = array(
     array("data" => imagecreatefrompng($BG_FOLDER . "Pizza_1.png"), "offset" => array(0, 0), "size" => array(40, 40)),
     array("data" => imagecreatefrompng($BG_FOLDER . "Pizza_2.png"), "offset" => array(0, 0), "size" => array(40, 40)),
     array("data" => imagecreatefrompng($BG_FOLDER . "Digits.png"), "offset" => array(0, 0), "size" => array(20, 20)),
-    array("data" => imagecreatefrompng($BG_FOLDER . "Snow_2b.png"), "offset" => array(0, 0), "size" => array(20, 20)),
+    array("data" => imagecreatefrompng($BG_FOLDER . "Snow_2b.png"), "offset" => array(0, 0), "size" => array(240, 64)),
     array("data" => imagecreatefrompng($BG_FOLDER . "Editor.png"), "offset" => array(0, 0), "size" => array(20, 20)),
     array("data" => imagecreatefrompng($BG_FOLDER . "Clouds_animated.png"), "offset" => array(0, 0), "size" => array(160, 256)),
+    array("data" => imagecreatefrompng($BG_FOLDER . "Dusk.png"), "offset" => array(0, 0), "size" => array(80, 256)),
+    array("data" => imagecreatefrompng($BG_FOLDER . "Memphis_1.png"), "offset" => array(0, 0), "size" => array(40, 40)),
+    array("data" => imagecreatefrompng($BG_FOLDER . "Memphis_2.png"), "offset" => array(0, 0), "size" => array(40, 40)),
 );
 
 // ------------------------------------------------------------

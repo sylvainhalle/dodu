@@ -35,7 +35,10 @@
 '  8: digits
 '  9: night sky
 ' 10: editor
-' 11: dusk
+' 11: clouds
+' 12: dusk
+' 13: Memphis 1
+' 14: Memphis 2
 
 ' Songs
 ' -----
@@ -66,8 +69,8 @@ Data "BACKGROUNDS", 6, 7
 Data "CUTSCENE", 1
 Data "LEVEL", "take_one"
 Data "LEVEL", "take_two"
+Data "LEVEL", "go_up"
 Data "LEVEL", "take_three"
-Data "LEVEL", "pick_side"
 
 Data "SECTION", "cookies", 1
 Data "BACKGROUNDS", 3, 4
@@ -81,6 +84,24 @@ Data "SECTION", "mittens", 7
 Data "CUTSCENE", 3
 Data "BACKGROUNDS", 11, -1
 Data "LEVEL", "first_mitts"
+Data "LEVEL", "the_island"
+Data "BACKGROUNDS", 12, -1
+Data "LEVEL", "the_wall"
+Data "LEVEL", "go_for_it"
+
+Data "SECTION", "snow", 6
+Data "CUTSCENE", 4
+Data "BACKGROUNDS", 5, -1
+Data "LEVEL", "climb"
+Data "LEVEL", "up_to_you"
+Data "LEVEL", "left_or_right"
+Data "BACKGROUNDS", 9, -1
+Data "LEVEL", "climb_again"
+
+Data "SECTION", "tuque", 8
+Data "CUTSCENE", 5
+Data "BACKGROUNDS", 13, 14
+
 
 Data "END"
 
