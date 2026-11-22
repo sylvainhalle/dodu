@@ -832,12 +832,12 @@ Sub ApplyToSquare (topleft As Square, botright As Square, sel As String)
     ReorderPoints
     For col = topleft.col To botright.col
         For row = topleft.row To botright.row
-            Square_Set s, col, row
+            Let Levels(CurrentLevel).Topo(col, row) = PaletteShortcuts(selection)
         Next
     Next
     For col = topleft.col To botright.col
         For row = topleft.row To botright.row
-            Let Levels(CurrentLevel).Topo(col, row) = PaletteShortcuts(selection)
+            Square_Set s, col, row
             If PaletteShortcuts(selection) = TILE_NOTHING Then
                 ClearSpriteSquare s
             Else

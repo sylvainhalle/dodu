@@ -39,6 +39,7 @@ Const LVL_HAND = 16
 Const LVL_ROPE_M = 17
 Const LVL_ROPE_E = 18
 Const LVL_MARK = 19
+Const LVL_HOOK_ITEM = 20
 
 
 Dim Shared ColorHighlight As Long, ColorHighlight2 As Long, ColorSnow As Long

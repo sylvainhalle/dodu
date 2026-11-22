@@ -198,9 +198,9 @@ $sprites = array(
     "m" => array("data" => imagecreatefrompng($LVL_FOLDER . "Mittens.png"), "offset" => array(-2, 2), "size" => array(15, 7)),
     "t" => array("data" => imagecreatefrompng($LVL_FOLDER . "Tuque.png"), "offset" => array(1, -3), "size" => array(10, 13)),
     "~" => array("data" => imagecreatefrompng($LVL_FOLDER . "Water.png"), "offset" => array(0, 0), "size" => array(11, 11)),
-    "C" => array("data" => imagecreatefrompng($LVL_FOLDER . "Snow_C.png"), "offset" => array(0, -14), "size" => array(11, 25)),
-    "L" => array("data" => imagecreatefrompng($LVL_FOLDER . "Snow_L.png"), "offset" => array(0, -14), "size" => array(11, 25)),
-    "R" => array("data" => imagecreatefrompng($LVL_FOLDER . "Snow_R.png"), "offset" => array(0, -14), "size" => array(11, 25)),
+    "C" => array("data" => imagecreatefrompng($LVL_FOLDER . "Snow_C.png"), "offset" => array(0, -11), "size" => array(11, 25)),
+    "L" => array("data" => imagecreatefrompng($LVL_FOLDER . "Snow_L.png"), "offset" => array(0, -11), "size" => array(11, 25)),
+    "R" => array("data" => imagecreatefrompng($LVL_FOLDER . "Snow_R.png"), "offset" => array(0, -11), "size" => array(11, 25)),
     "M" => array("data" => imagecreatefrompng($LVL_FOLDER . "Snow_M.png"), "offset" => array(0, 0), "size" => array(11, 11)),
     "*" => array("data" => imagecreatefrompng($LVL_FOLDER . "Mark.png"), "offset" => array(0, 0), "size" => array(11, 11)),
     "f" => array("data" => imagecreatefrompng($LVL_FOLDER . "Coffee.png"), "offset" => array(1, 1), "size" => array(9, 9))

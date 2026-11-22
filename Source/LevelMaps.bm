@@ -51,6 +51,7 @@
 '  6: Pastoral
 '  7: Homage to Brubeck
 '  8: Kraftwerk
+'  9: Daschelbel
 
 Sections:
 
@@ -98,10 +99,17 @@ Data "LEVEL", "left_or_right"
 Data "BACKGROUNDS", 9, -1
 Data "LEVEL", "climb_again"
 
-Data "SECTION", "tuque", 8
+Data "SECTION", "tuque", 9
 Data "CUTSCENE", 5
 Data "BACKGROUNDS", 13, 14
+Data "LEVEL", "the_tunnel"
+Data "LEVEL", "mittens_or_not"
+Data "LEVEL", "tower_1"
+Data "LEVEL", "low_ceiling"
 
+Data "SECTION", "hook", 8
+Data "CUTSCENE", 6
+Data "BACKGROUNDS", 8, -1
 
 Data "END"
 

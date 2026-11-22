@@ -37,6 +37,7 @@ Const TILE_ROPE = "$"
 Const TILE_END = "x"
 Const TILE_ENDALL = "X"
 Const TILE_MARK = "^"
+Const TILE_HOOK_ITEM = "?"
 
 Type Square
     col As Integer
@@ -175,9 +176,9 @@ Declare Sub PrintLevel (m As LevelMap)
 ' --------------------------
 ' Level loading
 ' --------------------------
-Dim Shared Levels(20) As LevelMap
-Dim Shared Maps(20) As LevelMap
-Dim Shared GameSections(10) As GameSection
+Dim Shared Levels(28) As LevelMap
+Dim Shared Maps(28) As LevelMap
+Dim Shared GameSections(12) As GameSection
 
 Type GameSection
     Name As String

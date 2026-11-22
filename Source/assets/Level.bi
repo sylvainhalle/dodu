@@ -105,6 +105,10 @@ SpriteSequence_InitFile SprLevel(LVL_THERMO), ImgDir$ + "/level/Thermometer.png"
 ' Mark
 SpriteSequence_InitFile SprLevel(LVL_MARK), ImgDir$ + "/level/Mark.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
+' Hook
+Dim SprHookOffset As Point
+Point_Set SprHookOffset, 0, -11
+SpriteSequence_InitFile SprLevel(LVL_HOOK_ITEM), ImgDir$ + "/level/Hook_Item.png",1, 1, TRUE, TRUE, SprHookOffset, SprHookOffset, COLOR_TRANSPARENT
 
 Dim Shared ThermoRed&, ThermoBlue&, HighlightColor&
 If ImgMode = IMG_MODE_CGA Then
