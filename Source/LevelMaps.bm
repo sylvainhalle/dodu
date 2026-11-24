@@ -74,7 +74,7 @@ Data "LEVEL", "go_up"
 Data "LEVEL", "take_three"
 
 Data "SECTION", "cookies", 1
-Data "BACKGROUNDS", 3, 4
+Data "BACKGROUNDS", 13, 14
 Data "CUTSCENE", 2
 Data "LEVEL", "little_help"
 Data "LEVEL", "take_it"
@@ -101,7 +101,7 @@ Data "LEVEL", "climb_again"
 
 Data "SECTION", "tuque", 9
 Data "CUTSCENE", 5
-Data "BACKGROUNDS", 13, 14
+Data "BACKGROUNDS", 3, 4
 Data "LEVEL", "the_tunnel"
 Data "LEVEL", "mittens_or_not"
 Data "LEVEL", "tower_1"
