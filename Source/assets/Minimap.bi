@@ -16,7 +16,7 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
-Dim Shared SprMinimap(19) As SpriteSequence
+Dim Shared SprMinimap(24) As SpriteSequence
 
 ' Player
 SpriteSequence_InitFile SprMinimap(LVL_PLAYER), ImgDir$ + "/minimap/Player.png", 1,  1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
@@ -27,6 +27,7 @@ SpriteSequence_InitFile SprMinimap(LVL_BLOCK_W), ImgDir$ + "/minimap/BlockWhite.
 SpriteSequence_InitFile SprMinimap(LVL_WATER), ImgDir$ + "/minimap/Water.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprMinimap(LVL_ROPE_M), ImgDir$ + "/minimap/Rope_M.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprMinimap(LVL_ROPE_E), ImgDir$ + "/minimap/Rope_E.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprMinimap(LVL_ROPE_E), ImgDir$ + "/minimap/Rope_H.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' Pole
 Dim MiniPoleOffset As Point, MiniPoleOffsetFlip As Point
@@ -57,5 +58,11 @@ SpriteSequence_InitFile SprMinimap(LVL_HAND), ImgDir$ + "/minimap/Hand.png",1, 1
 
 ' Mark
 SpriteSequence_InitFile SprMinimap(LVL_MARK), ImgDir$ + "/minimap/Mark.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+
+' Hook
+SpriteSequence_InitFile SprMinimap(LVL_HOOK_ITEM), ImgDir$ + "/minimap/Hook_Item.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+
+' Rope
+SpriteSequence_InitFile SprMinimap(LVL_ROPE_H), ImgDir$ + "/minimap/Rope_H.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' :mode=visualbasic:

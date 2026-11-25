@@ -41,6 +41,7 @@ Type Player
     HasMittens As Integer
     HasTuque As Integer
     HasRackets As Integer
+    HasBackpack As Integer ' 0: none, 1: empty, 2: rope
     InSnow As Integer
     SlipTick As Ticker
     SlipDir As Integer
@@ -65,6 +66,11 @@ Declare Sub TakeTuque(m As LevelMap, p As Square)
 '* The mittens slow down the thermometer when the player carries a block.
 '**
 Declare Sub TakeMittens (m As LevelMap, p As Square)
+
+'**
+'* Removes the hook at square p from the map and adds a backpack to the player.
+'**
+Declare Sub TakeBackpack (m As LevelMap, p As Square)
 
 '**
 '* Removes the cookie at square p from the map and raises the player's

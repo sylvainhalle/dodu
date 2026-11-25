@@ -67,8 +67,16 @@ Sub SetSpriteSquare (m As LevelMap, isfront As Integer, col As Integer, row As I
       Case TILE_SNOW
         PrepareSnow m, FALSE, col, row, Dodu.HasRackets
       Case TILE_ROPE
-        PrepareRope m, col, row
-    End Select
+        SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_ROPE_H)
+      Case TILE_HOOK_ITEM
+        SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_HOOK_ITEM)
+      Case TILE_BLOCK_HOOK
+      	If col > 0 _AndAlso m.Topo(col - 1, row) = TILE_ROPE Then
+      		SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_BLOCK_HOOK_L)
+      	ElseIf col < MAP_WIDTH - 1 _AndAlso m.Topo(col + 1, row) = TILE_ROPE Then
+      		SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_BLOCK_HOOK_R)
+      	End If
+  End Select
 End Sub
 
 Sub PrepareRope (m As LevelMap, col As Integer, row As Integer)
@@ -153,6 +161,12 @@ Sub DrawMinimap (v As Viewport, m As LevelMap)
           Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_SNOW), p, FALSE, 0
         Case TILE_MARK
           Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_MARK), p, FALSE, 0
+        Case TILE_ROPE
+          Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_ROPE_H), p, FALSE, 0
+        Case TILE_HOOK_ITEM
+          Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_HOOK_ITEM), p, FALSE, 0
+        Case TILE_BLOCK_HOOK
+          Viewport_PutSpriteSequence v, FALSE, SprMinimap(LVL_BLOCK_B), p, FALSE, 0
       End Select
     Next
   Next
@@ -206,6 +220,7 @@ Sub DrawPlayer (v As Viewport, seqs() As SpriteSequence)
   Viewport_PutSpriteSequence v, FALSE, seqs(0), Dodu.LevPos, seqs(0).Flipped, DEPTH_PLAYER
   Viewport_PutSpriteSequence v, FALSE, seqs(1), Dodu.LevPos, seqs(1).Flipped, DEPTH_PLAYER
   Viewport_PutSpriteSequence v, FALSE, seqs(2), Dodu.LevPos, seqs(2).Flipped, DEPTH_PLAYER
+  Viewport_PutSpriteSequence v, FALSE, seqs(3), Dodu.LevPos, seqs(3).Flipped, DEPTH_PLAYER
 End Sub
 
 

@@ -36,7 +36,7 @@ Dim dummy As String
 Const FPS% = 25
 
 ' Window scaling factor
-Const SCALE% = 2
+Const SCALE% = 6
 
 ' Number of frames between ticks of the thermometer
 Const THERMO_TICK_NORMAL% = 100
@@ -139,6 +139,8 @@ For argc = 1 To _CommandCount
             Let Dodu.HasTuque = TRUE
         Case "--mittens"
             Let Dodu.HasMittens = TRUE
+        Case "--backpack"
+            Let Dodu.HasBackpack = 2
         Case "--scanlines"
             Let toset = "scanlines"
         Case "--level"
@@ -346,6 +348,7 @@ Sub DoLevel
     ' Force initial animation selection
     Let DoduPast.HasBlock = 10
     Let DoduPast.IsWalking = 10
+    Let DoduPast.HasBackpack = 10
 
     ' ---------------------------------------
     ' 0. Initial pan
@@ -828,6 +831,7 @@ Sub DoLevel
         SpriteSequence_Tick CurrentSprite(0)
         SpriteSequence_Tick CurrentSprite(1)
         SpriteSequence_Tick CurrentSprite(2)
+        SpriteSequence_Tick CurrentSprite(3)
 
         If Dodu.IsWalking And CurrentSprite(2).Ticker.TickCnt = 0 And _
                 CurrentSprite(2).Ticker.Index Mod 2 = 0 Then
@@ -1081,6 +1085,9 @@ Sub GetDoduSprite (s() As SpriteSequence, DoduNow As Player, DoduPast As Player)
         End If
         Let s(2) = SprDodBody(Abs(DoduNow.IsWalking), Abs(DoduNow.HasBlock), Abs(DoduNow.HasMittens), Abs(DoduNow.IsPanting))
         Let s(2).Flipped = DoduNow.ToLeft
+        Let s(3) = SprDodBackpack(Abs(DoduNow.IsWalking), DoduNow.HasBackpack)
+        Let s(3).Flipped = DoduNow.ToLeft
+        SpriteSequence_Start s(3)
         Let DoduPast = DoduNow
     End If
 End Sub

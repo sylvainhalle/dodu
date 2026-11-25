@@ -87,6 +87,18 @@ SpriteSequence_InitFile SprDodBody(1, 1, 0, 1), ImgDir$ + "/player/Body_block_no
 SpriteSequence_InitFile SprDodBody(1, 0, 1, 1), ImgDir$ + "/player/Body_noblock_mittens_panting.png", 2,  10, TRUE, TRUE, BodyOffsetNoBlock, BodyOffsetNoBlock, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprDodBody(1, 1, 1, 1), ImgDir$ + "/player/Body_block_mittens_panting.png", 2,  10, TRUE, TRUE, BodyOffsetBlock, BodyOffsetBlock, COLOR_TRANSPARENT
 
+' Backpack. This item is overlaid on the body sprite.
+Dim Shared SprDodBackpack(2, 3) As SpriteSequence, BackpackOffset As Point, BackpackOffsetRev As Point
+Point_Set BackpackOffset, -3, 10
+Point_Set BackpackOffsetRev, 6, 10
+' 0 deliberately empty, so that it means "no backpack"
+SpriteSequence_InitFile SprDodBackpack(0, 0), ImgDir$ + "/Nothing.png", 1,  1, FALSE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBackpack(0, 1), ImgDir$ + "/player/Backpack_norope.png", 4,  2, FALSE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBackpack(0, 2), ImgDir$ + "/player/Backpack_rope.png", 4,  2, FALSE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBackpack(1, 0), ImgDir$ + "/Nothing.png", 1,  1, TRUE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBackpack(1, 1), ImgDir$ + "/player/Backpack_norope.png", 4,  2, TRUE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBackpack(1, 2), ImgDir$ + "/player/Backpack_rope.png", 4,  2, TRUE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
+
 ' Trajectories
 Const TRJ_CLIMBING% = 0
 Const TRJ_CLIMBING_SNOW% = 1

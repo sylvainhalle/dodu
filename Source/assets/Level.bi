@@ -18,7 +18,7 @@
 
 Const LAYER_THERMO% = 2
 
-Dim Shared SprLevel(20) As SpriteSequence
+Dim Shared SprLevel(24) As SpriteSequence
 Dim Shared CFG_NEIGHBORS As Integer
 Let CFG_NEIGHBORS = FALSE
 
@@ -69,6 +69,7 @@ SpriteSequence_InitFile SprLevel(LVL_SNOW_R), ImgDir$ + "/level/Snow_R.png",6, 2
 SpriteSequence_InitFile SprLevel(LVL_SNOW_M), ImgDir$ + "/level/Snow_M.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprLevel(LVL_ROPE_M), ImgDir$ + "/level/Rope_M.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprLevel(LVL_ROPE_E), ImgDir$ + "/level/Rope_E.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_ROPE_H), ImgDir$ + "/level/Rope_H.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' Goal post
 Dim PoleOffset As Point, PoleOffsetFlip As Point
@@ -105,10 +106,15 @@ SpriteSequence_InitFile SprLevel(LVL_THERMO), ImgDir$ + "/level/Thermometer.png"
 ' Mark
 SpriteSequence_InitFile SprLevel(LVL_MARK), ImgDir$ + "/level/Mark.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
-' Hook
+' Hook (item)
 Dim SprHookOffset As Point
 Point_Set SprHookOffset, 0, -11
 SpriteSequence_InitFile SprLevel(LVL_HOOK_ITEM), ImgDir$ + "/level/Hook_Item.png",1, 1, TRUE, TRUE, SprHookOffset, SprHookOffset, COLOR_TRANSPARENT
+
+' Hook on ice block
+SpriteSequence_InitFile SprLevel(LVL_BLOCK_HOOK_L), ImgDir$ + "/level/BlockBlue_hook_L.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_BLOCK_HOOK_R), ImgDir$ + "/level/BlockBlue_hook_R.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+
 
 Dim Shared ThermoRed&, ThermoBlue&, HighlightColor&
 If ImgMode = IMG_MODE_CGA Then

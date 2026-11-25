@@ -38,6 +38,7 @@ Const TILE_END = "x"
 Const TILE_ENDALL = "X"
 Const TILE_MARK = "^"
 Const TILE_HOOK_ITEM = "?"
+Const TILE_BLOCK_HOOK = "%"
 
 Type Square
     col As Integer
