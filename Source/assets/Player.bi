@@ -66,10 +66,12 @@ SpriteSequence_InitFile SprDodHead(1, 3), ImgDir$ + "/player/Head_panting.png", 
 ' 1st coordinate: 0 = not walking, 1 = walking
 ' 2nd coordinate: 0 = no block, 1 = has block
 ' 3rd coordinate: 0 = no mittens, 1 = with mittens
-' 4th coordinate: 0 = not panting, 1 = panting
-Dim Shared SprDodBody(2, 2, 2, 2) As SpriteSequence, BodyOffsetNoBlock As Point, BodyOffsetBlock As Point
+' 4th coordinate: 0 = not panting, 1 = panting, 2 = throwing
+Dim Shared SprDodBody(2, 2, 2, 2) As SpriteSequence, BodyOffsetNoBlock As Point, BodyOffsetBlock As Point, BodyOffsetThrow As Point, BodyOffsetThrowRev As Point
 Point_Set BodyOffsetNoBlock, 0, 13
 Point_Set BodyOffsetBlock, 0, 12
+Point_Set BodyOffsetThrow, 0, 9
+Point_Set BodyOffsetThrowRev, -11, 9
 SpriteSequence_InitFile SprDodBody(0, 0, 0, 0), ImgDir$ + "/player/Body_noblock_nomittens.png", 4, 2, FALSE, TRUE, BodyOffsetNoBlock, BodyOffsetNoBlock, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprDodBody(0, 1, 0, 0), ImgDir$ + "/player/Body_block_nomittens.png", 4,  2, FALSE, TRUE, BodyOffsetBlock, BodyOffsetBlock, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprDodBody(0, 0, 1, 0), ImgDir$ + "/player/Body_noblock_mittens.png", 4,  2, FALSE, TRUE, BodyOffsetNoBlock, BodyOffsetNoBlock, COLOR_TRANSPARENT
@@ -86,11 +88,13 @@ SpriteSequence_InitFile SprDodBody(1, 0, 0, 1), ImgDir$ + "/player/Body_noblock_
 SpriteSequence_InitFile SprDodBody(1, 1, 0, 1), ImgDir$ + "/player/Body_block_nomittens_panting.png", 2,  10, TRUE, TRUE, BodyOffsetBlock, BodyOffsetBlock, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprDodBody(1, 0, 1, 1), ImgDir$ + "/player/Body_noblock_mittens_panting.png", 2,  10, TRUE, TRUE, BodyOffsetNoBlock, BodyOffsetNoBlock, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprDodBody(1, 1, 1, 1), ImgDir$ + "/player/Body_block_mittens_panting.png", 2,  10, TRUE, TRUE, BodyOffsetBlock, BodyOffsetBlock, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(0, 0, 0, 2), ImgDir$ + "/player/Body_nomittens_throw.png", 20,  1, TRUE, TRUE, BodyOffsetThrow, BodyOffsetThrowRev, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprDodBody(0, 0, 1, 2), ImgDir$ + "/player/Body_mittens_throw.png", 20,  1, TRUE, TRUE, BodyOffsetThrow, BodyOffsetThrowRev, COLOR_TRANSPARENT
 
 ' Backpack. This item is overlaid on the body sprite.
 Dim Shared SprDodBackpack(2, 3) As SpriteSequence, BackpackOffset As Point, BackpackOffsetRev As Point
 Point_Set BackpackOffset, -3, 10
-Point_Set BackpackOffsetRev, 6, 10
+Point_Set BackpackOffsetRev, 5, 10
 ' 0 deliberately empty, so that it means "no backpack"
 SpriteSequence_InitFile SprDodBackpack(0, 0), ImgDir$ + "/Nothing.png", 1,  1, FALSE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprDodBackpack(0, 1), ImgDir$ + "/player/Backpack_norope.png", 4,  2, FALSE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
@@ -106,9 +110,10 @@ Const TRJ_UNCLIMBING% = 2
 Const TRJ_PANTING% = 3
 Const TRJ_LOOKING_THERMO% = 4
 Const TRJ_FALLING% = 5
+Const TRJ_THROWING% = 6
 Const TRJ_PANBACK% = 100
 
-Dim Shared Trajectories(6) As Trajectory
+Dim Shared Trajectories(7) As Trajectory
 Dim trj As Trajectory
 Trajectory_Init Trajectories(TRJ_CLIMBING), 6, 1, FALSE, FALSE
 Trajectory_AddCoords Trajectories(TRJ_CLIMBING), 0, -3, 0
@@ -139,6 +144,9 @@ Trajectory_AddCoords Trajectories(TRJ_FALLING), 0, 4, 5
 
 Trajectory_Init Trajectories(TRJ_PANTING), 1, 40, FALSE, FALSE
 Trajectory_AddCoords Trajectories(TRJ_PANTING), 0,  0, 0
+
+Trajectory_Init Trajectories(TRJ_THROWING), 1, 20, FALSE, FALSE
+Trajectory_AddCoords Trajectories(TRJ_THROWING), 0,  0, 0
 
 Trajectory_Init Trajectories(TRJ_LOOKING_THERMO), 1, 12, FALSE, FALSE
 Trajectory_AddCoords Trajectories(TRJ_LOOKING_THERMO), 0,  0, 0

@@ -65,7 +65,7 @@ Point_Set PtUnit, 1, 1
 ' Number of screen pixels per frame
 ' Currently, can only be an integer
 Const WALKING_SPEED# = 1
-Const WALKING_SPEED_SNOW# = 0.3
+Const WALKING_SPEED_SNOW# = 0.5
 
 Dim Shared WalkingTicker As Ticker
 Ticker_Init WalkingTicker, Ceil%(1 / WALKING_SPEED), 1, TRUE
@@ -81,6 +81,9 @@ Let CfgSplash = TRUE
 
 Dim Shared CfgThermo As Integer
 Let CfgThermo = TRUE
+
+Dim Shared CfgIntroduction As Integer
+Let CfgIntroduction = TRUE
 
 ' --------------------------
 ' Other includes (declarations)
@@ -118,6 +121,7 @@ Let Dodu.IsClimbing = 0
 Let Dodu.Temp = 10
 Let Dodu.HasMittens = FALSE
 Let Dodu.HasTuque = FALSE
+Let Dodu.HasBackpack = 0
 
 Dim argc As Integer, toset As String
 For argc = 1 To _CommandCount
@@ -125,6 +129,7 @@ For argc = 1 To _CommandCount
         Case "--dev"
             Let PlayMusic = FALSE
             Let CfgCutscenes = FALSE
+            Let CfgIntroduction = FALSE
             Let CfgSplash = FALSE
             Let CfgThermo = FALSE
         Case "--nomusic"
@@ -266,7 +271,9 @@ Sub MainLoop
         If CfgSplash Then
             DoLifSplash
         End If
-        DoIntroduction rst
+        If CfgIntroduction Then
+            DoIntroduction rst
+        End If
         If rst.Level >= 0 Then
             Let CurrentLevel = rst.Level
             Let Dodu.HasMittens = rst.HasMittens
@@ -316,6 +323,7 @@ Sub DoLevel
     Dim unclimbP As Square, blockingP As Square, poleP As Square
     Dim mittensP As Square, tuqueP As Square, cookieP As Square
     Dim coffeeP As Square, snowP As Square, feetP As Square
+    Dim throwP As Square, reclaimP As Square
 
     Let CtrlPressed = FALSE
     Player_Reset Dodu
@@ -331,8 +339,6 @@ Sub DoLevel
     Viewport_SetBackground ImgBuffer, _
         Backgrounds(Levels(CurrentLevel%).Background), Levels(CurrentLevel%).BackgroundParallax
 
-    'Color COLOR_WHITE&, , , ImgBuffer.Buffer
-    '_PrintMode _KeepBackground , ImgBuffer.Buffer
     Screen MainScreen.Layers(0).Buffer
 
     Let Dodu.LevPos.x = Levels(CurrentLevel).StartPoint.col * BLOCK_SIZE
@@ -503,6 +509,7 @@ Sub DoLevel
         CoffeeSquare Dodu.ToLeft, lp, Levels(CurrentLevel), coffeeP
         SnowSquare Dodu.ToLeft, lp, Levels(CurrentLevel), snowP
         FeetSquare Dodu.ToLeft, lp, Levels(CurrentLevel), feetP
+        ThrowSquare Dodu.ToLeft, lp, Levels(CurrentLevel), throwP
 
         If CurrentTrajectory% = TRJ_CLIMBING_SNOW Then
             Let Dodu.InSnow = TRUE
@@ -542,6 +549,7 @@ Sub DoLevel
                     Let CurrentTrajectory% = -1
                     Let Dodu.IsPanting = FALSE
                     Let Dodu.IsLooking = FALSE
+                    Let Dodu.IsThrowing = FALSE
                 Else
                     If Not IsOnGround%(Dodu.LevPos, Levels(CurrentLevel)) Then
                         Let CurrentTrajectory% = -1
@@ -728,36 +736,46 @@ Sub DoLevel
                 Initiate_Trajectory TRJ_UNCLIMBING, FALSE
             End If
 
-        ElseIf IsUp% And Square_IsValid(takeP) Then
+        ElseIf IsUp% Then
+            If Square_IsValid(takeP) Then
 
-            SoundPlayer_PlayEffect Audio, SND_GRAB
-            TakeBlock Levels(CurrentLevel), takeP
+                SoundPlayer_PlayEffect Audio, SND_GRAB
+                TakeBlock Levels(CurrentLevel), takeP
 
-            Point_Set dod_lastgrab, Dodu.LevPos.x, Dodu.LevPos.y
-            Let sq_lastgrab.col = takeP.col
-            Let sq_lastgrab.row = takeP.row
-            If Dodu.HasMittens Then
-                Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST_MITTENS
-            Else
-                Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST
+                Point_Set dod_lastgrab, Dodu.LevPos.x, Dodu.LevPos.y
+                Let sq_lastgrab.col = takeP.col
+                Let sq_lastgrab.row = takeP.row
+                If Dodu.HasMittens Then
+                    Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST_MITTENS
+                Else
+                    Let Dodu.ThermoTick.Speed = THERMO_TICK_FAST
+                End If
+
+                Let Dodu.IsWalking = FALSE
             End If
 
-            Let Dodu.IsWalking = FALSE
+        ElseIf IsDown% Then
+            If Square_IsValid(dropP) Then
 
-        ElseIf IsDown% And Square_IsValid(dropP) Then
+                SoundPlayer_PlayEffect Audio, SND_DROP
 
-            SoundPlayer_PlayEffect Audio, SND_DROP
+                Let sq_lastdrop.col = dropP.col
+                Let sq_lastdrop.row = dropP.row
 
-            Let sq_lastdrop.col = dropP.col
-            Let sq_lastdrop.row = dropP.row
-
-            DropBlock Levels(CurrentLevel), dropP
-            If Dodu.HasTuque Then
-                Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL_TUQUE
-            Else
-                Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL
+                DropBlock Levels(CurrentLevel), dropP
+                If Dodu.HasTuque Then
+                    Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL_TUQUE
+                Else
+                    Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL
+                End If
+                Let Dodu.IsWalking = FALSE
+            ElseIf Square_IsValid(throwP) Then 'And Dodu.HasBackpack = 2 Then
+                Let Dodu.IsThrowing = TRUE
+                Let Dodu.IsWalking = FALSE
+                Let Dodu.IsPanting = FALSE
+                Let Dodu.HasBackpack = 1
+                Initiate_Trajectory TRJ_THROWING, Dodu.ToLeft
             End If
-            Let Dodu.IsWalking = FALSE
 
         ElseIf _KeyDown(KEY_BACKSPACE) And _
                 Square_IsValid(sq_lastgrab) And _
@@ -855,8 +873,10 @@ Sub DoLevel
         HighlightBlock ImgBuffer, Levels(CurrentLevel), takeP, HighlightColor&
         HighlightBlock ImgBuffer, Levels(CurrentLevel), dropP, HighlightColor&
         HighlightBlock ImgBuffer, Levels(CurrentLevel), climbP, COLOR_PINK
+
         Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
         Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
+        Viewport_Print MainScreen, Str$(CurrentTrajectory), PtOrigin, 0
         Viewport_Display MainScreen, EYE_NONE
         Viewport_Tick ImgBuffer
         Viewport_Tick MainScreen
@@ -1059,8 +1079,10 @@ End Sub
 
 Sub GetDoduSprite (s() As SpriteSequence, DoduNow As Player, DoduPast As Player)
     If PlayerChanged(DoduNow, DoduPast) Then
+        'Tuque
         Let s(0) = SprDodTuque(Abs(DoduNow.IsWalking), Abs(DoduNow.HasTuque))
         Let s(0).Flipped = DoduNow.ToLeft
+        'Head
         If Dodu.Temp < 3 Then
             Let s(1) = SprDodHead(Abs(DoduNow.IsWalking), SPR_FREEZING)
         Else
@@ -1083,9 +1105,24 @@ Sub GetDoduSprite (s() As SpriteSequence, DoduNow As Player, DoduPast As Player)
                 Let s(1).Flipped = DoduNow.ToLeft
             End If
         End If
-        Let s(2) = SprDodBody(Abs(DoduNow.IsWalking), Abs(DoduNow.HasBlock), Abs(DoduNow.HasMittens), Abs(DoduNow.IsPanting))
+        'Body
+        Dim lastindex As Integer
+        If DoduNow.IsPanting Then Let lastindex = 1
+        If DoduNow.IsThrowing Then Let lastindex = 2
+        Let s(2) = SprDodBody(Abs(DoduNow.IsWalking), Abs(DoduNow.HasBlock), Abs(DoduNow.HasMittens), lastindex)
         Let s(2).Flipped = DoduNow.ToLeft
-        Let s(3) = SprDodBackpack(Abs(DoduNow.IsWalking), DoduNow.HasBackpack)
+        If DoduNow.IsThrowing Then
+            SpriteSequence_Stop s(2)
+            SpriteSequence_Start s(2)
+            'PrintConsole "STARTED"
+        End If
+        'Backpack
+        If DoduNow.IsThrowing Then
+            Let lastindex = 0 ' The backpack is included in the throwing sprites
+        Else
+            Let lastindex = DoduNow.HasBackpack
+        End If
+        Let s(3) = SprDodBackpack(Abs(DoduNow.IsWalking), lastindex)
         Let s(3).Flipped = DoduNow.ToLeft
         SpriteSequence_Start s(3)
         Let DoduPast = DoduNow

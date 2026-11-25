@@ -57,6 +57,16 @@ Function IsGoalAt (col As Integer, row As Integer, l As LevelMap)
     Let IsGoalAt = FALSE
 End Function
 
+Function IsEmptyAt (col As Integer, row As Integer, l As LevelMap)
+    If col >= 0 _AndAlso col < MAP_WIDTH _AndAlso row >= 0 _AndAlso row < MAP_HEIGHT Then
+        If l.Topo(col, row) = TILE_NOTHING Then
+            Let IsEmptyAt = TRUE
+            Exit Function
+        End If
+    End If
+    Let IsEmptyAt = FALSE
+End Function
+
 Function IsBlockAt (col As Integer, row As Integer, l As LevelMap)
     If l.Topo(col, row) = TILE_BLOCK_B Or l.Topo(col, row) = TILE_BLOCK_W Or l.Topo(col, row) = TILE_SNOW Then
         Let IsBlockAt = TRUE

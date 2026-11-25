@@ -108,6 +108,11 @@ Declare Sub Level_GoalSquare(l As LevelMap, s As Square)
 Declare Function IsGoalAt (col As Integer, row As Integer, l As LevelMap)
 
 '**
+'* Returns TRUE if the square (col, row) of level l is empty.
+'**
+Declare Function IsEmptyAt (col As Integer, row As Integer, l As LevelMap)
+
+'**
 '* Returns TRUE if the square (col, row) of level l contains something solid
 '* to stand on (black block, white block or snow).
 '**

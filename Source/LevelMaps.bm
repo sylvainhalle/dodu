@@ -59,6 +59,7 @@ Sections:
 Data "SECTION", "onlyice", 0
 Data "BACKGROUNDS", 0, 1
 Data "CUTSCENE", 0
+Data "LEVEL", "throwtest"
 Data "LEVEL", "just_walk"
 Data "LEVEL", "choose_side"
 Data "LEVEL", "choose_again"

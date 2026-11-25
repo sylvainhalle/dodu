@@ -115,6 +115,9 @@ SpriteSequence_InitFile SprLevel(LVL_HOOK_ITEM), ImgDir$ + "/level/Hook_Item.png
 SpriteSequence_InitFile SprLevel(LVL_BLOCK_HOOK_L), ImgDir$ + "/level/BlockBlue_hook_L.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprLevel(LVL_BLOCK_HOOK_R), ImgDir$ + "/level/BlockBlue_hook_R.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
+Dim Shared SprThrownRope(2) As SpriteSequence
+SpriteSequence_InitFile SprLevel(LVL_BLOCK_HOOK_L), ImgDir$ + "/level/BlockBlue_hook_L.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+
 
 Dim Shared ThermoRed&, ThermoBlue&, HighlightColor&
 If ImgMode = IMG_MODE_CGA Then

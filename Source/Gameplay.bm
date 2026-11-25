@@ -63,7 +63,7 @@ Sub TakeBackpack (m As LevelMap, p As Square)
 End Sub
 
 Function PlayerChanged (p_now As Player, p_past As Player)
-    Let PlayerChanged = Not (p_now.IsLooking = p_past.IsLooking And p_now.IsPanting = p_past.IsPanting And p_now.HasBlock = p_past.HasBlock And p_now.HasMittens = p_past.HasMittens And p_now.HasTuque = p_past.HasTuque And p_now.IsWalking = p_past.IsWalking And p_past.InSnow = p_now.InSnow And p_past.HasBackpack = p_now.HasBackpack)
+    Let PlayerChanged = Not (p_now.IsLooking = p_past.IsLooking And p_now.IsPanting = p_past.IsPanting And p_now.HasBlock = p_past.HasBlock And p_now.HasMittens = p_past.HasMittens And p_now.HasTuque = p_past.HasTuque And p_now.IsWalking = p_past.IsWalking And p_past.InSnow = p_now.InSnow And p_past.HasBackpack = p_now.HasBackpack And p_past.IsThrowing = p_now.IsThrowing And p_past.IsReclaiming = p_now.IsReclaiming)
 End Function
 
 Sub Player_Reset (p As Player)
@@ -75,7 +75,10 @@ Sub Player_Reset (p As Player)
     Let p.IsPanting = FALSE
     Let p.IsLooking = FALSE
     Let p.InSnow = FALSE
+    Let p.IsThrowing = FALSE
+    Let p.IsReclaiming = FALSE
     Ticker_Reset p.ThermoTick
     Ticker_Reset p.SlipTick
+    Ticker_Stop p.SlipTick
 End Sub
 ' :mode=visualbasic:folding=explicit:wrap=none:
