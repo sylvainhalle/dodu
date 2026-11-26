@@ -883,7 +883,7 @@ Sub DoLevel
         Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
         Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
         'Viewport_Print MainScreen, Str$(CurrentTrajectory), PtOrigin, 0
-        Viewport_Print MainScreen, Square_ToString(throwP), PtOrigin, 0
+        Viewport_Print MainScreen, Square_ToString(feetP) + Square_ToString(throwP), PtOrigin, 0
         Viewport_Display MainScreen, EYE_NONE
         Viewport_Tick ImgBuffer
         Viewport_Tick MainScreen
