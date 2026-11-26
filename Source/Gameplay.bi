@@ -87,6 +87,17 @@ Declare Sub TakeCookie (m As LevelMap, p As Square)
 Declare Sub TakeCoffee (m As LevelMap, p As Square)
 
 '**
+'* Puts the animated sprite for the rope being deployed.
+'**
+Declare Sub ThrowRope (m As LevelMap, p As Square)
+
+'**
+'* Puts the sprites for the deployed rope in the given
+'* square.
+'**
+Declare Sub DeployRope (m As LevelMap, p As Square)
+
+'**
 '* Resets a player to its initial state: full temperature, no block,
 '* not moving, and stopped thermometer/slip tickers.
 '**

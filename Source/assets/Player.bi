@@ -96,10 +96,10 @@ Dim Shared SprDodBackpack(2, 3) As SpriteSequence, BackpackOffset As Point, Back
 Point_Set BackpackOffset, -3, 10
 Point_Set BackpackOffsetRev, 5, 10
 ' 0 deliberately empty, so that it means "no backpack"
-SpriteSequence_InitFile SprDodBackpack(0, 0), ImgDir$ + "/Nothing.png", 1,  1, FALSE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
+' SpriteSequence_InitFile SprDodBackpack(0, 0), ImgDir$ + "/Nothing.png", 1,  1, FALSE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprDodBackpack(0, 1), ImgDir$ + "/player/Backpack_norope.png", 4,  2, FALSE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprDodBackpack(0, 2), ImgDir$ + "/player/Backpack_rope.png", 4,  2, FALSE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
-SpriteSequence_InitFile SprDodBackpack(1, 0), ImgDir$ + "/Nothing.png", 1,  1, TRUE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
+' SpriteSequence_InitFile SprDodBackpack(1, 0), ImgDir$ + "/Nothing.png", 1,  1, TRUE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprDodBackpack(1, 1), ImgDir$ + "/player/Backpack_norope.png", 4,  2, TRUE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprDodBackpack(1, 2), ImgDir$ + "/player/Backpack_rope.png", 4,  2, TRUE, TRUE, BackpackOffset, BackpackOffsetRev, COLOR_TRANSPARENT
 

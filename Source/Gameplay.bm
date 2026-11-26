@@ -22,6 +22,18 @@ Sub TakeBlock (m As LevelMap, p As Square)
     ClearSpriteSquare p
 End Sub
 
+Sub ThrowRope (m As LevelMap, p As Square)
+    Let SpriteLevel(DEPTH_LEVEL, p.col, p.row) = SprThrownRope(1)
+    Let SpriteLevel(DEPTH_LEVEL, p.col, p.row).Flipped = Dodu.ToLeft
+    SpriteSequence_Start SpriteLevel(DEPTH_LEVEL, p.col, p.row)
+End Sub
+
+Sub DeployRope (m As LevelMap, p As Square)
+	ClearSpriteSquare p
+	SetSpriteSquare m, FALSE, p.col, p.row, TILE_ROPE
+	Let Levels(CurrentLevel).Topo(p.col, p.row) = TILE_ROPE
+End Sub
+
 Sub TakeTuque (m As LevelMap, p As Square)
     Let m.Topo(p.col, p.row) = TILE_NOTHING
     Let Dodu.HasTuque = TRUE

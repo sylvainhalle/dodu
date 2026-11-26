@@ -394,8 +394,9 @@ Sub DoLevel
     Loop Until Ticker_IsFinished%(ImgBuffer.PanTick)
 
     Viewport_SetCenter ImgBuffer, center
-    Dim hasfallen As Integer
+    Dim hasfallen As Integer, hookReleased As Integer
     Dim lastClimbIndex As Integer, lastUnclimbIndex As Integer, lastFallIndex As Integer
+    Let hookReleased = FALSE
 
     Do
         _Limit FPS
@@ -592,12 +593,6 @@ Sub DoLevel
             SoundPlayer_PlayEffect Audio, SND_COOKIE
         End If
 
-        If Square_IsValid(coffeeP) Then
-            TakeCoffee Levels(CurrentLevel), coffeeP
-            SoundPlayer_PlayEffect Audio, SND_COOKIE
-        End If
-
-
 
         ' ---------------------------------------
         ' 5. Pan-back initiation
@@ -775,6 +770,7 @@ Sub DoLevel
                 Let Dodu.IsPanting = FALSE
                 Let Dodu.HasBackpack = 1
                 Initiate_Trajectory TRJ_THROWING, Dodu.ToLeft
+                ThrowRope Levels(CurrentLevel), throwP
             End If
 
         ElseIf _KeyDown(KEY_BACKSPACE) And _
@@ -865,8 +861,15 @@ Sub DoLevel
 
         DrawLevel ImgBuffer, Levels(CurrentLevel), FALSE
         TickLevel Levels(CurrentLevel)
+        If hookReleased Then
+            If SpriteSequence_IsFinished(SpriteLevel(DEPTH_LEVEL, throwP.col, throwP.row)) Then
+                DeployRope Levels(CurrentLevel), throwP
+                Let hookReleased = FALSE
+            End If
+        End If
+
         DrawPlayer ImgBuffer, CurrentSprite()
-        DrawLevel ImgBuffer, Levels(CurrentLevel), TRUE
+        'DrawLevel ImgBuffer, Levels(CurrentLevel), TRUE
         DrawThermometer ImgBuffer, IMG_DEPTH - 1
         DrawLevelNumber ImgBuffer, IMG_DEPTH - 1
 
