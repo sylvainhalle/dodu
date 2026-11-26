@@ -62,6 +62,7 @@ Const SND_COOKIE% = 10
 Const SND_POWERUP% = 11
 Const SND_POWERDOWN% = 12
 Const SND_STEP_SNOW% = 13
+Const SND_THROW_ROPE% = 14
 
 SoundPlayer_AddEffect Audio, SND_STEP, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step.mid"), 0.4
 SoundPlayer_AddEffect Audio, SND_THERMO, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/thermo.mid"), 1
@@ -77,6 +78,7 @@ SoundPlayer_AddEffect Audio, SND_COOKIE, _SndOpen("/home/sylvain/Workspaces/dodu
 SoundPlayer_AddEffect Audio, SND_POWERUP, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/powerup.mid"), 1
 SoundPlayer_AddEffect Audio, SND_POWERDOWN, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/powerdown.mid"), 1
 SoundPlayer_AddEffect Audio, SND_STEP_SNOW, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/step_snow.mid"), 0.4
+SoundPlayer_AddEffect Audio, SND_THROW_ROPE, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/throw.mid"), 0.4
 
 '**
 '* Sets the song volume to a low level.

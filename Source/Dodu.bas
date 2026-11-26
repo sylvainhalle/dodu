@@ -545,6 +545,8 @@ Sub DoLevel
                         Let lastClimbIndex = Trajectories(CurrentTrajectory).Ticker.Index
                     Case TRJ_FALLING
                         Let lastFallIndex = Trajectories(CurrentTrajectory).Ticker.Index
+                    Case TRJ_THROWING
+                        Let hookReleased = TRUE
                 End Select
                 If Not (CurrentTrajectory% = TRJ_UNCLIMBING Or CurrentTrajectory% = TRJ_FALLING) Then
                     Let CurrentTrajectory% = -1
@@ -771,6 +773,7 @@ Sub DoLevel
                 Let Dodu.HasBackpack = 1
                 Initiate_Trajectory TRJ_THROWING, Dodu.ToLeft
                 ThrowRope Levels(CurrentLevel), throwP
+                SoundPlayer_PlayEffect Audio, SND_THROW_ROPE
             End If
 
         ElseIf _KeyDown(KEY_BACKSPACE) And _
@@ -879,7 +882,8 @@ Sub DoLevel
 
         Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
         Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
-        Viewport_Print MainScreen, Str$(CurrentTrajectory), PtOrigin, 0
+        'Viewport_Print MainScreen, Str$(CurrentTrajectory), PtOrigin, 0
+        Viewport_Print MainScreen, Square_ToString(throwP), PtOrigin, 0
         Viewport_Display MainScreen, EYE_NONE
         Viewport_Tick ImgBuffer
         Viewport_Tick MainScreen

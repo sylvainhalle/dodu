@@ -112,13 +112,16 @@ Point_Set SprHookOffset, 0, -11
 SpriteSequence_InitFile SprLevel(LVL_HOOK_ITEM), ImgDir$ + "/level/Hook_Item.png",1, 1, TRUE, TRUE, SprHookOffset, SprHookOffset, COLOR_TRANSPARENT
 
 ' Hook on ice block
-SpriteSequence_InitFile SprLevel(LVL_BLOCK_HOOK_L), ImgDir$ + "/level/BlockBlue_hook_L.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
-SpriteSequence_InitFile SprLevel(LVL_BLOCK_HOOK_R), ImgDir$ + "/level/BlockBlue_hook_R.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+Dim SprBlockHookOffset As Point, SprBlockHookOffsetRev As Point
+Point_Set SprBlockHookOffset, 0, -5
+Point_Set SprBlockHookOffsetRev, 0, -5
+SpriteSequence_InitFile SprLevel(LVL_BLOCK_HOOK_L), ImgDir$ + "/level/BlockBlue_hook_L.png",1, 1, TRUE, TRUE, SprBlockHookOffset, SprBlockHookOffsetRev, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprLevel(LVL_BLOCK_HOOK_R), ImgDir$ + "/level/BlockBlue_hook_R.png",1, 1, TRUE, TRUE, SprBlockHookOffset, SprBlockHookOffsetRev, COLOR_TRANSPARENT
 
 ' Ropes
 Dim Shared SprThrownRope(2) As SpriteSequence, SprRopeOffset2 As Point, SprRopeOffset2Rev As Point
-Point_Set SprRopeOffset2, -16, -22
-SpriteSequence_InitFile SprThrownRope(1), ImgDir$ + "/level/Hook_Thrown_3.png",13, 2, TRUE, FALSE, SprRopeOffset2, SprRopeOffset2Rev, COLOR_TRANSPARENT
+Point_Set SprRopeOffset2, -49, -33
+SpriteSequence_InitFile SprThrownRope(1), ImgDir$ + "/level/Hook_Thrown_3.png",20, 1, TRUE, FALSE, SprRopeOffset2, SprRopeOffset2Rev, COLOR_TRANSPARENT
 
 
 Dim Shared ThermoRed&, ThermoBlue&, HighlightColor&

@@ -71,10 +71,10 @@ Sub SetSpriteSquare (m As LevelMap, isfront As Integer, col As Integer, row As I
       Case TILE_HOOK_ITEM
         SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_HOOK_ITEM)
       Case TILE_BLOCK_HOOK
-      	If col > 0 _AndAlso m.Topo(col - 1, row) = TILE_ROPE Then
-      		SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_BLOCK_HOOK_L)
-      	ElseIf col < MAP_WIDTH - 1 _AndAlso m.Topo(col + 1, row) = TILE_ROPE Then
+      	If col > 0 _AndAlso m.Topo(col - 1, row) = TILE_NOTHING Then
       		SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_BLOCK_HOOK_R)
+      	ElseIf col < MAP_WIDTH - 1 _AndAlso m.Topo(col + 1, row) = TILE_NOTHING Then
+      		SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, col, row), SprLevel(LVL_BLOCK_HOOK_L)
       	End If
   End Select
 End Sub

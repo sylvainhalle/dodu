@@ -30,8 +30,8 @@ End Sub
 
 Sub DeployRope (m As LevelMap, p As Square)
 	ClearSpriteSquare p
-	SetSpriteSquare m, FALSE, p.col, p.row, TILE_ROPE
-	Let Levels(CurrentLevel).Topo(p.col, p.row) = TILE_ROPE
+	SetSpriteSquare m, FALSE, p.col, p.row, TILE_BLOCK_HOOK
+	Let Levels(CurrentLevel).Topo(p.col, p.row) = TILE_BLOCK_HOOK
 End Sub
 
 Sub TakeTuque (m As LevelMap, p As Square)

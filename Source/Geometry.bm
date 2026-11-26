@@ -371,10 +371,22 @@ Sub ThrowSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
     If p.col < 0 Or p.row < 0 Then
         Exit Sub
     End If
-    If Not IsEmptyAt(p.col, p.row, m) Then
-        Let p.col = -1
-        Let p.row = -1
-    End If
+	If Not IsEmptyAt(p.col, p.row, m) Then
+		Let p.col = -1
+		Let p.row = -1
+		PrintConsole "NOT EMPTY"
+	End If
+    Dim k As Integer
+    For k = 1 To 4
+    	If p.col + k < MAP_WIDTH _AndAlso Not IsEmptyAt(p.col + k, p.row + 1, Levels(CurrentLevel)) Then
+    		Let p.col = p.col + k
+    		Let p.row = p.row + 1
+    		Exit Sub
+    	End If
+    Next
+    ' Gap too wide
+    Let p.col = -1
+    Let p.row = -1
 End Sub
 
 ' :mode=visualbasic:folding=explicit:wrap=none:
