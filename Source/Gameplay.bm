@@ -86,7 +86,7 @@ Sub PullRope (m As LevelMap, hook_p As Square, feet_p As Square, flipped As Inte
 	PrintLevelConsole m
 	PrintConsole "ROPELEN" + Str$(length)
 	Dim flip As Integer, hookornot As Integer
-	If feet_p.col < hook_p.col Then
+	If feet_p.col < hook_p.col Or (feet_p.col = hook_p.col And Not flipped) Then
 		PrintConsole "Player at left"
 		If direction = 1 Then ' pulling on the hook from the left
 			Let flip = TRUE
@@ -106,7 +106,7 @@ Sub PullRope (m As LevelMap, hook_p As Square, feet_p As Square, flipped As Inte
 		End If
 	End If
 	PrintConsole "Direction: " + Str$(direction) + " Flip: " + Str$(flip) + " Pulling hook: " + Str$(hookornot)
-	SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, hook_p.col, hook_p.row), SprPulledRope(Abs(length) - 1, hookornot)
+	SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, hook_p.col, hook_p.row), SprPulledRope(Abs(length) - 1, Abs(hookornot))
 	Let SpriteLevel(DEPTH_LEVEL, hook_p.col, hook_p.row).Flipped = flip
 	SpriteSequence_Start SpriteLevel(DEPTH_LEVEL, hook_p.col, hook_p.row)
 End Sub

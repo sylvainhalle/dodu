@@ -113,5 +113,8 @@ SpriteSequence_InitFile CutScenes(0), ImgDir$ + "/cutscenes/Cutscene_0" + SizeSu
 SpriteSequence_InitFile CutScenes(1), ImgDir$ + "/cutscenes/Cutscene_1" + SizeSuffix,1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile CutScenes(2), ImgDir$ + "/cutscenes/Cutscene_2" + SizeSuffix,4, 3, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile CutScenes(3), ImgDir$ + "/cutscenes/Cutscene_3" + SizeSuffix,1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile CutScenes(4), ImgDir$ + "/cutscenes/Cutscene_4" + SizeSuffix,1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile CutScenes(5), ImgDir$ + "/cutscenes/Cutscene_5" + SizeSuffix,1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile CutScenes(6), ImgDir$ + "/cutscenes/Cutscene_6" + SizeSuffix,1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 ' :mode=visualbasic:

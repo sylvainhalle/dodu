@@ -142,6 +142,9 @@ Let PaletteButtons(9) = LVL_COOKIE
 Let PaletteButtons(10) = LVL_WATER
 Let PaletteButtons(11) = LVL_SNOW_C
 Let PaletteButtons(12) = LVL_ROPE_M
+Let PaletteButtons(12) = LVL_ROPE_M
+Let PaletteButtons(12) = LVL_ROPE_M
+Let PaletteButtons(13) = LVL_HOOK_ITEM
 
 Dim Shared PaletteShortcuts(16) As String
 Let PaletteShortcuts(0) = "H"
@@ -157,6 +160,7 @@ Let PaletteShortcuts(9) = "c"
 Let PaletteShortcuts(10) = "~"
 Let PaletteShortcuts(11) = "S"
 Let PaletteShortcuts(12) = "$"
+Let PaletteShortcuts(13) = "?"
 
 Dim Shared LvlSprites(MAP_WIDTH, MAP_HEIGHT) As SpriteSequence
 Dim Shared SpriteLevel(IMG_DEPTH, MAP_WIDTH, MAP_HEIGHT) As SpriteSequence
@@ -374,7 +378,7 @@ Sub MainLoop
 
         ' Are we switching to a new selection?
         Dim i As Integer
-        For i = 0 To 12
+        For i = 0 To 13
             If khit = Asc(PaletteShortcuts(i)) Or khit = Asc(LCase$(PaletteShortcuts(i))) Then
                 Dim s As Integer
                 Let selection = i

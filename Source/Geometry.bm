@@ -380,7 +380,7 @@ Sub ThrowSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 	End If
     Dim k As Integer
     For k = 1 To 4
-    	If p.col + (sign * k) >= 0 _AndAlso p.col + (sign * k) < MAP_WIDTH - 1 _AndAlso IsIceBlockAt(p.col + (k * sign), p.row + 1, Levels(CurrentLevel)) Then
+    	If p.col + (sign * k) >= 0 _AndAlso p.col + (sign * k) < m.Width _AndAlso IsIceBlockAt(p.col + (k * sign), p.row + 1, Levels(CurrentLevel)) Then
     		Let p.col = p.col + (k * sign)
     		Let p.row = p.row + 1
     		Exit Sub

@@ -108,7 +108,7 @@ SpriteSequence_InitFile SprLevel(LVL_MARK), ImgDir$ + "/level/Mark.png",1, 1, TR
 
 ' Hook (item)
 Dim SprHookOffset As Point
-Point_Set SprHookOffset, 0, -11
+Point_Set SprHookOffset, 0, -3
 SpriteSequence_InitFile SprLevel(LVL_HOOK_ITEM), ImgDir$ + "/level/Hook_Item.png",1, 1, TRUE, TRUE, SprHookOffset, SprHookOffset, COLOR_TRANSPARENT
 
 ' Hook on ice block
@@ -139,20 +139,20 @@ Dim Shared SprPulledRope(3, 2) As SpriteSequence
 Dim SprPullOffset1 As Point, SprPullOffset1Rev As Point
 Dim SprPullOffset2 As Point, SprPullOffset2Rev As Point
 Dim SprPullOffset3 As Point, SprPullOffset3Rev As Point
-Point_Set SprPullOffset1, -5, -33
+Point_Set SprPullOffset1, -6, -33
 Point_Set SprPullOffset1Rev, -27, -33
-Point_Set SprPullOffset2, -5, -33
+Point_Set SprPullOffset2, -6, -33
 Point_Set SprPullOffset2Rev, -38, -33
-Point_Set SprPullOffset3, -5, -33
-Point_Set SprPullOffset3Rev, -49, -33
+Point_Set SprPullOffset3, -6, -33
+Point_Set SprPullOffset3Rev, -44, -33
 SpriteSequence_InitFile SprPulledRope(0, 0), ImgDir$ + "/level/NoHook_Retrieved_2.png",6, 4, TRUE, FALSE, SprPullOffset1, SprPullOffset1Rev, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprPulledRope(0, 1), ImgDir$ + "/level/Hook_Retrieved_2.png",6, 4, TRUE, FALSE, SprPullOffset1Rev, SprPullOffset1, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprPulledRope(1, 0), ImgDir$ + "/level/NoHook_Retrieved_2.png",6, 4, TRUE, FALSE, SprPullOffset2, SprPullOffset2Rev, COLOR_TRANSPARENT
 SpriteSequence_InitFile SprPulledRope(1, 1), ImgDir$ + "/level/Hook_Retrieved_2.png",6, 4, TRUE, FALSE, SprPullOffset2Rev, SprPullOffset2, COLOR_TRANSPARENT
-SpriteSequence_InitFile SprPulledRope(2, 0), ImgDir$ + "/level/NoHook_Retrieved_2.png",6, 4, TRUE, FALSE, SprPullOffset3, SprPullOffset3Rev, COLOR_TRANSPARENT
-SpriteSequence_InitFile SprPulledRope(2, 1), ImgDir$ + "/level/Hook_Retrieved_2.png",6, 4, TRUE, FALSE, SprPullOffset3Rev, SprPullOffset3, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprPulledRope(2, 0), ImgDir$ + "/level/NoHook_Retrieved_3.png",6, 4, TRUE, FALSE, SprPullOffset3, SprPullOffset3Rev, COLOR_TRANSPARENT
+SpriteSequence_InitFile SprPulledRope(2, 1), ImgDir$ + "/level/Hook_Retrieved_3.png",6, 4, TRUE, FALSE, SprPullOffset3Rev, SprPullOffset3, COLOR_TRANSPARENT
 
-' THermometer colors
+' Thermometer colors
 Dim Shared ThermoRed&, ThermoBlue&, HighlightColor&
 If ImgMode = IMG_MODE_CGA Then
     Let ThermoRed& = COLOR_PINK
