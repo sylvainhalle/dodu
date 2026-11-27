@@ -101,7 +101,7 @@ Sub DrawLevel (v As Viewport, m As LevelMap, isfront As Integer)
         If SpriteLevel(layer, col, row).Content <> -1 Then
           Dim p As Point
           Square_ToPoint s, p
-          Viewport_PutSpriteSequence v, FALSE, SpriteLevel(layer, col, row), p, FALSE, layer
+          Viewport_PutSpriteSequence v, FALSE, SpriteLevel(layer, col, row), p, SpriteLevel(layer, col, row).Flipped, layer
         End If
       Next
     Next

@@ -119,6 +119,16 @@ Declare Function IsEmptyAt (col As Integer, row As Integer, l As LevelMap)
 Declare Function IsBlockAt (col As Integer, row As Integer, l As LevelMap)
 
 '**
+'* Returns TRUE if the square (col, row) of level l contains an ice block.
+'**
+Declare Function IsIceBlockAt (col As Integer, row As Integer, l As LevelMap)
+
+'**
+'* Returns TRUE if the square (col, row) of level l contains a rope.
+'**
+Declare Function IsRopeAt (col As Integer, row As Integer, l As LevelMap)
+
+'**
 '* Returns TRUE if the square (col, row) of level l contains a white
 '* (movable) block.
 '**
@@ -178,6 +188,11 @@ Declare Sub LoadLevels ()
 '* Prints the map of level m on the text screen (for debugging).
 '**
 Declare Sub PrintLevel (m As LevelMap)
+
+'**
+'* Prints the map of level m at the console (if enabled).
+'**
+Declare Sub PrintLevelConsole (m As LevelMap)
 
 ' --------------------------
 ' Level loading

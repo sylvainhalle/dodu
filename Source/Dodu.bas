@@ -281,7 +281,9 @@ Sub MainLoop
         End If
 
         Viewport_FadeOut MainScreen, Ceil%(0.3 * FPS)
-        Viewport_Wait ImgBuffer, MainScreen, 2, FPS
+        If CfgIntroduction Then
+            Viewport_Wait ImgBuffer, MainScreen, 2, FPS
+        End If
         Do
             If Levels(CurrentLevel).CutScene >= 0 And CfgCutscenes Then
                 SoundPlayer_StopSong Audio
@@ -323,7 +325,8 @@ Sub DoLevel
     Dim unclimbP As Square, blockingP As Square, poleP As Square
     Dim mittensP As Square, tuqueP As Square, cookieP As Square
     Dim coffeeP As Square, snowP As Square, feetP As Square
-    Dim throwP As Square, reclaimP As Square
+    Dim throwP As Square, pullP As Square, hookSquare As Square
+    Square_Set hookSquare, -1, -1
 
     Let CtrlPressed = FALSE
     Player_Reset Dodu
@@ -359,6 +362,7 @@ Sub DoLevel
     ' ---------------------------------------
     ' 0. Initial pan
     ' ---------------------------------------
+
     GetDoduCenter center
     Viewport_StopPan ImgBuffer
     Dim target_s As Square, target_p As Point
@@ -372,26 +376,28 @@ Sub DoLevel
     DrawThermometer ImgBuffer, DEPTH_CONTROLS
     DrawLevelNumber ImgBuffer, DEPTH_CONTROLS
     Viewport_FadeIn MainScreen, Ceil%(0.5 * FPS)
-    'Viewport_Wait ImgBuffer, MainScreen, 0.8, FPS%
-    Viewport_ScrollCenter ImgBuffer, center, INIT_SCROLL_DURATION * FPS
-    Do
-        _Limit FPS
-        Viewport_Clear ImgBuffer
-        DrawLevel ImgBuffer, Levels(CurrentLevel%), FALSE
-        DrawPlayer ImgBuffer, CurrentSprite()
-        DrawLevel ImgBuffer, Levels(CurrentLevel%), TRUE
-        DrawThermometer ImgBuffer, DEPTH_CONTROLS
-        DrawLevelNumber ImgBuffer, DEPTH_CONTROLS
-        Viewport_Tick ImgBuffer
-        Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
-        Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
-        Viewport_Tick MainScreen
-        Viewport_Display MainScreen, EYE_NONE
-        If IsEsc% Or IsEnter% Then
-            Ticker_Stop ImgBuffer.PanTick
-            Exit Do
-        End If
-    Loop Until Ticker_IsFinished%(ImgBuffer.PanTick)
+    If CfgSplash Then
+        'Viewport_Wait ImgBuffer, MainScreen, 0.8, FPS%
+        Viewport_ScrollCenter ImgBuffer, center, INIT_SCROLL_DURATION * FPS
+        Do
+            _Limit FPS
+            Viewport_Clear ImgBuffer
+            DrawLevel ImgBuffer, Levels(CurrentLevel%), FALSE
+            DrawPlayer ImgBuffer, CurrentSprite()
+            DrawLevel ImgBuffer, Levels(CurrentLevel%), TRUE
+            DrawThermometer ImgBuffer, DEPTH_CONTROLS
+            DrawLevelNumber ImgBuffer, DEPTH_CONTROLS
+            Viewport_Tick ImgBuffer
+            Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
+            Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
+            Viewport_Tick MainScreen
+            Viewport_Display MainScreen, EYE_NONE
+            If IsEsc% Or IsEnter% Then
+                Ticker_Stop ImgBuffer.PanTick
+                Exit Do
+            End If
+        Loop Until Ticker_IsFinished%(ImgBuffer.PanTick)
+    End If
 
     Viewport_SetCenter ImgBuffer, center
     Dim hasfallen As Integer, hookReleased As Integer
@@ -511,6 +517,7 @@ Sub DoLevel
         SnowSquare Dodu.ToLeft, lp, Levels(CurrentLevel), snowP
         FeetSquare Dodu.ToLeft, lp, Levels(CurrentLevel), feetP
         ThrowSquare Dodu.ToLeft, lp, Levels(CurrentLevel), throwP
+        PullSquare Dodu.ToLeft, lp, Levels(CurrentLevel), pullP
 
         If CurrentTrajectory% = TRJ_CLIMBING_SNOW Then
             Let Dodu.InSnow = TRUE
@@ -547,6 +554,9 @@ Sub DoLevel
                         Let lastFallIndex = Trajectories(CurrentTrajectory).Ticker.Index
                     Case TRJ_THROWING
                         Let hookReleased = TRUE
+                    Case TRJ_PULLING
+                        SetSpriteSquare Levels(CurrentLevel), FALSE, hookSquare.col, hookSquare.row, TILE_BLOCK_B
+                        Let Dodu.HasBackpack = 2
                 End Select
                 If Not (CurrentTrajectory% = TRJ_UNCLIMBING Or CurrentTrajectory% = TRJ_FALLING) Then
                     Let CurrentTrajectory% = -1
@@ -749,6 +759,14 @@ Sub DoLevel
                 End If
 
                 Let Dodu.IsWalking = FALSE
+            ElseIf Square_IsValid(pullP) Then
+                Let Dodu.IsThrowing = FALSE
+                Let Dodu.IsWalking = FALSE
+                Let Dodu.IsPanting = FALSE
+                Square_Set hookSquare, pullP.col, pullP.row
+                Initiate_Trajectory TRJ_PULLING, Dodu.ToLeft
+                PullRope Levels(CurrentLevel), pullP, feetP, Dodu.ToLeft
+                SoundPlayer_PlayEffect Audio, SND_PULL_ROPE
             End If
 
         ElseIf IsDown% Then
@@ -766,13 +784,13 @@ Sub DoLevel
                     Let Dodu.ThermoTick.Speed = THERMO_TICK_NORMAL
                 End If
                 Let Dodu.IsWalking = FALSE
-            ElseIf Square_IsValid(throwP) Then 'And Dodu.HasBackpack = 2 Then
+            ElseIf Square_IsValid(throwP) And Dodu.HasBackpack = 2 Then
                 Let Dodu.IsThrowing = TRUE
                 Let Dodu.IsWalking = FALSE
                 Let Dodu.IsPanting = FALSE
                 Let Dodu.HasBackpack = 1
                 Initiate_Trajectory TRJ_THROWING, Dodu.ToLeft
-                ThrowRope Levels(CurrentLevel), throwP
+                ThrowRope Levels(CurrentLevel), throwP, feetP, Dodu.ToLeft
                 SoundPlayer_PlayEffect Audio, SND_THROW_ROPE
             End If
 
@@ -883,7 +901,7 @@ Sub DoLevel
         Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
         Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
         'Viewport_Print MainScreen, Str$(CurrentTrajectory), PtOrigin, 0
-        Viewport_Print MainScreen, Square_ToString(feetP) + Square_ToString(throwP), PtOrigin, 0
+        Viewport_Print MainScreen, Square_ToString(feetP) + Square_ToString(pullP), PtOrigin, 0
         Viewport_Display MainScreen, EYE_NONE
         Viewport_Tick ImgBuffer
         Viewport_Tick MainScreen

@@ -22,16 +22,93 @@ Sub TakeBlock (m As LevelMap, p As Square)
     ClearSpriteSquare p
 End Sub
 
-Sub ThrowRope (m As LevelMap, p As Square)
-    Let SpriteLevel(DEPTH_LEVEL, p.col, p.row) = SprThrownRope(1)
-    Let SpriteLevel(DEPTH_LEVEL, p.col, p.row).Flipped = Dodu.ToLeft
+Sub ThrowRope (m As LevelMap, p As Square, origin As Square, flipped As Integer)
+	SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, p.col, p.row), SprThrownRope(Abs(p.col - origin.col) - 1)
+    'Let SpriteLevel(DEPTH_LEVEL, p.col, p.row) = SprThrownRope(Abs(p.col - origin.col) - 1)
+    Let SpriteLevel(DEPTH_LEVEL, p.col, p.row).Flipped = flipped
+    PrintConsole str$(flipped)
+    PrintConsole Square_ToString(p)
     SpriteSequence_Start SpriteLevel(DEPTH_LEVEL, p.col, p.row)
 End Sub
 
 Sub DeployRope (m As LevelMap, p As Square)
 	ClearSpriteSquare p
 	SetSpriteSquare m, FALSE, p.col, p.row, TILE_BLOCK_HOOK
-	Let Levels(CurrentLevel).Topo(p.col, p.row) = TILE_BLOCK_HOOK
+	Let m.Topo(p.col, p.row) = TILE_BLOCK_HOOK
+	Dim k As Integer
+	If p.col > 0 _AndAlso m.Topo(p.col - 1, p.row) = TILE_NOTHING Then
+		' The gap is on the left
+		For k = _Clamp(0, MAP_WIDTH - 1, p.col - 1) To _Clamp(0, MAP_WIDTH - 1, p.col - 3) Step -1
+			If m.Topo(k, p.row) = TILE_NOTHING Then
+				Let m.Topo(k, p.row) = TILE_ROPE
+				SetSpriteSquare m, FALSE, k, p.row, TILE_ROPE
+			Else
+				Exit For
+			End If
+		Next
+	ElseIf p.col < MAP_WIDTH - 1 _AndAlso m.Topo(p.col + 1, p.row) = TILE_NOTHING Then
+		' The gap is on the right
+		For k = _Clamp(0, MAP_WIDTH - 1, p.col + 1) To _Clamp(0, MAP_WIDTH - 1, p.col + 3) Step 1
+			If m.Topo(k, p.row) = TILE_NOTHING Then
+				Let m.Topo(k, p.row) = TILE_ROPE
+				SetSpriteSquare m, FALSE, k, p.row, TILE_ROPE
+			Else
+				Exit For
+			End If
+		Next
+	End If
+End Sub
+
+Sub PullRope (m As LevelMap, hook_p As Square, feet_p As Square, flipped As Integer)
+	PrintLevelConsole m
+	Dim clearp As Square
+	ClearSpriteSquare hook_p
+	Let m.Topo(hook_p.col, hook_p.row) = TILE_BLOCK_B
+	Dim direction As Integer, length As Integer, k As Integer
+	If hook_p.col > 0 _AndAlso m.Topo(hook_p.col - 1, hook_p.row) = TILE_ROPE Then
+		Let direction = -1
+	ElseIf hook_p.col < m.Width - 1 _AndAlso m.Topo(hook_p.col + 1, hook_p.row) = TILE_ROPE Then
+		Let direction = 1
+	End If
+	For k = 1 To 3
+		If hook_p.col + (k * direction) < m.Width - 1 And hook_p.col + (k * direction) > 0 Then
+			If m.Topo(hook_p.col + (k * direction), hook_p.row) = TILE_ROPE Then
+				Square_Set clearp, hook_p.col + (k * direction), hook_p.row
+				Let length = length + 1
+				Let m.Topo(hook_p.col + (k * direction), hook_p.row) = TILE_NOTHING
+				ClearSpriteSquare clearp
+				PrintConsole "Clearing " + Square_ToString(clearp)
+			End If
+		Else
+			Exit For
+		End If
+	Next
+	PrintLevelConsole m
+	PrintConsole "ROPELEN" + Str$(length)
+	Dim flip As Integer, hookornot As Integer
+	If feet_p.col < hook_p.col Then
+		PrintConsole "Player at left"
+		If direction = 1 Then ' pulling on the hook from the left
+			Let flip = TRUE
+			Let hookornot = TRUE
+		Else ' pulling on the other end from the left
+			Let flip = TRUE
+			Let hookornot = FALSE
+		End If
+	Else
+		PrintConsole "Player at right"
+		If direction = 1 Then ' pulling on the other end from the right
+			Let flip = FALSE
+			Let hookornot = FALSE
+		Else ' pulling on the hook from the right
+			Let flip = FALSE
+			Let hookornot = TRUE
+		End If
+	End If
+	PrintConsole "Direction: " + Str$(direction) + " Flip: " + Str$(flip) + " Pulling hook: " + Str$(hookornot)
+	SpriteSequence_Copy SpriteLevel(DEPTH_LEVEL, hook_p.col, hook_p.row), SprPulledRope(Abs(length) - 1, hookornot)
+	Let SpriteLevel(DEPTH_LEVEL, hook_p.col, hook_p.row).Flipped = flip
+	SpriteSequence_Start SpriteLevel(DEPTH_LEVEL, hook_p.col, hook_p.row)
 End Sub
 
 Sub TakeTuque (m As LevelMap, p As Square)

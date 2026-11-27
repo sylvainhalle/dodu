@@ -143,11 +143,11 @@ Sub UnclimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 
     Let row = Ceil%((lp.y + PLAYER_HEIGHT) / BLOCK_SIZE)
     If row < 0 Or row >= MAP_HEIGHT Then Exit Sub
-    If IsBlockAt(col, row, m) Then Exit Sub
+    If IsBlockAt(col, row, m) Or IsRopeAt(col, row, m) Then Exit Sub
 
     ' Otherwise find the first supporting block below.
     For r = row + 1 To MAP_HEIGHT - 1
-        If Not IsBlockAt(col, r, m) Then
+        If IsEmptyAt(col, r, m) Then
             Let p.col = col
             Let p.row = r - 1
             Exit Sub
@@ -259,12 +259,12 @@ Function IsOnGround% (lp As Point, m As LevelMap)
     End If
     Let row = Ceil((lp.y + PLAYER_HEIGHT) / BLOCK_SIZE)
     Let col = Floor((lp.x + 6) / BLOCK_SIZE)
-    If IsBlockAt(col, row, m) Then
+    If IsBlockAt(col, row, m) Or IsRopeAt(col, row, m) Then
         Let IsOnGround = TRUE
         Exit Function
     End If
     Let Col = Floor((lp.x + PLAYER_WIDTH - 6) / BLOCK_SIZE)
-    If IsBlockAt(col, row, m) Then
+    If IsBlockAt(col, row, m) Or IsRopeAt(col, row, m) Then
         Let IsOnGround = TRUE
         Exit Function
     End If
@@ -367,6 +367,8 @@ Sub CoffeeSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 End Sub
 
 Sub ThrowSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+	Dim sign As Integer
+	If side Then Let sign = -1 Else Let sign = 1
     FeetSquare side, lp, m, p
     If p.col < 0 Or p.row < 0 Then
         Exit Sub
@@ -378,8 +380,8 @@ Sub ThrowSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 	End If
     Dim k As Integer
     For k = 1 To 4
-    	If p.col + k < MAP_WIDTH _AndAlso Not IsEmptyAt(p.col + k, p.row + 1, Levels(CurrentLevel)) Then
-    		Let p.col = p.col + k
+    	If p.col + (sign * k) >= 0 _AndAlso p.col + (sign * k) < MAP_WIDTH - 1 _AndAlso IsIceBlockAt(p.col + (k * sign), p.row + 1, Levels(CurrentLevel)) Then
+    		Let p.col = p.col + (k * sign)
     		Let p.row = p.row + 1
     		Exit Sub
     	End If
@@ -389,4 +391,30 @@ Sub ThrowSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
     Let p.row = -1
 End Sub
 
+Sub PullSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+	Dim k As Integer, ft As Square, sign As Integer
+	FeetSquare side, lp, m, ft
+	Let ft.row = ft.row + 1
+	Square_Set p, -1, -1
+	If Not Square_IsValid(ft) Then Exit Sub
+	If m.Topo(ft.col, ft.row + 1) = TILE_ROPE Then Exit Sub
+	If side Then ' player facing left
+		If ft.col = 0 Then
+			Exit Sub
+		End If
+		Let sign = -1
+	Else ' player facing right
+		If ft.col = m.Width - 1 Then
+			Exit Sub
+		End If
+		Let sign = 1
+	End If
+	For k = 0 To 4
+		'PrintConsole Str$(ft.col + (k * sign))
+		If _Clamp(0, m.Width - 1, ft.col + (k * sign)) = ft.col + (k * sign) _AndAlso m.Topo(ft.col + (k * sign), ft.row) = TILE_BLOCK_HOOK Then
+			Square_Set p, ft.col + (k * sign), ft.row
+			Exit For
+		End If
+	Next
+End Sub
 ' :mode=visualbasic:folding=explicit:wrap=none:

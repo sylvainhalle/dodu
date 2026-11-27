@@ -83,6 +83,18 @@ Declare Sub FeetSquare (side As Integer, lp As Point, m As LevelMap, p As Square
 Declare Sub SnowSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 
 '**
+'* Calculates the square that can be the target for throwing the hook. Sets p
+'* to (-1, -1) if not.
+'**
+Declare Sub ThrowSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+
+'**
+'* Calculates the square that can be the target for pulling the rope. Sets p
+'* to (-1, -1) if not.
+'**
+Declare Sub PullSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
+
+'**
 '* Returns TRUE if the player at level position lp is standing on a block
 '* (checks both feet against the row directly below the player).
 '**

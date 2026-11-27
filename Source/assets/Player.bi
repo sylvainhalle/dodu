@@ -111,9 +111,10 @@ Const TRJ_PANTING% = 3
 Const TRJ_LOOKING_THERMO% = 4
 Const TRJ_FALLING% = 5
 Const TRJ_THROWING% = 6
+Const TRJ_PULLING% = 7
 Const TRJ_PANBACK% = 100
 
-Dim Shared Trajectories(7) As Trajectory
+Dim Shared Trajectories(9) As Trajectory
 Dim trj As Trajectory
 Trajectory_Init Trajectories(TRJ_CLIMBING), 6, 1, FALSE, FALSE
 Trajectory_AddCoords Trajectories(TRJ_CLIMBING), 0, -3, 0
@@ -147,6 +148,9 @@ Trajectory_AddCoords Trajectories(TRJ_PANTING), 0,  0, 0
 
 Trajectory_Init Trajectories(TRJ_THROWING), 1, 20, FALSE, FALSE
 Trajectory_AddCoords Trajectories(TRJ_THROWING), 0,  0, 0
+
+Trajectory_Init Trajectories(TRJ_PULLING), 1, 6, FALSE, FALSE
+Trajectory_AddCoords Trajectories(TRJ_PULLING), 0,  0, 0
 
 Trajectory_Init Trajectories(TRJ_LOOKING_THERMO), 1, 12, FALSE, FALSE
 Trajectory_AddCoords Trajectories(TRJ_LOOKING_THERMO), 0,  0, 0

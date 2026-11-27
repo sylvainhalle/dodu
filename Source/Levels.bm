@@ -68,10 +68,18 @@ Function IsEmptyAt (col As Integer, row As Integer, l As LevelMap)
 End Function
 
 Function IsBlockAt (col As Integer, row As Integer, l As LevelMap)
-    If l.Topo(col, row) = TILE_BLOCK_B Or l.Topo(col, row) = TILE_BLOCK_W Or l.Topo(col, row) = TILE_SNOW Then
+    If l.Topo(col, row) = TILE_BLOCK_B Or l.Topo(col, row) = TILE_BLOCK_W Or l.Topo(col, row) = TILE_SNOW Or l.Topo(col, row) = TILE_BLOCK_HOOK Then
         Let IsBlockAt = TRUE
     Else
         Let IsBlockAt = FALSE
+    End If
+End Function
+
+Function IsIceBlockAt (col As Integer, row As Integer, l As LevelMap)
+    If l.Topo(col, row) = TILE_BLOCK_B Or l.Topo(col, row) = TILE_BLOCK_HOOK Then
+        Let IsIceBlockAt = TRUE
+    Else
+        Let IsIceBlockAt = FALSE
     End If
 End Function
 
@@ -83,8 +91,17 @@ Function IsWhiteBlockAt (col As Integer, row As Integer, l As LevelMap)
     End If
 End Function
 
+
+Function IsRopeAt (col As Integer, row As Integer, l As LevelMap)
+    If l.Topo(col, row) = TILE_ROPE Then
+        Let IsRopeAt = TRUE
+    Else
+        Let IsRopeAt = FALSE
+    End If
+End Function
+
 Function IsObstacleAt (col As Integer, row As Integer, l As LevelMap)
-    If l.Topo(col, row) = TILE_BLOCK_B Or l.Topo(col, row) = TILE_BLOCK_W Or l.Topo(col, row) = TILE_SNOW Or l.Topo(col, row) = TILE_POLE Then
+    If l.Topo(col, row) = TILE_BLOCK_B Or l.Topo(col, row) = TILE_BLOCK_W Or l.Topo(col, row) = TILE_BLOCK_HOOK Or l.Topo(col, row) = TILE_SNOW Or l.Topo(col, row) = TILE_POLE Then
         Let IsObstacleAt = TRUE
     Else
         Let IsObstacleAt = FALSE
@@ -247,6 +264,24 @@ Sub PrintLevel (m As LevelMap)
         Next
         Print
     Next
+End Sub
+
+Sub PrintLevelConsole (m As LevelMap)
+	Dim prev As Long
+    Let prev = _Dest
+    _Dest _Console
+    Dim i, j As Integer
+    For i = 1 To m.Height
+        For j = 1 To m.Width
+            If m.Topo(j-1,i-1) = " " Then
+                Print " ";
+            Else
+                Print m.Topo(j - 1, i - 1);
+            End If
+        Next
+        Print
+    Next
+    _Dest prev
 End Sub
 
 Sub LoadSections

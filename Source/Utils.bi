@@ -64,6 +64,12 @@ Declare Function Array_Contains% (a() As Integer, v As Integer)
 Declare Sub PrintConsole (s As String)
 
 '**
+'* Prints s to the console window (without moving to the next line), then
+'* restores the current destination.
+'**
+Declare Sub PrintConsoleNoLf (s As String)
+
+'**
 '* If CountTo is 0, returns the number of occurrences of Search in Content;
 '* otherwise returns the position of occurrence number CountTo (0 if absent).
 '* From https://qb64phoenix.com/forum/showthread.php?tid=3629&pid=34029
