@@ -197,9 +197,9 @@ Declare Sub PrintLevelConsole (m As LevelMap)
 ' --------------------------
 ' Level loading
 ' --------------------------
-Dim Shared Levels(28) As LevelMap
-Dim Shared Maps(28) As LevelMap
-Dim Shared GameSections(12) As GameSection
+Dim Shared Levels(42) As LevelMap
+Dim Shared Maps(42) As LevelMap
+Dim Shared GameSections(24) As GameSection
 
 Type GameSection
     Name As String

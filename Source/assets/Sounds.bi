@@ -33,6 +33,7 @@ Const SNG_BRUBECK = 7
 Const SNG_LIF = 8
 Const SNG_DASCHELBEL = 9
 Const SNG_JARWERK = 10
+Const SNG_RUDOLPH = 11
 
 SoundPlayer_AddSong Audio, SNG_SONG1, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/dod_fixed.mid", "STREAM"), 0.4
 SoundPlayer_AddSong Audio, SNG_SONG2, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/yaya.mid", "STREAM"), 0.4
@@ -46,7 +47,7 @@ SoundPlayer_AddSong Audio, SNG_PASTORAL, _SndOpen("/home/sylvain/Workspaces/dodu
 SoundPlayer_AddSong Audio, SNG_LIF, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/lif.mid", "STREAM"), 0.4
 Let Audio.Loops(SNG_LIF) = FALSE
 SoundPlayer_AddSong Audio, SNG_DASCHELBEL, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/joepachelbel_q.mid", "STREAM"), 0.4
-'SoundPlayer_AddSong Audio, SNG_PASTORAL, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/lullaby.mid"), 0.5
+SoundPlayer_AddSong Audio, SNG_RUDOLPH, _SndOpen("/home/sylvain/Workspaces/dodu/Source/music/rudolph.mid"), 0.5
 
 Const SND_STEP% = 0
 Const SND_THERMO% = 1

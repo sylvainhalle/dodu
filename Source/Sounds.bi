@@ -16,13 +16,16 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
+Const SNG_NUMSONGS% = 20
+Const SNG_EFFECTS% = 20
+
 Type SoundPlayer
     PlaySong As Integer
     PlayEffects As Integer
     CurrentSong As Long
-    Songs(10) As Long
-    Loops(10) As Integer
-    Effects(20) As Long
+    Songs(SNG_NUMSONGS) As Long
+    Loops(SNG_NUMSONGS) As Integer
+    Effects(SNG_EFFECTS) As Long
 End Type
 
 '**

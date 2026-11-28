@@ -184,6 +184,7 @@ $backgrounds = array(
     array("data" => imagecreatefrompng($BG_FOLDER . "Dusk.png"), "offset" => array(0, 0), "size" => array(80, 256)),
     array("data" => imagecreatefrompng($BG_FOLDER . "Memphis_1.png"), "offset" => array(0, 0), "size" => array(40, 40)),
     array("data" => imagecreatefrompng($BG_FOLDER . "Memphis_2.png"), "offset" => array(0, 0), "size" => array(40, 40)),
+    array("data" => imagecreatefrompng($BG_FOLDER . "XMas1.png"), "offset" => array(0, 0), "size" => array(40, 40)),
 );
 
 // ------------------------------------------------------------
@@ -203,7 +204,8 @@ $sprites = array(
     "R" => array("data" => imagecreatefrompng($LVL_FOLDER . "Snow_R.png"), "offset" => array(0, -11), "size" => array(11, 25)),
     "M" => array("data" => imagecreatefrompng($LVL_FOLDER . "Snow_M.png"), "offset" => array(0, 0), "size" => array(11, 11)),
     "*" => array("data" => imagecreatefrompng($LVL_FOLDER . "Mark.png"), "offset" => array(0, 0), "size" => array(11, 11)),
-    "f" => array("data" => imagecreatefrompng($LVL_FOLDER . "Coffee.png"), "offset" => array(1, 1), "size" => array(9, 9))
+    "f" => array("data" => imagecreatefrompng($LVL_FOLDER . "Coffee.png"), "offset" => array(1, 1), "size" => array(9, 9)),
+    "?" => array("data" => imagecreatefrompng($LVL_FOLDER . "Hook_Item.png"), "offset" => array(0, -3), "size" => array(11, 16))
 );
 
 // Set sprite transparency

@@ -17,6 +17,20 @@
 '-----------------------------------------------------------------------------
 
 '**
+'* Denotes an interval of pixels.
+'**
+Type Interval
+	iFrom As Integer
+	iTo As Integer
+End Type
+
+Declare Function Interval_ToString$(i As Interval)
+
+Declare Sub GroundFootprint(side As Integer, lp As Point, threshold As Integer, interval As Integer)
+
+Declare Function IsSupported% (i As Interval, row As Integer, m As LevelMap)
+
+'**
 '* Calculates the vertical line ofo the grid closest to the player.
 '**
 Declare Function SideColumn% (side As Integer, lp As Point, threshold As Integer)

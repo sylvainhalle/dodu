@@ -166,6 +166,7 @@ For argc = 1 To _CommandCount
             Select Case toset
                 Case "level"
                     Let CurrentLevel = Val(Command$(argc)) - 1
+                    PrintConsole "LEVEL" + Str$(CurrentLevel)
                 Case "width"
                     Point_Set ScreenDims, Val(Command$(argc)) - 1, ScreenDims.y
                 Case "height"
@@ -268,6 +269,7 @@ Sub MainLoop
         Let MainScreen.Scanlines = Scanlines
         Let MainScreen.ScanlineWidth = ScanlineWidth
         Let MainScreen.ScanlineColor = ScanlineColor
+        Let rst.Level = -1
         If CfgSplash Then
             DoLifSplash
         End If
@@ -320,6 +322,7 @@ Sub DoLevel
     Dim sq_lastgrab As Square, sq_lastdrop As Square
     Dim center As Point, panbacktarget As Point
     Dim trjP As Point, lp As Point, moveP As Point, panP As Point
+    Dim gfp As Interval
 
     Dim climbP As Square, takeP As Square, dropP As Square
     Dim unclimbP As Square, blockingP As Square, poleP As Square
@@ -518,6 +521,7 @@ Sub DoLevel
         FeetSquare Dodu.ToLeft, lp, Levels(CurrentLevel), feetP
         ThrowSquare Dodu.ToLeft, lp, Levels(CurrentLevel), throwP
         PullSquare Dodu.ToLeft, lp, Levels(CurrentLevel), pullP
+        GroundFootprint Dodu.ToLeft, lp, 4, gfp
 
         If CurrentTrajectory% = TRJ_CLIMBING_SNOW Then
             Let Dodu.InSnow = TRUE
@@ -564,15 +568,20 @@ Sub DoLevel
                     Let Dodu.IsLooking = FALSE
                     Let Dodu.IsThrowing = FALSE
                 Else
-                    If Not IsOnGround%(Dodu.LevPos, Levels(CurrentLevel)) Then
+                    If Not IsOnGround%(Dodu.ToLeft, Dodu.LevPos, Levels(CurrentLevel)) Then
+                        PrintConsole "CONTINUING FALL"
                         Let CurrentTrajectory% = -1
                         '   Not reached the ground: fall
                         Initiate_Trajectory TRJ_FALLING, Dodu.ToLeft
                         Let hasfallen = TRUE
                     Else
+                        PrintConsole "STOPPED FALL"
                         Let CurrentTrajectory% = -1
                         Let Dodu.IsPanting = FALSE
                         Let Dodu.IsLooking = FALSE
+PrintConsole "Fall ended at: " + _
+    Str$(Dodu.LevPos.x) + "," + Str$(Dodu.LevPos.y) + _
+    " Ground=" + Str$(IsOnGround%(Dodu.ToLeft, Dodu.LevPos, Levels(CurrentLevel)))
                     End If
                 End If
             End If
@@ -679,7 +688,7 @@ Sub DoLevel
         If IsLeft% Then
 
             Let Dodu.ToLeft = TRUE
-            Let Dodu.SlipDir = -1
+            Let Dodu.SlipDir = -SLIP_AMOUNT
 
             If Square_IsValid(climbP) Then
 
@@ -713,7 +722,7 @@ Sub DoLevel
         ElseIf IsRight% Then
 
             Let Dodu.ToLeft = FALSE
-            Let Dodu.SlipDir = 1
+            Let Dodu.SlipDir = SLIP_AMOUNT
 
             If Square_IsValid(climbP) Then
 
@@ -900,8 +909,8 @@ Sub DoLevel
 
         Viewport_Copy ImgBuffer, MainScreen, EYE_LEFT
         Viewport_Copy ImgBuffer, MainScreen, EYE_RIGHT
-        'Viewport_Print MainScreen, Str$(CurrentTrajectory), PtOrigin, 0
-        Viewport_Print MainScreen, Square_ToString(feetP) + Square_ToString(pullP), PtOrigin, 0
+        Viewport_Print MainScreen, Str$(CurrentTrajectory) + " " + Str$(IsOnGround%(Dodu.ToLeft, Dodu.LevPos, Levels(CurrentLevel))) + " " + Str$(Square_IsValid(unclimbP)) + Interval_ToString(gfp), PtOrigin, 0
+        'Viewport_Print MainScreen, Square_ToString(feetP) + Square_ToString(pullP), PtOrigin, 0
         Viewport_Display MainScreen, EYE_NONE
         Viewport_Tick ImgBuffer
         Viewport_Tick MainScreen
@@ -1065,7 +1074,7 @@ Sub TickLevel (m As LevelMap)
 End Sub
 
 Sub MovePlayer (v As Viewport, p_to As Point)
-    If WalkingTicker.TickCnt <> 0 Then Exit Sub
+    If CurrentTrajectory% = -1 And WalkingTicker.TickCnt <> 0 Then Exit Sub
     If p_to.x < 0 Then Dodu.ToLeft = TRUE
     If p_to.x > 0 Then Dodu.ToLeft = FALSE
     ' Otherwise, leave in its current state

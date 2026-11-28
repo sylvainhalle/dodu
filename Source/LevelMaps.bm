@@ -32,13 +32,14 @@
 '  5: falling snow
 '  6: pizza 1
 '  7: pizza 2
-'  8: digits
+'  8: digits 1
 '  9: night sky
 ' 10: editor
 ' 11: clouds
 ' 12: dusk
 ' 13: Memphis 1
 ' 14: Memphis 2
+' 15: XMas 1
 
 ' Songs
 ' -----
@@ -50,8 +51,10 @@
 '  5: Bière qui roule (Dompierre)
 '  6: Pastoral
 '  7: Homage to Brubeck
-'  8: Kraftwerk
+'  8: LIF
 '  9: Daschelbel
+' 10: Jarwerk
+' 11: Rudolph tango
 
 Sections:
 
@@ -59,7 +62,7 @@ Sections:
 Data "SECTION", "onlyice", 0
 Data "BACKGROUNDS", 0, 1
 Data "CUTSCENE", 0
-Data "LEVEL", "throwtest"
+'Data "LEVEL", "throwtest"
 Data "LEVEL", "just_walk"
 Data "LEVEL", "choose_side"
 Data "LEVEL", "choose_again"
@@ -111,6 +114,16 @@ Data "LEVEL", "low_ceiling"
 Data "SECTION", "hook", 8
 Data "CUTSCENE", 6
 Data "BACKGROUNDS", 8, -1
+Data "LEVEL", "make_a_bridge"
+Data "LEVEL", "climb_then_turn"
+Data "LEVEL", "small_reward"
+Data "LEVEL", "so_near_yet_so_far"
+
+Data "SECTION", "coffee", 11
+Data "CUTSCENE", 7
+Data "BACKGROUNDS", 15, -1
+Data "LEVEL", "think_before_you_drop"
+
 
 Data "END"
 

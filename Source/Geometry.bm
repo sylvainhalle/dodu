@@ -16,6 +16,36 @@
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '-----------------------------------------------------------------------------
 
+Function Interval_ToString$(i As Interval)
+	Let Interval_ToString = "[" + Str$(i.iFrom) + "-" + Str$(i.iTo) + "]"
+End Function
+
+Sub GroundFootprint(side As Integer, lp As Point, threshold As Integer, interval As Interval)
+	If side Then ' facing left
+		Let interval.iFrom = lp.x
+		Let interval.iTo = lp.x + PLAYER_WIDTH - threshold - 1
+	Else ' facing right
+		Let interval.iFrom = lp.x + threshold
+		Let interval.iTo = lp.x + PLAYER_WIDTH - 1
+	End If
+End Sub
+
+Function IsSupported% (i As Interval, row As Integer, m As LevelMap)
+    Dim col As Integer
+
+    Let IsSupported% = FALSE
+    If row < 0 Or row >= m.Height Then Exit Function
+
+    For col = Floor%(i.iFrom / BLOCK_SIZE) To Floor%((i.iTo - 1) / BLOCK_SIZE)
+        If col >= 0 And col < m.Width Then
+            If IsBlockAt(col, row, m) Or IsRopeAt(col, row, m) Then
+                Let IsSupported% = TRUE
+                Exit Function
+            End If
+        End If
+    Next
+End Function
+
 Sub ClimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
     Dim col As Integer, row As Integer, x As Integer, overlap As Integer
 
@@ -119,36 +149,32 @@ Sub DroppableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
 End Sub
 
 Sub UnclimbableSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
-    Dim col As Integer, row As Integer, x As Integer, overlap As Integer
-    Dim r As Integer
+    Dim nextP As Point
+    Dim i As Interval
+    Dim row As Integer, r As Integer
 
     Let p.col = -1
     Let p.row = -1
 
-    ' Leading edge after the next movement
-    If side Then ' left
-        Let x = lp.x - WALKING_SPEED
-        Let col = Floor%((x - 1) / BLOCK_SIZE)
-        Let overlap = (col + 1) * BLOCK_SIZE - x
-    Else ' right
-        Let x = lp.x + PLAYER_WIDTH + WALKING_SPEED
-        Let col = Floor%(x / BLOCK_SIZE)
-        Let overlap = x - col * BLOCK_SIZE
+    Let nextP = lp
+    If side Then
+        Let nextP.x = lp.x - WALKING_SPEED
+    Else
+        Let nextP.x = lp.x + WALKING_SPEED
     End If
 
-    ' Still within the permitted penetration
-    If overlap <= UNCLIMB_THRESHOLD Then Exit Sub
-
-    If col < 0 Or col >= MAP_WIDTH Then Exit Sub
+    GroundFootprint side, nextP, UNCLIMB_THRESHOLD, i
 
     Let row = Ceil%((lp.y + PLAYER_HEIGHT) / BLOCK_SIZE)
-    If row < 0 Or row >= MAP_HEIGHT Then Exit Sub
-    If IsBlockAt(col, row, m) Or IsRopeAt(col, row, m) Then Exit Sub
+    If IsSupported%(i, row, m) Then Exit Sub
 
-    ' Otherwise find the first supporting block below.
     For r = row + 1 To MAP_HEIGHT - 1
-        If IsEmptyAt(col, r, m) Then
-            Let p.col = col
+        If IsSupported%(i, r, m) Then
+            If side Then
+                Let p.col = Floor%(i.iFrom / BLOCK_SIZE)
+            Else
+                Let p.col = Floor%((i.iTo - 1) / BLOCK_SIZE)
+            End If
             Let p.row = r - 1
             Exit Sub
         End If
@@ -251,23 +277,16 @@ Sub PoleSquare (side As Integer, lp As Point, m As LevelMap, p As Square)
     End If
 End Sub
 
-Function IsOnGround% (lp As Point, m As LevelMap)
-    Dim row As Integer, col As Integer
-    Let IsOnGround = FALSE
-    If (lp.y + PLAYER_HEIGHT) Mod 11 <> 0 Then
-        Exit Function
-    End If
-    Let row = Ceil((lp.y + PLAYER_HEIGHT) / BLOCK_SIZE)
-    Let col = Floor((lp.x + 6) / BLOCK_SIZE)
-    If IsBlockAt(col, row, m) Or IsRopeAt(col, row, m) Then
-        Let IsOnGround = TRUE
-        Exit Function
-    End If
-    Let Col = Floor((lp.x + PLAYER_WIDTH - 6) / BLOCK_SIZE)
-    If IsBlockAt(col, row, m) Or IsRopeAt(col, row, m) Then
-        Let IsOnGround = TRUE
-        Exit Function
-    End If
+Function IsOnGround% (side As Integer, lp As Point, m As LevelMap)
+    Dim i As Interval
+    Dim row As Integer
+
+    Let IsOnGround% = FALSE
+    If (lp.y + PLAYER_HEIGHT) Mod BLOCK_SIZE <> 0 Then Exit Function
+
+    Let row = (lp.y + PLAYER_HEIGHT) \ BLOCK_SIZE
+    GroundFootprint side, lp, UNCLIMB_THRESHOLD, i
+    Let IsOnGround% = IsSupported%(i, row, m)
 End Function
 
 Sub FeetSquare (side As Integer, lp As Point, m As LevelMap, p As Square)

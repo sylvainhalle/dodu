@@ -19,7 +19,7 @@
 ' ---------------------
 ' Backgrounds
 ' ---------------------
-Dim Shared Backgrounds(15) As SpriteSequence
+Dim Shared Backgrounds(20) As SpriteSequence
 SpriteSequence_InitFile Backgrounds(0), ImgDir$ + "/backgrounds/Blue_1.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile Backgrounds(1), ImgDir$ + "/backgrounds/Blue_2.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile Backgrounds(2), ImgDir$ + "/backgrounds/Cards.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
@@ -35,6 +35,7 @@ SpriteSequence_InitFile Backgrounds(11), ImgDir$ + "/backgrounds/Clouds_animated
 SpriteSequence_InitFile Backgrounds(12), ImgDir$ + "/backgrounds/Dusk.png", 1, 10, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile Backgrounds(13), ImgDir$ + "/backgrounds/Memphis_1.png", 1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 SpriteSequence_InitFile Backgrounds(14), ImgDir$ + "/backgrounds/Memphis_2.png", 1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
+SpriteSequence_InitFile Backgrounds(15), ImgDir$ + "/backgrounds/XMas1.png", 6, 3, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT
 
 Dim Shared Veil As SpriteSequence
 SpriteSequence_InitFile Veil, ImgDir$ + "/backgrounds/Veil.png",1, 1, TRUE, TRUE, DefaultOffset, DefaultOffset, COLOR_TRANSPARENT

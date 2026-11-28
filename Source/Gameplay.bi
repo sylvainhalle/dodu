@@ -21,6 +21,7 @@ Const CLIMB_THRESHOLD% = 1
 Const TAKE_THRESHOLD% = 5
 Const DROP_THRESHOLD% = 5
 Const UNCLIMB_THRESHOLD% = 5
+Const SLIP_AMOUNT% = 0
 
 ' --------------------------
 ' Player
